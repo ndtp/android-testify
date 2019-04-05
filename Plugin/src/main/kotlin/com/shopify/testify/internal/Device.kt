@@ -36,7 +36,7 @@ object Device {
     }
 
     fun language(): String {
-        return if (version() <= 21) {
+        return if (version() <= 22) {
             Adb().arguments(
                 "shell",
                 "getprop",
@@ -52,7 +52,7 @@ object Device {
     }
 
     fun locale(): String {
-        return if (version() <= 21) {
+        return if (version() <= 22) {
             val language = Adb().arguments(
                 "shell",
                 "getprop",
