@@ -146,18 +146,20 @@ bintray {
 bintrayUpload {
     dependsOn install
     doFirst {
-        if (System.getenv('BINTRAY_USER').isEmpty()) {
+        if (System.getenv('BINTRAY_USER') == null || System.getenv('BINTRAY_USER').isEmpty()) {
             throw new IllegalArgumentException("BINTRAY_USER must be defined")
         }
-        if (System.getenv('BINTRAY_KEY').isEmpty()) {
+        if (System.getenv('BINTRAY_KEY') == null || System.getenv('BINTRAY_KEY').isEmpty()) {
             throw new IllegalArgumentException("BINTRAY_KEY must be defined")
         }
     }
 }
 
 task configureLocal {
-    version = "local"
-    jar.manifest.attributes.put("Implementation-Version", version)
+    doFirst {
+        version = "local"
+        jar.manifest.attributes.put("Implementation-Version", version)
+    }
 }
 
 task copyLocal(type: Copy) {
