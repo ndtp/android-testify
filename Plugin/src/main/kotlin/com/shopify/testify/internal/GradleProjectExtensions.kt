@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,4 +30,4 @@ import org.gradle.api.Project
 
 val Project.android: TestedExtension
     get() = this.properties["android"] as? TestedExtension
-            ?: throw GradleException("Gradle project must contain an `android` closure")
+        ?: throw GradleException("Gradle project must contain an `android` closure")

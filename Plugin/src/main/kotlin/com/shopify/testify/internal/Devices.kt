@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ internal object Devices {
     val count: Int
         get() {
             val result = Adb()
-                    .argument("devices")
-                    .execute()
+                .argument("devices")
+                .execute()
 
             return result.lines().filter {
                 it.isNotBlank() && !it.contains("List of devices attached")
@@ -48,8 +48,8 @@ internal object Devices {
 
     private fun enumerateDevices(): List<String> {
         val result = Adb()
-                .argument("devices")
-                .execute()
+            .argument("devices")
+            .execute()
 
         return result.lines().filter {
             it.isNotBlank() && !it.contains("List of devices attached")

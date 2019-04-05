@@ -1,5 +1,3 @@
-import com.android.ddmlib.DdmPreferences
-
 buildscript {
     repositories {
         jcenter()
@@ -8,20 +6,18 @@ buildscript {
 }
 
 plugins {
-    id "com.github.dcendents.android-maven" version "2.1"
-    id "com.jfrog.bintray" version "1.8.4"
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'com.github.dcendents.android-maven'
+    id 'com.jfrog.bintray'
+    id 'org.jetbrains.dokka'
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
 def VERSION_NAME = "$project.versions.testify"
 
 version = VERSION_NAME
 
 android {
-    DdmPreferences.setTimeOut(60000) // https://code.google.com/p/android/issues/detail?id=104305
-
     compileSdkVersion coreVersions.shopify.compileSdk
 
     lintOptions {
@@ -37,7 +33,11 @@ android {
         targetSdkVersion coreVersions.shopify.targetSdk
         versionCode 1
         versionName VERSION_NAME
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
     }
 
     buildTypes {
@@ -48,10 +48,8 @@ android {
     }
 
     libraryVariants.all { variant ->
-        variant.outputs.all { output ->
-            if (output.outputFile != null && output.outputFile.name.endsWith('.aar')) {
-                outputFileName = "${archivesBaseName}-${version}.aar"
-            }
+        variant.outputs.all {
+            outputFileName = "${archivesBaseName}-${version}.aar"
         }
     }
 
@@ -67,18 +65,21 @@ android {
     }
 
     dependencies {
-
-        api depends.support.test.espresso.core3
-        implementation depends.support.test.runner1
+        implementation depends.androidx.test.espresso.core
+        implementation depends.androidx.test.rules
+        implementation depends.androidx.test.runner
         implementation depends.kotlin.stdlib7
+
         testImplementation depends.mockito.v2
         testImplementation depends.mockito.kotlin
 
-        implementation 'com.android.support.test:rules:1.0.2'
+        androidTestImplementation depends.androidx.test.junit
+        androidTestImplementation depends.androidx.test.runner
+        androidTestImplementation depends.androidx.test.rules
+        androidTestImplementation depends.androidx.test.espresso.core
+        androidTestImplementation depends.androidx.test.espresso.contrib
     }
 }
-
-//endregion
 
 ext {
     pom = [
@@ -120,54 +121,24 @@ install {
         }
     }
 }
-//endregion
 
-//region `javadocJar` task
-sourceSets {
-    javadoc {
-        java.srcDirs = ['src/main/java']
-    }
+dokka {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/javadoc"
+    includeNonPublic = false
+    reportUndocumented = false
 }
 
-task javadoc(type: Javadoc) {
-    source = sourceSets.javadoc.allSource
-    title = "Android Testify"
-    description "Generates Javadoc"
-
-    options {
-        failOnError false
-    }
-
-    source = android.sourceSets.main.java.srcDirs
-    exclude '**/BuildConfig.java'
-    exclude '**/R.java'
-    exclude '**/R.html', '**/R.*.html', '**/index.html'
-    exclude('**/internal/**')
-
-    classpath = configurations.compile
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += project.files("build/generated/source/r/release", "build/generated/source/buildConfig/release")
-
-    android.libraryVariants.all { variant ->
-        if (variant.name == 'release') {
-            owner.classpath += variant.javaCompiler.classpath
-        }
-    }
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task javadocJar(type: Jar, dependsOn: dokka) {
     classifier = 'javadoc'
     baseName = 'testify'
-    from javadoc.destinationDir
+    from dokka.outputDirectory
 }
-//endregion `javadocJar` task
 
-//region `sourcesJar` task
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
 }
-//endregion
 
 ext {
     bintray = [
@@ -185,7 +156,8 @@ artifacts {
 
 bintray {
     // These values can be found on https://bintray.com/profile/edit
-    user = System.getenv('BINTRAY_USER') // BINTRAY_USER : your personal profile name (from "Your Profile")
+    user = System.getenv('BINTRAY_USER')
+    // BINTRAY_USER : your personal profile name (from "Your Profile")
     key = System.getenv('BINTRAY_KEY') // BINTRAY_KEY : found on the left menu, under "API Key"
 
     configurations = ['archives']
@@ -217,5 +189,5 @@ bintrayUpload {
         }
     }
 }
-//endregion `bintrayUpload` task
 
+apply from: '../ktlint.gradle'

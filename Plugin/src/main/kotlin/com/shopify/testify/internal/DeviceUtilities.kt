@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,10 +40,9 @@ internal fun Project.listFailedScreenshots(): List<String> {
     val dst = getDestinationImageDirectory()
 
     val log = Adb()
-            .argument("shell ls $src*.png")
-            .argument("2>/dev/null")
-            .execute()
-
+        .argument("shell ls $src*.png")
+        .argument("2>/dev/null")
+        .execute()
 
     val files = ArrayList<String>()
     log.lines().forEach {
@@ -57,9 +56,9 @@ internal fun Project.listFailedScreenshots(): List<String> {
 
 internal fun File.deleteOnDevice() {
     Adb()
-            .argument("shell")
-            .argument("rm")
-            .argument(this.path)
-            .stream(true)
-            .execute()
+        .argument("shell")
+        .argument("rm")
+        .argument(this.path)
+        .stream(true)
+        .execute()
 }

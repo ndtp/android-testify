@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,13 @@ open class DisableSoftKeyboardTask : TestifyUtilityTask() {
     override fun taskAction() {
 
         Adb().arguments(
-                "shell",
-                "settings",
-                "put",
-                "secure",
-                "show_ime_with_hard_keyboard",
-                "0")
-                .execute()
+            "shell",
+            "settings",
+            "put",
+            "secure",
+            "show_ime_with_hard_keyboard",
+            "0")
+            .execute()
 
         println("  Success")
     }

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -82,8 +82,9 @@ class Adb {
         private var deviceTarget: String? = null
 
         fun init(project: Project) {
-            adbPath = project.android.adbExecutable?.absolutePath ?: throw GradleException("adb not found. Have you defined an `android` block?")
-            val index =  (project.properties["device"] as? String)?.toInt() ?: 0
+            adbPath = project.android.adbExecutable?.absolutePath
+                ?: throw GradleException("adb not found. Have you defined an `android` block?")
+            val index = (project.properties["device"] as? String)?.toInt() ?: 0
             deviceTarget = Devices.targets[index]
         }
     }

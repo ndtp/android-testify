@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,6 @@
 
 package com.shopify.testify.tasks.utility
 
-import com.shopify.testify.TestifyPlugin
 import com.shopify.testify.tasks.internal.TaskNameProvider
 import com.shopify.testify.tasks.internal.TestifyUtilityTask
 import com.shopify.testify.testifySettings
@@ -34,8 +33,6 @@ open class SettingsTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the Testify gradle extension settings"
 
     override fun taskAction() {
-
-
         with(project.testifySettings) {
             println("  applicationPackageId = $applicationPackageId")
             println("  baselineSourceDir    = $baselineSourceDir")

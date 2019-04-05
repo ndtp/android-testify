@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2018 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package com.shopify.testify.tasks.main
 
 import com.shopify.testify.internal.Adb
 import com.shopify.testify.internal.AnsiFormat
+import com.shopify.testify.internal.Device
 import com.shopify.testify.internal.assurePath
 import com.shopify.testify.internal.getDestinationImageDirectory
 import com.shopify.testify.internal.getDeviceImageDirectory
@@ -45,6 +46,11 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
     override fun taskAction() {
         println("  Pulling screenshots:")
+
+        if (!Device.hasRootAccess) {
+            println(AnsiFormat.Red, "  Permission denied trying to access device directory. Try running 'adb root'.")
+            return
+        }
 
         val failedScreenshots = project.listFailedScreenshots()
         if (failedScreenshots.isEmpty()) {
@@ -72,10 +78,10 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         println()
 
         Adb()
-                .argument("pull")
-                .argument(src)
-                .argument(dst)
-                .execute()
+            .argument("pull")
+            .argument(src)
+            .argument(dst)
+            .execute()
 
         Thread.sleep(project.testifySettings.pullWaitTime)
     }
