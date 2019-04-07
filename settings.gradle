@@ -1,3 +1,0 @@
-include ':Sample'
-include ':Plugin'
-include ':Library'
