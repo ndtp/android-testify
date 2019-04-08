@@ -24,8 +24,8 @@
 package com.shopify.testify
 
 import com.shopify.testify.internal.compare.FuzzyCompare
-import junit.framework.Assert.assertFalse
-import junit.framework.Assert.assertTrue
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FuzzyCompareTest {
