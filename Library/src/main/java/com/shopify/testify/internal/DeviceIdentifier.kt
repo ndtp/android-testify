@@ -34,7 +34,7 @@ import java.util.Locale
 
 typealias TestName = Pair<String, String>
 
-object DeviceIdentifier {
+internal object DeviceIdentifier {
 
     @JvmStatic
     val DEFAULT_FOLDER_FORMAT = "a-wxh@d-l"

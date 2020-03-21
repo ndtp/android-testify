@@ -36,23 +36,42 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ClientDetailsViewScreenshotTest {
 
-    @get:Rule var rule = ScreenshotRule(TestHarnessActivity::class.java, R.id.harness_root)
+    @get:Rule
+    var rule = ScreenshotRule(TestHarnessActivity::class.java, R.id.harness_root)
 
     @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun default() {
         rule.setViewModifications { harnessRoot ->
-            val view = harnessRoot.getChildAt(0) as ClientDetailsView
-            view.render(
-                ClientDetailsViewState(
+            val viewState = ClientDetailsViewState(
                     name = "Testify Test",
                     avatar = R.drawable.avatar1,
                     heading = "This is the heading",
                     address = "1 Address Street\nCity, State, Country\nZ1PC0D3",
                     phoneNumber = "1-234-567-8910"
-                )
             )
+            val view = harnessRoot.getChildAt(0) as ClientDetailsView
+            view.render(viewState)
+            rule.activity.title = viewState.name
+        }.assertSame()
+    }
+
+    @TestifyLayout(layoutResName = "com.shopify.testify.sample:layout/view_client_details")
+    @ScreenshotInstrumentation
+    @Test
+    fun usingLayoutResName() {
+        rule.setViewModifications { harnessRoot ->
+            val viewState = ClientDetailsViewState(
+                    name = "Using Res Name",
+                    avatar = R.drawable.avatar1,
+                    heading = "This is the heading",
+                    address = "1 Address Street\nCity, State, Country\nZ1PC0D3",
+                    phoneNumber = "1-234-567-8910"
+            )
+            val view = harnessRoot.getChildAt(0) as ClientDetailsView
+            view.render(viewState)
+            rule.activity.title = viewState.name
         }.assertSame()
     }
 }
