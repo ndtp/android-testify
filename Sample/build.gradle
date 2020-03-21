@@ -14,7 +14,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.shopify.testify'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     lintOptions {
         disable 'GradleDependency'
@@ -23,7 +23,7 @@ android {
     defaultConfig {
         applicationId "com.shopify.testify.sample"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -40,24 +40,20 @@ android {
 }
 
 dependencies {
-
-    implementation depends.androidx.constraintlayout
-    implementation depends.kotlin.stdlib7
     implementation depends.androidx.appcompat
+    implementation depends.androidx.constraintlayout
     implementation depends.androidx.core_ktx
+    implementation depends.google.material
+    implementation depends.kotlin.stdlib8
 
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.appcompat:appcompat:1.0.0-beta01'
-    implementation 'com.google.android.material:material:1.0.0-beta01'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0-beta01'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
 
     androidTestImplementation project(":Library")
-    androidTestImplementation depends.androidx.test.junit
-    androidTestImplementation depends.androidx.test.runner
-    androidTestImplementation depends.androidx.test.rules
-    androidTestImplementation depends.androidx.test.espresso.core
     androidTestImplementation depends.androidx.test.espresso.contrib
+    androidTestImplementation depends.androidx.test.espresso.core
+    androidTestImplementation depends.androidx.test.junit
+    androidTestImplementation depends.androidx.test.rules
+    androidTestImplementation depends.androidx.test.runner
 }

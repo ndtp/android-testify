@@ -35,7 +35,7 @@ import com.shopify.testify.ScreenshotRule
 /**
  * The TestHarnessActivity is used as scaffolding for testing arbitrary views.
  * Testify's [ScreenshotRule] is a subclass of [ActivityTestRule] which means that an Activity
- * is required to "host" an UI that you wish to capture in your screenshot.
+ * is required to "host" a UI that you wish to capture in your screenshot.
  * This empty activity can be used as a generic container for testing your custom [View] classes.
  */
 class TestHarnessActivity : AppCompatActivity() {
