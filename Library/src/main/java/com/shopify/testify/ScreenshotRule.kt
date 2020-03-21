@@ -32,7 +32,6 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
 import android.os.Looper
-import android.util.Pair
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
@@ -45,6 +44,8 @@ import com.shopify.testify.annotation.BitmapComparisonExactness
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.internal.DeviceIdentifier
+import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
+import com.shopify.testify.internal.TestName
 import com.shopify.testify.internal.compare.FuzzyCompare
 import com.shopify.testify.internal.compare.SameAsCompare
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
@@ -59,14 +60,14 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
+import java.util.Locale
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.Locale
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
@@ -85,7 +86,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     @IdRes private var rootViewId: Int = android.R.id.content
-    @LayoutRes private var targetLayoutId: Int = NO_ID
+    @LayoutRes
+    private var targetLayoutId: Int = NO_ID
     @Suppress("MemberVisibilityCanBePrivate")
     lateinit var testMethodName: String
     private lateinit var testClass: String
@@ -103,16 +105,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var espressoActions: EspressoActions? = null
     private var exactness: Float? = null
     private var fontScale: Float? = null
-    private var hideCursor = true
-    private var hidePasswords = true
-    private var hideScrollbars = true
     private var hideSoftKeyboard = true
-    private var hideTextSuggestions = true
     private var isLayoutInspectionModeEnabled = false
     private var locale: Locale? = null
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
-    private var useSoftwareRenderer = false
     private var viewModification: ViewModification? = null
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -123,8 +120,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return Looper.getMainLooper().thread == Thread.currentThread()
     }
 
-    private val testNameComponents: Pair<String, String>
-        get() = Pair(testSimpleClassName, testMethodName)
+    private val testNameComponents: TestName
+        get() = TestName(testSimpleClassName, testMethodName)
 
     private val fullyQualifiedTestPath: String
         get() = testClass
@@ -141,27 +138,27 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setHideScrollbars(hideScrollbars: Boolean): ScreenshotRule<T> {
-        this.hideScrollbars = hideScrollbars
+        this.hideScrollbarsViewModification.isEnabled = hideScrollbars
         return this
     }
 
     fun setHidePasswords(hidePasswords: Boolean): ScreenshotRule<T> {
-        this.hidePasswords = hidePasswords
+        this.hidePasswordViewModification.isEnabled = hidePasswords
         return this
     }
 
     fun setHideCursor(hideCursor: Boolean): ScreenshotRule<T> {
-        this.hideCursor = hideCursor
+        this.hideCursorViewModification.isEnabled = hideCursor
         return this
     }
 
     fun setHideTextSuggestions(hideTextSuggestions: Boolean): ScreenshotRule<T> {
-        this.hideTextSuggestions = hideTextSuggestions
+        this.hideTextSuggestionsViewModification.isEnabled = hideTextSuggestions
         return this
     }
 
     fun setUseSoftwareRenderer(useSoftwareRenderer: Boolean): ScreenshotRule<T> {
-        this.useSoftwareRenderer = useSoftwareRenderer
+        this.softwareRenderViewModification.isEnabled = useSoftwareRenderer
         return this
     }
 
@@ -211,6 +208,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
+    fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ScreenshotRule<T> {
+        feature.setEnabled(true)
+        return this
+    }
+
     /**
      * Install an activity monitor and set the requested orientation.
      * Blocks and waits for the orientation change to complete before returning.
@@ -224,7 +226,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             getInstrumentation().addMonitor(activityMonitor)
 
             activity.requestedOrientation = requestedOrientation
-            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+            getInstrumentation().waitForIdleSync()
         }
         return this
     }
@@ -256,9 +258,18 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         testMethodName = description.methodName
         testClass = "${description.testClass?.canonicalName}#${description.methodName}"
         val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
-        targetLayoutId = testifyLayout?.layoutId ?: View.NO_ID
+        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
         return super.apply(ScreenshotStatement(base), description)
     }
+
+    @get:LayoutRes
+    private val TestifyLayout.resolvedLayoutId: Int
+        get() {
+            if (this.layoutResName.isNotEmpty()) {
+                return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null) ?: NO_ID
+            }
+            return layoutId
+        }
 
     private fun checkForScreenshotInstrumentationAnnotation(description: Description) {
         val classAnnotation = description.testClass.getAnnotation(ScreenshotInstrumentation::class.java)
@@ -329,14 +340,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 }
 
                 val screenshotUtility = ScreenshotUtility()
-                screenshotUtility.setLocale(if (defaultLocale != null) Locale.getDefault() else null)
 
                 var screenshotView: View? = null
                 if (screenshotViewProvider != null) {
                     screenshotView = screenshotViewProvider!!.invoke(getRootView(activity))
                 }
 
-                val outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), getOutputFileNameFormatString())
+                val outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), DEFAULT_NAME_FORMAT)
                 val currentBitmap = screenshotUtility.createBitmapFromActivity(activity, outputFileName, screenshotView)
                 assertNotNull("Failed to capture bitmap from activity", currentBitmap)
 
@@ -370,6 +380,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 }
             }
         } finally {
+            TestifyFeatures.reset()
             removeActivityMonitor()
             if (throwable != null) {
                 //noinspection ThrowFromfinallyBlock
@@ -420,7 +431,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private fun instrumentationPrintln(str: String) {
         val b = Bundle()
         b.putString(Instrumentation.REPORT_KEY_STREAMRESULT, "\n" + str)
-        InstrumentationRegistry.getInstrumentation().sendStatus(0, b)
+        getInstrumentation().sendStatus(0, b)
     }
 
     private fun isRecordMode(): Boolean {
@@ -431,15 +442,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private fun getModuleName(): String {
         val extras = InstrumentationRegistry.getArguments()
         return if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
-    }
-
-    private fun getOutputFileNameFormatString(): String {
-        val extras = InstrumentationRegistry.getArguments()
-        var formatString: String = DeviceIdentifier.DEFAULT_NAME_FORMAT
-        if (extras.containsKey("outputFileNameFormat")) {
-            formatString = extras.getString("outputFileNameFormat")!!
-        }
-        return formatString
     }
 
     private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {

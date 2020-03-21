@@ -29,29 +29,25 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Debug
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import androidx.test.platform.app.InstrumentationRegistry
+import com.shopify.testify.TestifyFeatures.CanvasCapture
+import com.shopify.testify.TestifyFeatures.PixelCopyCapture
 import com.shopify.testify.internal.DeviceIdentifier
-import com.shopify.testify.internal.capture.Capture
+import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_FOLDER_FORMAT
+import com.shopify.testify.internal.capture.createBitmapFromCanvas
 import com.shopify.testify.internal.capture.createBitmapFromDrawingCache
+import com.shopify.testify.internal.capture.createBitmapUsingPixelCopy
 import com.shopify.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 internal class ScreenshotUtility {
-    private var locale: Locale? = null
-
-    private val localeIdentifier: String
-        get() = if (locale != null) {
-            "-" + locale!!.language
-        } else ""
 
     private val preferredBitmapOptions: BitmapFactory.Options
         get() {
@@ -60,7 +56,6 @@ internal class ScreenshotUtility {
             return options
         }
 
-    @Throws(Exception::class)
     private fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
         if (bitmap == null) {
             return false
@@ -90,16 +85,18 @@ internal class ScreenshotUtility {
     private fun getOutputDirectoryPath(context: Context): File {
         val path: File
         path = if (useSdCard()) {
-            val sdCard = Environment.getExternalStorageDirectory()
-            File(sdCard.absolutePath + SDCARD_DESTINATION_DIR)
+            val sdCard = context.getExternalFilesDir(null)
+            File("${sdCard?.absolutePath}/$SDCARD_DESTINATION_DIR")
         } else {
             context.getDir(DATA_DESTINATION_DIR, Context.MODE_PRIVATE)
         }
-        return path
+
+        val deviceFormattedDirectory = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(context, null), DEFAULT_FOLDER_FORMAT)
+        return File(path, "$ROOT_DIR/$deviceFormattedDirectory")
     }
 
     fun getOutputFilePath(context: Context, fileName: String): String {
-        return getOutputDirectoryPath(context).path + File.separator + fileName + localeIdentifier + PNG_EXTENSION
+        return "${getOutputDirectoryPath(context).path}/$fileName$PNG_EXTENSION"
     }
 
     @Throws(Exception::class)
@@ -130,14 +127,17 @@ internal class ScreenshotUtility {
      * Load a baseline bitmap from the androidTest assets directory.
      */
     fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap? {
-        val filePath = SOURCE_DIR + DeviceIdentifier.getDescription(context) + "/" + testName + PNG_EXTENSION
+        val filePath = "$ROOT_DIR/${DeviceIdentifier.getDescription(context)}/$testName$PNG_EXTENSION"
         return loadBitmapFromAsset(context, filePath)
     }
 
-    private val createBitmapFromView: Capture
-        get() {
-            return ::createBitmapFromDrawingCache
+    private fun createBitmapFromView(activity: Activity, targetView: View?): Bitmap {
+        return when {
+            PixelCopyCapture.isEnabled(activity) -> createBitmapUsingPixelCopy(activity, targetView)
+            CanvasCapture.isEnabled(activity) -> createBitmapFromCanvas(activity, targetView)
+            else -> createBitmapFromDrawingCache(activity, targetView)
         }
+    }
 
     /**
      * Capture a bitmap from the given Activity and save it to the screenshots directory.
@@ -171,17 +171,13 @@ internal class ScreenshotUtility {
         return file.delete()
     }
 
-    fun setLocale(locale: Locale?) {
-        this.locale = locale
-    }
-
     companion object {
 
         private val LOG_TAG = ScreenshotUtility::class.java.simpleName
         private const val PNG_EXTENSION = ".png"
         private const val DATA_DESTINATION_DIR = "images"
-        private const val SDCARD_DESTINATION_DIR = "/testify_images"
-        private const val SOURCE_DIR = "screenshots/"
+        private const val SDCARD_DESTINATION_DIR = "testify_images"
+        private const val ROOT_DIR = "screenshots"
 
         fun useSdCard(): Boolean {
             val extras = InstrumentationRegistry.getArguments()

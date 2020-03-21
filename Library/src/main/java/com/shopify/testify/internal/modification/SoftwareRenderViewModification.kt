@@ -24,7 +24,6 @@
 package com.shopify.testify.internal.modification
 
 import android.view.View
-import android.widget.ImageView
 
 class SoftwareRenderViewModification : ViewModification(false) {
 
@@ -33,6 +32,6 @@ class SoftwareRenderViewModification : ViewModification(false) {
     }
 
     override fun qualifies(view: View): Boolean {
-        return view is ImageView
+        return true
     }
 }

@@ -24,5 +24,6 @@
 
 package com.shopify.testify.internal.exception
 
-class ScreenshotDirectoryNotFoundException(useSdCard: Boolean, path: String) : Exception("\n\n* Could not find or create path {$path}.\n" +
-        if (useSdCard) "* Check that your emulator has an SD card image and try again.\n" else "")
+class ScreenshotDirectoryNotFoundException(useSdCard: Boolean, path: String) :
+        Exception("\n\n* Could not find or create path {$path}.\n" +
+                if (useSdCard) "* Check that your emulator has an SD card image and try again.\n" else "")

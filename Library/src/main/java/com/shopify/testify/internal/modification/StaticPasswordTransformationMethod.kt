@@ -26,7 +26,6 @@ package com.shopify.testify.internal.modification
 import android.graphics.Rect
 import android.text.method.TransformationMethod
 import android.view.View
-
 import java.util.Arrays
 
 internal class StaticPasswordTransformationMethod : TransformationMethod {

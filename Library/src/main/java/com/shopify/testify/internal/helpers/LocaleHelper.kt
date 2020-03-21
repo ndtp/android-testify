@@ -25,6 +25,7 @@
 package com.shopify.testify.internal.helpers
 
 import android.content.res.Resources
+import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import java.util.Locale
 
@@ -44,3 +45,12 @@ internal object LocaleHelper {
         resources.updateConfiguration(configuration, resources.displayMetrics)
     }
 }
+
+val Locale.languageTag: String
+    get() {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            this.toLanguageTag().replace("-", "_")
+        } else {
+            "${this.language}_${this.country}"
+        }
+    }

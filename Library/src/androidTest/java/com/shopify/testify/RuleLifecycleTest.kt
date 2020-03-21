@@ -28,6 +28,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.NoScreenshotsOnUiThreadException
+import java.util.Stack
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.fail
@@ -37,7 +38,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
-import java.util.Stack
 
 @RunWith(AndroidJUnit4::class)
 class RuleLifecycleTest {

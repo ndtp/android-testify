@@ -26,7 +26,7 @@ package com.shopify.testify.internal.modification
 import android.view.View
 import android.view.ViewGroup
 
-abstract class ViewModification(private val isEnabled: Boolean = false) {
+abstract class ViewModification(var isEnabled: Boolean = false) {
 
     fun modify(view: View) {
         if (!isEnabled) {
