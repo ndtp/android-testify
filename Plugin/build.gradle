@@ -19,10 +19,18 @@ plugins {
 def VERSION_NAME = "$project.versions.testify"
 sourceCompatibility = 1.8
 
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        outputs.upToDateWhen { false }
+        showStandardStreams = true
+    }
+}
+
 dependencies {
     implementation "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
     implementation gradleApi()
-    implementation depends.kotlin.stdlib7
+    implementation depends.kotlin.stdlib8
 }
 
 repositories {
@@ -99,8 +107,12 @@ install {
 dokka {
     outputFormat = "html"
     outputDirectory = "$buildDir/javadoc"
-    includeNonPublic = false
-    reportUndocumented = false
+
+    configuration {
+        includeNonPublic = false
+        reportUndocumented = false
+    }
+
 }
 
 task sourcesJar(type: Jar) {

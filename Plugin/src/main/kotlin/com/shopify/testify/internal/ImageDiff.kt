@@ -24,8 +24,8 @@
 
 package com.shopify.testify.internal
 
-import org.gradle.api.Project
 import java.io.File
+import org.gradle.api.Project
 
 private fun generateDiff(sourceFile: File, diffFile: String) {
     print("    Extracting differences for ${sourceFile.nameWithoutExtension}")

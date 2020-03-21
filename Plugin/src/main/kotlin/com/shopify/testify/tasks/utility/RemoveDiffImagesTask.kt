@@ -25,7 +25,7 @@
 package com.shopify.testify.tasks.utility
 
 import com.shopify.testify.internal.deleteFilesWithSubstring
-import com.shopify.testify.internal.getDestinationImageDirectory
+import com.shopify.testify.internal.destinationImageDirectory
 import com.shopify.testify.tasks.internal.TaskNameProvider
 import com.shopify.testify.tasks.internal.TestifyUtilityTask
 import java.io.File
@@ -35,7 +35,7 @@ open class RemoveDiffImagesTask : TestifyUtilityTask() {
     override fun getDescription() = "Delete all generated diff images from your local machine."
 
     override fun taskAction() {
-        File(project.getDestinationImageDirectory()).deleteFilesWithSubstring("-diff")
+        File(project.destinationImageDirectory).deleteFilesWithSubstring("-diff")
     }
 
     companion object : TaskNameProvider {

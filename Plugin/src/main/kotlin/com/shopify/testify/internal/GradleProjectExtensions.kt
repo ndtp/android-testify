@@ -27,7 +27,33 @@ package com.shopify.testify.internal
 import com.android.build.gradle.TestedExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 val Project.android: TestedExtension
     get() = this.properties["android"] as? TestedExtension
         ?: throw GradleException("Gradle project must contain an `android` closure")
+
+val Project.isVerbose: Boolean
+    get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
+
+val Project.useLocale: Boolean
+    get() = (this.properties["useLocale"] as? String)?.toBoolean() ?: false
+
+val Project.inferredInstallTask: Task?
+    get() {
+        val pattern = "^install.*Debug$".toRegex()
+        val installTasks = this.tasks.filter { pattern.containsMatchIn(it.name) }
+        return installTasks.getOrNull(0)
+    }
+
+val Project.inferredAndroidTestInstallTask: Task?
+    get() {
+        val pattern = "^install.*DebugAndroidTest$".toRegex()
+        val installTasks = this.tasks.filter { pattern.containsMatchIn(it.name) }
+        return installTasks.getOrNull(0)
+    }
+
+val Project.inferredDefaultTestVariantId: String
+    get() {
+        return this.android.testVariants.minBy { it.testedVariant.flavorName }?.applicationId ?: ""
+    }

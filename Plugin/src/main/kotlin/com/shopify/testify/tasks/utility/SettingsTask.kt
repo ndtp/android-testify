@@ -34,15 +34,16 @@ open class SettingsTask : TestifyUtilityTask() {
 
     override fun taskAction() {
         with(project.testifySettings) {
-            println("  applicationPackageId = $applicationPackageId")
-            println("  baselineSourceDir    = $baselineSourceDir")
-            println("  moduleName           = $moduleName")
-            println("  outputFileNameFormat = $outputFileNameFormat")
-            println("  pullWaitTime         = $pullWaitTime")
-            println("  testRunner           = $testRunner")
-            println("  useSdCard            = $useSdCard")
-            println("  testContextId        = $testContextId")
-            println("  testPackageId        = $testPackageId")
+            println("  baselineSourceDir      = $baselineSourceDir")
+            println("  installAndroidTestTask = $installAndroidTestTask")
+            println("  installTask            = $installTask")
+            println("  moduleName             = $moduleName")
+            println("  outputFileNameFormat   = $outputFileNameFormat")
+            println("  pullWaitTime           = $pullWaitTime")
+            println("  targetPackageId        = $targetPackageId")
+            println("  testPackageId          = $testPackageId")
+            println("  testRunner             = $testRunner")
+            println("  useSdCard              = $useSdCard")
         }
     }
 

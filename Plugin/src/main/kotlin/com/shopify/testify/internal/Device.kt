@@ -26,88 +26,161 @@ package com.shopify.testify.internal
 
 object Device {
 
-    fun version(): Int {
-        val result = Adb().arguments(
-            "shell",
-            "getprop",
-            "ro.build.version.sdk")
-            .execute()
-        return result.trim().toInt()
-    }
-
-    fun language(): String {
-        return if (version() <= 22) {
-            Adb().arguments(
-                "shell",
-                "getprop",
-                "ro.product.locale.language")
-                .execute().trim()
-        } else {
-            Adb().arguments(
-                "shell",
-                "getprop",
-                "ro.product.locale")
-                .execute().trim().split("-").first()
-        }
-    }
-
-    fun locale(): String {
-        return if (version() <= 22) {
-            val language = Adb().arguments(
-                "shell",
-                "getprop",
-                "ro.product.locale.language")
-                .execute().trim()
-            val region = Adb().arguments(
-                "shell",
-                "getprop",
-                "ro.product.locale.region")
-                .execute().trim()
-            "$language-$region"
-        } else {
-            Adb().arguments(
-                "shell",
-                "getprop",
-                "ro.product.locale")
+    private val version: Int
+        get() {
+            val result = Adb()
+                .shell()
+                .arguments(
+                    "getprop",
+                    "ro.build.version.sdk")
                 .execute()
+            return result.trim().toInt()
         }
-    }
 
-    fun timeZone(): String {
-        val result = Adb().arguments(
-            "shell",
-            "getprop",
-            "persist.sys.timezone")
-            .execute()
-        return result.trim()
-    }
+    private var language: String
+        get() = Adb()
+                .shell()
+                .argument("getprop")
+                .apply {
+                    if (version == 22) {
+                        argument("ro.product.locale.language")
+                    } else {
+                        argument("persist.sys.language")
+                    }
+                }.execute().trim()
+        set(value) {
+            Adb()
+                    .shell()
+                    .argument("setprop")
+                    .apply {
+                        if (version == 22) {
+                            argument("ro.product.locale.language")
+                        } else {
+                            argument("persist.sys.language")
+                        }
+                    }
+                    .argument(value)
+                    .execute()
+        }
 
-    fun displayDensity(): Int {
-        val densityLine = Adb().arguments(
-            "shell",
-            "wm",
-            "density")
-            .execute().trim()
-        return densityLine.substring("Physical density: ".length).trim().toInt()
-    }
+    private var region: String
+        get() = Adb()
+                .shell()
+                .argument("getprop")
+                .apply {
+                    if (version == 22) {
+                        argument("ro.product.locale.region")
+                    } else {
+                        argument("persist.sys.country")
+                    }
+                }.execute().trim()
+        set(value) {
+            Adb()
+                    .shell()
+                    .argument("setprop")
+                    .apply {
+                        if (version == 22) {
+                            argument("ro.product.locale.region")
+                        } else {
+                            argument("persist.sys.country")
+                        }
+                    }
+                    .argument(value)
+                    .execute()
+        }
 
-    fun displaySize(): String {
-        val sizeLine = Adb().arguments(
-            "shell",
-            "wm",
-            "size")
-            .execute().trim()
-        return sizeLine.substring("Physical size: ".length).trim()
-    }
+    var locale: String
+        get() {
+            return if (version <= 22) {
+                "${language}_$region"
+            } else {
+                Adb().arguments(
+                    "shell",
+                    "getprop",
+                    "ro.product.locale")
+                    .execute().replace("-", "_")
+            }
+        }
+        set(value) {
+            if (version <= 22) {
+                val (language, territory) = value.split("_")
+                this.language = language
+                this.region = territory
+                restart()
+            } else {
+                Adb()
+                    .shell()
+                    .arguments(
+                        "setprop",
+                        "persist.sys.locale",
+                        value.replace("_", "-"))
+                    .execute()
+            }
+            restart()
+        }
 
-    fun deviceKey(language: String = Device.language()): String {
-        return "${version()}-${displaySize()}@${displayDensity()}dp-$language"
+    val timeZone: String
+        get() {
+            val result = Adb()
+                .shell()
+                .arguments(
+                    "getprop",
+                    "persist.sys.timezone")
+                .execute()
+            return result.trim()
+        }
+
+    private val displayDensity: Int
+        get() {
+            val densityLine = Adb()
+                .shell()
+                .arguments(
+                    "wm",
+                    "density")
+                .execute().trim()
+            return if (densityLine.contains("Override density", true)) {
+                densityLine.split(":").last().trim().toInt()
+            } else {
+                densityLine.substring("Physical density: ".length).trim().toInt()
+            }
+        }
+
+    private val displaySize: String
+        get() {
+            val sizeLine = Adb()
+                .shell()
+                .arguments(
+                    "wm",
+                    "size")
+                .execute().trim()
+            return sizeLine.substring("Physical size: ".length).trim()
+        }
+
+    internal fun deviceKey(): String {
+        return "$version-$displaySize@${displayDensity}dp-$locale"
     }
 
     val hasRootAccess: Boolean
-        get() = Adb().arguments(
-            "shell",
-            "ls",
-            "data/data")
+        get() = Adb()
+            .shell()
+            .arguments(
+                "ls",
+                "data/data")
             .execute().trim().isNotEmpty()
+
+    private fun restart() {
+        val adb = Adb().shell()
+        if (version <= 22) {
+            adb.arguments(
+                "setprop",
+                "ctl.restart",
+                "zygote")
+        } else {
+            adb.arguments(
+                "stop;",
+                "sleep 2;",
+                "start")
+        }
+        adb.execute()
+    }
 }

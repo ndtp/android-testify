@@ -27,18 +27,14 @@ import com.shopify.testify.internal.Adb
 import com.shopify.testify.internal.AnsiFormat
 import com.shopify.testify.internal.Device
 import com.shopify.testify.internal.assurePath
-import com.shopify.testify.internal.getDestinationImageDirectory
-import com.shopify.testify.internal.getDeviceImageDirectory
+import com.shopify.testify.internal.destinationImageDirectory
 import com.shopify.testify.internal.listFailedScreenshots
 import com.shopify.testify.internal.println
+import com.shopify.testify.internal.screenshotDirectory
 import com.shopify.testify.tasks.internal.TaskNameProvider
 import com.shopify.testify.tasks.internal.TestifyDefaultTask
 import com.shopify.testify.testifySettings
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption.REPLACE_EXISTING
-import java.util.regex.Pattern
 
 open class ScreenshotPullTask : TestifyDefaultTask() {
 
@@ -61,15 +57,14 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         println("  ${failedScreenshots.size} images to be pulled")
 
         pullScreenshots()
-        distributeLocalizedScreenshots()
         syncScreenshots()
 
         println("  Ready")
     }
 
     private fun pullScreenshots() {
-        val src = "${project.getDeviceImageDirectory()}."
-        val dst = project.getDestinationImageDirectory()
+        val src = project.screenshotDirectory
+        val dst = project.destinationImageDirectory
         File(dst).assurePath()
 
         println()
@@ -94,22 +89,6 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         }
 
         println("")
-    }
-
-    private fun distributeLocalizedScreenshots() {
-        val pattern = Pattern.compile(".*-([a-z]{2})\\.png")
-        project.listFailedScreenshots().forEach {
-            val matcher = pattern.matcher(it)
-            if (matcher.matches()) {
-                val language = matcher.group(1)
-                val destinationImageDirectory = project.getDestinationImageDirectory(language)
-                val destinationFilePath = "$destinationImageDirectory${it.substring(it.lastIndexOf("/") + 1, matcher.start(1) - 1)}.png"
-                if (File(destinationImageDirectory).exists()) {
-                    File(destinationImageDirectory).mkdir()
-                }
-                Files.move(Paths.get(it), Paths.get(destinationFilePath), REPLACE_EXISTING)
-            }
-        }
     }
 
     companion object : TaskNameProvider {
