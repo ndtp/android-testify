@@ -19,7 +19,6 @@ buildscript {
                 'dokka'                   : '0.9.18',         // https://github.com/Kotlin/dokka/releases
                 'kotlin'                  : '1.3.21',         // https://kotlinlang.org/
                 'ktlint'                  : '0.29.0',         // https://github.com/shyiko/ktlint
-                'ktlintHtml'              : '0.2.0',          // https://github.com/mcassiano/ktlint-html-reporter
                 'maven'                   : '2.1',            // https://github.com/dcendents/android-maven-gradle-plugin/releases
                 'mockito2'                : '2.23.0',         // https://github.com/mockito/mockito/releases
                 'mockitokotlin'           : '2.1.0',          // https://github.com/nhaarman/mockito-kotlin
@@ -53,7 +52,6 @@ buildscript {
                         'lint'        : [
                                 'main': "com.github.shyiko:ktlint:${versions.ktlint}",
                         ],
-                        'lintHtml'    : "me.cassiano:ktlint-html-reporter:${versions.ktlintHtml}",
                         'stdlib7'     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
                 ],
                 'mockito' : [
