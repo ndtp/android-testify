@@ -30,6 +30,7 @@ import com.shopify.testify.internal.print
 import com.shopify.testify.internal.println
 import com.shopify.testify.tasks.internal.TaskNameProvider
 import com.shopify.testify.tasks.internal.TestifyDefaultTask
+import com.shopify.testify.testifySettings
 import java.io.File
 
 open class ScreenshotClearTask : TestifyDefaultTask() {
@@ -49,7 +50,7 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
             val file = File(it)
             print(AnsiFormat.Red, "    x ")
             println(AnsiFormat.Red, file.nameWithoutExtension)
-            file.deleteOnDevice()
+            file.deleteOnDevice(project.testifySettings.targetPackageId)
         }
     }
 
