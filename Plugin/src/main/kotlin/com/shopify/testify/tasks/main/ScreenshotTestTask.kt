@@ -147,12 +147,13 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
                 TimeZoneTask.taskName()
             )
 
-            val installDebugAndroidTestTask = project.tasks.findByPath(":${project.testifySettings.moduleName}:installDebugAndroidTest")
+            val settings = project.testifySettings
+            val installDebugAndroidTestTask = project.tasks.findByPath(":${settings.moduleName}:${settings.installAndroidTestTask}")
             if (installDebugAndroidTestTask != null) {
                 task.dependsOn(installDebugAndroidTestTask)
             }
 
-            val installDebugTask = project.tasks.findByPath(":${project.testifySettings.moduleName}:installDebug")
+            val installDebugTask = project.tasks.findByPath(":${settings.moduleName}:${settings.installTask}")
             if (installDebugTask != null) {
                 task.dependsOn(installDebugTask)
             }

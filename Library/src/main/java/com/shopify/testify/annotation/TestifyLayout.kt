@@ -25,7 +25,24 @@
 package com.shopify.testify.annotation
 
 import androidx.annotation.LayoutRes
+import com.shopify.testify.ScreenshotRule.Companion.NO_ID
 
+/**
+ * The [TestifyLayout] annotation allows you to specify a layout resource to be automatically
+ * loaded into the host Activity for testing.
+ *
+ * @sample com.shopify.testify.ExperimentalPixelCopyTest.withoutPixelCopy
+ *
+ * @param layoutId: This integer parameter is a layout resource reference
+ *      (e.g. {@code android.R.layout.list_content}).
+ * @param layoutResName: A fully qualified resource name of the form "package:type/entry"
+ *      (e.g. {@code android:layout/list_content}).
+ *      Unfortunately R fields are not constants in Android library projects. LayoutRes IDs cannot
+ *      be used as annotations parameters.
+ */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-annotation class TestifyLayout(@LayoutRes val layoutId: Int)
+annotation class TestifyLayout(
+    @LayoutRes val layoutId: Int = NO_ID,
+    val layoutResName: String = ""
+)

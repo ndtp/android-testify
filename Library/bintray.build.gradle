@@ -1,88 +1,23 @@
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath depends.kotlin.gradleplugin
-    }
-}
-
-plugins {
-    id 'groovy'
-    id 'kotlin'
-    id 'com.github.dcendents.android-maven'
-    id 'com.jfrog.bintray'
-    id 'org.jetbrains.dokka'
-}
-
-def VERSION_NAME = "$project.versions.testify"
-sourceCompatibility = 1.8
-
-test {
-    testLogging {
-        events "passed", "skipped", "failed", "standardOut", "standardError"
-        outputs.upToDateWhen { false }
-        showStandardStreams = true
-    }
-}
-
-dependencies {
-    implementation "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
-    implementation gradleApi()
-    implementation depends.kotlin.stdlib8
-}
-
-repositories {
-    mavenCentral()
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
 ext {
     pom = [
             publishedGroupId  : 'com.shopify.testify',
-            artifact          : 'plugin',
-            libraryName       : 'testify-plugin',
-            libraryDescription: 'Android screenshot instrumentation tests plugin.',
+            artifact          : 'testify',
+            libraryName       : 'testify',
+            libraryDescription: 'Android screenshot instrumentation tests.',
             siteUrl           : 'https://github.com/Shopify/android-testify',
             gitUrl            : 'https://github.com/Shopify/android-testify.git',
             licenseName       : 'The MIT License',
             licenseUrl        : 'https://opensource.org/licenses/MIT'
     ]
-
-    bintray = [
-            org        : 'shopify',
-            repo       : 'shopify-android',
-            name       : 'testify-plugin',
-            allLicenses: ["MIT"]
-    ]
 }
 
 group = pom.publishedGroupId
-version = VERSION_NAME
-
-jar {
-    manifest {
-        attributes "Implementation-Title": "Testify"
-        attributes "Implementation-Vendor": "Shopify"
-        attributes "Implementation-Version": version
-    }
-}
 
 install {
     repositories.mavenInstaller {
         pom {
             project {
-                packaging 'jar'
+                packaging 'aar'
                 groupId project.ext.pom.publishedGroupId
                 artifactId project.ext.pom.artifact
                 name project.ext.pom.libraryName
@@ -112,18 +47,26 @@ dokka {
         includeNonPublic = false
         reportUndocumented = false
     }
-
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.groovy.srcDirs
-    classifier = 'sources'
 }
 
 task javadocJar(type: Jar, dependsOn: dokka) {
     classifier = 'javadoc'
     baseName = 'testify'
     from dokka.outputDirectory
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+ext {
+    bintray = [
+            org        : 'shopify',
+            repo       : 'shopify-android',
+            name       : 'testify',
+            allLicenses: ["MIT"]
+    ]
 }
 
 artifacts {
@@ -158,34 +101,11 @@ bintray {
 bintrayUpload {
     dependsOn install
     doFirst {
-        if (System.getenv('BINTRAY_USER') == null || System.getenv('BINTRAY_USER').isEmpty()) {
+        if (System.getenv('BINTRAY_USER').isEmpty()) {
             throw new IllegalArgumentException("BINTRAY_USER must be defined")
         }
-        if (System.getenv('BINTRAY_KEY') == null || System.getenv('BINTRAY_KEY').isEmpty()) {
+        if (System.getenv('BINTRAY_KEY').isEmpty()) {
             throw new IllegalArgumentException("BINTRAY_KEY must be defined")
         }
     }
 }
-
-task configureLocal {
-    doFirst {
-        version = "local"
-        jar.manifest.attributes.put("Implementation-Version", version)
-    }
-}
-
-task copyLocal(type: Copy) {
-    from "$buildDir/libs/${project.name}-local.jar"
-    into 'jar'
-}
-
-task assembleLocal(description: 'Assembles the outputs of this project for use locally.', group: 'Build') {
-    dependsOn configureLocal
-    dependsOn build
-    dependsOn copyLocal
-
-    build.mustRunAfter configureLocal
-    copyLocal.mustRunAfter build
-}
-
-apply from: '../ktlint.gradle'

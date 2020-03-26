@@ -25,8 +25,7 @@ package com.shopify.testify.tasks.main
 
 import com.shopify.testify.internal.AnsiFormat
 import com.shopify.testify.internal.deleteOnDevice
-import com.shopify.testify.internal.getDeviceImageDirectory
-import com.shopify.testify.internal.listFailedScreenshots
+import com.shopify.testify.internal.listFailedScreenshotsWithPath
 import com.shopify.testify.internal.print
 import com.shopify.testify.internal.println
 import com.shopify.testify.tasks.internal.TaskNameProvider
@@ -38,20 +37,18 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
     override fun getDescription() = "Remove any existing screenshot test images from the device"
 
     override fun taskAction() {
-        val failedScreenshots = project.listFailedScreenshots()
+        val failedScreenshots = project.listFailedScreenshotsWithPath()
 
         if (failedScreenshots.isEmpty()) {
             println(AnsiFormat.Green, "  No failed screenshots found")
             return
         }
 
-        val deviceImageDirectory = project.getDeviceImageDirectory()
-
-        println("  ${failedScreenshots.size} images to be deleted")
+        println("  ${failedScreenshots.size} images to be deleted:")
         failedScreenshots.forEach {
-            val file = File("$deviceImageDirectory/${File(it).name}")
-            print(AnsiFormat.Red, "  \u2717 ")
-            println(file.nameWithoutExtension)
+            val file = File(it)
+            print(AnsiFormat.Red, "    x ")
+            println(AnsiFormat.Red, file.nameWithoutExtension)
             file.deleteOnDevice()
         }
     }

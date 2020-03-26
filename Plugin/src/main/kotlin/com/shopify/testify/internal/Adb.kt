@@ -64,7 +64,12 @@ class Adb {
         }
 
         val command = (listOf(adbPath) + arguments).joinToString(" ")
-        return com.shopify.testify.internal.runProcess(command, streamResults)
+
+        if (verbose) {
+            println(AnsiFormat.Purple, command)
+        }
+
+        return runProcess(command, streamResults)
     }
 
     fun testOptions(testOptionsBuilder: TestOptionsBuilder): Adb {
@@ -80,12 +85,14 @@ class Adb {
     companion object {
         private lateinit var adbPath: String
         private var deviceTarget: String? = null
+        private var verbose: Boolean = false
 
         fun init(project: Project) {
             adbPath = project.android.adbExecutable?.absolutePath
                 ?: throw GradleException("adb not found. Have you defined an `android` block?")
             val index = (project.properties["device"] as? String)?.toInt() ?: 0
             deviceTarget = Devices.targets[index]
+            verbose = project.isVerbose
         }
     }
 }

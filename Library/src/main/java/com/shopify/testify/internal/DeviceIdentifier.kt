@@ -28,8 +28,11 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.util.Pair
 import android.view.WindowManager
-
+import com.shopify.testify.TestifyFeatures
+import com.shopify.testify.internal.helpers.languageTag
 import java.util.Locale
+
+typealias TestName = Pair<String, String>
 
 object DeviceIdentifier {
 
@@ -61,7 +64,7 @@ object DeviceIdentifier {
         w: Device width (ex.720)
         h: Device height (ex. 1440)
         d: Device density (ex. 320dp)
-        l: Language (ex. en)
+        l: Locale (ex. en_US)
         c: Test class (ex. OrderDetailTest)
         n: Test name (ex. testDefault)
          */
@@ -69,14 +72,13 @@ object DeviceIdentifier {
         val w = formatter.deviceWidth
         val h = formatter.deviceHeight
         val d = formatter.deviceDensity
-        val l = formatter.language
+        val l = formatter.locale
         val c = formatter.testClass
         val n = formatter.getTestName()
 
         val stringBuilder = StringBuilder("")
-        for (i in 0 until format.length) {
-            val character = format[i]
-            when (character) {
+        for (element in format) {
+            when (element) {
                 'a' -> stringBuilder.append(a)
                 'w' -> stringBuilder.append(w)
                 'h' -> stringBuilder.append(h)
@@ -84,20 +86,20 @@ object DeviceIdentifier {
                 'l' -> stringBuilder.append(l)
                 'c' -> stringBuilder.append(c)
                 'n' -> stringBuilder.append(n)
-                else -> stringBuilder.append(character)
+                else -> stringBuilder.append(element)
             }
         }
 
         return stringBuilder.toString()
     }
 
-    open class DeviceStringFormatter(private val context: Context, private val testName: Pair<String, String>?) {
+    open class DeviceStringFormatter(private val context: Context, private val testName: TestName?) {
 
         internal open val dimensions: Pair<Int, Int>
             get() = getDeviceDimensions(context)
 
         internal open val androidVersion: String
-            get() = Integer.toString(android.os.Build.VERSION.SDK_INT)
+            get() = android.os.Build.VERSION.SDK_INT.toString()
 
         internal open val deviceWidth: String
             get() = dimensions.first.toString()
@@ -108,8 +110,14 @@ object DeviceIdentifier {
         internal open val deviceDensity: String
             get() = context.resources.displayMetrics.densityDpi.toString() + "dp"
 
-        internal open val language: String
-            get() = Locale.getDefault().language
+        internal open val locale: String
+            get() {
+                return if (TestifyFeatures.Locale.isEnabled(context)) {
+                    Locale.getDefault().languageTag
+                } else {
+                    Locale.getDefault().languageTag.substringBefore("_")
+                }
+            }
 
         internal open val testClass: String
             get() = if (testName == null) "" else testName.first

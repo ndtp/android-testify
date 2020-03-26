@@ -7,52 +7,61 @@ buildscript {
 
     ext {
         versions = [
-                'androidGradlePlugin'     : '3.3.2',          // https://developer.android.com/studio/releases/gradle-plugin.html
-                'androidxConstraintLayout': '2.0.0-alpha3',   // https://developer.android.com/jetpack/androidx/releases
-                'androidxCore'            : '1.0.0',          // https://developer.android.com/jetpack/androidx/releases
-                'androidxCoreTesting'     : '2.0.0-rc01',     // https://developer.android.com/jetpack/androidx/releases
-                'androidxEspresso'        : '3.1.0',          // https://developer.android.com/jetpack/androidx/releases
-                'androidxJunit'           : '1.1.0',          // https://developer.android.com/jetpack/androidx/releases
-                'androidxKtx'             : '1.0.1',          // https://developer.android.com/jetpack/androidx/releases
-                'androidxTest'            : '1.1.1',          // https://developer.android.com/jetpack/androidx/releases
+                'androidGradlePlugin'     : '3.6.1',          // https://developer.android.com/studio/releases/gradle-plugin.html
+                'androidx' : [
+                    'constraintLayout'     : '2.0.0-beta4',    // https://developer.android.com/jetpack/androidx/releases
+                    'appCompat'            : '1.1.0',          // https://developer.android.com/jetpack/androidx/releases
+                    'coreKtx'              : '1.1.0',          // https://developer.android.com/jetpack/androidx/releases
+                    'test' : [
+                        'core'             : '2.1.0'     ,     // https://developer.android.com/jetpack/androidx/releases
+                        'espresso'         : '3.2.0',          // https://developer.android.com/jetpack/androidx/releases
+                        'junit'            : '1.1.0',          // https://developer.android.com/jetpack/androidx/releases
+                        'rules'            : '1.1.1',          // https://developer.android.com/jetpack/androidx/releases
+                        'runner'           : '1.1.1',          // https://developer.android.com/jetpack/androidx/releases
+                    ]
+                ],
                 'bintray'                 : '1.8.4',          // https://github.com/bintray/gradle-bintray-plugin/releases
-                'dokka'                   : '0.9.18',         // https://github.com/Kotlin/dokka/releases
-                'kotlin'                  : '1.3.21',         // https://kotlinlang.org/
-                'ktlint'                  : '0.29.0',         // https://github.com/shyiko/ktlint
+                'dokka'                   : '0.10.0',         // https://github.com/Kotlin/dokka/releases
+                'kotlin'                  : '1.3.70',         // https://kotlinlang.org/
+                'ktlint'                  : '0.36.0',         // https://github.com/pinterest/ktlint
                 'maven'                   : '2.1',            // https://github.com/dcendents/android-maven-gradle-plugin/releases
-                'mockito2'                : '2.23.0',         // https://github.com/mockito/mockito/releases
+                'material'                : '1.1.0',          // https://material.io/develop/android/docs/getting-started/
+                'mockito2'                : '2.28.2',         // https://github.com/mockito/mockito/releases
                 'mockitokotlin'           : '2.1.0',          // https://github.com/nhaarman/mockito-kotlin
-                'testify'                 : '1.0.0-alpha1',   // https://github.com/Shopify/android-testify/releases
+                'testify'                 : '1.0.0-beta1',    // https://github.com/Shopify/android-testify/releases
         ]
         coreVersions = [
                 'shopify': [
-                        'compileSdk': 28,
+                        'compileSdk': 29,
                         'minSdk'    : 19,
-                        'targetSdk' : 28
+                        'targetSdk' : 29
                 ]
         ]
         depends = [
                 'androidx': [
-                        'appcompat'       : "androidx.appcompat:appcompat:${versions.androidxCore}",
-                        'constraintlayout': "androidx.constraintlayout:constraintlayout:${versions.androidxConstraintLayout}",
-                        'core_ktx'        : "androidx.core:core-ktx:${versions.androidxKtx}",
+                        'appcompat'       : "androidx.appcompat:appcompat:${versions.androidx.appCompat}",
+                        'constraintlayout': "androidx.constraintlayout:constraintlayout:${versions.androidx.constraintLayout}",
+                        'core_ktx'        : "androidx.core:core-ktx:${versions.androidx.coreKtx}",
                         'test'            : [
-                                'core'    : "androidx.arch.core:core-testing:${versions.androidxCoreTesting}",
+                                'core'    : "androidx.arch.core:core-testing:${versions.androidx.test.core}",
                                 'espresso': [
-                                        'core'   : "androidx.test.espresso:espresso-core:${versions.androidxEspresso}",
-                                        'contrib': "androidx.test.espresso:espresso-contrib:${versions.androidxEspresso}",
+                                        'core'   : "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}",
+                                        'contrib': "androidx.test.espresso:espresso-contrib:${versions.androidx.test.espresso}",
                                 ],
-                                'junit'   : "androidx.test.ext:junit:${versions.androidxJunit}",
-                                'rules'   : "androidx.test:rules:${versions.androidxTest}",
-                                'runner'  : "androidx.test:runner:${versions.androidxTest}",
+                                'junit'   : "androidx.test.ext:junit:${versions.androidx.test.junit}",
+                                'rules'   : "androidx.test:rules:${versions.androidx.test.rules}",
+                                'runner'  : "androidx.test:runner:${versions.androidx.test.runner}",
                         ],
+                ],
+                'google'  : [
+                        'material'    : "com.google.android.material:material:${versions.material}"
                 ],
                 'kotlin'  : [
                         'gradleplugin': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
-                        'lint'        : [
-                                'main': "com.github.shyiko:ktlint:${versions.ktlint}",
+                        'lint'         : [
+                                'main': "com.pinterest:ktlint:${versions.ktlint}"
                         ],
-                        'stdlib7'     : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}",
+                        'stdlib8'     : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}",
                 ],
                 'mockito' : [
                         'kotlin': "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.mockitokotlin}",
