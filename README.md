@@ -21,7 +21,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.0.0-alpha1"
+        classpath "com.shopify.testify:plugin:1.0.0-beta1"
     }
 }
 
@@ -33,16 +33,6 @@ It is required for you to turn off animations on your test device — leaving sy
 - **Window animation scale**
 - **Transition animation scale**
 - **Animator duration scale**
-
-# Library projects
-
-Testify can infer most properties for your project, but for library projects you need to provide an `applicationPackageId`. This is necessary for the Testify plugin to correctly synchronize your test images with your emulator when running tests.
-
-```groovy
-testify {
-    applicationPackageId "com.example.library"
-}
-```
 
 # Write a test
 
@@ -76,7 +66,7 @@ Testify works by referencing a PNG baseline found in your `androidTest/assets` d
 Copy images from the `app_images` directory on your emulator to your local `androidTest/assets` directory.
 
 ```bash
-./gradlew screenshotPull
+./gradlew :screenshotPull
 ```
 
 ### Record a new baseline
@@ -84,7 +74,7 @@ Copy images from the `app_images` directory on your emulator to your local `andr
 Run all the screenshot tests in your app and update the local baseline.
 
 ```bash
-./gradlew screenshotRecord
+./gradlew :screenshotRecord
 ```
 
 ### Verify the tests
@@ -109,7 +99,7 @@ There are a variety of additional Gradle commands available through the Testify 
 
     MIT License
     
-    Copyright (c) 2019 Shopify
+    Copyright (c) 2020 Shopify
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
