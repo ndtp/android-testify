@@ -69,6 +69,7 @@ Breaking changes introduced. Bumped Testify to 1.0.0-beta1
 - `setDeviceLocale` task added. You can now set the emulator locale via Testify.
 - Added `verbose` logging support. Add `-Pverbose=true` to your gradle commands to enable verbose logging. e.g. `./gradlew Sample:screenshotTest -Pverbose=true`
 - The device key is now based off the emulator locale, not language. (e.g. `en_US` instead of just `en`)
+- Testify plugin no longer requires `adb root` access. `screenshotPull` and `screenshotClear` can now work on any device or Google Play emulator image.
 
 #### Bug Fixes
 

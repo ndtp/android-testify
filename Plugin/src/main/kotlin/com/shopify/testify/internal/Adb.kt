@@ -24,13 +24,14 @@
 
 package com.shopify.testify.internal
 
+import com.shopify.testify.internal.StreamData.BufferedStream
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 class Adb {
 
     private val arguments = ArrayList<String>()
-    private var streamResults = false
+    private var streamData: StreamData? = null
 
     fun emulator(): Adb {
         arguments.add("-e")
@@ -39,6 +40,23 @@ class Adb {
 
     fun shell(): Adb {
         arguments.add("shell")
+        return this
+    }
+
+    fun execOut(): Adb {
+        arguments.add("exec-out")
+        return this
+    }
+
+    fun runAs(packageId: String): Adb {
+        if (arguments.isEmpty() ||
+            !arguments.last().contentEquals("shell") &&
+            !arguments.last().contentEquals("exec-out")) {
+            throw GradleException("You must specify 'shell' or 'execOut' before 'runAs'")
+        }
+
+        arguments.add("run-as")
+        arguments.add(packageId)
         return this
     }
 
@@ -52,8 +70,8 @@ class Adb {
         return this
     }
 
-    fun stream(stream: Boolean = true): Adb {
-        streamResults = stream
+    fun stream(streamData: StreamData): Adb {
+        this.streamData = streamData
         return this
     }
 
@@ -69,7 +87,7 @@ class Adb {
             println(AnsiFormat.Purple, command)
         }
 
-        return runProcess(command, streamResults)
+        return runProcess(command, streamData ?: BufferedStream())
     }
 
     fun testOptions(testOptionsBuilder: TestOptionsBuilder): Adb {
