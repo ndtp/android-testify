@@ -16,6 +16,11 @@ apply plugin: 'com.shopify.testify'
 android {
     compileSdkVersion 29
 
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
     lintOptions {
         disable 'GradleDependency'
     }
@@ -56,4 +61,6 @@ dependencies {
     androidTestImplementation depends.androidx.test.junit
     androidTestImplementation depends.androidx.test.rules
     androidTestImplementation depends.androidx.test.runner
+    androidTestImplementation depends.mockito.android
+    androidTestImplementation depends.mockito.kotlin
 }

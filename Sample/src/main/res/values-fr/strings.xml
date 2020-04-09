@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="client_since">Client depuis %1s</string>
+    <string name="contact_information">Coordonnées du client</string>
+    <string name="lorem_ipsum">Ce texte ici est tout en français.</string>
+</resources>

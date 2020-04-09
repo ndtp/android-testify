@@ -24,33 +24,56 @@
 
 package com.shopify.testify.internal.helpers
 
-import android.content.res.Resources
+import android.app.Activity
 import android.os.Build
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import com.shopify.testify.internal.exception.LocaleTestMustExtendLocaleOverrideException
+import com.shopify.testify.internal.exception.LocaleTestMustWrapContextException
+import com.shopify.testify.internal.extensions.updateLocale
+import com.shopify.testify.locale.TestifyLocaleOverride
 import java.util.Locale
 
-internal object LocaleHelper {
+object LocaleHelper {
 
-    @JvmStatic
-    fun setTestLocale(locale: Locale) {
-        Locale.setDefault(locale)
-        setResourcesLocale(getInstrumentation().targetContext.resources, locale)
-        setResourcesLocale(Resources.getSystem(), locale)
+    internal var overrideLocale: Locale? = null
+    internal var isWrapped: Boolean = false
+    private var defaultLocale: Locale? = null
+
+    fun setOverrideLocale(locale: Locale?) {
+        this.overrideLocale = locale
     }
 
-    private fun setResourcesLocale(resources: Resources, locale: Locale) {
-        val configuration = resources.configuration
-        configuration.setLocale(locale)
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-    }
-}
+    fun afterActivityLaunched(activity: Activity) {
+        if (this.overrideLocale == null) return
 
-val Locale.languageTag: String
-    get() {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.toLanguageTag().replace("-", "_")
-        } else {
-            "${this.language}_${this.country}"
+        val version: Int = Build.VERSION.SDK_INT
+        when {
+            version <= Build.VERSION_CODES.M -> {
+                this.defaultLocale = Locale.getDefault()
+                activity.updateLocale(this.overrideLocale)
+            }
+            version >= Build.VERSION_CODES.N -> {
+                if (activity !is TestifyLocaleOverride) {
+                    throw LocaleTestMustExtendLocaleOverrideException(activity.localClassName)
+                }
+                if (!this.isWrapped) {
+                    throw LocaleTestMustWrapContextException(activity.localClassName)
+                }
+            }
         }
     }
+
+    fun afterTestFinished(activity: Activity) {
+        this.resetWrapper(activity)
+    }
+
+    private fun resetWrapper(activity: Activity) {
+        defaultLocale?.let {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+                activity.updateLocale(it)
+            }
+        }
+        overrideLocale = null
+        defaultLocale = null
+        isWrapped = false
+    }
+}

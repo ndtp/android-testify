@@ -23,6 +23,7 @@ Breaking changes introduced. Bumped Testify to 1.0.0-beta1
 
 #### Bug Fixes
 
+- Fully support changing locale during testing on API 19+
 - Correctly access external files directory on API 28+
 - Correctly detect the locale on API 22
 - `SoftwareRenderViewModification` now qualifies all views, not just `ImageView`

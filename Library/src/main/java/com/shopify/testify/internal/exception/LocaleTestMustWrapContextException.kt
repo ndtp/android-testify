@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,32 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.sample
+package com.shopify.testify.internal.exception
 
-import android.graphics.Color
-import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.test.rule.ActivityTestRule
-import com.shopify.testify.ScreenshotRule
-
-/**
- * The TestHarnessActivity is used as scaffolding for testing arbitrary views.
- * Testify's [ScreenshotRule] is a subclass of [ActivityTestRule] which means that an Activity
- * is required to "host" a UI that you wish to capture in your screenshot.
- * This empty activity can be used as a generic container for testing your custom [View] classes.
- */
-class TestHarnessActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContentView(FrameLayout(this).apply {
-            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
-            setBackgroundColor(Color.WHITE)
-            id = R.id.harness_root
-        })
-    }
-}
+class LocaleTestMustWrapContextException(activityName: String) :
+    RuntimeException("\n\n* You must override attachBaseContext and invoke super.attachBaseContext(newBase?.wrap()) from $activityName when using setLocale to test *\n")

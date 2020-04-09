@@ -36,6 +36,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.VisibleForTesting
 import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -49,6 +50,9 @@ import com.shopify.testify.internal.TestName
 import com.shopify.testify.internal.compare.FuzzyCompare
 import com.shopify.testify.internal.compare.SameAsCompare
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
+import com.shopify.testify.internal.exception.LocaleTestMustLaunchActivityException
+import com.shopify.testify.internal.exception.MissingAssertSameException
+import com.shopify.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import com.shopify.testify.internal.exception.NoScreenshotsOnUiThreadException
 import com.shopify.testify.internal.exception.RootViewNotFoundException
 import com.shopify.testify.internal.exception.ScreenshotBaselineNotDefinedException
@@ -77,15 +81,11 @@ typealias BitmapCompare = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boo
 @Suppress("unused")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val activityClass: Class<T>,
+    @IdRes private var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    launchActivity: Boolean = true
+    private val launchActivity: Boolean = true
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
-    constructor(activityClass: Class<T>, @IdRes rootViewId: Int) : this(activityClass) {
-        this.rootViewId = rootViewId
-    }
-
-    @IdRes private var rootViewId: Int = android.R.id.content
     @LayoutRes
     private var targetLayoutId: Int = NO_ID
     @Suppress("MemberVisibilityCanBePrivate")
@@ -101,7 +101,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var activityMonitor: Instrumentation.ActivityMonitor? = null
     private var assertSameInvoked = false
     private var defaultFontScale: Float? = null
-    private var defaultLocale: Locale? = null
     private var espressoActions: EspressoActions? = null
     private var exactness: Float? = null
     private var fontScale: Float? = null
@@ -204,6 +203,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setLocale(newLocale: Locale): ScreenshotRule<T> {
+        if (launchActivity) {
+            throw LocaleTestMustLaunchActivityException()
+        }
         this.locale = newLocale
         return this
     }
@@ -236,6 +238,18 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             activityMonitor = Instrumentation.ActivityMonitor(activityClass.name, null, true)
         }
         return activityMonitor!!
+    }
+
+    override fun afterActivityLaunched() {
+        super.afterActivityLaunched()
+        LocaleHelper.afterActivityLaunched(activity)
+    }
+
+    override fun beforeActivityLaunched() {
+        super.beforeActivityLaunched()
+        locale?.let {
+            LocaleHelper.setOverrideLocale(it)
+        }
     }
 
     override fun getActivity(): T {
@@ -276,7 +290,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         if (classAnnotation == null) {
             val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
             if (methodAnnotation == null) {
-                this.throwable = Exception("Please add @ScreenshotInstrumentation for the test '${description.methodName}'")
+                this.throwable = MissingScreenshotInstrumentationAnnotationException(description.methodName)
             }
         }
     }
@@ -306,12 +320,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun assertSame() {
+
+        if (!launchActivity) {
+            launchActivity(activityIntent)
+        }
         assertSameInvoked = true
         try {
-            locale?.let {
-                defaultLocale = Locale.getDefault()
-                LocaleHelper.setTestLocale(it)
-            }
 
             fontScale?.let {
                 defaultFontScale = testContext.resources.configuration.fontScale
@@ -372,14 +386,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     }
                 }
             } finally {
-                defaultLocale?.let {
-                    LocaleHelper.setTestLocale(it)
-                }
                 defaultFontScale?.let {
                     FontScaleHelper.setTestFontScale(it)
                 }
             }
         } finally {
+            LocaleHelper.afterTestFinished(activity)
             TestifyFeatures.reset()
             removeActivityMonitor()
             if (throwable != null) {
@@ -451,10 +463,17 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             base.evaluate()
             // Safeguard against accidentally omitting the call to `assertSame`
             if (!assertSameInvoked) {
-                throw RuntimeException("\n\n* You must call assertSame on the ScreenshotRule *\n")
+                throw MissingAssertSameException()
             }
         }
     }
+
+    @VisibleForTesting
+    var isDebugMode: Boolean = false
+        set(value) {
+            field = value
+            assertSameInvoked = value
+        }
 
     companion object {
         const val NO_ID = -1
