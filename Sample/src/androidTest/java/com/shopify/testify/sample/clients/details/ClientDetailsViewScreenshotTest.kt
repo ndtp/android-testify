@@ -28,7 +28,7 @@ import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.sample.R
-import com.shopify.testify.sample.TestHarnessActivity
+import com.shopify.testify.sample.test.TestHarnessActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

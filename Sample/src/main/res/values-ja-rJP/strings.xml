@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="client_since">%1s 以降の顧客</string>
+    <string name="contact_information">お客様の連絡先の詳細</string>
+    <string name="lorem_ipsum">このテキストはすべて日本語です</string>
+</resources>

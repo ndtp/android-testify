@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".TestHarnessActivity"></activity>
+        <activity android:name="com.shopify.testify.sample.test.TestHarnessActivity" />
+        <activity android:name="com.shopify.testify.sample.test.TestLocaleHarnessActivity" />
+        <activity android:name="com.shopify.testify.sample.test.TestLocaleHarnessNoWrapActivity" />
         <activity
             android:name=".clients.details.ClientDetailsActivity"
             android:parentActivityName=".clients.index.ClientListActivity" />

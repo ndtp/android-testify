@@ -29,7 +29,7 @@ import android.util.DisplayMetrics
 import android.util.Pair
 import android.view.WindowManager
 import com.shopify.testify.TestifyFeatures
-import com.shopify.testify.internal.helpers.languageTag
+import com.shopify.testify.internal.extensions.languageTag
 import java.util.Locale
 
 typealias TestName = Pair<String, String>
