@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.shopify.testify.internal.exception
 
-package com.shopify.testify.internal.helpers
-
-import android.content.res.Resources
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-
-internal object FontScaleHelper {
-
-    fun setTestFontScale(fontScale: Float) {
-        updateResources(getInstrumentation().targetContext.resources, fontScale)
-        updateResources(Resources.getSystem(), fontScale)
-    }
-
-    private fun updateResources(resources: Resources, fontScale: Float) {
-        val config = resources.configuration
-        config.fontScale = fontScale
-        @Suppress("DEPRECATION")
-        resources.updateConfiguration(config, resources.displayMetrics)
-    }
-}
+class TestMustLaunchActivityException :
+    RuntimeException("\n\n* You must set ScreenshotRule(launchActivity) to false when using setLocale or setFontScale *\n")

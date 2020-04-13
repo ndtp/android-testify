@@ -21,7 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.internal.exception
+package com.shopify.testify.resources
 
-class LocaleTestMustExtendLocaleOverrideException(activityName: String) :
-    RuntimeException("\n\n* You must extend TestifyLocaleOverride when using setLocale to test $activityName *\n")
+import android.content.Context
+import androidx.annotation.CallSuper
+import com.shopify.testify.internal.helpers.ResourceWrapper
+
+/**
+ * You must implement this interface on > API 23 in order to use the setLocale method
+ * on ScreenshotTestRule.
+ * In API 24, the resource loading mechanism on Android has changed and Testify can not
+ * change the Locale dynamically without having access to the base Context for each activity
+ * under test.
+ *
+ * e.g.
+ *    override fun attachBaseContext(newBase: Context?) {
+ *        super.attachBaseContext(newBase?.wrap())
+ *    }
+ */
+interface TestifyResourcesOverride {
+
+    @CallSuper
+    fun attachBaseContext(newBase: Context?)
+
+    /**
+     * Wrap the given Context with one updated to use the overridden Locale
+     */
+    fun Context.wrap(): Context {
+        return ResourceWrapper.wrap(this)
+    }
+}

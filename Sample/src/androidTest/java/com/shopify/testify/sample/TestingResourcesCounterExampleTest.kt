@@ -30,26 +30,35 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.internal.exception.LocaleTestMustExtendLocaleOverrideException
-import com.shopify.testify.internal.exception.LocaleTestMustLaunchActivityException
-import com.shopify.testify.internal.exception.LocaleTestMustWrapContextException
-import com.shopify.testify.locale.TestifyLocaleOverride
+import com.shopify.testify.internal.exception.ActivityMustImplementResourceOverrideException
+import com.shopify.testify.internal.exception.TestMustLaunchActivityException
+import com.shopify.testify.internal.exception.TestMustWrapContextException
+import com.shopify.testify.internal.helpers.ResourceWrapper
+import com.shopify.testify.internal.helpers.WrappedLocale
+import com.shopify.testify.resources.TestifyResourcesOverride
 import com.shopify.testify.sample.test.TestHarnessActivity
 import com.shopify.testify.sample.test.TestLocaleHarnessActivity
 import com.shopify.testify.sample.test.TestLocaleHarnessNoWrapActivity
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import java.util.Locale
-import com.shopify.testify.internal.helpers.LocaleHelper
 
 /**
  * These tests demonstrate counter-examples or incorrect usages of the Testify locale support
  */
-class TestingLocalesCounterExampleTest {
+class TestingResourcesCounterExampleTest {
+
+    @Before
+    @After
+    fun resetResourceWrapper() {
+        ResourceWrapper.reset()
+    }
 
     /**
      * Throws LocaleTestMustLaunchActivityException unless launchActivity is set to false
      */
-    @Test(expected = LocaleTestMustLaunchActivityException::class)
+    @Test(expected = TestMustLaunchActivityException::class)
     fun usingSetLocaleRequiresLaunchActivityToBeFalse() {
 
         val rule = ScreenshotRule(
@@ -61,27 +70,27 @@ class TestingLocalesCounterExampleTest {
     }
 
     /**
-     * Throws LocaleTestMustExtendLocaleOverrideException unless the Activity under test
-     * implements [TestifyLocaleOverride]
+     * Throws ActivityMustImplementResourceOverrideException unless the Activity under test
+     * implements [TestifyResourcesOverride]
      */
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
-    @Test(expected = LocaleTestMustExtendLocaleOverrideException::class)
-    fun usingSetLocaleRequiresActivityToImplementLocaleOverride() {
+    @Test(expected = ActivityMustImplementResourceOverrideException::class)
+    fun usingSetLocaleRequiresActivityToImplementResourceOverride() {
 
         val activity = mock<TestHarnessActivity>().apply {
             doReturn("TestHarnessActivity").whenever(this).localClassName
         }
 
-        LocaleHelper.setOverrideLocale(Locale.FRANCE)
-        LocaleHelper.afterActivityLaunched(activity)
+        ResourceWrapper.addOverride(WrappedLocale(Locale.FRANCE))
+        ResourceWrapper.afterActivityLaunched(activity)
     }
 
     /**
-     * Throws LocaleTestMustWrapContextException unless you call newBase?.wrap() from within
+     * Throws TestMustWrapContextException unless you call newBase?.wrap() from within
      * attachBaseContext in your Activity under test.
      */
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
-    @Test(expected = LocaleTestMustWrapContextException::class)
+    @Test(expected = TestMustWrapContextException::class)
     fun usingSetLocaleRequiresActivityToWrapContext() {
         val rule = ScreenshotRule(
             activityClass = TestLocaleHarnessNoWrapActivity::class.java,

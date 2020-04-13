@@ -26,15 +26,15 @@ package com.shopify.testify.sample.test
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
-import com.shopify.testify.locale.TestifyLocaleOverride
+import com.shopify.testify.resources.TestifyResourcesOverride
 
 /**
  * DO NOT DO THIS
  *
- * This Activity is provided as a demonstration of incorrect usage of [TestifyLocaleOverride]
+ * This Activity is provided as a demonstration of incorrect usage of [TestifyResourcesOverride]
  */
 @VisibleForTesting
-class TestLocaleHarnessNoWrapActivity : AppCompatActivity(), TestifyLocaleOverride {
+class TestLocaleHarnessNoWrapActivity : AppCompatActivity(), TestifyResourcesOverride {
 
     /**
      * This is incorrect. You should call newBase?.wrap()

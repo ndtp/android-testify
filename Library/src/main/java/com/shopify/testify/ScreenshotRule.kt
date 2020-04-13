@@ -51,16 +51,17 @@ import com.shopify.testify.internal.TestName
 import com.shopify.testify.internal.compare.FuzzyCompare
 import com.shopify.testify.internal.compare.SameAsCompare
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
-import com.shopify.testify.internal.exception.LocaleTestMustLaunchActivityException
 import com.shopify.testify.internal.exception.MissingAssertSameException
 import com.shopify.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import com.shopify.testify.internal.exception.NoScreenshotsOnUiThreadException
 import com.shopify.testify.internal.exception.RootViewNotFoundException
 import com.shopify.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import com.shopify.testify.internal.exception.ScreenshotIsDifferentException
+import com.shopify.testify.internal.exception.TestMustLaunchActivityException
 import com.shopify.testify.internal.exception.ViewModificationException
-import com.shopify.testify.internal.helpers.FontScaleHelper
-import com.shopify.testify.internal.helpers.LocaleHelper
+import com.shopify.testify.internal.helpers.ResourceWrapper
+import com.shopify.testify.internal.helpers.WrappedFontScale
+import com.shopify.testify.internal.helpers.WrappedLocale
 import com.shopify.testify.internal.modification.HideCursorViewModification
 import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
@@ -102,7 +103,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val testContext = getInstrumentation().context
     private var activityMonitor: Instrumentation.ActivityMonitor? = null
     private var assertSameInvoked = false
-    private var defaultFontScale: Float? = null
     private var espressoActions: EspressoActions? = null
     private var exactness: Float? = null
     private var fontScale: Float? = null
@@ -196,6 +196,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setFontScale(fontScale: Float): ScreenshotRule<T> {
+        if (launchActivity) {
+            throw TestMustLaunchActivityException()
+        }
         this.fontScale = fontScale
         return this
     }
@@ -207,7 +210,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun setLocale(newLocale: Locale): ScreenshotRule<T> {
         if (launchActivity) {
-            throw LocaleTestMustLaunchActivityException()
+            throw TestMustLaunchActivityException()
         }
         this.locale = newLocale
         return this
@@ -239,7 +242,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
-        LocaleHelper.afterActivityLaunched(activity)
+        ResourceWrapper.afterActivityLaunched(activity)
         if (activity.requestedOrientation != this.requestedOrientation) {
             getInstrumentation().addMonitor(getActivityMonitor())
             activity.requestedOrientation = this.requestedOrientation
@@ -250,8 +253,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override fun beforeActivityLaunched() {
         super.beforeActivityLaunched()
         locale?.let {
-            LocaleHelper.setOverrideLocale(it)
+            ResourceWrapper.addOverride(WrappedLocale(it))
         }
+        fontScale?.let {
+            ResourceWrapper.addOverride(WrappedFontScale(it))
+        }
+        ResourceWrapper.beforeActivityLaunched()
     }
 
     override fun getActivity(): T {
@@ -282,7 +289,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val TestifyLayout.resolvedLayoutId: Int
         get() {
             if (this.layoutResName.isNotEmpty()) {
-                return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null) ?: NO_ID
+                return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null)
+                    ?: NO_ID
             }
             return layoutId
         }
@@ -329,12 +337,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
 
         try {
-
-            fontScale?.let {
-                defaultFontScale = testContext.resources.configuration.fontScale
-                FontScaleHelper.setTestFontScale(it)
-            }
-
             val bitmapCompare: BitmapCompare = exactness?.let {
                 FuzzyCompare(it)::compareBitmaps
             } ?: SameAsCompare()::compareBitmaps
@@ -389,12 +391,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     }
                 }
             } finally {
-                defaultFontScale?.let {
-                    FontScaleHelper.setTestFontScale(it)
-                }
             }
         } finally {
-            LocaleHelper.afterTestFinished(activity)
+            ResourceWrapper.afterTestFinished(activity)
             requestedOrientation = SCREEN_ORIENTATION_UNSPECIFIED
             TestifyFeatures.reset()
             removeActivityMonitor()

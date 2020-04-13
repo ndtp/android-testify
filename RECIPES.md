@@ -8,9 +8,9 @@ Examples of advanced test cases.
 
 It is often desirable to test your View or Activity in multiple locales. Testify allows you to dynamically change the locale on a per-test basis. 
 
-To begin, if you are targeting an emulator running Android API 24 or higher, your activity under test must implement the [TestifyLocaleOverride](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/locale/TestifyLocaleOverride.kt) interface. This allows Testify to attach a new `Context` with the appropriate locale loaded. It is highly recommended that you employ a _test harness activity_ for this purpose. Please see the [TestHarnessActivity](https://github.com/Shopify/android-testify/blob/master/Sample/src/androidTest/java/com/shopify/testify/sample/test/TestLocaleHarnessActivity.kt) in the provided Sample.
+To begin, if you are targeting an emulator running Android API 24 or higher, your activity under test must implement the [TestifyResourcesOverride](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/resources/TestifyResourcesOverride.kt) interface. This allows Testify to attach a new `Context` with the appropriate locale loaded. It is highly recommended that you employ a _test harness activity_ for this purpose. Please see the [TestHarnessActivity](https://github.com/Shopify/android-testify/blob/master/Sample/src/androidTest/java/com/shopify/testify/sample/test/TestLocaleHarnessActivity.kt) in the provided Sample.
 
-With an Activity which implements `TestifyLocaleOverride`, you can now invoke the [setLocale](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/ScreenshotRule.kt#L205) method on the `ScreenshotTestRule`. `setLocale` accepts any valid [Locale](https://docs.oracle.com/javase/7/docs/api/java/util/Locale.html) instance.
+With an Activity which implements `TestifyResourcesOverride`, you can now invoke the [setLocale](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/ScreenshotRule.kt#L205) method on the `ScreenshotTestRule`. `setLocale` accepts any valid [Locale](https://docs.oracle.com/javase/7/docs/api/java/util/Locale.html) instance.
 
 _Example Test:_
 ```kotlin
@@ -35,7 +35,7 @@ class TestLocaleActivityTest {
 
 _Example Test Harness Activity_
 ```kotlin
-open class TestHarnessActivity : AppCompatActivity(), TestifyLocaleOverride {
+open class TestHarnessActivity : AppCompatActivity(), TestifyResourcesOverride {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +56,7 @@ Please read this excellent [blog post](https://proandroiddev.com/change-language
 
 ### API 23 or lower
 
-On lower API levels, a test harness activity is not required. You are not required to implement `TestifyLocaleOverride`, but doing so is not harmful.
+On lower API levels, a test harness activity is not required. You are not required to implement `TestifyResourcesOverride`, but doing so is not harmful.
 
 To test with a provided locale, invoke the `setLocale` method on `ScreenshotRule`
 
@@ -76,6 +76,32 @@ class MainActivityScreenshotTest {
     }
 }
 ```
+---
+
+## Changing the font scale in a test
+
+Testify allows you to change the current Activity scaling factor for fonts, relative to the base density scaling. This allows you to simulate the impact of a user modifying the default font size on their device, such as tiny, large or huge.
+:warning: Please note that, similar to changing the Locale (above), you are required to implement `TestifyResourcesOverride` when invoking `setFontScale()`.
+
+See [Font size and display size](https://support.google.com/accessibility/android/answer/6006972?hl=en)
+
+_Example Test:_
+```kotlin
+class MainActivityScreenshotTest {
+
+    @get:Rule var rule = ScreenshotRule(MainActivity::class.java)
+
+    @ScreenshotInstrumentation
+    @TestifyLayout(R.layout.view_client_details)
+    @Test
+    fun testHugeFontScale() {
+        rule
+            .setFontScale(2.0f)
+            .assertSame()
+    }
+}
+```
+
 ---
 
 ## Using `TestifyLayout` in library projects
