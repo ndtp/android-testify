@@ -67,7 +67,6 @@ Breaking changes introduced. Bumped Testify to 1.0.0-beta1
     - `installTask` has been added. You can specify which task to run to install your APK. This is automatically inferred, but you may wish to override the default value.
     - `installAndroidTestTask` has been added. You can specify which task to run to install the Android Instrumentation test package. This is automatically inferred, but you may wish to override the default value.
     You can view the inferred extension values by running `./gradlew testifySettings`
-- `setDeviceLocale` task added. You can now set the emulator locale via Testify.
 - Added `verbose` logging support. Add `-Pverbose=true` to your gradle commands to enable verbose logging. e.g. `./gradlew Sample:screenshotTest -Pverbose=true`
 - The device key is now based off the emulator locale, not language. (e.g. `en_US` instead of just `en`)
 - Testify plugin no longer requires `adb root` access. `screenshotPull` and `screenshotClear` can now work on any device or Google Play emulator image.

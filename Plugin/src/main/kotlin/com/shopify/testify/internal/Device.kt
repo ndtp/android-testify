@@ -28,106 +28,37 @@ object Device {
 
     private val version: Int
         get() {
-            val result = Adb()
-                .shell()
-                .arguments(
-                    "getprop",
-                    "ro.build.version.sdk")
-                .execute()
-            return result.trim().toInt()
+            return Adb().getprop("ro.build.version.sdk").toInt()
         }
 
-    private var language: String
-        get() = Adb()
-                .shell()
-                .argument("getprop")
-                .apply {
-                    if (version == 22) {
-                        argument("ro.product.locale.language")
-                    } else {
-                        argument("persist.sys.language")
-                    }
-                }.execute().trim()
-        set(value) {
-            Adb()
-                    .shell()
-                    .argument("setprop")
-                    .apply {
-                        if (version == 22) {
-                            argument("ro.product.locale.language")
-                        } else {
-                            argument("persist.sys.language")
-                        }
-                    }
-                    .argument(value)
-                    .execute()
-        }
-
-    private var region: String
-        get() = Adb()
-                .shell()
-                .argument("getprop")
-                .apply {
-                    if (version == 22) {
-                        argument("ro.product.locale.region")
-                    } else {
-                        argument("persist.sys.country")
-                    }
-                }.execute().trim()
-        set(value) {
-            Adb()
-                    .shell()
-                    .argument("setprop")
-                    .apply {
-                        if (version == 22) {
-                            argument("ro.product.locale.region")
-                        } else {
-                            argument("persist.sys.country")
-                        }
-                    }
-                    .argument(value)
-                    .execute()
-        }
-
-    var locale: String
+    val locale: String
         get() {
-            return if (version <= 22) {
-                "${language}_$region"
-            } else {
-                Adb().arguments(
-                    "shell",
-                    "getprop",
-                    "ro.product.locale")
-                    .execute().replace("-", "_")
+            return when {
+                version in 21..22 -> {
+                    var language = Adb().getprop("persist.sys.language")
+                    if (language.isBlank()) {
+                        language = "en"
+                    }
+                    var region = Adb().getprop("persist.sys.country")
+                    if (region.isBlank()) {
+                        region = "US"
+                    }
+                    "$language-$region"
+                }
+                version >= 23 -> {
+                    var result = Adb().getprop("persist.sys.locale").trim().replace('_', '-')
+                    if (result.isBlank()) {
+                        result = "en-US"
+                    }
+                    return result
+                }
+                else -> "unsupported"
             }
-        }
-        set(value) {
-            if (version <= 22) {
-                val (language, territory) = value.split("_")
-                this.language = language
-                this.region = territory
-                restart()
-            } else {
-                Adb()
-                    .shell()
-                    .arguments(
-                        "setprop",
-                        "persist.sys.locale",
-                        value.replace("_", "-"))
-                    .execute()
-            }
-            restart()
         }
 
     val timeZone: String
         get() {
-            val result = Adb()
-                .shell()
-                .arguments(
-                    "getprop",
-                    "persist.sys.timezone")
-                .execute()
-            return result.trim()
+            return Adb().getprop("persist.sys.timezone")
         }
 
     private val displayDensity: Int
@@ -160,27 +91,10 @@ object Device {
         return "$version-$displaySize@${displayDensity}dp-$locale"
     }
 
-    val hasRootAccess: Boolean
-        get() = Adb()
-            .shell()
-            .arguments(
-                "ls",
-                "data/data")
-            .execute().trim().isNotEmpty()
-
-    private fun restart() {
-        val adb = Adb().shell()
-        if (version <= 22) {
-            adb.arguments(
-                "setprop",
-                "ctl.restart",
-                "zygote")
-        } else {
-            adb.arguments(
-                "stop;",
-                "sleep 2;",
-                "start")
-        }
-        adb.execute()
+    private fun Adb.getprop(prop: String): String {
+        shell()
+        argument("getprop")
+        argument(prop)
+        return execute().trim()
     }
 }
