@@ -24,8 +24,10 @@
 
 package com.shopify.testify.sample
 
+import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.graphics.Color
+import android.os.Bundle
 import android.view.View
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.typeText
@@ -35,6 +37,7 @@ import com.shopify.testify.TestifyFeatures
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.sample.test.TestHarnessActivity
+import com.shopify.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import com.shopify.testify.sample.test.clientDetailsView
 import com.shopify.testify.sample.test.getViewState
 import org.junit.Rule
@@ -73,6 +76,25 @@ class ScreenshotRuleExampleTests {
             }
         }.assertSame()
     }
+
+    /**
+     * Demonstrates how to add a [Bundle] of extras to the [Intent] used to create the Activity
+     * under test.
+     *
+     * You can provide a lambda to populate the provided Bundle with any user-declared extra values.
+     * This example shows how to set the title bar text using an Intent extra.
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun addIntentExtras() {
+        rule
+            .addIntentExtras {
+                it.putString(EXTRA_TITLE, "addIntentExtras")
+            }
+            .assertSame()
+    }
+
 
     /**
      * Demonstrates the alternative of loading layouts by resource name.

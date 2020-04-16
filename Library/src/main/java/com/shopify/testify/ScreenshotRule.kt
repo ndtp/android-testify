@@ -81,6 +81,7 @@ typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
 typealias BitmapCompare = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean
+typealias ExtrasProvider = (bundle: Bundle) -> Unit
 
 @Suppress("unused")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
@@ -113,6 +114,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
+    private var extrasProvider: ExtrasProvider? = null
     private var requestedOrientation: Int = SCREEN_ORIENTATION_UNSPECIFIED
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -306,11 +308,23 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    override fun getActivityIntent(): Intent {
+    fun addIntentExtras(extrasProvider: ExtrasProvider): ScreenshotRule<T> {
+        this.extrasProvider = extrasProvider
+        return this
+    }
+
+    final override fun getActivityIntent(): Intent {
         var intent: Intent? = super.getActivityIntent()
         if (intent == null) {
             intent = getIntent()
         }
+
+        extrasProvider?.let {
+            val bundle = Bundle()
+            it(bundle)
+            intent.extras?.putAll(bundle) ?: intent.replaceExtras(bundle)
+        }
+
         return intent
     }
 
