@@ -25,8 +25,13 @@
 package com.shopify.testify.sample
 
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+import android.graphics.Color
 import android.view.View
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.shopify.testify.ScreenshotRule
+import com.shopify.testify.TestifyFeatures
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.sample.test.TestHarnessActivity
@@ -34,6 +39,7 @@ import com.shopify.testify.sample.test.clientDetailsView
 import com.shopify.testify.sample.test.getViewState
 import org.junit.Rule
 import org.junit.Test
+import kotlin.random.Random
 
 class ScreenshotRuleExampleTests {
 
@@ -66,6 +72,151 @@ class ScreenshotRuleExampleTests {
                 rule.activity.title = it.name
             }
         }.assertSame()
+    }
+
+    /**
+     * Demonstrates the alternative of loading layouts by resource name.
+     *
+     * This approach is useful for library projects where the R.id values are not constant.
+     */
+    @TestifyLayout(layoutResName = "com.shopify.testify.sample:layout/view_client_details")
+    @ScreenshotInstrumentation
+    @Test
+    fun usingLayoutResName() {
+        rule.setViewModifications { harnessRoot ->
+            rule.activity.getViewState(name = "usingLayoutResName").let {
+                harnessRoot.clientDetailsView.render(it)
+                rule.activity.title = it.name
+            }
+        }.assertSame()
+    }
+
+    /**
+     * Demonstrates how to load a layout file programmatically using setTargetLayoutId
+     */
+    @ScreenshotInstrumentation
+    @Test
+    fun setTargetLayoutId() {
+        rule
+            .setTargetLayoutId(R.layout.view_client_details)
+            .setViewModifications { harnessRoot ->
+                rule.activity.getViewState(name = "setTargetLayoutId").let {
+                    harnessRoot.clientDetailsView.render(it)
+                    rule.activity.title = it.name
+                }
+            }.assertSame()
+    }
+
+    /**
+     * Demonstrates Testify's ability to interoperate with Espresso actions.
+     *
+     * [ScreenshotRule.setEspressoActions] accepts a lambda of type [EspressoActions] in which you
+     * may define any number of Espresso actions. These actions are executed after the activity is
+     * fully inflated and any view modifications have been applied. Testify will synchronize with
+     * the Espresso event loop and ensure that all Espresso actions are complete before capturing
+     * a screenshot.
+     *
+     * Note that it's not generally recommended to use complex Espresso actions with your screenshot
+     * tests. Espresso test are an order of magnitude slower to run and are more susceptible to
+     * flakiness.
+     */
+    @TestifyLayout(R.layout.view_edit_text)
+    @ScreenshotInstrumentation
+    @Test
+    fun setEspressoActions() {
+        rule
+            .setEspressoActions {
+                onView(withId(R.id.edit_text)).perform(typeText("Testify"))
+            }
+            .assertSame()
+    }
+
+    /**
+     * Demonstrates how to enable experimental features programmatically.
+     *
+     * In this example, CanvasCapture is enabled. If you compare to the [default] test case,
+     * you will notice minor capture differences owning to the different capture methods used.
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun withExperimentalFeatureEnabled() {
+        rule
+            .setViewModifications { harnessRoot ->
+                rule.activity.getViewState(name = "withExperimentalFeatureEnabled").let {
+                    harnessRoot.clientDetailsView.render(it)
+                    rule.activity.title = it.name
+                }
+            }
+            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
+            .assertSame()
+    }
+
+    /**
+     * Demonstrates how to force the use of the software renderer.
+     *
+     * In some instances it may be desirable to use the software renderer, not Android's default
+     * hardware renderer. Differences in GPU hardware from device to device (and emulators running
+     * on different architectures) may cause flakiness in rendering.
+     *
+     * [@see https://developer.android.com/guide/topics/graphics/hardware-accel.html]
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun setUseSoftwareRenderer() {
+        rule
+            .setViewModifications { harnessRoot ->
+                rule.activity.getViewState(name = "withExperimentalFeatureEnabled").let {
+                    harnessRoot.clientDetailsView.render(it)
+                    rule.activity.title = it.name
+                }
+            }
+            .setUseSoftwareRenderer(true)
+            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
+            .assertSame()
+    }
+
+    /**
+     * Demonstrates the fuzzy matching ability of testify
+     *
+     * By providing a value less than 1 to [setExactness], a test will be more tolerant to color
+     * differences. The fuzzy matching algorithm maps the captured image into the HSV color space
+     * and compares the Hue, Saturation and Lightness components of each pixel. If they are within
+     * the provided tolerance, the images are considered to be the same.
+     *
+     * Note that the fuzzy matching is approximately 10x slower than the default matching.
+     * Use sparingly.
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun setExactness() {
+        rule
+            .setExactness(0.9f)
+            .setViewModifications {
+                val r = Integer.toHexString(Random.nextInt(0, 25) + 230).padStart(2, '0')
+                it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#${r}0000"))
+            }
+            .assertSame()
+    }
+
+    /**
+     * Demonstrates Testify's ability to take a screenshot of a single view.
+     *
+     * Using [ScreenshotRule.setScreenshotViewProvider], you may return a [View] reference
+     * which will be used by Testify to narrow the bitmap to only that View.
+     * You can use this method to take a screenshot of a partial Activity or a single View.
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun setScreenshotViewProvider() {
+        rule
+            .setScreenshotViewProvider {
+                it.findViewById(R.id.info_card)
+            }
+            .assertSame()
     }
 
     /**

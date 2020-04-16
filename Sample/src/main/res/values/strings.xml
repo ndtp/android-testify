@@ -11,5 +11,6 @@
     <string name="contact_information">Contact Information</string>
     <string name="mock_address">150 Elgin Street\nOttawa, Ontario\nK2P 1L4</string>
     <string name="mock_phone">1-613-555-5555</string>
+    <string name="type_here">Type here</string>
 
 </resources>

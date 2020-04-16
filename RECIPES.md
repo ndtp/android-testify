@@ -2,6 +2,43 @@
 
 Examples of advanced test cases.
 
+## Setting up an emulator to run the Sample
+
+The Sample application includes a baseline for an emulator that's compatible with Travis CI. To configure an AVD locally, create a new virtual device with the following settings in the Android Virtual Device (AVD) configuration:
+
+- Phone: Nexus S (480x800 hdpi)
+- Lollopop API level 22, x86, Android 5.1 (Google APIs)
+- RAM: 2048 MB
+- VM heap: 128 MB
+- Internal Storage: 2048 MB
+- SD card, Studio-managed: 1024 MB
+- Enable Device Frame with nexus_s skin
+- Enable keyboard input
+
+Once the emulator is booted:
+- Set the Language to English (United States) (`en_US`)
+- In the developer settings, set Window animation scale, Transition animation scale, and Animator duration scale to `off`
+
+## Taking a screenshot of an area less than that of the entire Activity
+
+It is often desirable to capture only a portion of your screen or to capture a single `View`.
+For these cases, you can use the `setScreenshotViewProvider` on `ScreenshotRule` to specify which `View` to capture.
+
+Using `ScreenshotRule.setScreenshotViewProvider`, you myst return a `View` reference which will be used by Testify to narrow the bitmap to only that View.
+
+```kotlin
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setScreenshotViewProvider {
+                it.findViewById(R.id.info_card)
+            }
+            .assertSame()
+    }
+```
+
 ## Changing the Locale in a test
 
 ### API 24+
@@ -104,6 +141,36 @@ class MainActivityScreenshotTest {
 
 ---
 
+## Increase the matching tolerance
+
+In some cases, the captured screenshot may inherently contain randomness. It may then be desirable to allow for an inexact matching. By default, Testify employs an exact, pixel-by-pixel matching algorithm.
+Alternatively, you may optionally reduce this exactness.
+
+By providing a value less than 1 to `setExactness`, a test will be more tolerant to color differences. The fuzzy matching algorithm maps the captured image into the HSV color space
+and compares the Hue, Saturation and Lightness components of each pixel. If they are within the provided tolerance, the images are considered to be the same.
+
+:warning: Note that the fuzzy matching is approximately 10x slower than the default matching.
+**Use sparingly.**
+
+```kotlin
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun setExactness() {
+        rule
+            .setExactness(0.9f)
+            .setViewModifications {
+                val r = Integer.toHexString(Random.nextInt(0, 25) + 230).padStart(2, '0')
+                it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#${r}0000"))
+            }
+            .assertSame()
+    }
+```
+
+
+
+---
+
 ## Using `TestifyLayout` in library projects
 
 The `TestifyLayout` annotation allows you to specify a layout resource to be automatically loaded into the host Activity for testing.
@@ -123,6 +190,59 @@ class MainActivityScreenshotTest {
     }
 }
 ```
+---
+
+## Specifying a layout resource programmatically
+
+As an alternative to using the `TestifyLayout` annotation, you may also specific a layout file to be loaded programmatically.
+You can pass a `R.layout.*` resource ID to `setTargetLayoutId` on the `ScreenshotRule`.
+
+```kotlin
+class MainActivityScreenshotTest {
+
+    @get:Rule var rule = ScreenshotRule(MainActivity::class.java)
+
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setTargetLayoutId(R.layout.view_client_details)
+            .assertSame()
+    }
+}
+```
+---
+
+## Use Espresso UI tests with Testify
+
+`ScreenshotRule.setEspressoActions` accepts a lambda of type `EspressoActions` in which you may define any number of Espresso actions. These actions are executed after the activity is fully inflated and any view modifications have been applied.
+Testify will synchronize with the Espresso event loop and ensure that all Espresso actions are complete before capturing a screenshot.
+
+Note that it's not generally recommended to use complex Espresso actions with your screenshot tests. Espresso test are an order of magnitude slower to run and are more susceptible to flakiness.
+
+Please [check here](https://developer.android.com/training/testing/espresso) for more information about Espresso testing.
+
+
+```kotlin
+class MainActivityScreenshotTest {
+
+    @get:Rule var rule = ScreenshotRule(MainActivity::class.java)
+
+    @TestifyLayout(R.layout.view_edit_text)
+    @ScreenshotInstrumentation
+    @Test
+    fun setEspressoActions() {
+        rule
+            .setEspressoActions {
+                onView(withId(R.id.edit_text)).perform(typeText("Testify"))
+            }
+            .assertSame()
+    }
+}
+```
+
+---
+
 
 ---
 
@@ -160,3 +280,75 @@ Use the `setOrientation` method to select between portrait and landscape mode.
 ```
 
 ---
+
+## Debugging with the Layout Inspector
+
+You may use Android Studio's [Layout Inspector](https://developer.android.com/studio/debug/layout-inspector) in conjunction with your screenshot test. It can sometimes be useful to pause your test so that you can capture the layout hierarchy for further debugging in Android Studio. In order to do so, invoke the `setLayoutInspectionModeEnabled` method on the test rule. This will pause the test after all ViewModifications have been applied and prior to the screenshot being taken. The test is paused for 5 minutes, allowing plenty of time to capture the layout.
+
+```kotlin
+    @ScreenshotInstrumentation
+    @Test
+    fun testDefault() {
+        rule
+                .setLayoutInspectionModeEnabled(true)
+                .assertSame()
+    }
+```
+
+---
+
+## Selecting an alternative capture method
+
+Testify provides three bitmap capture method. Each method will capture slightly different results based primarily on API level.
+
+The three capture methods available are:
+
+(1) Canvas: Render the view (and all of its children) to a given Canvas, using [View.draw](https://developer.android.com/reference/android/view/View#draw(android.graphics.Canvas))
+(2) DrawingCache: Pulls the view's drawing cache bitmap using the deprecated [View.getDrawingCache](https://developer.android.com/reference/android/view/View#getDrawingCache())
+(3) PixelCopy: Use Android's recommended [PixelCopy](https://developer.android.com/reference/android/view/PixelCopy) API to capture the full screen, including elevation.
+
+For legacy compatibility reasons, `DrawingCache` mode is the default Testify capture method.
+
+If you wish to select an alternative capture method, you can enable the experimental feature either in code, or in your manifest.
+Available features can be found in [TestifyFeatures](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/TestifyFeatures.kt#L10)
+
+**Code:**
+```kotlin
+    @ScreenshotInstrumentation
+    @Test
+    fun testDefault() {
+        rule
+            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
+            .assertSame()
+    }
+```
+
+**Manifest:**
+```xml
+<manifest package="com.shopify.testify.sample"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <meta-data android:name="testify-canvas-capture" android:value="true" />
+    </application>
+
+</manifest>
+```
+
+---
+
+## Force software rendering
+
+In some instances it may be desirable to use the software renderer, not Android's default hardware renderer. Differences in GPU hardware from device to device (and emulators running on different architectures) may cause flakiness in rendering.
+
+Please read more about [Hardware acceleration](https://developer.android.com/guide/topics/graphics/hardware-accel.html) for more information.
+
+```kotlin
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setUseSoftwareRenderer(true)
+            .assertSame()
+    }
+```
