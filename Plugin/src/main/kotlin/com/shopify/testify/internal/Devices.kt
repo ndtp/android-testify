@@ -26,6 +26,9 @@ package com.shopify.testify.internal
 
 internal object Devices {
 
+    val isEmpty: Boolean
+        get() = (count == 0)
+
     val count: Int
         get() {
             val result = Adb()
