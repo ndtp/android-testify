@@ -57,6 +57,7 @@ import com.shopify.testify.internal.exception.NoScreenshotsOnUiThreadException
 import com.shopify.testify.internal.exception.RootViewNotFoundException
 import com.shopify.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import com.shopify.testify.internal.exception.ScreenshotIsDifferentException
+import com.shopify.testify.internal.exception.ViewModificationException
 import com.shopify.testify.internal.helpers.FontScaleHelper
 import com.shopify.testify.internal.helpers.LocaleHelper
 import com.shopify.testify.internal.modification.HideCursorViewModification
@@ -64,14 +65,14 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
-import java.util.Locale
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.util.Locale
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
@@ -412,12 +413,18 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         val parentView = getRootView(activity)
         val latch = CountDownLatch(1)
 
+        var viewModificationException: Throwable? = null
         activity.runOnUiThread {
             if (targetLayoutId != NO_ID) {
                 activity.layoutInflater.inflate(targetLayoutId, parentView, true)
             }
-            if (viewModification != null) {
-                viewModification!!.invoke(parentView)
+
+            viewModification?.let { viewModification ->
+                try {
+                    viewModification(parentView)
+                } catch (exception: Throwable) {
+                    viewModificationException = exception
+                }
             }
 
             hideScrollbarsViewModification.modify(parentView)
@@ -432,6 +439,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             latch.await()
         } else {
             assertTrue(latch.await(INFLATE_TIMEOUT_SECONDS, TimeUnit.SECONDS))
+        }
+
+        viewModificationException?.let {
+            throw ViewModificationException(it)
         }
     }
 
