@@ -24,6 +24,7 @@
 
 package com.shopify.testify.sample
 
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.view.View
 import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
@@ -65,5 +66,20 @@ class ScreenshotRuleExampleTests {
                 rule.activity.title = it.name
             }
         }.assertSame()
+    }
+
+    /**
+     * Demonstrates how to change the orientation of your Activity to landscape.
+     *
+     * Note how the screenshot device key baseline has a longer width than height.
+     * e.g. 22-800x480@240dp-en_US
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun setOrientation() {
+        rule
+            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
+            .assertSame()
     }
 }
