@@ -28,6 +28,7 @@ import android.app.Instrumentation
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
@@ -110,6 +111,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
+    private var requestedOrientation: Int = SCREEN_ORIENTATION_UNSPECIFIED
 
     @Suppress("MemberVisibilityCanBePrivate")
     val testName: String
@@ -223,13 +225,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
         require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        if (activity.requestedOrientation != requestedOrientation) {
-            val activityMonitor = getActivityMonitor()
-            getInstrumentation().addMonitor(activityMonitor)
-
-            activity.requestedOrientation = requestedOrientation
-            getInstrumentation().waitForIdleSync()
-        }
+        this.requestedOrientation = requestedOrientation
         return this
     }
 
@@ -243,6 +239,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         LocaleHelper.afterActivityLaunched(activity)
+        if (activity.requestedOrientation != this.requestedOrientation) {
+            getInstrumentation().addMonitor(getActivityMonitor())
+            activity.requestedOrientation = this.requestedOrientation
+            getInstrumentation().waitForIdleSync()
+        }
     }
 
     override fun beforeActivityLaunched() {
@@ -320,11 +321,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun assertSame() {
+        assertSameInvoked = true
 
         if (!launchActivity) {
             launchActivity(activityIntent)
         }
-        assertSameInvoked = true
+
         try {
 
             fontScale?.let {
@@ -392,6 +394,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             }
         } finally {
             LocaleHelper.afterTestFinished(activity)
+            requestedOrientation = SCREEN_ORIENTATION_UNSPECIFIED
             TestifyFeatures.reset()
             removeActivityMonitor()
             if (throwable != null) {
