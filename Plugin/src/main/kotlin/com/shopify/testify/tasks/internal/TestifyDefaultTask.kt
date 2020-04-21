@@ -25,7 +25,9 @@
 package com.shopify.testify.tasks.internal
 
 import com.shopify.testify.internal.AnsiFormat
+import com.shopify.testify.internal.Devices
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
@@ -45,8 +47,14 @@ abstract class TestifyDefaultTask : DefaultTask() {
 
     protected val divider = "-".repeat(60)
 
+    protected open fun beforeAction() {
+        if (Devices.isEmpty) throw GradleException("No Android Virtual Device found. Please start an emulator prior to running Testify tasks.")
+    }
+
     @TaskAction
     protected fun action() {
+        beforeAction()
+
         println()
         println(divider)
         com.shopify.testify.internal.println(AnsiFormat.Bold, description)
