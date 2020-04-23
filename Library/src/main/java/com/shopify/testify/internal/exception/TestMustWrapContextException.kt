@@ -23,5 +23,5 @@
  */
 package com.shopify.testify.internal.exception
 
-class LocaleTestMustLaunchActivityException :
-    RuntimeException("\n\n* You must set ScreenshotRule(launchActivity) to false when using setLocale *\n")
+class TestMustWrapContextException(activityName: String) :
+    RuntimeException("\n\n* You must override attachBaseContext and invoke super.attachBaseContext(newBase?.wrap()) from $activityName when using setLocale or setFontScale to test *\n")

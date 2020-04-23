@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,35 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.locale
 
+package com.shopify.testify.internal.helpers
+
+import android.app.Activity
 import android.content.Context
-import androidx.annotation.CallSuper
 import com.shopify.testify.internal.extensions.updateLocale
-import com.shopify.testify.internal.helpers.LocaleHelper
+import java.util.Locale
 
-/**
- * You must implement this interface on > API 23 in order to use the setLocale method
- * on ScreenshotTestRule.
- * In API 24, the resource loading mechanism on Android has changed and Testify can not
- * change the Locale dynamically without having access to the base Context for each activity
- * under test.
- *
- * e.g.
- *    override fun attachBaseContext(newBase: Context?) {
- *        super.attachBaseContext(newBase?.wrap())
- *    }
- */
-interface TestifyLocaleOverride {
+class WrappedLocale(override var overrideValue: Locale) : WrappedResource<Locale> {
+    override lateinit var defaultValue: Locale
 
-    @CallSuper
-    fun attachBaseContext(newBase: Context?)
+    override fun beforeActivityLaunched() {
+        this.defaultValue = Locale.getDefault()
+    }
 
-    /**
-     * Wrap the given Context with one updated to use the overridden Locale
-     */
-    fun Context.wrap(): Context {
-        LocaleHelper.isWrapped = true
-        return this.updateLocale(LocaleHelper.overrideLocale)
+    override fun afterActivityLaunched(activity: Activity) {
+        activity.updateLocale(this.overrideValue)
+    }
+
+    override fun afterTestFinished(activity: Activity) {
+        activity.updateLocale(defaultValue)
+    }
+
+    override fun updateContext(context: Context): Context {
+        return context.updateLocale(overrideValue)
     }
 }

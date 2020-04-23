@@ -22,48 +22,58 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.testify.internal.extensions
+package com.shopify.testify.internal.helpers
 
 import android.annotation.TargetApi
+import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
-import android.os.LocaleList
-import java.util.Locale
 
-internal fun Context.updateLocale(locale: Locale?): Context {
-    if (locale == null) return this
+class WrappedFontScale(override var overrideValue: Float) : WrappedResource<Float> {
+    override var defaultValue: Float = 1.0f
+
+    override fun beforeActivityLaunched() {
+    }
+
+    override fun afterActivityLaunched(activity: Activity) {
+        defaultValue = activity.resources.configuration.fontScale
+        activity.updateFontScale(this.overrideValue)
+    }
+
+    override fun afterTestFinished(activity: Activity) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+            activity.updateFontScale(defaultValue)
+        }
+    }
+
+    override fun updateContext(context: Context): Context {
+        return context.updateFontScale(overrideValue)
+    }
+}
+
+internal fun Context.updateFontScale(fontScale: Float?): Context {
+    if (fontScale == null) return this
 
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        this.updateResources(locale)
+        this.updateResources(fontScale)
     } else {
-        this.updateResourcesLegacy(locale)
+        this.updateResourcesLegacy(fontScale)
     }
 }
 
 @TargetApi(Build.VERSION_CODES.N)
-private fun Context.updateResources(locale: Locale): Context {
+private fun Context.updateResources(fontScale: Float): Context {
     val configuration = Configuration(this.resources.configuration)
-    val localeList = LocaleList(locale)
-    LocaleList.setDefault(localeList)
-    configuration.setLocales(localeList)
-    return this.createConfigurationContext(configuration)
+    configuration.fontScale = fontScale
+    val x = this.createConfigurationContext(configuration)
+    return x
 }
 
 @Suppress("DEPRECATION")
-private fun Context.updateResourcesLegacy(locale: Locale): Context {
-    Locale.setDefault(locale)
+private fun Context.updateResourcesLegacy(fontScale: Float): Context {
     val configuration = Configuration(this.resources.configuration)
-    configuration.locale = locale
+    configuration.fontScale = fontScale
     this.resources.updateConfiguration(configuration, this.resources.displayMetrics)
     return this
 }
-
-internal val Locale.languageTag: String
-    get() {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            this.toLanguageTag().replace("-", "_")
-        } else {
-            "${this.language}_${this.country}"
-        }
-    }

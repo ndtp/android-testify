@@ -24,10 +24,12 @@
 
 package com.shopify.testify.sample
 
+import android.app.Activity
 import android.os.Build
 import androidx.test.filters.SdkSuppress
 import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
+import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.sample.test.TestHarnessActivity
 import com.shopify.testify.sample.test.clientDetailsView
 import com.shopify.testify.sample.test.getViewState
@@ -36,11 +38,11 @@ import org.junit.Test
 import java.util.Locale
 
 /**
- * These tests demonstrate how to test the same Activity on different locales
+ * These tests demonstrate how to test the same Activity with different resource configurations
  * API less than 24
  */
 @SdkSuppress(maxSdkVersion = Build.VERSION_CODES.M)
-class TestingLocalesLegacyExampleTest {
+class TestingResourceConfigurationsLegacyExampleTest {
 
     @get:Rule var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
@@ -75,15 +77,48 @@ class TestingLocalesLegacyExampleTest {
         assertLocale(Locale.CANADA)
     }
 
-    private fun assertLocale(locale: Locale) {
+    /**
+     * Demonstrates how to adjust the scaling factor for fonts, relative to the base density scaling.
+     *
+     * This test uses [ScreenshotRule.setFontScale] to dynamically increase the font scaling factor.
+     */
+    @ScreenshotInstrumentation
+    @Test
+    fun increaseFontScale() {
         rule
+            .configure(name = "Scale 2.0f")
+            .setFontScale(2.0f)
+            .assertSame()
+    }
+
+    /**
+     * Demonstrates how to adjust multiple configuration properties in the same test.
+     *
+     * This test uses [ScreenshotRule.setFontScale] and [ScreenshotRule.setLocale]
+     */
+    @ScreenshotInstrumentation
+    @Test
+    fun reduceFontScaleAndChangeLocale() {
+        rule.configure("${Locale.JAPAN.displayName} @ 0.75")
+            .setFontScale(0.75f)
+            .setLocale(Locale.JAPAN)
+            .assertSame()
+    }
+
+    private fun <T : Activity> ScreenshotRule<T>.configure(name: String): ScreenshotRule<T> {
+        return this
             .setTargetLayoutId(R.layout.view_client_details)
             .setViewModifications { harnessRoot ->
-                rule.activity.getViewState(name = "Locale ${locale.displayName}").let {
+                rule.activity.getViewState(name).let {
                     harnessRoot.clientDetailsView.render(it)
                     rule.activity.title = it.name
                 }
             }
+    }
+
+    private fun assertLocale(locale: Locale) {
+        rule
+            .configure(name = "Locale ${locale.displayName}")
             .setLocale(locale)
             .assertSame()
     }

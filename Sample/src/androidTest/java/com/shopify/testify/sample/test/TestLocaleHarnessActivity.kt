@@ -26,26 +26,26 @@ package com.shopify.testify.sample.test
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
-import com.shopify.testify.locale.TestifyLocaleOverride
-import com.shopify.testify.sample.TestingLocalesExampleTest
+import com.shopify.testify.resources.TestifyResourcesOverride
+import com.shopify.testify.sample.TestingResourceConfigurationsExampleTest
 import java.util.Locale
 
 /**
- * This Activity is used to demonstrate the use of [TestifyLocaleOverride].
+ * This Activity is used to demonstrate the use of [TestifyResourcesOverride].
  *
  * Starting in Android API Version 24 (Nougat), the proper way to dynamically alter an Activity's
  * resources and locale is to wrap the base [Context] in [AppCompatActivity.attachBaseContext]
  * with a Context that has been updated with a new [Locale]. Testify provides a helper interface,
- * [TestifyLocaleOverride] which provides a Context extension method, [TestifyLocaleOverride.wrap].
+ * [TestifyResourcesOverride] which provides a Context extension method, [TestifyResourcesOverride.wrap].
  *
  */
 @VisibleForTesting
-class TestLocaleHarnessActivity : TestHarnessActivity(), TestifyLocaleOverride {
+class TestLocaleHarnessActivity : TestHarnessActivity(), TestifyResourcesOverride {
 
     /**
      * This is required to correctly support dynamic Locale changes
      *
-     * See [TestingLocalesExampleTest]
+     * See [TestingResourceConfigurationsExampleTest]
      */
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase?.wrap())
