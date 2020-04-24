@@ -51,5 +51,13 @@ open class TestHarnessActivity : AppCompatActivity() {
             setBackgroundColor(Color.WHITE)
             id = R.id.harness_root
         })
+
+        if (intent?.hasExtra(EXTRA_TITLE) == true) {
+            title = intent.getStringExtra(EXTRA_TITLE)
+        }
+    }
+
+    companion object {
+        const val EXTRA_TITLE = "TOOLBAR_TITLE"
     }
 }
