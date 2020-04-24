@@ -50,6 +50,7 @@ import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
 import com.shopify.testify.internal.compare.FuzzyCompare
 import com.shopify.testify.internal.compare.SameAsCompare
+import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.MissingAssertSameException
 import com.shopify.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
@@ -326,6 +327,17 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         if (exactness == null) {
             val bitmapComparison = description.getAnnotation(BitmapComparisonExactness::class.java)
             exactness = bitmapComparison?.exactness
+        }
+    }
+
+    override fun launchActivity(startIntent: Intent?): T {
+        try {
+            return super.launchActivity(startIntent)
+        } catch (runtimeException: java.lang.RuntimeException) {
+            if (runtimeException.message?.contains("Could not launch activity") == true) {
+                throw ActivityNotRegisteredException(activityClass)
+            }
+            throw runtimeException
         }
     }
 
