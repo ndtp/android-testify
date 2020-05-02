@@ -1,6 +1,6 @@
 # Testify Change Log
 
-## 1.0.0-beta1 -- March 21, 2020
+## 1.0.0-beta1 -- May 2, 2020
 
 Breaking changes introduced. Bumped Testify to 1.0.0-beta1
 
