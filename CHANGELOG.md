@@ -1,5 +1,13 @@
 # Testify Change Log
 
+## 1.0.1-beta1 -- May 5, 2020
+
+### Library
+
+#### Bug Fixes
+- Fixed issue #148. Can now correctly override both enabled and disabled features using an AndroidManifest meta-data tag.
+
+
 ## 1.0.0-beta1 -- May 2, 2020
 
 Breaking changes introduced. Bumped Testify to 1.0.0-beta1
