@@ -1,0 +1,93 @@
+package com.shopify.testify
+
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.content.pm.PackageManager.GET_META_DATA
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import com.shopify.testify.TestifyFeatures.ExampleDisabledFeature
+import com.shopify.testify.TestifyFeatures.ExampleFeature
+import org.junit.After
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+class TestifyFeaturesTest {
+
+    @After
+    @Before
+    fun setUp() {
+        ExampleFeature.reset()
+        ExampleDisabledFeature.reset()
+    }
+
+    @Test
+    fun `Features can default to enabled`() {
+        assertTrue(ExampleFeature.isEnabled())
+    }
+
+    @Test
+    fun `Features can default to disabled`() {
+        assertFalse(ExampleDisabledFeature.isEnabled())
+    }
+
+    @Test
+    fun `Can use setEnabled to override a disabled feature`() {
+        ExampleDisabledFeature.setEnabled(true)
+        assertTrue(ExampleDisabledFeature.isEnabled())
+    }
+
+    @Test
+    fun `Can use setEnabled to override an enabled feature`() {
+        ExampleFeature.setEnabled(false)
+        assertFalse(ExampleFeature.isEnabled())
+    }
+
+    private fun mockContext(feature: TestifyFeatures, enabled: Boolean): Context {
+        val mockPackageManager: PackageManager = mock()
+        val mockContext: Context = mock {
+            on { packageManager } doReturn mockPackageManager
+            on { packageName } doReturn "com.testify.sample"
+        }
+        doReturn(mock<ApplicationInfo>().apply {
+            metaData = mock {
+                on { containsKey(feature.tag) } doReturn true
+                on { getBoolean(feature.tag) } doReturn enabled
+            }
+        }).whenever(mockPackageManager).getApplicationInfo("com.testify.sample", GET_META_DATA)
+        return mockContext
+    }
+
+    @Test
+    fun `Can use AndroidManifest to override an enabled feature`() {
+        assertFalse(ExampleFeature.isEnabled(mockContext(ExampleFeature, enabled = false)))
+    }
+
+    @Test
+    fun `Can use AndroidManifest to override a disabled feature`() {
+        assertTrue(ExampleDisabledFeature.isEnabled(mockContext(ExampleDisabledFeature, enabled = true)))
+    }
+
+    @Test
+    fun `Can use setEnabled to override a manifest change`() {
+        ExampleFeature.setEnabled(enabled = true)
+        assertTrue(ExampleFeature.isEnabled(mockContext(ExampleFeature, enabled = false)))
+    }
+
+    @Test
+    fun `Can reset an enabled feature`() {
+        ExampleFeature.setEnabled(false)
+        TestifyFeatures.reset()
+        assertTrue(ExampleFeature.isEnabled())
+    }
+
+    @Test
+    fun `Can reset a disabled feature`() {
+        ExampleDisabledFeature.setEnabled(true)
+        TestifyFeatures.reset()
+        assertFalse(ExampleDisabledFeature.isEnabled())
+    }
+}
