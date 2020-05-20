@@ -1,6 +1,6 @@
 # Testify Change Log
 
-## 1.0.1-beta1 -- May 5, 2020
+## 1.0.0-beta2 -- May 20, 2020
 
 ### Library
 

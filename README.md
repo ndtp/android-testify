@@ -21,7 +21,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.0.0-beta1"
+        classpath "com.shopify.testify:plugin:1.0.0-beta2"
     }
 }
 
