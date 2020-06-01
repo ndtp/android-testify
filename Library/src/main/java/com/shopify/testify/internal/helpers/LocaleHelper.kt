@@ -22,10 +22,25 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.testify.annotation
+package com.shopify.testify.internal.helpers
 
-import androidx.annotation.LayoutRes
+import android.content.res.Resources
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import java.util.Locale
 
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-annotation class TestifyLayout(@LayoutRes val layoutId: Int)
+internal object LocaleHelper {
+
+    @JvmStatic
+    fun setTestLocale(locale: Locale) {
+        Locale.setDefault(locale)
+        setResourcesLocale(getInstrumentation().targetContext.resources, locale)
+        setResourcesLocale(Resources.getSystem(), locale)
+    }
+
+    private fun setResourcesLocale(resources: Resources, locale: Locale) {
+        val configuration = resources.configuration
+        configuration.setLocale(locale)
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(configuration, resources.displayMetrics)
+    }
+}

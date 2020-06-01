@@ -24,5 +24,4 @@
 
 package com.shopify.testify.internal.exception
 
-class ScreenshotBaselineNotDefinedException(moduleName: String, testName: String, testClass: String) :
-        Exception("\n\n*  A baseline screenshot could not be found for '$testName'.\n*  To record a baseline screenshot, run `./gradlew $moduleName:screenshotRecord -PtestClass=$testClass`\n")
+class ScreenshotBaselineNotDefinedException(moduleName: String, testName: String, testClass: String) : Exception("\n\n*  A baseline screenshot could not be found for '$testName'.\n*  To record a baseline screenshot, run `./gradlew $moduleName:screenshotRecord -PtestClass=$testClass`\n")

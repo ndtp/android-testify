@@ -27,10 +27,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import androidx.annotation.VisibleForTesting
-import kotlin.math.abs
-import kotlin.math.acos
-import kotlin.math.cos
-import kotlin.math.sin
 
 internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
 
@@ -93,7 +89,7 @@ internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
 
         @VisibleForTesting
         fun isValueDifferent(baseline: Float, current: Float, exactness: Float): Boolean {
-            val diff = abs(baseline - current)
+            val diff = Math.abs(baseline - current)
             val epsilon = 1.0f - exactness + 0.0001f
             return diff > epsilon
         }
@@ -102,13 +98,13 @@ internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
             val angle1 = Math.toRadians(degree1.toDouble())
             val angle2 = Math.toRadians(degree2.toDouble())
 
-            val x1 = cos(angle1)
-            val y1 = sin(angle1)
-            val x2 = cos(angle2)
-            val y2 = sin(angle2)
+            val x1 = Math.cos(angle1)
+            val y1 = Math.sin(angle1)
+            val x2 = Math.cos(angle2)
+            val y2 = Math.sin(angle2)
 
             val dotProduct = x1 * x2 + y1 * y2
-            return Math.toDegrees(acos(dotProduct)).toFloat()
+            return Math.toDegrees(Math.acos(dotProduct)).toFloat()
         }
     }
 }

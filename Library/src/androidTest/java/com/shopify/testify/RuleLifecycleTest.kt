@@ -66,7 +66,7 @@ class RuleLifecycleTest {
         assertExpectedOrder(3, "testMethod2")
 
         thrown.expect(RuntimeException::class.java)
-        thrown.expectMessage("com.shopify.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException: Please add @ScreenshotInstrumentation for the test 'testMethod2'")
+        thrown.expectMessage("java.lang.Exception: Please add @ScreenshotInstrumentation for the test 'testMethod2'")
 
         rule.assertSame()
     }

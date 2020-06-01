@@ -28,7 +28,6 @@ import android.app.Instrumentation
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
@@ -37,7 +36,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
-import androidx.annotation.VisibleForTesting
 import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -50,49 +48,45 @@ import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
 import com.shopify.testify.internal.compare.FuzzyCompare
 import com.shopify.testify.internal.compare.SameAsCompare
-import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
-import com.shopify.testify.internal.exception.MissingAssertSameException
-import com.shopify.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import com.shopify.testify.internal.exception.NoScreenshotsOnUiThreadException
 import com.shopify.testify.internal.exception.RootViewNotFoundException
 import com.shopify.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import com.shopify.testify.internal.exception.ScreenshotIsDifferentException
-import com.shopify.testify.internal.exception.TestMustLaunchActivityException
-import com.shopify.testify.internal.exception.ViewModificationException
-import com.shopify.testify.internal.helpers.ResourceWrapper
-import com.shopify.testify.internal.helpers.WrappedFontScale
-import com.shopify.testify.internal.helpers.WrappedLocale
+import com.shopify.testify.internal.helpers.FontScaleHelper
+import com.shopify.testify.internal.helpers.LocaleHelper
 import com.shopify.testify.internal.modification.HideCursorViewModification
 import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
+import java.util.Locale
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.Locale
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
 typealias BitmapCompare = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean
-typealias ExtrasProvider = (bundle: Bundle) -> Unit
 
 @Suppress("unused")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val activityClass: Class<T>,
-    @IdRes private var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    private val launchActivity: Boolean = true
+    launchActivity: Boolean = true
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
-    @LayoutRes
-    private var targetLayoutId: Int = NO_ID
+    constructor(activityClass: Class<T>, @IdRes rootViewId: Int) : this(activityClass) {
+        this.rootViewId = rootViewId
+    }
+
+    @IdRes private var rootViewId: Int = android.R.id.content
+    @LayoutRes private var targetLayoutId: Int = NO_ID
     @Suppress("MemberVisibilityCanBePrivate")
     lateinit var testMethodName: String
     private lateinit var testClass: String
@@ -105,6 +99,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val testContext = getInstrumentation().context
     private var activityMonitor: Instrumentation.ActivityMonitor? = null
     private var assertSameInvoked = false
+    private var defaultFontScale: Float? = null
+    private var defaultLocale: Locale? = null
     private var espressoActions: EspressoActions? = null
     private var exactness: Float? = null
     private var fontScale: Float? = null
@@ -114,8 +110,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
-    private var extrasProvider: ExtrasProvider? = null
-    private var requestedOrientation: Int = SCREEN_ORIENTATION_UNSPECIFIED
 
     @Suppress("MemberVisibilityCanBePrivate")
     val testName: String
@@ -199,9 +193,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setFontScale(fontScale: Float): ScreenshotRule<T> {
-        if (launchActivity) {
-            throw TestMustLaunchActivityException()
-        }
         this.fontScale = fontScale
         return this
     }
@@ -212,9 +203,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setLocale(newLocale: Locale): ScreenshotRule<T> {
-        if (launchActivity) {
-            throw TestMustLaunchActivityException()
-        }
         this.locale = newLocale
         return this
     }
@@ -232,7 +220,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
         require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        this.requestedOrientation = requestedOrientation
+        if (activity.requestedOrientation != requestedOrientation) {
+            val activityMonitor = getActivityMonitor()
+            getInstrumentation().addMonitor(activityMonitor)
+
+            activity.requestedOrientation = requestedOrientation
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+        }
         return this
     }
 
@@ -241,27 +235,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             activityMonitor = Instrumentation.ActivityMonitor(activityClass.name, null, true)
         }
         return activityMonitor!!
-    }
-
-    override fun afterActivityLaunched() {
-        super.afterActivityLaunched()
-        ResourceWrapper.afterActivityLaunched(activity)
-        if (activity.requestedOrientation != this.requestedOrientation) {
-            getInstrumentation().addMonitor(getActivityMonitor())
-            activity.requestedOrientation = this.requestedOrientation
-            getInstrumentation().waitForIdleSync()
-        }
-    }
-
-    override fun beforeActivityLaunched() {
-        super.beforeActivityLaunched()
-        locale?.let {
-            ResourceWrapper.addOverride(WrappedLocale(it))
-        }
-        fontScale?.let {
-            ResourceWrapper.addOverride(WrappedFontScale(it))
-        }
-        ResourceWrapper.beforeActivityLaunched()
     }
 
     override fun getActivity(): T {
@@ -284,47 +257,25 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         testMethodName = description.methodName
         testClass = "${description.testClass?.canonicalName}#${description.methodName}"
         val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
-        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
+        targetLayoutId = testifyLayout?.layoutId ?: View.NO_ID
         return super.apply(ScreenshotStatement(base), description)
     }
-
-    @get:LayoutRes
-    private val TestifyLayout.resolvedLayoutId: Int
-        get() {
-            if (this.layoutResName.isNotEmpty()) {
-                return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null)
-                    ?: NO_ID
-            }
-            return layoutId
-        }
 
     private fun checkForScreenshotInstrumentationAnnotation(description: Description) {
         val classAnnotation = description.testClass.getAnnotation(ScreenshotInstrumentation::class.java)
         if (classAnnotation == null) {
             val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
             if (methodAnnotation == null) {
-                this.throwable = MissingScreenshotInstrumentationAnnotationException(description.methodName)
+                this.throwable = Exception("Please add @ScreenshotInstrumentation for the test '${description.methodName}'")
             }
         }
     }
 
-    fun addIntentExtras(extrasProvider: ExtrasProvider): ScreenshotRule<T> {
-        this.extrasProvider = extrasProvider
-        return this
-    }
-
-    final override fun getActivityIntent(): Intent {
+    override fun getActivityIntent(): Intent {
         var intent: Intent? = super.getActivityIntent()
         if (intent == null) {
             intent = getIntent()
         }
-
-        extrasProvider?.let {
-            val bundle = Bundle()
-            it(bundle)
-            intent.extras?.putAll(bundle) ?: intent.replaceExtras(bundle)
-        }
-
         return intent
     }
 
@@ -344,25 +295,19 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    override fun launchActivity(startIntent: Intent?): T {
-        try {
-            return super.launchActivity(startIntent)
-        } catch (runtimeException: java.lang.RuntimeException) {
-            if (runtimeException.message?.contains("Could not launch activity") == true) {
-                throw ActivityNotRegisteredException(activityClass)
-            }
-            throw runtimeException
-        }
-    }
-
     fun assertSame() {
         assertSameInvoked = true
-
-        if (!launchActivity) {
-            launchActivity(activityIntent)
-        }
-
         try {
+            locale?.let {
+                defaultLocale = Locale.getDefault()
+                LocaleHelper.setTestLocale(it)
+            }
+
+            fontScale?.let {
+                defaultFontScale = testContext.resources.configuration.fontScale
+                FontScaleHelper.setTestFontScale(it)
+            }
+
             val bitmapCompare: BitmapCompare = exactness?.let {
                 FuzzyCompare(it)::compareBitmaps
             } ?: SameAsCompare()::compareBitmaps
@@ -417,10 +362,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     }
                 }
             } finally {
+                defaultLocale?.let {
+                    LocaleHelper.setTestLocale(it)
+                }
+                defaultFontScale?.let {
+                    FontScaleHelper.setTestFontScale(it)
+                }
             }
         } finally {
-            ResourceWrapper.afterTestFinished(activity)
-            requestedOrientation = SCREEN_ORIENTATION_UNSPECIFIED
             TestifyFeatures.reset()
             removeActivityMonitor()
             if (throwable != null) {
@@ -441,18 +390,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         val parentView = getRootView(activity)
         val latch = CountDownLatch(1)
 
-        var viewModificationException: Throwable? = null
         activity.runOnUiThread {
             if (targetLayoutId != NO_ID) {
                 activity.layoutInflater.inflate(targetLayoutId, parentView, true)
             }
-
-            viewModification?.let { viewModification ->
-                try {
-                    viewModification(parentView)
-                } catch (exception: Throwable) {
-                    viewModificationException = exception
-                }
+            if (viewModification != null) {
+                viewModification!!.invoke(parentView)
             }
 
             hideScrollbarsViewModification.modify(parentView)
@@ -468,10 +411,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         } else {
             assertTrue(latch.await(INFLATE_TIMEOUT_SECONDS, TimeUnit.SECONDS))
         }
-
-        viewModificationException?.let {
-            throw ViewModificationException(it)
-        }
     }
 
     private fun getRootView(activity: Activity): ViewGroup {
@@ -482,7 +421,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private fun instrumentationPrintln(str: String) {
         val b = Bundle()
         b.putString(Instrumentation.REPORT_KEY_STREAMRESULT, "\n" + str)
-        getInstrumentation().sendStatus(0, b)
+        InstrumentationRegistry.getInstrumentation().sendStatus(0, b)
     }
 
     private fun isRecordMode(): Boolean {
@@ -502,17 +441,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             base.evaluate()
             // Safeguard against accidentally omitting the call to `assertSame`
             if (!assertSameInvoked) {
-                throw MissingAssertSameException()
+                throw RuntimeException("\n\n* You must call assertSame on the ScreenshotRule *\n")
             }
         }
     }
-
-    @VisibleForTesting
-    var isDebugMode: Boolean = false
-        set(value) {
-            field = value
-            assertSameInvoked = value
-        }
 
     companion object {
         const val NO_ID = -1

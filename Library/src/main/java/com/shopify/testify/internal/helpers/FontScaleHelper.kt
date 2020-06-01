@@ -22,10 +22,22 @@
  * THE SOFTWARE.
  */
 
-package com.shopify.testify.annotation
+package com.shopify.testify.internal.helpers
 
-import androidx.annotation.LayoutRes
+import android.content.res.Resources
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-annotation class TestifyLayout(@LayoutRes val layoutId: Int)
+internal object FontScaleHelper {
+
+    fun setTestFontScale(fontScale: Float) {
+        updateResources(getInstrumentation().targetContext.resources, fontScale)
+        updateResources(Resources.getSystem(), fontScale)
+    }
+
+    private fun updateResources(resources: Resources, fontScale: Float) {
+        val config = resources.configuration
+        config.fontScale = fontScale
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(config, resources.displayMetrics)
+    }
+}

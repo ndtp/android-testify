@@ -29,12 +29,11 @@ import android.util.DisplayMetrics
 import android.util.Pair
 import android.view.WindowManager
 import com.shopify.testify.TestifyFeatures
-import com.shopify.testify.internal.extensions.languageTag
 import java.util.Locale
 
 typealias TestName = Pair<String, String>
 
-internal object DeviceIdentifier {
+object DeviceIdentifier {
 
     @JvmStatic
     val DEFAULT_FOLDER_FORMAT = "a-wxh@d-l"
@@ -77,8 +76,9 @@ internal object DeviceIdentifier {
         val n = formatter.getTestName()
 
         val stringBuilder = StringBuilder("")
-        for (element in format) {
-            when (element) {
+        for (i in 0 until format.length) {
+            val character = format[i]
+            when (character) {
                 'a' -> stringBuilder.append(a)
                 'w' -> stringBuilder.append(w)
                 'h' -> stringBuilder.append(h)
@@ -86,7 +86,7 @@ internal object DeviceIdentifier {
                 'l' -> stringBuilder.append(l)
                 'c' -> stringBuilder.append(c)
                 'n' -> stringBuilder.append(n)
-                else -> stringBuilder.append(element)
+                else -> stringBuilder.append(character)
             }
         }
 
@@ -99,7 +99,7 @@ internal object DeviceIdentifier {
             get() = getDeviceDimensions(context)
 
         internal open val androidVersion: String
-            get() = android.os.Build.VERSION.SDK_INT.toString()
+            get() = Integer.toString(android.os.Build.VERSION.SDK_INT)
 
         internal open val deviceWidth: String
             get() = dimensions.first.toString()
@@ -113,9 +113,9 @@ internal object DeviceIdentifier {
         internal open val locale: String
             get() {
                 return if (TestifyFeatures.Locale.isEnabled(context)) {
-                    Locale.getDefault().languageTag
+                    Locale.getDefault().toLanguageTag().replace("-", "_")
                 } else {
-                    Locale.getDefault().languageTag.substringBefore("_")
+                    Locale.getDefault().toLanguageTag().substringBefore("-")
                 }
             }
 

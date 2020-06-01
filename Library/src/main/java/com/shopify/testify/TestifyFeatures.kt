@@ -3,33 +3,33 @@ package com.shopify.testify
 import android.content.Context
 import android.content.pm.PackageManager
 
-enum class TestifyFeatures(internal val tag: String, private val defaultValue: Boolean = false) {
+enum class TestifyFeatures(private val tag: String, private var enabled: Boolean = false) {
 
-    ExampleFeature("testify-example", defaultValue = true),
+    ExampleFeature("testify-example", true),
     ExampleDisabledFeature("testify-disabled"),
-    Locale("testify-experimental-locale", defaultValue = true),
+    Locale("testify-experimental-locale"),
     CanvasCapture("testify-canvas-capture"),
     PixelCopyCapture("testify-experimental-capture");
 
-    private var override: Boolean? = null
+    private val defaultValue: Boolean = enabled
 
     internal fun reset() {
-        override = null
+        enabled = defaultValue
     }
 
-    fun setEnabled(enabled: Boolean = true) {
-        this.override = enabled
+    internal fun setEnabled(enabled: Boolean = true) {
+        this.enabled = enabled
     }
 
-    fun isEnabled(context: Context? = null): Boolean {
-        return override ?: context?.isEnabledInManifest ?: defaultValue
+    internal fun isEnabled(context: Context? = null): Boolean {
+        return enabled || context?.isEnabledInManifest ?: enabled
     }
 
-    private val Context?.isEnabledInManifest: Boolean?
+    private val Context.isEnabledInManifest: Boolean
         get() {
-            val applicationInfo = this?.packageManager?.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-            val metaData = applicationInfo?.metaData
-            return if (metaData?.containsKey(tag) == true) metaData.getBoolean(tag) else null
+            val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+            val metaData = applicationInfo.metaData
+            return metaData?.getBoolean(tag) ?: false
         }
 
     companion object {

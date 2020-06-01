@@ -21,11 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package com.shopify.testify.internal.capture
 
-package com.shopify.testify.annotation
+import android.app.Activity
+import android.graphics.Bitmap
+import android.view.View
 
-import androidx.annotation.LayoutRes
-
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-annotation class TestifyLayout(@LayoutRes val layoutId: Int)
+typealias Capture = (activity: Activity, targetView: View?) -> Bitmap

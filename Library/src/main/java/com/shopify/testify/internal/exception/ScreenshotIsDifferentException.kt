@@ -25,6 +25,6 @@
 package com.shopify.testify.internal.exception
 
 class ScreenshotIsDifferentException(moduleName: String, testName: String) : Exception(
-        "\n\n*  The captured screenshot is different from the baseline screenshot.\n" +
-                "*  Run `./gradlew $moduleName:screenshotPull` to view the differences.\n" +
-                "*  Run `./gradlew $moduleName:screenshotTest -PtestClass=$testName` to run this test again.\n\n")
+    "\n\n*  The captured screenshot is different from the baseline screenshot.\n" +
+            "*  Run `./gradlew $moduleName:screenshotPull` to view the differences.\n" +
+            "*  Run `./gradlew $moduleName:screenshotTest -PtestClass=$testName` to run this test again.\n\n")
