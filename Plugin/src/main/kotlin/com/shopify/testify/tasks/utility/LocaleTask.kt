@@ -30,10 +30,10 @@ import com.shopify.testify.tasks.internal.TestifyUtilityTask
 
 open class LocaleTask : TestifyUtilityTask() {
 
-    override fun getDescription() = "Displays the device locale."
+    override fun getDescription() = "Displays the locale currently set on the device"
 
     override fun taskAction() {
-        println("  Current Locale       = ${Device.locale}")
+        println("  Locale               = ${Device.locale}")
     }
 
     companion object : TaskNameProvider {

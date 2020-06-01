@@ -24,7 +24,6 @@
 
 package com.shopify.testify.internal
 
-import com.shopify.testify.internal.StreamData.ConsoleStream
 import com.shopify.testify.testifySettings
 import java.io.File
 import org.gradle.api.Project
@@ -42,6 +41,7 @@ internal val Project.screenshotDirectory: String
 
 private fun Adb.listFiles(path: String): List<String> {
     val log = this
+        .shell()
         .argument("ls $path")
         .argument("2>/dev/null")
         .execute()
@@ -52,16 +52,8 @@ private fun Adb.listFiles(path: String): List<String> {
 internal fun Project.listFailedScreenshotsWithPath(): List<String> {
     val src = screenshotDirectory
 
-    val rootDir = Adb()
-            .shell()
-            .runAs(this.testifySettings.targetPackageId)
-            .listFiles(src)
-    val files = rootDir.flatMap {
-        Adb()
-            .shell()
-            .runAs(this.testifySettings.targetPackageId)
-            .listFiles(it)
-    }
+    val rootDir = Adb().listFiles(src)
+    val files = rootDir.flatMap { Adb().listFiles(it) }
 
     if (this.isVerbose) {
         files.forEach { println(AnsiFormat.Purple, "\t$it") }
@@ -77,17 +69,13 @@ internal fun Project.listFailedScreenshots(): List<String> {
     return files.map { it.replace(src, dst) }
 }
 
-internal fun File.deleteOnDevice(targetPackageId: String) {
+internal fun File.deleteOnDevice() {
     Adb()
         .shell()
-        .runAs(targetPackageId)
         .argument("rm")
-        .argument(this.path.unixPath)
-        .stream(ConsoleStream)
+        .argument(this.path)
+        .stream(true)
         .execute()
 }
-
-private val String.unixPath: String
-    get() = this.replace('\\', '/')
 
 const val SCREENSHOT_DIR = "screenshots"

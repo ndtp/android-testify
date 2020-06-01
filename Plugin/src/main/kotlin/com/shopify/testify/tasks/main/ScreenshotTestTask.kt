@@ -27,7 +27,6 @@ import com.shopify.testify.TestifySettings
 import com.shopify.testify.internal.Adb
 import com.shopify.testify.internal.AdbParam
 import com.shopify.testify.internal.AnsiFormat
-import com.shopify.testify.internal.StreamData.ConsoleStream
 import com.shopify.testify.internal.TestOptionsBuilder
 import com.shopify.testify.internal.fromEnv
 import com.shopify.testify.internal.println
@@ -121,7 +120,7 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .testOptions(testOptions)
             .argument("-w")
             .argument("${settings.testPackageId}/${settings.testRunner}")
-            .stream(ConsoleStream)
+            .stream(true)
             .execute()
 
         if (!isRecordMode && (log.contains("FAILURES!!!") || log.contains("INSTRUMENTATION_CODE: 0") || log.contains("Process crashed while executing"))) {

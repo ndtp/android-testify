@@ -25,20 +25,16 @@ package com.shopify.testify.tasks.main
 
 import com.shopify.testify.internal.Adb
 import com.shopify.testify.internal.AnsiFormat
-import com.shopify.testify.internal.SCREENSHOT_DIR
-import com.shopify.testify.internal.StreamData.BinaryStream
+import com.shopify.testify.internal.Device
 import com.shopify.testify.internal.assurePath
 import com.shopify.testify.internal.destinationImageDirectory
-import com.shopify.testify.internal.isVerbose
 import com.shopify.testify.internal.listFailedScreenshots
-import com.shopify.testify.internal.listFailedScreenshotsWithPath
 import com.shopify.testify.internal.println
 import com.shopify.testify.internal.screenshotDirectory
 import com.shopify.testify.tasks.internal.TaskNameProvider
 import com.shopify.testify.tasks.internal.TestifyDefaultTask
 import com.shopify.testify.testifySettings
 import java.io.File
-import java.io.FileOutputStream
 
 open class ScreenshotPullTask : TestifyDefaultTask() {
 
@@ -46,6 +42,11 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
     override fun taskAction() {
         println("  Pulling screenshots:")
+
+        if (!Device.hasRootAccess) {
+            println(AnsiFormat.Red, "  Permission denied trying to access device directory. Try running 'adb root'.")
+            return
+        }
 
         val failedScreenshots = project.listFailedScreenshots()
         if (failedScreenshots.isEmpty()) {
@@ -61,13 +62,6 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         println("  Ready")
     }
 
-    private fun String.toLocalPath(): String {
-        val src = project.screenshotDirectory
-        val dst = project.destinationImageDirectory
-        val key = this.removePrefix("$src/").replace('/', File.separatorChar)
-        return "$dst${File.separatorChar}$SCREENSHOT_DIR${File.separatorChar}$key"
-    }
-
     private fun pullScreenshots() {
         val src = project.screenshotDirectory
         val dst = project.destinationImageDirectory
@@ -78,26 +72,11 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         println("  Destination          = $dst")
         println()
 
-        val failedScreenshots = project.listFailedScreenshotsWithPath()
-
-        failedScreenshots.forEach {
-
-            val localPath = it.toLocalPath()
-
-            if (project.isVerbose) {
-                println(AnsiFormat.Purple, "Copying $it to ${it.toLocalPath()}")
-            }
-
-            File(localPath).parentFile.assurePath()
-
-            Adb()
-                .execOut()
-                .runAs(project.testifySettings.targetPackageId)
-                .argument("cat")
-                .argument(it)
-                .stream(BinaryStream(FileOutputStream(it.toLocalPath())))
-                .execute()
-        }
+        Adb()
+            .argument("pull")
+            .argument(src)
+            .argument(dst)
+            .execute()
 
         Thread.sleep(project.testifySettings.pullWaitTime)
     }

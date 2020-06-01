@@ -28,37 +28,88 @@ object Device {
 
     private val version: Int
         get() {
-            return Adb().getprop("ro.build.version.sdk").toInt()
+            val result = Adb()
+                .shell()
+                .arguments(
+                    "getprop",
+                    "ro.build.version.sdk")
+                .execute()
+            return result.trim().toInt()
         }
 
-    val locale: String
+    private var language: String
+        get() = Adb()
+            .shell()
+            .arguments(
+                "getprop",
+                "persist.sys.language")
+            .execute().trim()
+        set(value) {
+            Adb()
+                .shell()
+                .arguments(
+                    "setprop",
+                    "persist.sys.language",
+                    value)
+                .execute()
+        }
+
+    private var region: String
+        get() = Adb()
+            .shell()
+            .arguments(
+                "getprop",
+                "persist.sys.country")
+            .execute().trim()
+        set(value) {
+            Adb()
+                .shell()
+                .arguments(
+                    "setprop",
+                    "persist.sys.country",
+                    value)
+                .execute()
+        }
+
+    var locale: String
         get() {
-            return when {
-                version in 21..22 -> {
-                    var language = Adb().getprop("persist.sys.language")
-                    if (language.isBlank()) {
-                        language = "en"
-                    }
-                    var region = Adb().getprop("persist.sys.country")
-                    if (region.isBlank()) {
-                        region = "US"
-                    }
-                    "$language-$region"
-                }
-                version >= 23 -> {
-                    var result = Adb().getprop("persist.sys.locale").trim().replace('_', '-')
-                    if (result.isBlank()) {
-                        result = "en-US"
-                    }
-                    return result
-                }
-                else -> "unsupported"
+            return if (version <= 22) {
+                "${language}_$region"
+            } else {
+                Adb().arguments(
+                    "shell",
+                    "getprop",
+                    "ro.product.locale")
+                    .execute().replace("-", "_")
             }
+        }
+        set(value) {
+            if (version <= 22) {
+                val (language, territory) = value.split("_")
+                this.language = language
+                this.region = territory
+                restart()
+            } else {
+                Adb()
+                    .shell()
+                    .arguments(
+                        "setprop",
+                        "persist.sys.locale",
+                        value.replace("_", "-"))
+                    .execute()
+            }
+            restart()
         }
 
     val timeZone: String
         get() {
-            return Adb().getprop("persist.sys.timezone")
+            val result = Adb()
+                .shell()
+                .arguments(
+                    "getprop",
+                    "persist.sys.timezone")
+                .execute()
+            return result.trim()
         }
 
     private val displayDensity: Int
@@ -91,10 +142,27 @@ object Device {
         return "$version-$displaySize@${displayDensity}dp-$locale"
     }
 
-    private fun Adb.getprop(prop: String): String {
-        shell()
-        argument("getprop")
-        argument(prop)
-        return execute().trim()
+    val hasRootAccess: Boolean
+        get() = Adb()
+            .shell()
+            .arguments(
+                "ls",
+                "data/data")
+            .execute().trim().isNotEmpty()
+
+    private fun restart() {
+        val adb = Adb().shell()
+        if (version <= 22) {
+            adb.arguments(
+                "setprop",
+                "ctl.restart",
+                "zygote")
+        } else {
+            adb.arguments(
+                "stop;",
+                "sleep 2;",
+                "start")
+        }
+        adb.execute()
     }
 }

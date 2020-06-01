@@ -30,7 +30,6 @@ import com.shopify.testify.internal.print
 import com.shopify.testify.internal.println
 import com.shopify.testify.tasks.internal.TaskNameProvider
 import com.shopify.testify.tasks.internal.TestifyDefaultTask
-import com.shopify.testify.testifySettings
 import java.io.File
 
 open class ScreenshotClearTask : TestifyDefaultTask() {
@@ -45,12 +44,12 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
             return
         }
 
-        println("  ${failedScreenshots.size} images to be deleted:")
+        println("  ${failedScreenshots.size} images to be deleted")
         failedScreenshots.forEach {
             val file = File(it)
-            print(AnsiFormat.Red, "    x ")
-            println(AnsiFormat.Red, file.nameWithoutExtension)
-            file.deleteOnDevice(project.testifySettings.targetPackageId)
+            print(AnsiFormat.Red, "  \u2717 ")
+            println(file.nameWithoutExtension)
+            file.deleteOnDevice()
         }
     }
 

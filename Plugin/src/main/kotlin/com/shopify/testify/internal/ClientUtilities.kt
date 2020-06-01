@@ -24,72 +24,39 @@
 
 package com.shopify.testify.internal
 
-import com.shopify.testify.internal.StreamData.BufferedStream
 import com.shopify.testify.testifySettings
-import org.gradle.api.Project
 import java.io.BufferedReader
 import java.io.File
-import java.io.InputStream
 import java.io.InputStreamReader
-import java.io.OutputStream
-
-sealed class StreamData {
-
-    abstract fun handleInputStream(inputStream: InputStream): String
-
-    /**
-     * Capture input stream from process and pass it to a StringBuilder
-     */
-    open class BufferedStream : StreamData() {
-
-        override fun handleInputStream(inputStream: InputStream): String {
-            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-            val stringBuilder = StringBuilder()
-            bufferedReader.useLines { sequence ->
-                sequence.forEach { handleOutputLine(it, stringBuilder) }
-            }
-            return stringBuilder.toString()
-        }
-
-        open fun handleOutputLine(s: String, sb: StringBuilder) {
-            sb.append(s)
-            sb.append(System.lineSeparator())
-        }
-    }
-
-    /**
-     * Use StringBuild to produce a String of the process output and print to console
-     */
-    object ConsoleStream : BufferedStream() {
-        override fun handleOutputLine(s: String, sb: StringBuilder) {
-            super.handleOutputLine(s, sb)
-            println(s)
-        }
-    }
-
-    /**
-     * Use an OutputStream to stream the process output to a client-side file
-     */
-    class BinaryStream(private val outputStream: OutputStream) : StreamData() {
-        override fun handleInputStream(inputStream: InputStream): String {
-            val buffer = ByteArray(size = 512)
-            var length: Int
-            while (inputStream.read(buffer).also { bytesWritten -> length = bytesWritten } != -1) {
-                outputStream.write(buffer, 0, length)
-            }
-            return "OK"
-        }
-    }
-}
+import org.gradle.api.Project
 
 internal val Project.destinationImageDirectory: String
-    get() = "${project.testifySettings.baselineSourceDir}${File.separatorChar}"
+    get() = "${project.testifySettings.baselineSourceDir}/"
 
-fun runProcess(command: String, streamData: StreamData = BufferedStream()): String {
+private typealias OutputHandler = (String, StringBuilder) -> Unit
+
+private val directHandler = fun(s: String, sb: StringBuilder) {
+    sb.append(s)
+    sb.append(System.lineSeparator())
+}
+
+private val streamedHandler = fun(s: String, sb: StringBuilder) {
+    directHandler(s, sb)
+    println(s)
+}
+
+fun runProcess(command: String, stream: Boolean = false): String {
     val process = Runtime.getRuntime().exec(command)
-    val result = streamData.handleInputStream(process.inputStream)
+    val reader = BufferedReader(InputStreamReader(process.inputStream))
+    val outputHandler: OutputHandler = if (stream) streamedHandler else directHandler
+
+    val stringBuilder = StringBuilder()
+    reader.useLines {
+        it.forEach { outputHandler(it, stringBuilder) }
+    }
+
     process.waitFor()
-    return result
+    return stringBuilder.toString()
 }
 
 val File.pathRelativeToCurrentDir: String
@@ -97,6 +64,8 @@ val File.pathRelativeToCurrentDir: String
 
 private val currentDir: String
     get() = runProcess("pwd")
+
+const val FILESYSTEM_TIMEOUT = 300L
 
 sealed class AnsiFormat(private val code: String) {
     object Reset : AnsiFormat("\u001B[0m")
