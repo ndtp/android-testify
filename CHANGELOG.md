@@ -1,5 +1,12 @@
 # Testify Change Log
 
+## 1.0.0-beta3 -- June 11, 2020
+
+### Library
+
+#### Bug Fixes
+- Fixed issue #151. Plugin correctly displays Locale string with an underscore, not a dash. e.g. `en_US`, not `en-US`
+
 ## 1.0.0-beta2 -- May 20, 2020
 
 ### Library
