@@ -12,7 +12,7 @@ Displays the locale currently set on the device
 ------------------------------------------------------------
 Displays the locale currently set on the device
 ------------------------------------------------------------
-  Locale               = en-US
+  Locale               = en_US
 ```
 
 ### deviceTimeZone
@@ -91,7 +91,7 @@ Displays the Testify output key for the current device. Testify uses the key as 
 Displays the Testify output key for the current device
 ------------------------------------------------------------
   Format: {api_version}-{width_in_pixels}x{height_in_pixels}@{dpi}-{language}
-  key                  = 21-768x1280@320dp-en
+  key                  = 21-768x1280@320dp-en_US
 ```
 
 ### testifySettings
@@ -127,7 +127,7 @@ Displays the Testify plugin version
 ------------------------------------------------------------
   Vendor               = Shopify
   Title                = Testify
-  Version              = 1.0.0-alpha1
+  Version              = 1.0.0-beta3
 ```
 
 ### verifyImageMagick

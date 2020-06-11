@@ -43,12 +43,12 @@ object Device {
                     if (region.isBlank()) {
                         region = "US"
                     }
-                    "$language-$region"
+                    "${language}_$region"
                 }
                 version >= 23 -> {
-                    var result = Adb().getprop("persist.sys.locale").trim().replace('_', '-')
+                    var result = Adb().getprop("persist.sys.locale").trim()
                     if (result.isBlank()) {
-                        result = "en-US"
+                        result = "en_US"
                     }
                     return result
                 }
