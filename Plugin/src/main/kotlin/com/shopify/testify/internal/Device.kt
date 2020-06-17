@@ -46,7 +46,7 @@ object Device {
                     "${language}_$region"
                 }
                 version >= 23 -> {
-                    var result = Adb().getprop("persist.sys.locale").trim()
+                    var result = Adb().getprop("persist.sys.locale").trim().replace("-", "_")
                     if (result.isBlank()) {
                         result = "en_US"
                     }
