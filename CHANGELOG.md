@@ -2,6 +2,14 @@
 
 ## 1.0.0-beta4
 
+### Plugin
+
+#### New
+
+- Added `autoImplementLibrary` member to the `testify` extension. Defaults to `true`.
+    When set to `false`, prevents the Plugin from automatically adding a Library `androidTestImplementation` dependency to your project.
+    This is useful for local debugging or if you require a different version of the library and plugin.
+
 ### Library
 
 #### Bug fixes

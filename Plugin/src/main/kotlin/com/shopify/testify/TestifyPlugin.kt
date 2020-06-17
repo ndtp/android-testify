@@ -65,10 +65,8 @@ class TestifyPlugin : Plugin<Project> {
 
             project.addDependencies()
 
-            val version = javaClass.getPackage().implementationVersion
-
-            // Do not auto-inject dependency in local configuration
-            if (version?.contains("local", ignoreCase = true) == false) {
+            if (settings.autoImplementLibrary) {
+                val version = javaClass.getPackage().implementationVersion
                 project.dependencies.add("androidTestImplementation", "com.shopify.testify:testify:$version")
             }
 
