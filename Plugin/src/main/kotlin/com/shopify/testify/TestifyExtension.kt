@@ -61,7 +61,8 @@ internal data class TestifySettings(
      */
     var targetPackageId: String,
     var installTask: String?,
-    var installAndroidTestTask: String?
+    var installAndroidTestTask: String?,
+    var autoImplementLibrary: Boolean = true
 ) {
 
     fun override(extension: TestifyExtension): TestifySettings {
@@ -94,6 +95,9 @@ internal data class TestifySettings(
         }
         if (extension.installAndroidTestTask?.isNotEmpty() == true) {
             this.installAndroidTestTask = extension.installAndroidTestTask
+        }
+        if (extension.autoImplementLibrary != null) {
+            this.autoImplementLibrary = extension.autoImplementLibrary!!
         }
         return this
     }
@@ -160,7 +164,9 @@ internal class TestifySettingsFactory {
             val targetPackageId = project.inferredTargetPackageId
             val installTask = project.inferredInstallTask
             val installAndroidTestTask = project.inferredAndroidTestInstallTask
+            val version = TestifySettingsFactory::class.java.getPackage().implementationVersion
 
+            // Defaults
             return TestifySettings(
                 baselineSourceDir = baselineSourceDir,
                 moduleName = project.name,
@@ -171,7 +177,8 @@ internal class TestifySettingsFactory {
                 testPackageId = testPackageId,
                 targetPackageId = targetPackageId,
                 installTask = installTask?.name,
-                installAndroidTestTask = installAndroidTestTask?.name
+                installAndroidTestTask = installAndroidTestTask?.name,
+                autoImplementLibrary = version?.contains("local", ignoreCase = true) == false
             )
         }
     }
@@ -189,6 +196,7 @@ open class TestifyExtension {
     var testPackageId: String? = null
     var installTask: String? = null
     var installAndroidTestTask: String? = null
+    var autoImplementLibrary: Boolean? = null
 
     companion object {
         const val NAME = "testify"
