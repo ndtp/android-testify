@@ -1,5 +1,12 @@
 # Testify Change Log
 
+## 1.0.0-beta4
+
+### Library
+
+#### Bug fixes
+- Fixed issue #153 - Orientation change will now be reliably applied regardless of how many times you invoke `setOrientation` in a single test class.
+
 ## 1.0.0-beta3 -- June 11, 2020
 
 ### Library
