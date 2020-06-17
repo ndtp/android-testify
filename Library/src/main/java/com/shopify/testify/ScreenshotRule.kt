@@ -28,7 +28,6 @@ import android.app.Instrumentation
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
@@ -60,6 +59,7 @@ import com.shopify.testify.internal.exception.ScreenshotBaselineNotDefinedExcept
 import com.shopify.testify.internal.exception.ScreenshotIsDifferentException
 import com.shopify.testify.internal.exception.TestMustLaunchActivityException
 import com.shopify.testify.internal.exception.ViewModificationException
+import com.shopify.testify.internal.helpers.OrientationHelper
 import com.shopify.testify.internal.helpers.ResourceWrapper
 import com.shopify.testify.internal.helpers.WrappedFontScale
 import com.shopify.testify.internal.helpers.WrappedLocale
@@ -103,7 +103,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification()
     private val softwareRenderViewModification = SoftwareRenderViewModification()
     private val testContext = getInstrumentation().context
-    private var activityMonitor: Instrumentation.ActivityMonitor? = null
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
     private var exactness: Float? = null
@@ -115,7 +114,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
-    private var requestedOrientation: Int = SCREEN_ORIENTATION_UNSPECIFIED
+    private var orientationHelper = OrientationHelper(activityClass)
 
     @Suppress("MemberVisibilityCanBePrivate")
     val testName: String
@@ -200,7 +199,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun setFontScale(fontScale: Float): ScreenshotRule<T> {
         if (launchActivity) {
-            throw TestMustLaunchActivityException()
+            throw TestMustLaunchActivityException("setFontScale")
         }
         this.fontScale = fontScale
         return this
@@ -213,7 +212,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun setLocale(newLocale: Locale): ScreenshotRule<T> {
         if (launchActivity) {
-            throw TestMustLaunchActivityException()
+            throw TestMustLaunchActivityException("setLocale")
         }
         this.locale = newLocale
         return this
@@ -232,25 +231,17 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
         require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        this.requestedOrientation = requestedOrientation
-        return this
-    }
-
-    private fun getActivityMonitor(): Instrumentation.ActivityMonitor {
-        if (activityMonitor == null) {
-            activityMonitor = Instrumentation.ActivityMonitor(activityClass.name, null, true)
+        if (launchActivity) {
+            throw TestMustLaunchActivityException("setOrientation")
         }
-        return activityMonitor!!
+        this.orientationHelper.requestedOrientation = requestedOrientation
+        return this
     }
 
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
-        if (activity.requestedOrientation != this.requestedOrientation) {
-            getInstrumentation().addMonitor(getActivityMonitor())
-            activity.requestedOrientation = this.requestedOrientation
-            getInstrumentation().waitForIdleSync()
-        }
+        orientationHelper.afterActivityLaunched(this)
     }
 
     override fun beforeActivityLaunched() {
@@ -262,18 +253,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             ResourceWrapper.addOverride(WrappedFontScale(it))
         }
         ResourceWrapper.beforeActivityLaunched()
-    }
-
-    override fun getActivity(): T {
-        var activity: Activity? = null
-        if (activityMonitor != null) {
-            activity = activityMonitor!!.lastActivity
-        }
-        if (activity == null) {
-            activity = super.getActivity()
-        }
-        @Suppress("UNCHECKED_CAST")
-        return activity as T
     }
 
     override fun apply(base: Statement, description: Description): Statement {
@@ -384,6 +363,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Espresso.closeSoftKeyboard()
                 }
 
+                orientationHelper.assertOrientation()
+
                 val screenshotUtility = ScreenshotUtility()
 
                 var screenshotView: View? = null
@@ -420,20 +401,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             }
         } finally {
             ResourceWrapper.afterTestFinished(activity)
-            requestedOrientation = SCREEN_ORIENTATION_UNSPECIFIED
+            orientationHelper.afterTestFinished()
             TestifyFeatures.reset()
-            removeActivityMonitor()
             if (throwable != null) {
                 //noinspection ThrowFromfinallyBlock
                 throw RuntimeException(throwable)
             }
-        }
-    }
-
-    private fun removeActivityMonitor() {
-        if (activityMonitor != null) {
-            getInstrumentation().removeMonitor(activityMonitor)
-            activityMonitor = null
         }
     }
 

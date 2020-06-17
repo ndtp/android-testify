@@ -23,9 +23,5 @@
  */
 package com.shopify.testify.internal.exception
 
-/**
- * Some features of Testify will not work correctly unless you allow the underlying ActivityTestRule
- * to launch the Activity under test on its own.
- */
-class TestMustLaunchActivityException(context: String) :
-    RuntimeException("\n\n* You must specify `launchActivity = false` on the ScreenshotRule constructor when using $context *\n")
+class UnexpectedOrientationException(errorMessage: String) :
+    RuntimeException("Could not configure the device to the requested orientation. $errorMessage")
