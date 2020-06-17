@@ -1,6 +1,6 @@
 # Testify Change Log
 
-## 1.0.0-beta4
+## 1.0.0-beta4 -- June 17, 2020
 
 ### Plugin
 
