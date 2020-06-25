@@ -29,6 +29,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Debug
 import android.os.Looper
@@ -48,6 +49,7 @@ import com.shopify.testify.internal.DeviceIdentifier
 import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
 import com.shopify.testify.internal.compare.FuzzyCompare
+import com.shopify.testify.internal.compare.RegionCompare
 import com.shopify.testify.internal.compare.SameAsCompare
 import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
@@ -82,6 +84,7 @@ typealias EspressoActions = () -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
 typealias BitmapCompare = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean
 typealias ExtrasProvider = (bundle: Bundle) -> Unit
+typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 @Suppress("unused")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
@@ -115,6 +118,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
     private var orientationHelper = OrientationHelper(activityClass)
+    private var exclusionRectProvider: ExclusionRectProvider? = null
+    private val exclusionRects = HashSet<Rect>()
 
     @Suppress("MemberVisibilityCanBePrivate")
     val testName: String
@@ -238,6 +243,21 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
+    /**
+     * Allow the test to define a set of rectangles to exclude from the comparison.
+     * Any pixels contained within the bounds of any of the provided Rects are ignored.
+     * The provided callback is invoked after the layout is fully rendered and immediately before
+     * the screenshot is captured.
+     *
+     * Note: This comparison method is significantly slower than the default.
+     *
+     * @param provider A callback of type ExclusionRectProvider
+     */
+    fun defineExclusionRects(provider: ExclusionRectProvider): ScreenshotRule<T> {
+        this.exclusionRectProvider = provider
+        return this
+    }
+
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
@@ -342,10 +362,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
 
         try {
-            val bitmapCompare: BitmapCompare = exactness?.let {
-                FuzzyCompare(it)::compareBitmaps
-            } ?: SameAsCompare()::compareBitmaps
-
             try {
                 if (isRunningOnUiThread()) {
                     throw NoScreenshotsOnUiThreadException()
@@ -372,6 +388,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     screenshotView = screenshotViewProvider!!.invoke(getRootView(activity))
                 }
 
+                exclusionRectProvider?.let { provider ->
+                    provider(getRootView(activity), exclusionRects)
+                }
+
                 val outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), DEFAULT_NAME_FORMAT)
                 val currentBitmap = screenshotUtility.createBitmapFromActivity(activity, outputFileName, screenshotView)
                 assertNotNull("Failed to capture bitmap from activity", currentBitmap)
@@ -388,6 +408,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         throw ScreenshotBaselineNotDefinedException(getModuleName(), testName, fullyQualifiedTestPath)
                     }
 
+                val bitmapCompare: BitmapCompare = when {
+                    exclusionRects.isNotEmpty() -> RegionCompare(exclusionRects)::compareBitmaps
+                    exactness != null -> FuzzyCompare(exactness!!)::compareBitmaps
+                    else -> SameAsCompare()::compareBitmaps
+                }
+
                 if (bitmapCompare(baselineBitmap, currentBitmap!!)) {
                     assertTrue("Could not delete cached bitmap $testName", screenshotUtility.deleteBitmap(activity, outputFileName))
                 } else {
@@ -400,6 +426,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             } finally {
             }
         } finally {
+            exclusionRects.clear()
             ResourceWrapper.afterTestFinished(activity)
             orientationHelper.afterTestFinished()
             TestifyFeatures.reset()
