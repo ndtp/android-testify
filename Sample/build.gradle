@@ -45,22 +45,22 @@ android {
 }
 
 dependencies {
-    implementation depends.androidx.appcompat
-    implementation depends.androidx.constraintlayout
-    implementation depends.androidx.core_ktx
-    implementation depends.google.material
-    implementation depends.kotlin.stdlib8
+    implementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
+    implementation "androidx.constraintlayout:constraintlayout:${versions.androidx.constraintLayout}"
+    implementation "androidx.core:core-ktx:${versions.androidx.coreKtx}"
+    implementation "com.google.android.material:material:${versions.material}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
 
     androidTestImplementation project(":Library")
-    androidTestImplementation depends.androidx.test.espresso.contrib
-    androidTestImplementation depends.androidx.test.espresso.core
-    androidTestImplementation depends.androidx.test.junit
-    androidTestImplementation depends.androidx.test.rules
-    androidTestImplementation depends.androidx.test.runner
-    androidTestImplementation depends.mockito.android
-    androidTestImplementation depends.mockito.kotlin
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.androidx.test.espresso}"
+    androidTestImplementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
+    androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"
+    androidTestImplementation "androidx.test:rules:${versions.androidx.test.rules}"
+    androidTestImplementation "androidx.test:runner:${versions.androidx.test.runner}"
+    androidTestImplementation "org.mockito:mockito-android:${versions.mockitoAndroid}"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.mockitokotlin}"
 }

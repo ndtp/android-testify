@@ -7,7 +7,7 @@ configurations {
 }
 
 dependencies {
-    ktlint depends.kotlin.lint.main
+    ktlint "com.pinterest:ktlint:${versions.ktlint}"
     // additional 3rd party ruleset(s) can be specified here
     // just add them to the classpath (e.g. ktlint 'groupId:artifactId:version') and
     // ktlint will pick them up
