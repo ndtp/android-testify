@@ -1,12 +1,22 @@
 # Testify Change Log
 
-## 1.0.0-beta5 -- June 26, 2020
+## 1.0.0-beta5
 
 ### Library
 
 #### New
 
 - Add defineExclusionRects method to ScreenshotRule. You can now use defineExclusionRects to exclude regions from a bitmap comparison.
+
+### Updates
+
+- Android Gradle Plugin to 4.0.0
+- AndroidX Junit to 1.1.1
+- AndroidX Test Rules to 1.2.0
+- Kotlin to 1.3.72
+- Mockito to 3.3.3
+
+---
 
 ## 1.0.0-beta4 -- June 17, 2020
 

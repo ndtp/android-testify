@@ -139,7 +139,7 @@ private val Project.inferredTargetPackageId: String
 
         // For apks without a debug variant, use the default applicationId
         if (targetPackageId.isNullOrEmpty()) {
-            targetPackageId = this.android.defaultConfig?.applicationId
+            targetPackageId = this.android.defaultConfig.applicationId
         }
 
         // If we still do not have a targetPackageId, it is likely a library project
@@ -157,7 +157,7 @@ internal class TestifySettingsFactory {
 
         fun create(project: Project): TestifySettings {
             val android = project.android
-            val assetsSet = android.sourceSets?.getByName("""androidTest""")?.assets
+            val assetsSet = android.sourceSets.getByName("""androidTest""").assets
             val baselineSourceDir = "${assetsSet?.srcDirs?.first()?.path}"
             val testRunner = android.defaultConfig.testInstrumentationRunner
             val testPackageId = project.inferredDefaultTestVariantId
