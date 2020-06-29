@@ -36,6 +36,7 @@ import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.TestifyFeatures
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
+import com.shopify.testify.extensions.boundingBox
 import com.shopify.testify.sample.test.TestHarnessActivity
 import com.shopify.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import com.shopify.testify.sample.test.clientDetailsView
@@ -253,6 +254,29 @@ class ScreenshotRuleExampleTests {
     fun setOrientation() {
         rule
             .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
+            .assertSame()
+    }
+
+    /**
+     * Demonstrates how to exclude a rectangular region from the comparison.
+     * This can be useful if some content of your View is dynamic or not repeatable under test.
+     * Note that this comparison mechanism is slower than the default.
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun exclusions() {
+        rule
+            .setViewModifications {
+                val r = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
+                val g = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
+                val b = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
+                it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#$r$g$b"))
+            }
+            .defineExclusionRects { rootView, exclusionRects ->
+                val card = rootView.findViewById<View>(R.id.info_card)
+                exclusionRects.add(card.boundingBox)
+            }
             .assertSame()
     }
 }

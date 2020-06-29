@@ -1,5 +1,13 @@
 # Testify Change Log
 
+## 1.0.0-beta5 -- June 26, 2020
+
+### Library
+
+#### New
+
+- Add defineExclusionRects method to ScreenshotRule. You can now use defineExclusionRects to exclude regions from a bitmap comparison.
+
 ## 1.0.0-beta4 -- June 17, 2020
 
 ### Plugin
