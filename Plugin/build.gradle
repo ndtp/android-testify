@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath depends.kotlin.gradleplugin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
     }
 }
 
@@ -30,7 +30,7 @@ test {
 dependencies {
     implementation "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
     implementation gradleApi()
-    implementation depends.kotlin.stdlib8
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
 }
 
 repositories {

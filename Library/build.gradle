@@ -11,7 +11,7 @@ def VERSION_NAME = "$project.versions.testify"
 version = VERSION_NAME
 
 android {
-    compileSdkVersion coreVersions.shopify.compileSdk
+    compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
         abortOnError true
@@ -22,8 +22,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion coreVersions.shopify.minSdk
-        targetSdkVersion coreVersions.shopify.targetSdk
+        minSdkVersion coreVersions.minSdk
+        targetSdkVersion coreVersions.targetSdk
         versionCode 1
         versionName VERSION_NAME
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -51,21 +51,21 @@ android {
     }
 
     dependencies {
-        implementation depends.androidx.test.espresso.core
-        implementation depends.androidx.test.rules
-        implementation depends.androidx.test.runner
-        implementation depends.kotlin.stdlib8
+        implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
+        implementation "androidx.test:rules:${versions.androidx.test.rules}"
+        implementation "androidx.test:runner:${versions.androidx.test.runner}"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
 
-        testImplementation depends.mockito.v2
-        testImplementation depends.mockito.kotlin
+        testImplementation "org.mockito:mockito-core:${versions.mockito2}"
+        testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.mockitokotlin}"
 
-        androidTestImplementation depends.androidx.test.junit
-        androidTestImplementation depends.androidx.test.runner
-        androidTestImplementation depends.androidx.test.rules
-        androidTestImplementation depends.androidx.test.espresso.core
-        androidTestImplementation depends.androidx.test.espresso.contrib
-        androidTestImplementation depends.google.material
-        androidTestImplementation depends.androidx.appcompat
+        androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"
+        androidTestImplementation "androidx.test:runner:${versions.androidx.test.runner}"
+        androidTestImplementation "androidx.test:rules:${versions.androidx.test.rules}"
+        androidTestImplementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
+        androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.androidx.test.espresso}"
+        androidTestImplementation "com.google.android.material:material:${versions.material}"
+        androidTestImplementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
     }
 }
 
