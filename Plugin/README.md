@@ -127,7 +127,10 @@ Displays the Testify plugin version
 ------------------------------------------------------------
   Vendor               = Shopify
   Title                = Testify
-  Version              = 1.0.0-beta4
+  Version              = 1.0.0-beta5
+```
+
+### verifyImageMagick
 
 Verify that the ImageMagick tools required for diff images are installed. The `generateDiffImages` command can create high-contrast images to make subtle image differences easier to spot. To do this, Testify uses the [ImageMagick](https://www.imagemagick.org/) command.
 
