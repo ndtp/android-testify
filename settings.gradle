@@ -1,3 +1,5 @@
 include ':Sample'
 include ':Plugin'
 include ':Library'
+
+project(':Plugin').projectDir = new File("./Plugins/Gradle")

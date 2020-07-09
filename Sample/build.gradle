@@ -4,7 +4,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath files("${project.rootDir.path}/Plugin/jar/Plugin-local.jar")
+        classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
     }
 }
 
