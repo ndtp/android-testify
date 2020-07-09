@@ -1,0 +1,3 @@
+gradlew linguist-generated
+gradlew.bat linguist-generated
+**/gradle/** linguist-generated

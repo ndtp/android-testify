@@ -1,0 +1,23 @@
+<idea-plugin>
+    <id>com.shopify.testify</id>
+    <name>Android Testify - Screenshot Instrumentation Tests</name>
+    <vendor email="support@shopify.com" url="http://testify.dev">Shopify</vendor>
+
+    <description><![CDATA[
+Testify screenshot tests are built on top of Android Instrumentation tests and so already integrate seamlessly with existing test suites. Screenshots can be captured directly from within Android Studio or using the Gradle command-line tools.
+
+However, the current Android Studio support relies fully on the fact that Testify tests extend ActivityTestRule and can be invoked using the built-in support for running instrumentation tests with various commands (notably sidebar icons) in Android Studio. These are limited to run and debug commands. Android Studio has no concept of recording or pulling screenshots from the device. Thus, it requires developers to drop to the Gradle Panel or command-line to fully use Testify. This project will enhance the developer experience by adding fully integrated IDE UI for all relevant Testify commands.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    <depends>com.intellij.modules.androidstudio</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider
+                language="kotlin"
+                implementationClass="com.shopify.testify.extensions.RecordMarkerProvider"/>
+    </extensions>
+
+</idea-plugin>
