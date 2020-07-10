@@ -6,3 +6,4 @@ captures
 *.iml
 projectFilesBackup/
 .DS_Store
+Plugins/Intellij/out
