@@ -25,7 +25,6 @@ package com.shopify.testify
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.psi.PsiMethod
 import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -50,7 +49,7 @@ val UElement.baselineImageName: String
 
 val UElement.methodName: String
     get() {
-        val methodName = (this.sourcePsi as? KtNamedFunction)?.name ?: (this.sourcePsi as? PsiMethod)?.name
+        val methodName = (this.sourcePsi as? KtNamedFunction)?.name
         return methodName ?: "unknown"
     }
 
