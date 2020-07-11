@@ -23,13 +23,13 @@
  */
 package com.shopify.testify.actions.screenshot
 
-import com.intellij.ide.DataManager
 import com.intellij.ide.actions.runAnything.RunAnythingAction
 import com.intellij.ide.actions.runAnything.RunAnythingContext
 import com.intellij.ide.actions.runAnything.activity.RunAnythingProvider
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.task.TaskData
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
@@ -66,8 +66,7 @@ abstract class BaseScreenshotAction(private val anchorElement: UElement) : AnAct
     final override fun actionPerformed(event: AnActionEvent) {
         val project = event.project as Project
         val anchorPsi = anchorElement.sourcePsi
-        val dataManager = DataManager.getInstance()
-        val dataContext = dataManager.dataContext
+        val dataContext = SimpleDataContext.getProjectContext(project)
         val executionContext = dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT)
             ?: RunAnythingContext.ProjectContext(project)
         val context = createContext(project, executionContext, dataContext)
