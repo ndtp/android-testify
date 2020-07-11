@@ -23,6 +23,7 @@
  */
 package com.shopify.testify.actions.utility
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
@@ -37,13 +38,19 @@ class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorEle
     override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
         val immediate: Boolean = (modifiers and ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK
         if (immediate) {
-            virtualFile.delete(this)
+            virtualFile.deleteSafely(this)
             return
         }
 
         val shortName = virtualFile.presentableName
         if (ConfirmationDialogWrapper(dialogTitle = "Delete", prompt = "Delete file $shortName?").showAndGet()) {
-            virtualFile.delete(this)
+            virtualFile.deleteSafely(this)
+        }
+    }
+
+    private fun VirtualFile.deleteSafely(requestor: Any) {
+        ApplicationManager.getApplication().runWriteAction {
+            this.delete(requestor)
         }
     }
 }
