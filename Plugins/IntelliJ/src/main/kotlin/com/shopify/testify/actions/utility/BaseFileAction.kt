@@ -27,13 +27,13 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiElement
 import com.intellij.psi.search.FilenameIndex
 import com.shopify.testify.baselineImageName
 import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtFile
-import org.jetbrains.uast.UElement
 
-abstract class BaseFileAction(protected val anchorElement: UElement) : AnAction() {
+abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnAction() {
 
     val baselineImageName = anchorElement.baselineImageName
     abstract val menuText: String
@@ -56,7 +56,7 @@ abstract class BaseFileAction(protected val anchorElement: UElement) : AnAction(
     }
 
     private fun AnActionEvent.findBaselineImage(): VirtualFile? {
-        val psiFile = anchorElement.sourcePsi?.containingFile
+        val psiFile = anchorElement.containingFile
         if (psiFile is KtFile && psiFile.module != null) {
             val files = FilenameIndex.getVirtualFilesByName(project, baselineImageName, psiFile.module!!.moduleContentScope)
             if (files.isNotEmpty()) {

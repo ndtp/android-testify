@@ -36,6 +36,7 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.psi.PsiElement
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.util.containers.MultiMap
@@ -50,10 +51,9 @@ import org.jetbrains.plugins.gradle.service.project.GradleProjectResolverUtil
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
 import org.jetbrains.plugins.gradle.util.GradleUtil
-import org.jetbrains.uast.UElement
 
 @Suppress("UnstableApiUsage")
-abstract class BaseScreenshotAction(private val anchorElement: UElement) : AnAction() {
+abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
 
     abstract val gradleCommand: String
     abstract val menuText: String
@@ -65,14 +65,13 @@ abstract class BaseScreenshotAction(private val anchorElement: UElement) : AnAct
 
     final override fun actionPerformed(event: AnActionEvent) {
         val project = event.project as Project
-        val anchorPsi = anchorElement.sourcePsi
         val dataContext = SimpleDataContext.getProjectContext(project)
         val executionContext = dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT)
             ?: RunAnythingContext.ProjectContext(project)
         val context = createContext(project, executionContext, dataContext)
         val executor = context.executor
         val workingDirectory = context.externalProjectPath ?: ""
-        val arguments = (anchorPsi as? KtNamedFunction)?.testifyMethodInvocationPath
+        val arguments = (anchorElement as? KtNamedFunction)?.testifyMethodInvocationPath
         val fullCommandLine = ":${event.moduleName}:$gradleCommand -PtestClass=$arguments"
 
         GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)

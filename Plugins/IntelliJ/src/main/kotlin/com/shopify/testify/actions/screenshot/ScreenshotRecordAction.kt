@@ -23,9 +23,9 @@
  */
 package com.shopify.testify.actions.screenshot
 
-import org.jetbrains.uast.UElement
+import com.intellij.psi.PsiElement
 
-class ScreenshotRecordAction(anchorElement: UElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotRecordAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
     override val gradleCommand: String
         get() = "screenshotRecord"

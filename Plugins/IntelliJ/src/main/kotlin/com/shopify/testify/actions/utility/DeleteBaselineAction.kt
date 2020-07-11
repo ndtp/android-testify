@@ -25,11 +25,11 @@ package com.shopify.testify.actions.utility
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiElement
 import com.shopify.testify.ConfirmationDialogWrapper
-import org.jetbrains.uast.UElement
 import java.awt.event.ActionEvent
 
-class DeleteBaselineAction(anchorElement: UElement) : BaseFileAction(anchorElement) {
+class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
 
     override val menuText: String
         get() = "Delete baseline image ${baselineImageName.replace("_", "__")}"

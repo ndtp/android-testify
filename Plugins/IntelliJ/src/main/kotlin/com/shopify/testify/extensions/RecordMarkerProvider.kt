@@ -64,7 +64,7 @@ class RecordMarkerProvider : LineMarkerProvider {
             anchorElement.textRange,
             ICON,
             TooltipProvider { "Android Testify Commands" },
-            NavHandler(element.toUElement() as UMethod),
+            NavHandler(element),
             GutterIconRenderer.Alignment.RIGHT)
     }
 
