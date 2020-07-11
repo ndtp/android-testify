@@ -1,0 +1,68 @@
+name: Build Library
+on: [push, pull_request]
+
+jobs:
+
+  # Run Gradle Wrapper Validation Action to verify the wrapper's checksum
+  gradleValidation:
+    name: Gradle Wrapper
+    runs-on: ubuntu-latest
+    steps:
+
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+
+      # Validate wrapper
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+  instrumentationTests:
+    name: Instrumentation Tests
+    runs-on: macos-latest
+    steps:
+
+    - name: Fetch Sources
+      uses: actions/checkout@v2
+
+    - name: Validate Build
+      run: ./gradlew :Library:assemble
+
+    - name: Run Instrumentation Tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        profile: pixel_2
+        script: ./gradlew :Library:connectedDebugAndroidTest
+
+  test:
+    name: Test Library
+    needs: gradleValidation
+    runs-on: ubuntu-latest
+    steps:
+
+      # Check out current repository
+      - name: Fetch Sources
+        uses: actions/checkout@v2
+
+      # Setup Java 1.8 environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      # Cache Gradle dependencies
+      - name: Setup Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      # Run ktlint
+      - name: Run KtLint
+        run: ./gradlew :Library:ktlint
+
+      # Run test Gradle task
+      - name: Run JVM Tests
+        run: ./gradlew :Library:test

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+#### Changes
+
+- Replace Travis CI with GitHub Actions.
+
 ### Library
 
 #### Changes
@@ -10,7 +14,7 @@
     The CIELAB color space (also known as CIE L* a* b* or sometimes abbreviated as simply "Lab" color space) is a color space defined by the International Commission on Illumination (CIE) in 1976.
     It expresses color as three values: L* for the lightness from black (0) to white (100), a* from green (−) to red (+), and b* from blue (−) to yellow (+).
     CIELAB was designed so that the same amount of numerical change in these values corresponds to roughly the same amount of visually perceived change.
-    The CIE calls their distance metric ΔE*ab where delta is a Greek letter often used to denote difference, and E stands for Empfindung; German for "sensation".
+    The CIE calls their distance metric ΔE * ab where delta is a Greek letter often used to denote difference, and E stands for Empfindung; German for "sensation".
     If deltaE < 1 then the difference can't recognized by human eyes.
 
 ### Plugin
