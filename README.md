@@ -93,7 +93,7 @@ Clear any baseline images that may be remaining on your emulator.
 ./gradlew :screenshotClear
 ```
 
-There are a variety of additional Gradle commands available through the Testify plugin. For advance usage, please refer to the [Plugin guide](Plugin/README.md).
+There are a variety of additional Gradle commands available through the Testify plugin. For advance usage, please refer to the [Plugin guide](Plugins/Gradle/README.md).
 
 # License
 

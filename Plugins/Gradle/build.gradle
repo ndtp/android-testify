@@ -188,4 +188,4 @@ task assembleLocal(description: 'Assembles the outputs of this project for use l
     copyLocal.mustRunAfter build
 }
 
-apply from: '../ktlint.gradle'
+apply from: '../../ktlint.gradle'

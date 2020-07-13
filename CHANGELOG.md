@@ -1,5 +1,15 @@
 # Testify Change Log
 
+## Unreleased
+
+### Plugin
+
+#### Changed
+
+- The gradle plugin has moved to `Plugins/Gradle`
+
+---
+
 ## 1.0.0-beta5
 
 ### Library
