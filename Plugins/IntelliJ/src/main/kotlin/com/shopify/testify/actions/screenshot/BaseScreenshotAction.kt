@@ -23,37 +23,24 @@
  */
 package com.shopify.testify.actions.screenshot
 
-import com.intellij.ide.DataManager
 import com.intellij.ide.actions.runAnything.RunAnythingAction
 import com.intellij.ide.actions.runAnything.RunAnythingContext
 import com.intellij.ide.actions.runAnything.activity.RunAnythingProvider
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.DataContext
-import com.intellij.openapi.externalSystem.model.project.ModuleData
-import com.intellij.openapi.externalSystem.model.task.TaskData
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.roots.ProjectRootManager
-import com.intellij.psi.util.CachedValueProvider
-import com.intellij.psi.util.CachedValuesManager
-import com.intellij.util.containers.MultiMap
-import com.shopify.testify.actions.Context
-import com.shopify.testify.actions.getGradleTasksMap
+import com.intellij.psi.PsiElement
 import com.shopify.testify.methodName
 import com.shopify.testify.moduleName
 import com.shopify.testify.testifyMethodInvocationPath
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.plugins.gradle.action.GradleExecuteTaskAction
-import org.jetbrains.plugins.gradle.service.project.GradleProjectResolverUtil
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
-import org.jetbrains.plugins.gradle.util.GradleUtil
-import org.jetbrains.uast.UElement
 
-@Suppress("UnstableApiUsage")
-abstract class BaseScreenshotAction(private val anchorElement: UElement) : AnAction() {
+abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
 
     abstract val gradleCommand: String
     abstract val menuText: String
@@ -65,15 +52,11 @@ abstract class BaseScreenshotAction(private val anchorElement: UElement) : AnAct
 
     final override fun actionPerformed(event: AnActionEvent) {
         val project = event.project as Project
-        val anchorPsi = anchorElement.sourcePsi
-        val dataManager = DataManager.getInstance()
-        val dataContext = dataManager.dataContext
-        val executionContext = dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT)
-            ?: RunAnythingContext.ProjectContext(project)
-        val context = createContext(project, executionContext, dataContext)
-        val executor = context.executor
-        val workingDirectory = context.externalProjectPath ?: ""
-        val arguments = (anchorPsi as? KtNamedFunction)?.testifyMethodInvocationPath
+        val dataContext = SimpleDataContext.getProjectContext(project)
+        val executionContext = dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT) ?: RunAnythingContext.ProjectContext(project)
+        val workingDirectory: String = executionContext.getProjectPath() ?: ""
+        val executor = RunAnythingAction.EXECUTOR_KEY.getData(dataContext)
+        val arguments = (anchorElement as? KtNamedFunction)?.testifyMethodInvocationPath
         val fullCommandLine = ":${event.moduleName}:$gradleCommand -PtestClass=$arguments"
 
         GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)
@@ -86,6 +69,7 @@ abstract class BaseScreenshotAction(private val anchorElement: UElement) : AnAct
         }
     }
 
+    @Suppress("UnstableApiUsage")
     private fun RunAnythingContext.getProjectPath() = when (this) {
         is RunAnythingContext.ProjectContext ->
             GradleSettings.getInstance(project).linkedProjectsSettings.firstOrNull()
@@ -94,35 +78,5 @@ abstract class BaseScreenshotAction(private val anchorElement: UElement) : AnAct
         is RunAnythingContext.ModuleContext -> ExternalSystemApiUtil.getExternalProjectPath(module)
         is RunAnythingContext.RecentDirectoryContext -> path
         is RunAnythingContext.BrowseRecentDirectoryContext -> null
-    }
-
-    private fun RunAnythingContext.getGradlePath(project: Project) = when (this) {
-        is RunAnythingContext.ProjectContext -> ":"
-        is RunAnythingContext.ModuleContext -> getGradlePath(module)
-        is RunAnythingContext.RecentDirectoryContext -> GradleUtil.findGradleModuleData(project, path)
-            ?.let { dataNode -> getGradlePath(dataNode.data) }
-        is RunAnythingContext.BrowseRecentDirectoryContext -> null
-    }
-
-    private fun getGradlePath(module: ModuleData) =
-        GradleProjectResolverUtil.getGradlePath(module)
-            .removeSuffix(":")
-
-    private fun getGradlePath(module: Module) =
-        GradleProjectResolverUtil.getGradlePath(module)
-            ?.removeSuffix(":")
-
-    private fun fetchTasks(project: Project): Map<String, MultiMap<String, TaskData>> {
-        return CachedValuesManager.getManager(project).getCachedValue(project) {
-            CachedValueProvider.Result.create(getGradleTasksMap(project), ProjectRootManager.getInstance(project))
-        }
-    }
-
-    private fun createContext(project: Project, context: RunAnythingContext, dataContext: DataContext): Context {
-        val externalProjectPath = context.getProjectPath()
-        val gradlePath = context.getGradlePath(project)
-        val tasks = fetchTasks(project)[externalProjectPath] ?: MultiMap()
-        val executor = RunAnythingAction.EXECUTOR_KEY.getData(dataContext)
-        return Context(context, project, gradlePath, externalProjectPath, tasks, executor)
     }
 }

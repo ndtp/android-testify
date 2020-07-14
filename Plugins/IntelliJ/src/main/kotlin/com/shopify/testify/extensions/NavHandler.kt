@@ -43,10 +43,9 @@ import com.shopify.testify.actions.screenshot.ScreenshotRecordAction
 import com.shopify.testify.actions.screenshot.ScreenshotTestAction
 import com.shopify.testify.actions.utility.DeleteBaselineAction
 import com.shopify.testify.actions.utility.RevealBaselineAction
-import org.jetbrains.uast.UMethod
 import java.awt.event.MouseEvent
 
-class NavHandler(private val anchorElement: UMethod) : GutterIconNavigationHandler<PsiElement> {
+class NavHandler(private val anchorElement: PsiElement) : GutterIconNavigationHandler<PsiElement> {
 
     override fun navigate(e: MouseEvent?, nameIdentifier: PsiElement) {
         val listOwner = nameIdentifier.parent
@@ -59,14 +58,14 @@ class NavHandler(private val anchorElement: UMethod) : GutterIconNavigationHandl
                 editor.caretModel.moveToOffset(nameIdentifier.textOffset)
                 val file: PsiFile? = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
                 if (file != null && virtualFile == file.virtualFile) {
-                    val popup: JBPopup? = createActionGroupPopup(anchorElement, containingFile, project, editor)
+                    val popup: JBPopup? = createActionGroupPopup(anchorElement, project)
                     popup?.show(RelativePoint(e!!))
                 }
             }
         }
     }
 
-    private fun createActionGroupPopup(anchorElement: UMethod, file: PsiFile, project: Project, editor: Editor): JBPopup? {
+    private fun createActionGroupPopup(anchorElement: PsiElement, project: Project): JBPopup? {
 
         val group = DefaultActionGroup(
             ScreenshotTestAction(anchorElement),

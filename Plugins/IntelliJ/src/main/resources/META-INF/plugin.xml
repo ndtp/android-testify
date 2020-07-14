@@ -1,4 +1,4 @@
-<idea-plugin>
+<idea-plugin require-restart="false">
     <id>com.shopify.testify</id>
     <name>Android Testify - Screenshot Instrumentation Tests</name>
     <vendor email="support@shopify.com" url="http://testify.dev">Shopify</vendor>

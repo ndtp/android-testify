@@ -25,11 +25,10 @@ package com.shopify.testify
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
-import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.uast.UElement
 
 val AnActionEvent.moduleName: String
     get() {
@@ -37,10 +36,10 @@ val AnActionEvent.moduleName: String
         return (psiFile as? KtFile)?.module?.name ?: ""
     }
 
-val UElement.baselineImageName: String
+val PsiElement.baselineImageName: String
     get() {
         var imageName = "unknown"
-        (this.sourcePsi as? KtNamedFunction)?.let {
+        (this as? KtNamedFunction)?.let {
             val c = it.fqName?.parent()?.shortName()
             val m = it.fqName?.shortName()
             imageName = "${c}_$m.png"
@@ -48,9 +47,9 @@ val UElement.baselineImageName: String
         return imageName
     }
 
-val UElement.methodName: String
+val PsiElement.methodName: String
     get() {
-        val methodName = (this.sourcePsi as? KtNamedFunction)?.name ?: (this.sourcePsi as? PsiMethod)?.name
+        val methodName = (this as? KtNamedFunction)?.name
         return methodName ?: "unknown"
     }
 

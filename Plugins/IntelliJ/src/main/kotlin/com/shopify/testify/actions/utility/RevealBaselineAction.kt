@@ -26,10 +26,10 @@ package com.shopify.testify.actions.utility
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import org.jetbrains.uast.UElement
+import com.intellij.psi.PsiElement
 import java.awt.event.ActionEvent
 
-class RevealBaselineAction(anchorElement: UElement) : BaseFileAction(anchorElement) {
+class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
     override val menuText: String
         get() = "Reveal baseline image ${baselineImageName.replace("_", "__")}"
 

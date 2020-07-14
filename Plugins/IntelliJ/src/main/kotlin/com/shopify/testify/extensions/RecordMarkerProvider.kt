@@ -33,8 +33,6 @@ import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.source.getPsi
-import org.jetbrains.uast.UMethod
-import org.jetbrains.uast.toUElement
 
 typealias TooltipProvider = Function<PsiElement?, String?>
 
@@ -64,7 +62,7 @@ class RecordMarkerProvider : LineMarkerProvider {
             anchorElement.textRange,
             ICON,
             TooltipProvider { "Android Testify Commands" },
-            NavHandler(element.toUElement() as UMethod),
+            NavHandler(element),
             GutterIconRenderer.Alignment.RIGHT)
     }
 

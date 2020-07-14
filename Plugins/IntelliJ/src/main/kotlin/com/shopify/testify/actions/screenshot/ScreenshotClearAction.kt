@@ -23,9 +23,9 @@
  */
 package com.shopify.testify.actions.screenshot
 
-import org.jetbrains.uast.UElement
+import com.intellij.psi.PsiElement
 
-class ScreenshotClearAction(anchorElement: UElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotClearAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
     override val gradleCommand: String
         get() = "screenshotClear"
