@@ -10,6 +10,13 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
+This issue relates to:
+- [ ] The Kotlin library
+- [ ] The Gradle plugin
+- [ ] The IntelliJ Platform plugin
+- [ ] The sample code
+- [ ] The documentation
+
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
