@@ -10,7 +10,7 @@ assignees: ''
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-This issue relates to:
+This feedback relates to:
 - [ ] The Kotlin library
 - [ ] The Gradle plugin
 - [ ] The IntelliJ Platform plugin
