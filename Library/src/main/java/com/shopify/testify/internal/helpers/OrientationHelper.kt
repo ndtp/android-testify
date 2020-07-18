@@ -114,9 +114,13 @@ internal class OrientationHelper<T : Activity>(
             throw UnexpectedOrientationException("Failed to apply requested rotation.")
         }
 
-        // Wait for the activity to fully resume
-        if (!lifecycleLatch.await(1, TimeUnit.SECONDS)) {
-            throw UnexpectedOrientationException("Activity did not resume.")
+        try {
+            // Wait for the activity to fully resume
+            if (!lifecycleLatch.await(5, TimeUnit.SECONDS)) {
+                throw UnexpectedOrientationException("Activity did not resume.")
+            }
+        } finally {
+            ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(::lifecycleCallback)
         }
     }
 }
