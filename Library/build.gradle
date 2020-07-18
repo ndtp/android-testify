@@ -55,6 +55,7 @@ android {
         implementation "androidx.test:rules:${versions.androidx.test.rules}"
         implementation "androidx.test:runner:${versions.androidx.test.runner}"
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+        implementation "com.github.ajalt:colormath:${versions.colormath}"
 
         testImplementation "org.mockito:mockito-core:${versions.mockito2}"
         testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.mockitokotlin}"

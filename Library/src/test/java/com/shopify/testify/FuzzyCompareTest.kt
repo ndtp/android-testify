@@ -23,89 +23,133 @@
  */
 package com.shopify.testify
 
-import com.shopify.testify.internal.compare.FuzzyCompare
-import org.junit.Assert.assertFalse
+import com.github.ajalt.colormath.LAB
+import com.github.ajalt.colormath.RGB
+import com.shopify.testify.internal.compare.colorspace.calculateDeltaE
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
+import java.lang.Long.parseLong
+import kotlin.random.Random
 
 class FuzzyCompareTest {
 
     @Test
-    fun huesIdentical() {
-        for (hue in 0..359) {
-            assertFalse(FuzzyCompare.isHueDifferent(hue.toFloat(), hue.toFloat(), 1.0f))
+    fun identicalLab() {
+        assertEquals(0.0, calculateDeltaE("000000".lab, "000000".lab), 0.1)
+        assertEquals(0.0, calculateDeltaE("0000FF".lab, "0000FF".lab), 0.1)
+        assertEquals(0.0, calculateDeltaE("00FF00".lab, "00FF00".lab), 0.1)
+        assertEquals(0.0, calculateDeltaE("ABCDEF".lab, "ABCDEF".lab), 0.1)
+        assertEquals(0.0, calculateDeltaE("FF0000".lab, "FF0000".lab), 0.1)
+        assertEquals(0.0, calculateDeltaE("FFFFFF".lab, "FFFFFF".lab), 0.1)
+    }
+
+    @Test
+    fun differenceLab() {
+        assertEquals(0.2, calculateDeltaE("0F0F0F".lab, "0E0E0E".lab), 0.1)
+        assertEquals(0.4, calculateDeltaE("000000".lab, "000001".lab), 0.1)
+        assertEquals(2.6, calculateDeltaE("ED0000".lab, "E10000".lab), 0.1)
+        assertEquals(33.3, calculateDeltaE("00FF00".lab, "FFFFFF".lab), 0.1)
+        assertEquals(39.7, calculateDeltaE("0000FF".lab, "000000".lab), 0.1)
+        assertEquals(45.8, calculateDeltaE("FF0000".lab, "FFFFFF".lab), 0.1)
+        assertEquals(50.4, calculateDeltaE("FF0000".lab, "000000".lab), 0.1)
+        assertEquals(52.9, calculateDeltaE("FF0000".lab, "0000FF".lab), 0.1)
+        assertEquals(64.2, calculateDeltaE("0000FF".lab, "FFFFFF".lab), 0.1)
+        assertEquals(83.2, calculateDeltaE("00FF00".lab, "0000FF".lab), 0.1)
+        assertEquals(86.6, calculateDeltaE("FF0000".lab, "00FF00".lab), 0.1)
+        assertEquals(87.9, calculateDeltaE("00FF00".lab, "000000".lab), 0.1)
+    }
+
+    @Test
+    fun extremeDifferenceLab() {
+        assertEquals(100.0, calculateDeltaE("000000".lab, "FFFFFF".lab), 0.1)
+        assertEquals(100.0, calculateDeltaE("FFFFFF".lab, "000000".lab), 0.1)
+        assertEquals(52.9, calculateDeltaE("FF0000".lab, "0000FF".lab), 0.1)
+        assertEquals(83.2, calculateDeltaE("00FF00".lab, "0000FF".lab), 0.1)
+        assertEquals(86.6, calculateDeltaE("FF0000".lab, "00FF00".lab), 0.1)
+    }
+
+    @Test
+    fun grayscaleDifferenceLab() {
+        (25..230).forEach { value1 ->
+            val baseColor = RGB(value1, value1, value1)
+            val lab1 = baseColor.toLAB()
+            (-25..25).forEach { value2 ->
+                val currentColor = RGB(value1 + value2, value1 + value2, value1 + value2)
+                val lab2 = currentColor.toLAB()
+                val deltaE = calculateDeltaE(lab1, lab2)
+                if (deltaE >= 10) {
+                    fail("deltaE of #${baseColor.toHex()} and #${currentColor.toHex()} is $deltaE which is greater than 10")
+                }
+            }
         }
     }
 
     @Test
-    fun huesIdenticalMod360() {
-        assertFalse(FuzzyCompare.isHueDifferent(0f, 360f, 1.0f))
-        assertFalse(FuzzyCompare.isHueDifferent(360f, 0f, 1.0f))
-    }
-
-    @Test
-    fun huesWithTinyDifferentAnd1PercentTolerance() {
-        for (hue in 0..359) {
-            assertFalse(FuzzyCompare.isHueDifferent(hue.toFloat(), hue + 0.01f, 0.99f))
+    fun redDifferenceLab() {
+        // Visually very similar Red-based colors
+        (0..20).forEach { value1 ->
+            val baseColor = RGB(255 - value1, value1, value1)
+            val lab1 = baseColor.toLAB()
+            (0..20).forEach { value2 ->
+                val currentColor = RGB(255 - value2, value2, value2)
+                val lab2 = currentColor.toLAB()
+                val deltaE = calculateDeltaE(lab1, lab2)
+                assertTrue("deltaE of ${baseColor.toHex()} and ${currentColor.toHex()} is $deltaE which is greater than 5", deltaE < 5)
+            }
         }
     }
 
     @Test
-    fun huesWithTinyDifferentAndNoTolerance() {
-        for (hue in 0..359) {
-            assertTrue(FuzzyCompare.isHueDifferent(hue.toFloat(), hue + 0.01f, 1.0f))
+    fun greenDifferenceLab() {
+        // Visually very similar Green-based colors
+        (0..20).forEach { value1 ->
+            val baseColor = RGB(value1, 255 - value1, value1)
+            val lab1 = baseColor.toLAB()
+            (0..20).forEach { value2 ->
+                val currentColor = RGB(value2, 255 - value2, value2)
+                val lab2 = currentColor.toLAB()
+                val deltaE = calculateDeltaE(lab1, lab2)
+                assertTrue("deltaE of ${baseColor.toHex()} and ${currentColor.toHex()} is $deltaE which is greater than 5", deltaE < 5)
+            }
         }
     }
 
     @Test
-    fun hues5PercentDifferentWith5PercentTolerance() {
-        for (hue in 0..359) {
-            assertFalse(FuzzyCompare.isHueDifferent(hue.toFloat(), (hue + 18).toFloat(), 0.95f))
+    fun blueDifferenceLab() {
+        // Visually very similar Blue-based colors
+        (0..20).forEach { value1 ->
+            val baseColor = RGB(value1, value1, 255 - value1)
+            val lab1 = baseColor.toLAB()
+            (0..20).forEach { value2 ->
+                val currentColor = RGB(value2, value2, 255 - value2)
+                val lab2 = currentColor.toLAB()
+                val deltaE = calculateDeltaE(lab1, lab2)
+                assertTrue("deltaE of ${baseColor.toHex()} and ${currentColor.toHex()} is $deltaE which is greater than 5", deltaE < 5)
+            }
         }
     }
 
     @Test
-    fun hues5PercentDifferentWith1PercentTolerance() {
-        for (hue in 0..359) {
-            assertTrue(FuzzyCompare.isHueDifferent(hue.toFloat(), (hue + 18).toFloat(), 0.99f))
+    fun largeArea() {
+        repeat((0..1024).count()) {
+            repeat((0..768).count()) {
+                val color1 = RGB(Random.nextInt(5, 250), Random.nextInt(5, 250), Random.nextInt(5, 250))
+                val color2 = RGB(color1.r + Random.nextInt(-5, 5), color1.g + Random.nextInt(-5, 5), color1.b + Random.nextInt(-5, 5))
+                val deltaE = calculateDeltaE(color1.toLAB(), color2.toLAB())
+                assertTrue("deltaE of ${color1.toHex()} and ${color2.toHex()} is $deltaE which is greater than 12.5", deltaE < 12.5)
+            }
         }
     }
 
-    @Test
-    fun hueSpecialCases() {
-        assertFalse(FuzzyCompare.isHueDifferent(0f, 360f, 1.0f))
-        assertFalse(FuzzyCompare.isHueDifferent(0f, 3.6f, 0.99f))
-        assertTrue(FuzzyCompare.isHueDifferent(0f, 3.7f, 0.99f))
-        assertFalse(FuzzyCompare.isHueDifferent(360f, 3.6f, 0.99f))
-        assertTrue(FuzzyCompare.isHueDifferent(360f, 3.7f, 0.99f))
-        assertFalse(FuzzyCompare.isHueDifferent(356.4f, 0f, 0.99f))
-        assertTrue(FuzzyCompare.isHueDifferent(356.3f, 0f, 0.99f))
-    }
-
-    @Test
-    fun valueIdentical() {
-        var value = 0.0f
-        while (value < 1.0f) {
-            assertFalse(FuzzyCompare.isValueDifferent(value, value, 1.0f))
-            value += 0.001f
+    private val String.lab: LAB
+        get() {
+            val a = parseLong(this, 16).toInt()
+            return RGB.fromInt(a).toLAB()
         }
-    }
 
-    @Test
-    fun valueDifferent() {
-        var value = 0.0f
-        while (value < 1.0f) {
-            assertTrue(FuzzyCompare.isValueDifferent(value, value + 0.001f, 1.0f))
-            value += 0.001f
-        }
-    }
-
-    @Test
-    fun valueIdenticalWithTolerance() {
-        var value = 0.0f
-        while (value < 1.0f) {
-            assertFalse(FuzzyCompare.isValueDifferent(value, value + 0.01f, 0.99f))
-            value += 0.001f
-        }
+    private fun calculateDeltaE(lab1: LAB, lab2: LAB): Double {
+        return calculateDeltaE(lab1.l, lab1.a, lab1.b, lab2.l, lab2.a, lab2.b)
     }
 }
