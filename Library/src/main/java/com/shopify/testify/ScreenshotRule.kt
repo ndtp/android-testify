@@ -65,6 +65,7 @@ import com.shopify.testify.internal.helpers.OrientationHelper
 import com.shopify.testify.internal.helpers.ResourceWrapper
 import com.shopify.testify.internal.helpers.WrappedFontScale
 import com.shopify.testify.internal.helpers.WrappedLocale
+import com.shopify.testify.internal.modification.FocusModification
 import com.shopify.testify.internal.modification.HideCursorViewModification
 import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
@@ -105,6 +106,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val hideScrollbarsViewModification = HideScrollbarsViewModification()
     private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification()
     private val softwareRenderViewModification = SoftwareRenderViewModification()
+    private val focusModification = FocusModification()
     private val testContext = getInstrumentation().context
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
@@ -168,6 +170,17 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun setUseSoftwareRenderer(useSoftwareRenderer: Boolean): ScreenshotRule<T> {
         this.softwareRenderViewModification.isEnabled = useSoftwareRenderer
+        return this
+    }
+
+    /**
+     * Allows Testify to deliberately set the keyboard focus to the specified view
+     *
+     * @param clearFocus when true, removes focus from all views in the activity
+     */
+    fun setFocusTarget(enabled: Boolean = true, @IdRes focusTargetId: Int = android.R.id.content): ScreenshotRule<T> {
+        this.focusModification.isEnabled = enabled
+        this.focusModification.focusTargetId = focusTargetId
         return this
     }
 
@@ -463,6 +476,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
             latch.countDown()
         }
+        focusModification.modify(activity)
         if (Debug.isDebuggerConnected()) {
             latch.await()
         } else {
