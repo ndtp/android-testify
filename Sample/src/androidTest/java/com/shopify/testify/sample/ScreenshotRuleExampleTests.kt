@@ -216,7 +216,10 @@ class ScreenshotRuleExampleTests {
     @Test
     fun setExactness() {
         rule
-            .setExactness(0.9f)
+            .setScreenshotViewProvider {
+                it.findViewById(R.id.info_card)
+            }
+            .setExactness(0.975f)
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 25) + 230).padStart(2, '0')
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#${r}0000"))

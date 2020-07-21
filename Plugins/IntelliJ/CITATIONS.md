@@ -4,6 +4,9 @@
 
     https://github.com/JetBrains/intellij-community
 
+- Portions of *Colormath* Copyright 2018-2020 AJ Alt reused under the [Apache License 2.0](#apache-license-20) 
+
+    https://github.com/ajalt/colormath
 ---
 
 ### Licenses

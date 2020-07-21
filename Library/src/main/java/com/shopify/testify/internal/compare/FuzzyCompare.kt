@@ -24,13 +24,9 @@
 package com.shopify.testify.internal.compare
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import androidx.annotation.ColorInt
-import androidx.annotation.VisibleForTesting
-import kotlin.math.abs
-import kotlin.math.acos
-import kotlin.math.cos
-import kotlin.math.sin
+import com.github.ajalt.colormath.RGB
+import com.shopify.testify.internal.compare.colorspace.calculateDeltaE
 
 internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
 
@@ -47,68 +43,21 @@ internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
         val width = baselineBitmap.width
 
         for (y in 0 until height) {
-            for (x in 0 until width) {
+            x@ for (x in 0 until width) {
                 @ColorInt val baselineColor = baselineBitmap.getPixel(x, y)
                 @ColorInt val currentColor = currentBitmap.getPixel(x, y)
 
-                val baselineHsv = FloatArray(HSV_SIZE)
-                val currentHsv = FloatArray(HSV_SIZE)
+                if (baselineColor == currentColor) continue@x
 
-                /*
-                 * hsv[0] is Hue [0 .. 360)
-                 * hsv[1] is Saturation [0...1]
-                 * hsv[2] is Value [0...1]
-                 */
+                val baselineLab = RGB.fromInt(baselineColor).toLAB()
+                val currentLab = RGB.fromInt(currentColor).toLAB()
 
-                Color.colorToHSV(baselineColor, baselineHsv)
-                Color.colorToHSV(currentColor, currentHsv)
-
-                if (isHueDifferent(baselineHsv[HUE], currentHsv[HUE], exactness)) {
-                    return false
-                }
-                if (isValueDifferent(baselineHsv[SAT], currentHsv[SAT], exactness)) {
-                    return false
-                }
-                if (isValueDifferent(baselineHsv[VAL], currentHsv[VAL], exactness)) {
+                val deltaE = calculateDeltaE(baselineLab.l, baselineLab.a, baselineLab.b, currentLab.l, currentLab.a, currentLab.b)
+                if ((100.0 - deltaE) / 100.0f < exactness) {
                     return false
                 }
             }
         }
         return true
-    }
-
-    companion object {
-
-        private const val HSV_SIZE = 3
-        private const val HUE = 0
-        private const val SAT = 1
-        private const val VAL = 2
-
-        @VisibleForTesting
-        fun isHueDifferent(baseline: Float, current: Float, exactness: Float): Boolean {
-            val diff = hueDifference(baseline, current)
-            val epsilon = 360.0f * (1.0f - exactness) + 0.0001f
-            return diff > epsilon
-        }
-
-        @VisibleForTesting
-        fun isValueDifferent(baseline: Float, current: Float, exactness: Float): Boolean {
-            val diff = abs(baseline - current)
-            val epsilon = 1.0f - exactness + 0.0001f
-            return diff > epsilon
-        }
-
-        private fun hueDifference(degree1: Float, degree2: Float): Float {
-            val angle1 = Math.toRadians(degree1.toDouble())
-            val angle2 = Math.toRadians(degree2.toDouble())
-
-            val x1 = cos(angle1)
-            val y1 = sin(angle1)
-            val x2 = cos(angle2)
-            val y2 = sin(angle2)
-
-            val dotProduct = x1 * x2 + y1 * y2
-            return Math.toDegrees(acos(dotProduct)).toFloat()
-        }
     }
 }
