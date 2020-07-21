@@ -4,11 +4,14 @@
 
 #### Changes
 
-- Replace Travis CI with GitHub Actions.
+- Replace Travis CI with GitHub Actions. https://github.com/Shopify/android-testify/actions
 
 ### Library
 
 #### Bug fixes
+
+- Fix https://github.com/Shopify/android-testify/issues/138
+    Introduce the `setFocusTarget` method on `ScreenshotRule` which allows for keyboard focus to be placed on an explicit View. 
 
 - Fix https://github.com/Shopify/android-testify/issues/165
     Increase the timeout on the ActivityLifecycleMonitor to 5 seconds to allow for the rotation to complete.

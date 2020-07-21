@@ -26,6 +26,7 @@ package com.shopify.testify.sample.clients.index
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
+import com.shopify.testify.sample.R
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,7 +38,17 @@ class ClientListActivityScreenshotTest {
 
     @ScreenshotInstrumentation
     @Test
-    fun default() {
-        rule.assertSame()
+    fun withFocusOnBackground() {
+        rule
+            .setFocusTarget(enabled = true, focusTargetId = android.R.id.content)
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun withFocusOnFab() {
+        rule
+            .setFocusTarget(enabled = true, focusTargetId = R.id.fab)
+            .assertSame()
     }
 }
