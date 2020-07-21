@@ -1,0 +1,22 @@
+name: Build Sample
+on: [push, pull_request]
+
+jobs:
+
+  instrumentationTests:
+    name: Screenshot Tests
+    runs-on: macos-latest
+    steps:
+
+    - name: Fetch Sources
+      uses: actions/checkout@v2
+
+    - name: Validate build
+      run: ./gradlew Sample:assemble
+
+    - name: Run Screenshot Tests
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        profile: pixel_2
+        script: ./gradlew Sample:testifyKey Sample:screenshotTest
