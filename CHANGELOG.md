@@ -8,9 +8,14 @@
 
 ### Library
 
-#### Changes
+#### Bug fixes
 
-- Replace the existing FuzzyCompare algorithm with CIEDE2000. Calculate the colour difference value between two colours in lab space.
+- Fix https://github.com/Shopify/android-testify/issues/165
+    Increase the timeout on the ActivityLifecycleMonitor to 5 seconds to allow for the rotation to complete.
+    Deregister the lifecycle callback.
+
+- Fix https://github.com/Shopify/android-testify/issues/166
+    Replace the existing FuzzyCompare algorithm with CIEDE2000. Calculate the colour difference value between two colours in lab space.
     The CIELAB color space (also known as CIE L* a* b* or sometimes abbreviated as simply "Lab" color space) is a color space defined by the International Commission on Illumination (CIE) in 1976.
     It expresses color as three values: L* for the lightness from black (0) to white (100), a* from green (−) to red (+), and b* from blue (−) to yellow (+).
     CIELAB was designed so that the same amount of numerical change in these values corresponds to roughly the same amount of visually perceived change.

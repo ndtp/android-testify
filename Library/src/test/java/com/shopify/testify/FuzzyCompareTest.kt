@@ -133,8 +133,8 @@ class FuzzyCompareTest {
 
     @Test
     fun largeArea() {
-        repeat((0..1024).count()) {
-            repeat((0..768).count()) {
+        repeat(1024) {
+            repeat(768) {
                 val color1 = RGB(Random.nextInt(5, 250), Random.nextInt(5, 250), Random.nextInt(5, 250))
                 val color2 = RGB(color1.r + Random.nextInt(-5, 5), color1.g + Random.nextInt(-5, 5), color1.b + Random.nextInt(-5, 5))
                 val deltaE = calculateDeltaE(color1.toLAB(), color2.toLAB())
