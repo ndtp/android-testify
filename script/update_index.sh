@@ -4,7 +4,7 @@ BASEDIR=$(dirname "$0")
 INDEX_FILE="${BASEDIR}/../index.md"
 
 git checkout master "${BASEDIR}/../LICENSE"
-git checkout master "${BASEDIR}/../Plugin/README.md"
+git checkout master "${BASEDIR}/../Plugins/Gradle/README.md"
 git checkout master "${BASEDIR}/../README.md"
 git checkout master "${BASEDIR}/../RECIPES.md"
 

@@ -127,7 +127,7 @@ Displays the Testify plugin version
 ------------------------------------------------------------
   Vendor               = Shopify
   Title                = Testify
-  Version              = 1.0.0-beta5
+  Version              = 1.0.0-beta3
 ```
 
 ### verifyImageMagick

@@ -4,15 +4,15 @@ Examples of advanced test cases.
 
 ## Setting up an emulator to run the Sample
 
-The Sample application includes a baseline for an emulator that's compatible with Travis CI. To configure an AVD locally, create a new virtual device with the following settings in the Android Virtual Device (AVD) configuration:
+The Sample application includes a baseline for an emulator that's compatible with GitHub Actions. To configure an AVD locally, create a new virtual device with the following settings in the Android Virtual Device (AVD) configuration:
 
-- Phone: Nexus S (480x800 hdpi)
-- Lollopop API level 22, x86, Android 5.1 (Google APIs)
-- RAM: 2048 MB
-- VM heap: 128 MB
-- Internal Storage: 2048 MB
-- SD card, Studio-managed: 1024 MB
-- Enable Device Frame with nexus_s skin
+- Phone: Pixel 2 (1080x1920 420dpi)
+- Q API level 29, x86, Android 10.0 (Google APIs)
+- RAM: 1536 MB
+- VM heap: 256 MB
+- Internal Storage: 800 MB
+- SD card, Studio-managed: 512 MB
+- Enable Device Frame with pixel_2 skin
 - Enable keyboard input
 
 Once the emulator is booted:
@@ -395,6 +395,25 @@ Note that this comparison mechanism is slower than the default.
                 val card = rootView.findViewById<View>(R.id.info_card)
                 exclusionRects.add(card.boundingBox)
             }
+            .assertSame()
+    }
+```
+
+---
+
+## Placing the keyboard focus on a specific view
+
+It's possible that users can navigate your app using a keyboard, because the Android system enables most of the necessary behaviors by default.
+In order to place the keyboard focus on a specific View, use the `setFocusTarget` method.
+
+See https://developer.android.com/training/keyboard-input/navigation
+
+```kotlin
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setFocusTarget(enabled = true, focusTargetId = R.id.fab)
             .assertSame()
     }
 ```
