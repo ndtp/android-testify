@@ -7,7 +7,7 @@ buildscript {
 
     ext {
         versions = [
-                'androidGradlePlugin': '4.0.0',             // https://developer.android.com/studio/releases/gradle-plugin.html
+                'androidGradlePlugin': '4.1.0',             // https://developer.android.com/studio/releases/gradle-plugin.html
                 'androidx'           : [
                         'constraintLayout': '2.0.0-beta4',  // https://developer.android.com/jetpack/androidx/releases
                         'appCompat'       : '1.1.0',        // https://developer.android.com/jetpack/androidx/releases
