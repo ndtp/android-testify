@@ -17,6 +17,7 @@ jobs:
     - name: Run Screenshot Tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 29
-        profile: pixel_2
+        api-level: 30
+        target: google_apis
+        profile: pixel_3a
         script: ./gradlew Sample:testifyKey Sample:screenshotTest

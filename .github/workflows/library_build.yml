@@ -31,8 +31,9 @@ jobs:
     - name: Run Instrumentation Tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 29
-        profile: pixel_2
+        api-level: 30
+        profile: pixel_3a
+        target: google_apis
         script: ./gradlew :Library:connectedDebugAndroidTest
 
   test:
