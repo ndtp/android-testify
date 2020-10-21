@@ -159,7 +159,7 @@ internal class TestifySettingsFactory {
             val android = project.android
             val assetsSet = android.sourceSets.getByName("""androidTest""").assets
             val baselineSourceDir = "${assetsSet?.srcDirs?.first()?.path}"
-            val testRunner = android.defaultConfig.testInstrumentationRunner
+            val testRunner = android.defaultConfig.testInstrumentationRunner ?: "unknown"
             val testPackageId = project.inferredDefaultTestVariantId
             val targetPackageId = project.inferredTargetPackageId
             val installTask = project.inferredInstallTask
