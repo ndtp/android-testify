@@ -4,13 +4,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.3.72"
+    id("org.jetbrains.kotlin.jvm") version "1.4.10"
     // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
     id("org.jetbrains.intellij") version "0.4.21"
     // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-    id("org.jetbrains.changelog") version "0.3.3"
+    id("org.jetbrains.changelog") version "0.6.2"
     // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
-    id("org.jlleitschuh.gradle.ktlint") version "9.2.1"
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
 // Import variables from gradle.properties file
@@ -35,6 +35,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("script-runtime"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
 }
 
 // Configure gradle-intellij-plugin plugin.
@@ -71,16 +72,20 @@ tasks {
         untilBuild(pluginUntilBuild)
 
         // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
-        pluginDescription(closure {
-            File("${project.rootDir.path}/README.md").readText().lines().run {
-                subList(indexOf("<!-- Plugin description -->") + 1, indexOf("<!-- Plugin description end -->"))
-            }.joinToString("\n").run { markdownToHTML(this) }
-        })
+        pluginDescription(
+            closure {
+                File("${project.rootDir.path}/README.md").readText().lines().run {
+                    subList(indexOf("<!-- Plugin description -->") + 1, indexOf("<!-- Plugin description end -->"))
+                }.joinToString("\n").run { markdownToHTML(this) }
+            }
+        )
 
         // Get the latest available change notes from the changelog file
-        changeNotes(closure {
-            changelog.getLatest().toHTML()
-        })
+        changeNotes(
+            closure {
+                changelog.getLatest().toHTML()
+            }
+        )
     }
 
     publishPlugin {

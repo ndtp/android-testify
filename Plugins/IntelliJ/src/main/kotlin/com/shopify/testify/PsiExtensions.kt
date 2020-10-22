@@ -33,7 +33,10 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 val AnActionEvent.moduleName: String
     get() {
         val psiFile = this.getData(PlatformDataKeys.PSI_FILE)
-        return (psiFile as? KtFile)?.module?.name ?: ""
+        val ktFile = (psiFile as? KtFile)
+        val projectName = ktFile?.project?.name?.replace(' ', '_') ?: ""
+        val moduleName = ktFile?.module?.name ?: ""
+        return moduleName.removePrefix("$projectName.")
     }
 
 val PsiElement.baselineImageName: String
