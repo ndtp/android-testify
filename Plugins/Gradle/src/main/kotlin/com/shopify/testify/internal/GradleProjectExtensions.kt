@@ -27,7 +27,6 @@ package com.shopify.testify.internal
 import com.android.build.gradle.TestedExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 val Project.android: TestedExtension
     get() = this.properties["android"] as? TestedExtension
@@ -39,18 +38,18 @@ val Project.isVerbose: Boolean
 val Project.useLocale: Boolean
     get() = (this.properties["useLocale"] as? String)?.toBoolean() ?: false
 
-val Project.inferredInstallTask: Task?
+val Project.inferredInstallTask: String?
     get() {
         val pattern = "^install.*Debug$".toRegex()
-        val installTasks = this.tasks.filter { pattern.containsMatchIn(it.name) }
-        return installTasks.getOrNull(0)
+        val installTasks = this.tasks.names.filter { pattern.containsMatchIn(it) }
+        return installTasks.firstOrNull()
     }
 
-val Project.inferredAndroidTestInstallTask: Task?
+val Project.inferredAndroidTestInstallTask: String?
     get() {
         val pattern = "^install.*DebugAndroidTest$".toRegex()
-        val installTasks = this.tasks.filter { pattern.containsMatchIn(it.name) }
-        return installTasks.getOrNull(0)
+        val installTasks = this.tasks.names.filter { pattern.containsMatchIn(it) }
+        return installTasks.firstOrNull()
     }
 
 val Project.inferredDefaultTestVariantId: String

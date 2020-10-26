@@ -176,8 +176,8 @@ internal class TestifySettingsFactory {
                 useSdCard = false,
                 testPackageId = testPackageId,
                 targetPackageId = targetPackageId,
-                installTask = installTask?.name,
-                installAndroidTestTask = installAndroidTestTask?.name,
+                installTask = installTask,
+                installAndroidTestTask = installAndroidTestTask,
                 autoImplementLibrary = version?.contains("local", ignoreCase = true) == false
             )
         }
