@@ -20,4 +20,4 @@ jobs:
         api-level: 30
         target: google_apis
         profile: pixel_3a
-        script: ./gradlew Sample:testifyKey Sample:screenshotTest
+        script: ./sample_test.sh
