@@ -110,13 +110,13 @@ internal class OrientationHelper<T : Activity>(
         }
 
         // Wait for the rotation request to be made
-        if (!rotationLatch.await(1, TimeUnit.SECONDS)) {
+        if (!rotationLatch.await(30, TimeUnit.SECONDS)) {
             throw UnexpectedOrientationException("Failed to apply requested rotation.")
         }
 
         try {
             // Wait for the activity to fully resume
-            if (!lifecycleLatch.await(5, TimeUnit.SECONDS)) {
+            if (!lifecycleLatch.await(30, TimeUnit.SECONDS)) {
                 throw UnexpectedOrientationException("Activity did not resume.")
             }
         } finally {
