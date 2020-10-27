@@ -63,7 +63,8 @@ class RecordMarkerProvider : LineMarkerProvider {
             ICON,
             TooltipProvider { "Android Testify Commands" },
             NavHandler(element),
-            GutterIconRenderer.Alignment.RIGHT)
+            GutterIconRenderer.Alignment.RIGHT
+        )
     }
 
     companion object {
