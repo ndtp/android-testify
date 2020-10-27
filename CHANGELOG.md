@@ -1,5 +1,31 @@
 # Testify Change Log
 
+## 1.0.0-rc2
+
+### Library
+
+#### Bug fixes
+
+- Increase the timeout values on orientation change. Addresses various `Failed to apply requested rotation` and `Activity did not resume` errors when invoking `setOrientation`.
+
+#### Updates
+
+- Android Gradle Plugin to 4.1.0
+- Gradle Wrapper to 6.5
+
+### Gradle Plugin
+
+#### Bug fixes
+
+- Access task names lazily via names property. We were previously accessing task names in a way which resulted in early configuration of tasks resulting in Gradle failing to sync on the latest versions of Gradle and Android Gradle Plugin when custom lint checks were used in a project. Likely related to https://issuetracker.google.com/issues/67482030#comment2.
+Use the `TaskContainer.names` which doesn't cause all tasks to be resolved immediately.
+
+### Sample App
+
+- Update Sample application to use a Pixel 3a API 30 baseline emulator.
+
+---
+
 ## 1.0.0-rc1
 
 #### Changes
