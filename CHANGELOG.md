@@ -17,7 +17,7 @@
 
 #### Bug fixes
 
-- Access task names lazily via names property. We were previously accessing task names in a way which resulted in early configuration of tasks resulting in Gradle failing to sync on the latest versions of Gradle and Android Gradle Plugin when custom lint checks were using in a project. Likely related to https://issuetracker.google.com/issues/67482030#comment2.
+- Access task names lazily via names property. We were previously accessing task names in a way which resulted in early configuration of tasks resulting in Gradle failing to sync on the latest versions of Gradle and Android Gradle Plugin when custom lint checks were used in a project. Likely related to https://issuetracker.google.com/issues/67482030#comment2.
 Use the `TaskContainer.names` which doesn't cause all tasks to be resolved immediately.
 
 ### Sample App
