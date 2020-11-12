@@ -24,9 +24,12 @@
 
 package com.shopify.testify.annotation
 
+import android.content.pm.ActivityInfo
 import java.lang.annotation.Inherited
 
 @Inherited
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER, AnnotationTarget.CLASS, AnnotationTarget.FILE)
-annotation class ScreenshotInstrumentation
+annotation class ScreenshotInstrumentation(
+    val orientationToIgnore: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+)

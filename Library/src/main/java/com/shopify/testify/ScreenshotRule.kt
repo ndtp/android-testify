@@ -28,6 +28,7 @@ import android.app.Instrumentation
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Bundle
@@ -71,11 +72,13 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.io.File
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -97,6 +100,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @LayoutRes
     private var targetLayoutId: Int = NO_ID
+
     @Suppress("MemberVisibilityCanBePrivate")
     lateinit var testMethodName: String
     private lateinit var testClass: String
@@ -122,10 +126,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var orientationHelper = OrientationHelper(activityClass)
     private var exclusionRectProvider: ExclusionRectProvider? = null
     private val exclusionRects = HashSet<Rect>()
+    private var orientationToIgnore: Int = SCREEN_ORIENTATION_UNSPECIFIED
+    var outputFileExists: Boolean = false
 
     @Suppress("MemberVisibilityCanBePrivate")
     val testName: String
         get() = "${testSimpleClassName}_$testMethodName"
+
+    val deviceOrientation: Int
+        get() = orientationHelper.deviceOrientation
 
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
@@ -316,6 +325,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
             if (methodAnnotation == null) {
                 this.throwable = MissingScreenshotInstrumentationAnnotationException(description.methodName)
+            } else {
+                orientationToIgnore = methodAnnotation.orientationToIgnore
             }
         }
     }
@@ -367,6 +378,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
+    private fun applyOutputFileExists(screenshotUtility: ScreenshotUtility, outputFileName: String) {
+        outputFileExists = File(screenshotUtility.getOutputFilePath(activity, outputFileName)).exists()
+    }
+
     fun assertSame() {
         assertSameInvoked = true
 
@@ -376,8 +391,20 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         try {
             try {
+                val screenshotUtility = ScreenshotUtility()
+                val outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), DEFAULT_NAME_FORMAT)
+
+                applyOutputFileExists(screenshotUtility, outputFileName)
+
                 if (isRunningOnUiThread()) {
                     throw NoScreenshotsOnUiThreadException()
+                }
+
+                if (orientationHelper.shouldIgnoreOrientation(orientationToIgnore)) {
+                    val orientationName = if (orientationToIgnore == SCREEN_ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
+                    instrumentationPrintln("\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + testName + " due to $orientationName orientation" + 27.toChar() + "[0m")
+                    assertFalse("Output file should not exist for $orientationName orientation", outputFileExists)
+                    return
                 }
 
                 initializeView(activity)
@@ -394,8 +421,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 orientationHelper.assertOrientation()
 
-                val screenshotUtility = ScreenshotUtility()
-
                 var screenshotView: View? = null
                 if (screenshotViewProvider != null) {
                     screenshotView = screenshotViewProvider!!.invoke(getRootView(activity))
@@ -405,7 +430,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     provider(getRootView(activity), exclusionRects)
                 }
 
-                val outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), DEFAULT_NAME_FORMAT)
                 val currentBitmap = screenshotUtility.createBitmapFromActivity(activity, outputFileName, screenshotView)
                 assertNotNull("Failed to capture bitmap from activity", currentBitmap)
 
@@ -436,6 +460,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         throw ScreenshotIsDifferentException(getModuleName(), fullyQualifiedTestPath)
                     }
                 }
+
+                applyOutputFileExists(screenshotUtility, outputFileName) // Re-capture the existince of the output file
             } finally {
             }
         } finally {

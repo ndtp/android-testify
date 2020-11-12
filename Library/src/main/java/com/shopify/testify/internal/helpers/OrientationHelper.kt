@@ -37,15 +37,23 @@ import java.util.concurrent.TimeUnit
 internal class OrientationHelper<T : Activity>(
     private val activityClass: Class<T>
 ) {
+    var deviceOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     var requestedOrientation: Int? = null
     private lateinit var rule: ActivityTestRule<T>
     private lateinit var lifecycleLatch: CountDownLatch
 
     fun afterActivityLaunched(rule: ActivityTestRule<T>) {
         this.rule = rule
+
+        // Set the orientation based on how the activity was launched
+        deviceOrientation = if (activity.isLandscape) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+
         this.requestedOrientation?.let {
             if (!activity.isRequestedOrientation(it)) {
                 activity.changeOrientation(it)
+
+                // Re-capture the orientation based on user requested value
+                deviceOrientation = it
             }
         }
     }
@@ -63,6 +71,14 @@ internal class OrientationHelper<T : Activity>(
 
     fun afterTestFinished() {
         requestedOrientation = null
+    }
+
+    fun shouldIgnoreOrientation(orientationToIgnore: Int): Boolean {
+        require(orientationToIgnore in ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED..ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        return when (orientationToIgnore) {
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED -> false
+            else -> activity.isRequestedOrientation(orientationToIgnore)
+        }
     }
 
     private val activity: T

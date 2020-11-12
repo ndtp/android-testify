@@ -7,6 +7,7 @@ import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.sample.clients.details.ClientDetailsView
 import com.shopify.testify.sample.test.TestHarnessActivity
 import com.shopify.testify.sample.test.getViewState
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 
@@ -18,7 +19,8 @@ import org.junit.Test
  */
 class OrientationTest {
 
-    @get:Rule var rule = ScreenshotRule(
+    @get:Rule
+    var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
         rootViewId = R.id.harness_root
@@ -46,6 +48,13 @@ class OrientationTest {
     @ScreenshotInstrumentation
     fun d() {
         testOrientation("Four", SCREEN_ORIENTATION_LANDSCAPE)
+    }
+
+    @Test
+    @ScreenshotInstrumentation(orientationToIgnore = SCREEN_ORIENTATION_PORTRAIT)
+    fun e() {
+        testOrientation("Five", SCREEN_ORIENTATION_PORTRAIT)
+        assertFalse(rule.outputFileExists)
     }
 
     private fun testOrientation(title: String, orientation: Int) {
