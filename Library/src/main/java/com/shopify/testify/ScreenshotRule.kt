@@ -78,7 +78,6 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.io.File
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -127,7 +126,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var exclusionRectProvider: ExclusionRectProvider? = null
     private val exclusionRects = HashSet<Rect>()
     private var orientationToIgnore: Int = SCREEN_ORIENTATION_UNSPECIFIED
-    var outputFileExists: Boolean = false
+    private val screenshotUtility = ScreenshotUtility()
+    private lateinit var outputFileName: String
 
     @Suppress("MemberVisibilityCanBePrivate")
     val testName: String
@@ -135,6 +135,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     val deviceOrientation: Int
         get() = orientationHelper.deviceOrientation
+
+    val outputFileExists: Boolean
+        get() = screenshotUtility.doesOutputFileExist(activity, outputFileName)
 
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
@@ -378,10 +381,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    private fun applyOutputFileExists(screenshotUtility: ScreenshotUtility, outputFileName: String) {
-        outputFileExists = File(screenshotUtility.getOutputFilePath(activity, outputFileName)).exists()
-    }
-
     fun assertSame() {
         assertSameInvoked = true
 
@@ -391,10 +390,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         try {
             try {
-                val screenshotUtility = ScreenshotUtility()
-                val outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), DEFAULT_NAME_FORMAT)
-
-                applyOutputFileExists(screenshotUtility, outputFileName)
+                outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), DEFAULT_NAME_FORMAT)
 
                 if (isRunningOnUiThread()) {
                     throw NoScreenshotsOnUiThreadException()
@@ -460,8 +456,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         throw ScreenshotIsDifferentException(getModuleName(), fullyQualifiedTestPath)
                     }
                 }
-
-                applyOutputFileExists(screenshotUtility, outputFileName) // Re-capture the existince of the output file
             } finally {
             }
         } finally {
