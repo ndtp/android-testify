@@ -99,6 +99,10 @@ internal class ScreenshotUtility {
         return "${getOutputDirectoryPath(context).path}/$fileName$PNG_EXTENSION"
     }
 
+    fun doesOutputFileExist(context: Context, filename: String): Boolean {
+        return File(getOutputFilePath(context, filename)).exists()
+    }
+
     @Throws(Exception::class)
     private fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap? {
         val assetManager = context.assets
