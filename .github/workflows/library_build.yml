@@ -1,5 +1,5 @@
 name: Build Library
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
 
@@ -34,7 +34,7 @@ jobs:
         api-level: 30
         profile: pixel_3a
         target: google_apis
-        script: ./gradlew :Library:connectedDebugAndroidTest
+        script: ./github_action_emulator_command.sh :Library:connectedDebugAndroidTest
 
   test:
     name: Test Library

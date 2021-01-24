@@ -1,5 +1,5 @@
 name: Build Gradle Plugin
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
 
