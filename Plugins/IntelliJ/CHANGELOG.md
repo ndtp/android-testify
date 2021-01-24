@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.0.3]
+
+### Updated
+
+- Intellij plugin now supports Android Studio 4.2
+
 ## [0.0.2]
 
 ### Fixed
@@ -24,14 +30,3 @@
 - Initial Version
 
 ## [0.0.1-alpha]
-### Added
-
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
