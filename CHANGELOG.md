@@ -1,5 +1,14 @@
 # Testify Change Log
 
+
+## Unreleased
+
+### Library
+
+#### Changes
+
+- ScreenshotBaselineNotDefinedException now reports the expected device key
+
 ## 1.0.0-rc2
 
 ### Library
