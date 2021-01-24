@@ -7,7 +7,7 @@ Examples of advanced test cases.
 The Sample application includes a baseline for an emulator that's compatible with GitHub Actions. To configure an AVD locally, create a new virtual device with the following settings in the Android Virtual Device (AVD) configuration:
 
 - Phone: Pixel 3a (1080x2220 440dpi)
-- R API level 30, x86, Android 11.0 (Google APIs)
+- Q API level 29, x86, Android 10.0 (Google APIs)
 - RAM: 1536 MB
 - VM heap: 256 MB
 - Internal Storage: 2048 MB
