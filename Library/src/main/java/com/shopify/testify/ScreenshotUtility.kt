@@ -47,7 +47,7 @@ import java.io.InputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-internal class ScreenshotUtility {
+class ScreenshotUtility {
 
     private val preferredBitmapOptions: BitmapFactory.Options
         get() {
