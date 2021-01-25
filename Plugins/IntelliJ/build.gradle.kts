@@ -35,7 +35,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("script-runtime"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.10")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
 }
 
 // Configure gradle-intellij-plugin plugin.
@@ -47,7 +47,7 @@ intellij {
     downloadSources = platformDownloadSources.toBoolean()
     updateSinceUntilBuild = true
 
-    alternativeIdePath = "/Applications/Android Studio.app"
+    alternativeIdePath = "/Applications/Android Studio 4.2 Preview.app"
 
 //  Plugin Dependencies:
 //  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html

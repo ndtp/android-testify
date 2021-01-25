@@ -30,8 +30,11 @@ import com.intellij.psi.PsiElement
 import java.awt.event.ActionEvent
 
 class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+
+    override val icon = "reveal"
+
     override val menuText: String
-        get() = "Reveal baseline image ${baselineImageName.replace("_", "__")}"
+        get() = "Reveal ${shortDisplayName()}"
 
     override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
         val focusEditor: Boolean = (modifiers and ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK

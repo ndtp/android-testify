@@ -17,7 +17,12 @@ However, the current Android Studio support relies fully on the fact that Testif
     <extensions defaultExtensionNs="com.intellij">
         <codeInsight.lineMarkerProvider
                 language="kotlin"
-                implementationClass="com.shopify.testify.extensions.RecordMarkerProvider"/>
+                implementationClass="com.shopify.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
+
+        <codeInsight.lineMarkerProvider
+                language="kotlin"
+                implementationClass="com.shopify.testify.extensions.ScreenshotClassMarkerProvider"/>
+
     </extensions>
 
 </idea-plugin>

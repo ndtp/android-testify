@@ -33,7 +33,9 @@ import java.awt.event.ActionEvent
 class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
 
     override val menuText: String
-        get() = "Delete baseline image ${baselineImageName.replace("_", "__")}"
+        get() = "Delete ${shortDisplayName()}"
+
+    override val icon = "delete"
 
     override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
         val immediate: Boolean = (modifiers and ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK

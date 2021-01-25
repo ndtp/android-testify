@@ -31,10 +31,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
 import com.shopify.testify.methodName
 import com.shopify.testify.moduleName
+import com.shopify.testify.testifyClassInvocationPath
 import com.shopify.testify.testifyMethodInvocationPath
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.plugins.gradle.action.GradleExecuteTaskAction
 import org.jetbrains.plugins.gradle.settings.GradleSettings
@@ -42,30 +45,60 @@ import org.jetbrains.plugins.gradle.util.GradleConstants
 
 abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
 
-    abstract val gradleCommand: String
-    abstract val menuText: String
+    abstract val classGradleCommand: String
+    abstract val classMenuText: String
+
+    abstract val methodGradleCommand: String
+    abstract val methodMenuText: String
+
+    abstract val icon: String
 
     protected val methodName: String
         get() {
-            return anchorElement.methodName
+            var name = anchorElement.methodName
+            if (name.length > 18) {
+                name = "${name.take(18)}..."
+            }
+            return name
         }
+
+    protected val className: String?
+        get() {
+            return if (isClass()) (anchorElement as? KtClass)?.name else null
+        }
+
+    private fun String.toFullGradleCommand(event: AnActionEvent): String {
+        val arguments = when (anchorElement) {
+            is KtNamedFunction -> anchorElement.testifyMethodInvocationPath
+            is KtClass -> anchorElement.testifyClassInvocationPath
+            else -> null
+        }
+        val command = ":${event.moduleName}:$this"
+        return if (arguments != null) "$command -PtestClass=$arguments" else command
+    }
+
+    private fun isClass(): Boolean {
+        return anchorElement is KtClass
+    }
 
     final override fun actionPerformed(event: AnActionEvent) {
         val project = event.project as Project
         val dataContext = SimpleDataContext.getProjectContext(project)
-        val executionContext = dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT) ?: RunAnythingContext.ProjectContext(project)
+        val executionContext =
+            dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT) ?: RunAnythingContext.ProjectContext(project)
         val workingDirectory: String = executionContext.getProjectPath() ?: ""
         val executor = RunAnythingAction.EXECUTOR_KEY.getData(dataContext)
-        val arguments = (anchorElement as? KtNamedFunction)?.testifyMethodInvocationPath
-        val fullCommandLine = ":${event.moduleName}:$gradleCommand -PtestClass=$arguments"
 
+        val gradleCommand = if (isClass()) classGradleCommand else methodGradleCommand
+        val fullCommandLine = gradleCommand.toFullGradleCommand(event)
         GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)
     }
 
     final override fun update(anActionEvent: AnActionEvent) {
         anActionEvent.presentation.apply {
-            text = menuText
+            text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
+            icon = IconLoader.getIcon("/icons/${this@BaseScreenshotAction.icon}.svg")
         }
     }
 
@@ -73,7 +106,13 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
     private fun RunAnythingContext.getProjectPath() = when (this) {
         is RunAnythingContext.ProjectContext ->
             GradleSettings.getInstance(project).linkedProjectsSettings.firstOrNull()
-                ?.let { ExternalSystemApiUtil.findProjectData(project, GradleConstants.SYSTEM_ID, it.externalProjectPath) }
+                ?.let {
+                    ExternalSystemApiUtil.findProjectData(
+                        project,
+                        GradleConstants.SYSTEM_ID,
+                        it.externalProjectPath
+                    )
+                }
                 ?.data?.linkedExternalProjectPath
         is RunAnythingContext.ModuleContext -> ExternalSystemApiUtil.getExternalProjectPath(module)
         is RunAnythingContext.RecentDirectoryContext -> path

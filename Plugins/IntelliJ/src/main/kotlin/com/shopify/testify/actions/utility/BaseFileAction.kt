@@ -26,6 +26,7 @@ package com.shopify.testify.actions.utility
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.FilenameIndex
@@ -35,8 +36,9 @@ import org.jetbrains.kotlin.psi.KtFile
 
 abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnAction() {
 
-    val baselineImageName = anchorElement.baselineImageName
+    protected val baselineImageName = anchorElement.baselineImageName
     abstract val menuText: String
+    abstract val icon: String
 
     final override fun update(anActionEvent: AnActionEvent) {
 
@@ -46,6 +48,7 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
             text = menuText
             isEnabled = isInProject
             isVisible = (anActionEvent.project != null)
+            icon = IconLoader.getIcon("/icons/${this@BaseFileAction.icon}.svg")
         }
     }
 
@@ -58,7 +61,8 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
     private fun AnActionEvent.findBaselineImage(): VirtualFile? {
         val psiFile = anchorElement.containingFile
         if (psiFile is KtFile && psiFile.module != null) {
-            val files = FilenameIndex.getVirtualFilesByName(project, baselineImageName, psiFile.module!!.moduleContentScope)
+            val files =
+                FilenameIndex.getVirtualFilesByName(project, baselineImageName, psiFile.module!!.moduleContentScope)
             if (files.isNotEmpty()) {
                 return files.first()
             }
@@ -72,4 +76,15 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
         }
 
     abstract fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int)
+
+    protected fun shortDisplayName(): String {
+        val fullName = anchorElement.baselineImageName.replace("_", "__")
+
+        return if (fullName.length > 43) {
+            val names = fullName.split("__")
+            "${names[0].take(18)}...${names[1].takeLast(22)}"
+        } else {
+            fullName
+        }
+    }
 }

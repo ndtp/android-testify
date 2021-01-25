@@ -45,7 +45,8 @@ import com.shopify.testify.actions.utility.DeleteBaselineAction
 import com.shopify.testify.actions.utility.RevealBaselineAction
 import java.awt.event.MouseEvent
 
-class NavHandler(private val anchorElement: PsiElement) : GutterIconNavigationHandler<PsiElement> {
+class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: PsiElement) :
+    GutterIconNavigationHandler<PsiElement> {
 
     override fun navigate(e: MouseEvent?, nameIdentifier: PsiElement) {
         val listOwner = nameIdentifier.parent
@@ -77,7 +78,7 @@ class NavHandler(private val anchorElement: PsiElement) : GutterIconNavigationHa
         )
 
         return JBPopupFactory.getInstance().createActionGroupPopup(
-            null,
+            "",
             group,
             SimpleDataContext.getProjectContext(project),
             true,
