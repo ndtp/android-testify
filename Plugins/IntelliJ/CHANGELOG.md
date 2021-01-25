@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+## [0.1.0]
+
+### Added
+
+- You can now invoke Testify commands from the class level.
+- Menu items now have icons.
+
+### Changed
+
+- Reworded the menu items for clarity.
+
+### Updated
+
+- Upgraded gradle from 6.5.1 to 6.8.1
+- Upgraded kotlin-reflect from 1.4.10 to 1.4.21
+
 ## [0.0.3]
 
 ### Updated

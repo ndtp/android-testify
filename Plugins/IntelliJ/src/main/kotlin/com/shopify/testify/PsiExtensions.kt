@@ -27,6 +27,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.idea.util.projectStructure.module
+import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
@@ -61,4 +62,9 @@ val KtNamedFunction.testifyMethodInvocationPath: String
         val className = this.fqName?.parent().toString()
         val methodName = this.fqName?.shortName().toString()
         return "$className#$methodName"
+    }
+
+val KtClass.testifyClassInvocationPath: String
+    get() {
+        return "${this.fqName?.parent()}.${this.name}"
     }

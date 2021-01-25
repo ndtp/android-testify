@@ -28,28 +28,25 @@ import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
-import com.intellij.util.Function
 import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.source.getPsi
-
-typealias TooltipProvider = Function<PsiElement?, String?>
 
 // Reference https://github.com/square/dagger-intellij-plugin/blob/master/src/com/squareup/ideaplugin/dagger/InjectionLineMarkerProvider.java
 
 /**
  * Get testify 📷 line markers for qualifying PsiElements.
  */
-class RecordMarkerProvider : LineMarkerProvider {
+class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element !is KtNamedFunction) return null
         if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
-        return element.getLineMarkerInfo(element)
+        return element.getLineMarkerInfo()
     }
 
-    private fun KtNamedFunction.getLineMarkerInfo(element: PsiElement): LineMarkerInfo<PsiElement>? {
+    private fun KtNamedFunction.getLineMarkerInfo(): LineMarkerInfo<PsiElement>? {
 
         if (descriptor == null) return null
         if (descriptor?.annotations == null) return null
@@ -61,14 +58,13 @@ class RecordMarkerProvider : LineMarkerProvider {
             anchorElement.firstChild,
             anchorElement.textRange,
             ICON,
-            TooltipProvider { "Android Testify Commands" },
-            NavHandler(element),
+            { "Android Testify Commands" },
+            ScreenshotInstrumentationAnnotationNavHandler(this),
             GutterIconRenderer.Alignment.RIGHT
         )
     }
 
     companion object {
         private val ICON = IconLoader.getIcon("/icons/camera.svg")
-        private const val SCREENSHOT_INSTRUMENTATION = "com.shopify.testify.annotation.ScreenshotInstrumentation"
     }
 }

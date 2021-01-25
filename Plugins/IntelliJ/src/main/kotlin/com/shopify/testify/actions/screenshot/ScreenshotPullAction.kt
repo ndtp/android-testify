@@ -27,9 +27,17 @@ import com.intellij.psi.PsiElement
 
 class ScreenshotPullAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
-    override val gradleCommand: String
+    override val classGradleCommand: String
         get() = "screenshotPull"
 
-    override val menuText: String
-        get() = "Pull '$methodName()'"
+    override val classMenuText: String
+        get() = "Pull all screenshots for '$className'"
+
+    override val methodGradleCommand: String
+        get() = "screenshotPull"
+
+    override val methodMenuText: String
+        get() = "Pull screenshots for '$methodName()'"
+
+    override val icon = "pull"
 }

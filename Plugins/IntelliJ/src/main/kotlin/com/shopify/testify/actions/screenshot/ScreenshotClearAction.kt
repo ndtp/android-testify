@@ -27,9 +27,17 @@ import com.intellij.psi.PsiElement
 
 class ScreenshotClearAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
-    override val gradleCommand: String
+    override val classGradleCommand: String
         get() = "screenshotClear"
 
-    override val menuText: String
-        get() = "Clear '$methodName()'"
+    override val classMenuText: String
+        get() = "Clear screenshots from device"
+
+    override val methodGradleCommand: String
+        get() = "screenshotClear"
+
+    override val methodMenuText: String
+        get() = "Clear screenshots from device"
+
+    override val icon = "clear"
 }
