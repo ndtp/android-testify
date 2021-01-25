@@ -1,13 +1,17 @@
 # Testify Change Log
 
-
 ## Unreleased
 
 ### Library
 
 #### Changes
 
+- ScreenshotUtility is now public
 - ScreenshotBaselineNotDefinedException now reports the expected device key
+
+#### Added
+
+- Public method getRootViewId() has been added to ScreenshotRule
 
 ## 1.0.0-rc2
 

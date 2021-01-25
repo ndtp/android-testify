@@ -197,7 +197,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     @IdRes
-    fun getRootViewId() : Int {
+    fun getRootViewId(): Int {
         return rootViewId
     }
 
