@@ -438,7 +438,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         instrumentationPrintln("\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName + 27.toChar() + "[0m")
                         return
                     } else {
-                        throw ScreenshotBaselineNotDefinedException(getModuleName(), testName, fullyQualifiedTestPath)
+                        throw ScreenshotBaselineNotDefinedException(
+                                moduleName = getModuleName(),
+                                testName = testName,
+                                testClass = fullyQualifiedTestPath,
+                                deviceKey = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, null), DeviceIdentifier.DEFAULT_FOLDER_FORMAT)
+                        )
                     }
 
                 val bitmapCompare: BitmapCompare = when {
