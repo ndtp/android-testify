@@ -6,7 +6,7 @@ layout: index
 
 Add screenshots to your Android tests
 
-<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=master"/></a> <a href='https://bintray.com/shopify/shopify-android/testify-plugin/1.0.0-rc2/link' alt="Testify download"><img src='https://api.bintray.com/packages/shopify/shopify-android/testify-plugin/images/download.svg?version=1.0.0-rc2'></a>
+<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=master"/></a> <a href='https://bintray.com/shopify/shopify-android/testify-plugin/1.0.0-rc3/link' alt="Testify download"><img src='https://api.bintray.com/packages/shopify/shopify-android/testify-plugin/images/download.svg?version=1.0.0-rc3'></a>
 ---
 
 Expand your test coverage by including the View-layer. Testify allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.
@@ -25,7 +25,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.0.0-rc2"
+        classpath "com.shopify.testify:plugin:1.0.0-rc3"
     }
 }
 
