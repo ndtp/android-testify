@@ -124,7 +124,11 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .stream(ConsoleStream)
             .execute()
 
-        if (!isRecordMode && (log.contains("FAILURES!!!") || log.contains("INSTRUMENTATION_CODE: 0") || log.contains("Process crashed while executing"))) {
+        if (!isRecordMode &&
+            (log.contains("FAILURES!!!") ||
+                log.contains("INSTRUMENTATION_CODE: 0") ||
+                log.contains("Process crashed while executing"))
+        ) {
             println(AnsiFormat.Red, "SCREENSHOT TESTS HAVE FAILED!!!")
             throw RuntimeException("Screenshot tests have failed")
         }
@@ -149,12 +153,15 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             )
 
             val settings = project.testifySettings
-            val installDebugAndroidTestTask = project.tasks.findByPath(":${settings.moduleName}:${settings.installAndroidTestTask}")
+            val installDebugAndroidTestTask =
+                project.tasks.findByPath(":${settings.moduleName}:${settings.installAndroidTestTask}")
             if (installDebugAndroidTestTask != null) {
                 task.dependsOn(installDebugAndroidTestTask)
             }
 
-            val installDebugTask = project.tasks.findByPath(":${settings.moduleName}:${settings.installTask}")
+            val installDebugTask = project.tasks.findByPath(
+                ":${settings.moduleName}:${settings.installTask}"
+            )
             if (installDebugTask != null) {
                 task.dependsOn(installDebugTask)
             }

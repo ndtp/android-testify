@@ -51,7 +51,8 @@ class Adb {
     fun runAs(packageId: String): Adb {
         if (arguments.isEmpty() ||
             !arguments.last().contentEquals("shell") &&
-            !arguments.last().contentEquals("exec-out")) {
+            !arguments.last().contentEquals("exec-out")
+        ) {
             throw GradleException("You must specify 'shell' or 'execOut' before 'runAs'")
         }
 

@@ -28,4 +28,7 @@ package com.shopify.testify.internal.exception
  * to launch the Activity under test on its own.
  */
 class TestMustLaunchActivityException(context: String) :
-    RuntimeException("\n\n* You must specify `launchActivity = false` on the ScreenshotRule constructor when using $context *\n")
+    RuntimeException(
+        "\n\n* You must specify `launchActivity = false` on the ScreenshotRule constructor when using " +
+            "$context *\n"
+    )

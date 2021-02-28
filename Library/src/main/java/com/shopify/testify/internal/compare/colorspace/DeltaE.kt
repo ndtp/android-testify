@@ -73,11 +73,28 @@ fun calculateDeltaE(L1: Double, a1: Double, b1: Double, L2: Double, a2: Double, 
 
     val h1prime = atan2(b1, a1prime) + 2.0 * Math.PI * if (atan2(b1, a1prime) < 0) 1.0 else 0.0
     val h2prime = atan2(b2, a2prime) + 2.0 * Math.PI * if (atan2(b2, a2prime) < 0) 1.0 else 0.0
-    val hMeanPrime = if (abs(h1prime - h2prime) > Math.PI) (h1prime + h2prime + 2.0 * Math.PI) / 2.0 else (h1prime + h2prime) / 2
+    val hMeanPrime =
+        if (abs(h1prime - h2prime) > Math.PI) (h1prime + h2prime + 2.0 * Math.PI) / 2.0 else (h1prime + h2prime) / 2
 
-    val t = 1.0 - 0.17 * cos(hMeanPrime - Math.PI / 6.0) + 0.24 * cos(2 * hMeanPrime) + 0.32 * cos(3 * hMeanPrime + Math.PI / 30) - 0.2 * cos(4 * hMeanPrime - 21 * Math.PI / 60)
+    val t = 1.0 -
+        0.17 *
+        cos(hMeanPrime - Math.PI / 6.0) +
+        0.24 *
+        cos(2 * hMeanPrime) +
+        0.32 *
+        cos(3 * hMeanPrime + Math.PI / 30) -
+        0.2 *
+        cos(4 * hMeanPrime - 21 * Math.PI / 60)
 
-    var deltaHPrime = if (abs(h1prime - h2prime) <= Math.PI) h2prime - h1prime else if (h2prime <= h1prime) h2prime - h1prime + 2.0 * Math.PI else h2prime - h1prime - 2.0 * Math.PI
+    var deltaHPrime = if (abs(h1prime - h2prime) <= Math.PI) {
+        h2prime - h1prime
+    } else {
+        if (h2prime <= h1prime) {
+            h2prime - h1prime + 2.0 * Math.PI
+        } else {
+            h2prime - h1prime - 2.0 * Math.PI
+        }
+    }
 
     val deltaLPrime = L2 - L1
     val deltaCPrime = c2prime - c1prime
@@ -87,15 +104,18 @@ fun calculateDeltaE(L1: Double, a1: Double, b1: Double, L2: Double, a2: Double, 
     val sC = 1.0 + 0.045 * cMeanPrime
     val sH = 1.0 + 0.015 * cMeanPrime * t
 
-    val deltaTheta = 30.0 * Math.PI / 180.0 * exp(-((180.0 / Math.PI * hMeanPrime - 275.0) / 25.0) * ((180.0 / Math.PI * hMeanPrime - 275.0) / 25.0))
+    val deltaTheta = 30.0 *
+        Math.PI /
+        180.0 *
+        exp(-((180.0 / Math.PI * hMeanPrime - 275.0) / 25.0) * ((180.0 / Math.PI * hMeanPrime - 275.0) / 25.0))
     val rC = 2.0 * sqrt(cMeanPrime.pow(7.0) / (cMeanPrime.pow(7.0) + 25.0.pow(7.0)))
     val rT = -rC * sin(2.0 * deltaTheta)
 
     return sqrt(
         deltaLPrime / (KL * sL) * (deltaLPrime / (KL * sL)) +
-                deltaCPrime / (KC * sC) * (deltaCPrime / (KC * sC)) +
-                deltaHPrime / (KH * sH) * (deltaHPrime / (KH * sH)) +
-                rT * (deltaCPrime / (KC * sC)) * (deltaHPrime / (KH * sH))
+            deltaCPrime / (KC * sC) * (deltaCPrime / (KC * sC)) +
+            deltaHPrime / (KH * sH) * (deltaHPrime / (KH * sH)) +
+            rT * (deltaCPrime / (KC * sC)) * (deltaHPrime / (KH * sH))
     )
 }
 

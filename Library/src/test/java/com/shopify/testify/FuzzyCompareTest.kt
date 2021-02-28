@@ -80,7 +80,11 @@ class FuzzyCompareTest {
                 val lab2 = currentColor.toLAB()
                 val deltaE = calculateDeltaE(lab1, lab2)
                 if (deltaE >= 10) {
-                    fail("deltaE of #${baseColor.toHex()} and #${currentColor.toHex()} is $deltaE which is greater than 10")
+                    fail(
+                        "deltaE of #${baseColor.toHex()} and " +
+                            "#${currentColor.toHex()} is " +
+                            "$deltaE which is greater than 10"
+                    )
                 }
             }
         }
@@ -96,7 +100,12 @@ class FuzzyCompareTest {
                 val currentColor = RGB(255 - value2, value2, value2)
                 val lab2 = currentColor.toLAB()
                 val deltaE = calculateDeltaE(lab1, lab2)
-                assertTrue("deltaE of ${baseColor.toHex()} and ${currentColor.toHex()} is $deltaE which is greater than 5", deltaE < 5)
+                assertTrue(
+                    "deltaE of ${baseColor.toHex()} and " +
+                        "${currentColor.toHex()} is " +
+                        "$deltaE which is greater than 5",
+                    deltaE < 5
+                )
             }
         }
     }
@@ -111,7 +120,12 @@ class FuzzyCompareTest {
                 val currentColor = RGB(value2, 255 - value2, value2)
                 val lab2 = currentColor.toLAB()
                 val deltaE = calculateDeltaE(lab1, lab2)
-                assertTrue("deltaE of ${baseColor.toHex()} and ${currentColor.toHex()} is $deltaE which is greater than 5", deltaE < 5)
+                assertTrue(
+                    "deltaE of ${baseColor.toHex()} and " +
+                        "${currentColor.toHex()} is " +
+                        "$deltaE which is greater than 5",
+                    deltaE < 5
+                )
             }
         }
     }
@@ -126,7 +140,12 @@ class FuzzyCompareTest {
                 val currentColor = RGB(value2, value2, 255 - value2)
                 val lab2 = currentColor.toLAB()
                 val deltaE = calculateDeltaE(lab1, lab2)
-                assertTrue("deltaE of ${baseColor.toHex()} and ${currentColor.toHex()} is $deltaE which is greater than 5", deltaE < 5)
+                assertTrue(
+                    "deltaE of ${baseColor.toHex()} and " +
+                        "${currentColor.toHex()} is " +
+                        "$deltaE which is greater than 5",
+                    deltaE < 5
+                )
             }
         }
     }
@@ -135,10 +154,21 @@ class FuzzyCompareTest {
     fun largeArea() {
         repeat(1024) {
             repeat(768) {
-                val color1 = RGB(Random.nextInt(5, 250), Random.nextInt(5, 250), Random.nextInt(5, 250))
-                val color2 = RGB(color1.r + Random.nextInt(-5, 5), color1.g + Random.nextInt(-5, 5), color1.b + Random.nextInt(-5, 5))
+                val color1 = RGB(
+                    Random.nextInt(5, 250),
+                    Random.nextInt(5, 250),
+                    Random.nextInt(5, 250)
+                )
+                val color2 = RGB(
+                    color1.r + Random.nextInt(-5, 5),
+                    color1.g + Random.nextInt(-5, 5),
+                    color1.b + Random.nextInt(-5, 5)
+                )
                 val deltaE = calculateDeltaE(color1.toLAB(), color2.toLAB())
-                assertTrue("deltaE of ${color1.toHex()} and ${color2.toHex()} is $deltaE which is greater than 12.5", deltaE < 12.5)
+                assertTrue(
+                    "deltaE of ${color1.toHex()} and ${color2.toHex()} is $deltaE which is greater than 12.5",
+                    deltaE < 12.5
+                )
             }
         }
     }

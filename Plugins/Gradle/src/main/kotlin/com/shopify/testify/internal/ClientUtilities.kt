@@ -26,12 +26,12 @@ package com.shopify.testify.internal
 
 import com.shopify.testify.internal.StreamData.BufferedStream
 import com.shopify.testify.testifySettings
-import org.gradle.api.Project
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
+import org.gradle.api.Project
 
 sealed class StreamData {
 

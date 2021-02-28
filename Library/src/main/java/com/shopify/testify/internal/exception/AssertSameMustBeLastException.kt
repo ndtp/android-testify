@@ -23,4 +23,7 @@
  */
 package com.shopify.testify.internal.exception
 
-class AssertSameMustBeLastException : RuntimeException("\n\n*  assertSame must be called after setViewModifications and setEspressoActions\n")
+class AssertSameMustBeLastException : RuntimeException(
+    "\n\n*  assertSame must be called after setViewModifications " +
+        "and setEspressoActions\n"
+)

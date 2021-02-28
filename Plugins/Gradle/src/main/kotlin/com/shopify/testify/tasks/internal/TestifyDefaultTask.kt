@@ -48,7 +48,9 @@ abstract class TestifyDefaultTask : DefaultTask() {
     protected val divider = "-".repeat(60)
 
     protected open fun beforeAction() {
-        if (Devices.isEmpty) throw GradleException("No Android Virtual Device found. Please start an emulator prior to running Testify tasks.")
+        if (Devices.isEmpty) throw GradleException(
+            "No Android Virtual Device found. Please start an emulator prior to running Testify tasks."
+        )
     }
 
     @TaskAction

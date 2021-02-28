@@ -91,7 +91,10 @@ class ScreenshotUtility {
             context.getDir(DATA_DESTINATION_DIR, Context.MODE_PRIVATE)
         }
 
-        val deviceFormattedDirectory = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(context, null), DEFAULT_FOLDER_FORMAT)
+        val deviceFormattedDirectory = DeviceIdentifier.formatDeviceString(
+            DeviceIdentifier.DeviceStringFormatter(context, null),
+            DEFAULT_FOLDER_FORMAT
+        )
         return File(path, "$ROOT_DIR/$deviceFormattedDirectory")
     }
 

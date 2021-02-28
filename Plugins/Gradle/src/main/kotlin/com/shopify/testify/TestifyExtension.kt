@@ -104,14 +104,16 @@ internal data class TestifySettings(
 
     fun validate() {
         if (targetPackageId.isEmpty()) {
-            throw GradleExtensionException("""
+            throw GradleExtensionException(
+                """
 
   You must define an `applicationPackageId` in your `testify` gradle extension block:
 
       testify {
           applicationPackageId "com.example.app"
       }
-      """)
+      """
+            )
         }
     }
 }
