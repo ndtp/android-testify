@@ -71,7 +71,7 @@ class ScreenshotRuleExampleTests {
     @Test
     fun default() {
         rule.setViewModifications { harnessRoot ->
-            rule.activity.getViewState(name = "default").let {
+            rule.activity.getViewState(name = "_default").let {
                 harnessRoot.clientDetailsView.render(it)
                 rule.activity.title = it.name
             }

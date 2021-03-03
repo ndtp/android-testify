@@ -83,8 +83,7 @@ class ScreenshotUtility {
     }
 
     private fun getOutputDirectoryPath(context: Context): File {
-        val path: File
-        path = if (useSdCard()) {
+        val path: File = if (useSdCard()) {
             val sdCard = context.getExternalFilesDir(null)
             File("${sdCard?.absolutePath}/$SDCARD_DESTINATION_DIR")
         } else {
@@ -176,6 +175,12 @@ class ScreenshotUtility {
     fun deleteBitmap(context: Context, fileName: String): Boolean {
         val file = File(getOutputFilePath(context, fileName))
         return file.delete()
+    }
+
+    fun generateDiff(activity: Activity, fileName: String, baselineBitmap: Bitmap, currentBitmap: Bitmap) {
+        if (baselineBitmap.isMutable) print("")
+        val outputPath = getOutputFilePath(activity, "$fileName.diff")
+        saveBitmapToFile(activity, currentBitmap, outputPath)
     }
 
     companion object {

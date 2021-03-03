@@ -488,6 +488,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         screenshotUtility.deleteBitmap(activity, outputFileName)
                     )
                 } else {
+                    if (isDiffMode()) {
+                        screenshotUtility.generateDiff(activity, outputFileName, baselineBitmap, currentBitmap)
+                    }
                     if (isRecordMode()) {
                         instrumentationPrintln(
                             "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
@@ -563,6 +566,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private fun isRecordMode(): Boolean {
         val extras = InstrumentationRegistry.getArguments()
         return extras.containsKey("isRecordMode") && extras.get("isRecordMode") == "true"
+    }
+
+    private fun isDiffMode(): Boolean {
+        val extras = InstrumentationRegistry.getArguments()
+        return extras.containsKey("isDiffMode") && extras.get("isDiffMode") == "true"
     }
 
     private fun getModuleName(): String {
