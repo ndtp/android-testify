@@ -48,7 +48,12 @@ fun createBitmapUsingPixelCopy(activity: Activity, targetView: View?): Bitmap {
 
     PixelCopy.request(
         window,
-        Rect(locationInWindow[0], locationInWindow[1], locationInWindow[0] + view.width, locationInWindow[1] + view.height),
+        Rect(
+            locationInWindow[0],
+            locationInWindow[1],
+            locationInWindow[0] + view.width,
+            locationInWindow[1] + view.height
+        ),
         bitmap,
         { copyResult ->
             if (copyResult == PixelCopy.SUCCESS) {

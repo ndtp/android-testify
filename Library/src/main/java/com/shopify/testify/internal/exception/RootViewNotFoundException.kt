@@ -27,4 +27,7 @@ import android.content.Context
 import androidx.annotation.IdRes
 
 class RootViewNotFoundException(context: Context, @IdRes rootViewId: Int) :
-        RuntimeException("The provided RootViewId {R.id.${context.resources.getResourceEntryName(rootViewId)}} could not be found in the test harness Activity")
+    RuntimeException(
+        "The provided RootViewId {R.id.${context.resources.getResourceEntryName(rootViewId)}} could " +
+            "not be found in the test harness Activity"
+    )

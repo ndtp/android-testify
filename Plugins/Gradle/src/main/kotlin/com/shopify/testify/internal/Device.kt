@@ -67,7 +67,8 @@ object Device {
                 .shell()
                 .arguments(
                     "wm",
-                    "density")
+                    "density"
+                )
                 .execute().trim()
             return if (densityLine.contains("Override density", true)) {
                 densityLine.split(":").last().trim().toInt()
@@ -82,7 +83,8 @@ object Device {
                 .shell()
                 .arguments(
                     "wm",
-                    "size")
+                    "size"
+                )
                 .execute().trim()
             return sizeLine.substring("Physical size: ".length).trim()
         }

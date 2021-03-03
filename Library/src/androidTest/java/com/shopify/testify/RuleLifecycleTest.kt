@@ -28,7 +28,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.NoScreenshotsOnUiThreadException
-import java.util.Stack
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.fail
@@ -38,12 +37,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
+import java.util.Stack
 
 @RunWith(AndroidJUnit4::class)
 class RuleLifecycleTest {
 
-    @get:Rule var rule: ScreenshotRule<TestActivity> = ScreenshotRule(TestActivity::class.java)
-    @get:Rule var thrown: ExpectedException = ExpectedException.none()
+    @get:Rule
+    var rule: ScreenshotRule<TestActivity> = ScreenshotRule(TestActivity::class.java)
+
+    @get:Rule
+    var thrown: ExpectedException = ExpectedException.none()
 
     @Before
     fun beforeMethod() {
@@ -66,7 +69,10 @@ class RuleLifecycleTest {
         assertExpectedOrder(3, "testMethod2")
 
         thrown.expect(RuntimeException::class.java)
-        thrown.expectMessage("com.shopify.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException: Please add @ScreenshotInstrumentation for the test 'testMethod2'")
+        thrown.expectMessage(
+            "com.shopify.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException: " +
+                "Please add @ScreenshotInstrumentation for the test 'testMethod2'"
+        )
 
         rule.assertSame()
     }
@@ -125,7 +131,15 @@ class RuleLifecycleTest {
 
         private fun assertExpectedOrder(order: Int, tag: String) {
             if (lifecycleVisits.size != order) {
-                fail(String.format("In method [%s], expected %d but was %d\n%s", tag, order, lifecycleVisits.size, lifecycleVisits.toString()))
+                fail(
+                    String.format(
+                        "In method [%s], expected %d but was %d\n%s",
+                        tag,
+                        order,
+                        lifecycleVisits.size,
+                        lifecycleVisits.toString()
+                    )
+                )
             }
             lifecycleVisits.push(tag)
         }

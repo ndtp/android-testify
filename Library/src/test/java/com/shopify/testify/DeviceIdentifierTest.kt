@@ -50,21 +50,33 @@ class DeviceIdentifierTest {
 
     @Test
     fun testFolderNameFormat() {
-        assertEquals("21-800x1024@380dp-en_US", DeviceIdentifier.formatDeviceString(formatter, DeviceIdentifier.DEFAULT_FOLDER_FORMAT))
+        assertEquals(
+            "21-800x1024@380dp-en_US",
+            DeviceIdentifier.formatDeviceString(formatter, DeviceIdentifier.DEFAULT_FOLDER_FORMAT)
+        )
     }
 
     @Test
     fun testFileNameFormat() {
-        assertEquals("Class_method", DeviceIdentifier.formatDeviceString(formatter, DeviceIdentifier.DEFAULT_NAME_FORMAT))
+        assertEquals(
+            "Class_method",
+            DeviceIdentifier.formatDeviceString(formatter, DeviceIdentifier.DEFAULT_NAME_FORMAT)
+        )
     }
 
     @Test
     fun testCIFormat() {
-        assertEquals("21-800x1024@380dp-en_US#Class_method", DeviceIdentifier.formatDeviceString(formatter, "a-wxh@d-l#c_n"))
+        assertEquals(
+            "21-800x1024@380dp-en_US#Class_method",
+            DeviceIdentifier.formatDeviceString(formatter, "a-wxh@d-l#c_n")
+        )
     }
 
     @Test
     fun testCustomFormat() {
-        assertEquals("21Class380dp1024en_USmethod800", DeviceIdentifier.formatDeviceString(formatter, "acdhlnw"))
+        assertEquals(
+            "21Class380dp1024en_USmethod800",
+            DeviceIdentifier.formatDeviceString(formatter, "acdhlnw")
+        )
     }
 }

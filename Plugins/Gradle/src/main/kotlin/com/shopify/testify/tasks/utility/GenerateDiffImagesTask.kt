@@ -33,7 +33,8 @@ import org.gradle.api.Project
 
 open class GenerateDiffImagesTask : TestifyUtilityTask() {
 
-    override fun getDescription() = "Create high-contrast images highlighting differences between the current screenshot and the baseline"
+    override fun getDescription() = "Create high-contrast images highlighting differences " +
+        "between the current screenshot and the baseline"
 
     override fun taskAction() {
         project.generateDiffs()

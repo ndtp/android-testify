@@ -40,7 +40,8 @@ open class HidePasswordsTasks : TestifyUtilityTask() {
             "put",
             "system",
             "show_password",
-            "0")
+            "0"
+        )
             .execute()
 
         println("  Success")

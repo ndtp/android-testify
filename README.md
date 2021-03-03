@@ -2,7 +2,7 @@
 
 Add screenshots to your Android tests
 
-<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=master"/></a> <a href='https://bintray.com/shopify/shopify-android/testify-plugin/1.0.0-rc3/link' alt="Testify download"><img src='https://api.bintray.com/packages/shopify/shopify-android/testify-plugin/images/download.svg?version=1.0.0-rc3'></a>
+<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=master"/></a> <a href='https://bintray.com/shopify/shopify-android/testify-plugin/1.0.0/link' alt="Testify download"><img src='https://api.bintray.com/packages/shopify/shopify-android/testify-plugin/images/download.svg?version=1.0.0'></a>
 ---
 
 Expand your test coverage by including the View-layer. Testify allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.
@@ -21,18 +21,35 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.0.0-rc3"
+        classpath "com.shopify.testify:plugin:1.0.0"
     }
 }
 
 apply plugin: 'com.shopify.testify'
 ```
 
+## Device Configuration
+
 It is required for you to turn off animations on your test device — leaving system animations turned on in the test device might cause synchronization issues which may lead your test to fail. Turn off animations from _Settings_ by opening _Developer options_ and turning all the following options off:
 
 - **Window animation scale**
 - **Transition animation scale**
 - **Animator duration scale**
+
+You can find a recommended emulator configuration [here](https://github.com/Shopify/android-testify/wiki/Recipes#setting-up-an-emulator-to-run-the-sample).
+
+## Android Studio Plugin
+
+<img width="800px" src="./Plugins/IntelliJ/marketplace/screenshot_22606.png"/>
+
+Testify screenshot tests are built on top of Android Instrumentation tests and so already integrate seamlessly with existing test suites. Screenshots can be captured directly from within Android Studio or using the Gradle command-line tools.
+
+However, the current Android Studio support relies fully on the fact that Testify tests extend ActivityTestRule and can be invoked using the built-in support for running instrumentation tests with various commands (notably sidebar icons) in Android Studio. These are limited to run and debug commands. Android Studio has no concept of recording or pulling screenshots from the device. Thus, it requires developers to drop to the Gradle Panel or command-line to fully use Testify. 
+
+With the installation of an an Intellij-platform plugin, many common Testify actions can be seamlessly integrated into your IDE. The Testify Android Studio plugin is available for Android Studio version 4.0 through 4.2 via the Intellij Marketplace.
+
+<a href="https://plugins.jetbrains.com/plugin/14687-android-testify--screenshot-instrumentation-tests"><img width="300px" alt="Get from Marketplace" src="./Plugins/IntelliJ/marketplace/get.png"/></a>
+
 
 # Write a test
 
@@ -61,14 +78,6 @@ For additional testing scenarios, please refer to the [recipe book](RECIPES.md).
 
 Testify works by referencing a PNG baseline found in your `androidTest/assets` directory for each test case that you write. As you write and run tests, an updated baseline image is maintained on your device or emulator. In order to update the baseline, you need to copy or pull the image from the device to your local development environment. Testify offers a variety of Gradle tasks to simplify the copying of your baseline images.
 
-### Pull images from the device
-
-Copy images from the `app_images` directory on your emulator to your local `androidTest/assets` directory.
-
-```bash
-./gradlew :screenshotPull
-```
-
 ### Record a new baseline
 
 Run all the screenshot tests in your app and update the local baseline.
@@ -85,6 +94,14 @@ Run all the screenshot tests in your app and fail if any differences from the ba
 ./gradlew :screenshotTest
 ```
 
+### Pull images from the device
+
+Copy images from the `app_images` directory on your emulator to your local `androidTest/assets` directory.
+
+```bash
+./gradlew :screenshotPull
+```
+
 ### Erase any existing images from the device
 
 Clear any baseline images that may be remaining on your emulator.
@@ -99,7 +116,7 @@ There are a variety of additional Gradle commands available through the Testify 
 
     MIT License
     
-    Copyright (c) 2020 Shopify
+    Copyright (c) 2021 Shopify
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

@@ -46,7 +46,10 @@ internal class OrientationHelper<T : Activity>(
         this.rule = rule
 
         // Set the orientation based on how the activity was launched
-        deviceOrientation = if (activity.isLandscape) ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+        deviceOrientation = if (activity.isLandscape)
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        else
+            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
 
         this.requestedOrientation?.let {
             if (!activity.isRequestedOrientation(it)) {
@@ -74,7 +77,9 @@ internal class OrientationHelper<T : Activity>(
     }
 
     fun shouldIgnoreOrientation(orientationToIgnore: Int): Boolean {
-        require(orientationToIgnore in ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED..ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        require(
+            orientationToIgnore in ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED..ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
         return when (orientationToIgnore) {
             ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED -> false
             else -> activity.isRequestedOrientation(orientationToIgnore)
@@ -98,7 +103,7 @@ internal class OrientationHelper<T : Activity>(
      */
     private fun Activity.isRequestedOrientation(requestedOrientation: Int): Boolean {
         return (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && this.isLandscape) ||
-                (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && !this.isLandscape)
+            (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && !this.isLandscape)
     }
 
     /**

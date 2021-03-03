@@ -53,9 +53,9 @@ internal fun Project.listFailedScreenshotsWithPath(): List<String> {
     val src = screenshotDirectory
 
     val rootDir = Adb()
-            .shell()
-            .runAs(this.testifySettings.targetPackageId)
-            .listFiles(src)
+        .shell()
+        .runAs(this.testifySettings.targetPackageId)
+        .listFiles(src)
     val files = rootDir.flatMap {
         Adb()
             .shell()

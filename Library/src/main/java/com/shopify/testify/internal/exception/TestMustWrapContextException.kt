@@ -24,4 +24,7 @@
 package com.shopify.testify.internal.exception
 
 class TestMustWrapContextException(activityName: String) :
-    RuntimeException("\n\n* You must override attachBaseContext and invoke super.attachBaseContext(newBase?.wrap()) from $activityName when using setLocale or setFontScale to test *\n")
+    RuntimeException(
+        "\n\n* You must override attachBaseContext and invoke super.attachBaseContext(newBase?.wrap()) " +
+            "from $activityName when using setLocale or setFontScale to test *\n"
+    )

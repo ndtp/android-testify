@@ -24,8 +24,8 @@
 
 package com.shopify.testify.internal
 
-import java.io.File
 import org.gradle.api.Project
+import java.io.File
 
 private fun generateDiff(sourceFile: File, diffFile: String) {
     print("    Extracting differences for ${sourceFile.nameWithoutExtension}")
@@ -49,7 +49,10 @@ fun Project.generateDiffs() {
         println("  No failed screenshot tests found.")
         return
     } else {
-        println("  ${failedScreenshots.size} failed screenshot test${if (failedScreenshots.size == 1) "" else "s"} found")
+        println(
+            "  ${failedScreenshots.size} failed screenshot test" +
+                "${if (failedScreenshots.size == 1) "" else "s"} found"
+        )
     }
 
     println(AnsiFormat.Green, "  Generating diffs for changed screenshots...")

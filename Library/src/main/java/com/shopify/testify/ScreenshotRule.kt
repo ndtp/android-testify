@@ -78,6 +78,7 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.util.HashSet
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -395,16 +396,28 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         try {
             try {
-                outputFileName = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, testNameComponents), DEFAULT_NAME_FORMAT)
+                outputFileName = DeviceIdentifier.formatDeviceString(
+                    DeviceIdentifier.DeviceStringFormatter(
+                        testContext,
+                        testNameComponents
+                    ), DEFAULT_NAME_FORMAT
+                )
 
                 if (isRunningOnUiThread()) {
                     throw NoScreenshotsOnUiThreadException()
                 }
 
                 if (orientationHelper.shouldIgnoreOrientation(orientationToIgnore)) {
-                    val orientationName = if (orientationToIgnore == SCREEN_ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
-                    instrumentationPrintln("\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + testName + " due to $orientationName orientation" + 27.toChar() + "[0m")
-                    assertFalse("Output file should not exist for $orientationName orientation", outputFileExists)
+                    val orientationName =
+                        if (orientationToIgnore == SCREEN_ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
+                    instrumentationPrintln(
+                        "\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + testName +
+                            " due to $orientationName orientation" + 27.toChar() + "[0m"
+                    )
+                    assertFalse(
+                        "Output file should not exist for $orientationName orientation",
+                        outputFileExists
+                    )
                     return
                 }
 
@@ -431,7 +444,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     provider(getRootView(activity), exclusionRects)
                 }
 
-                val currentBitmap = screenshotUtility.createBitmapFromActivity(activity, outputFileName, screenshotView)
+                val currentBitmap = screenshotUtility.createBitmapFromActivity(
+                    activity,
+                    outputFileName,
+                    screenshotView
+                )
                 assertNotNull("Failed to capture bitmap from activity", currentBitmap)
 
                 if (isLayoutInspectionModeEnabled) {
@@ -440,14 +457,22 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 val baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(testContext, testName)
                     ?: if (isRecordMode()) {
-                        instrumentationPrintln("\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName + 27.toChar() + "[0m")
+                        instrumentationPrintln(
+                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
+                                27.toChar() + "[0m"
+                        )
                         return
                     } else {
                         throw ScreenshotBaselineNotDefinedException(
-                                moduleName = getModuleName(),
-                                testName = testName,
-                                testClass = fullyQualifiedTestPath,
-                                deviceKey = DeviceIdentifier.formatDeviceString(DeviceIdentifier.DeviceStringFormatter(testContext, null), DeviceIdentifier.DEFAULT_FOLDER_FORMAT)
+                            moduleName = getModuleName(),
+                            testName = testName,
+                            testClass = fullyQualifiedTestPath,
+                            deviceKey = DeviceIdentifier.formatDeviceString(
+                                DeviceIdentifier.DeviceStringFormatter(
+                                    testContext,
+                                    null
+                                ), DeviceIdentifier.DEFAULT_FOLDER_FORMAT
+                            )
                         )
                     }
 
@@ -458,10 +483,16 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 }
 
                 if (bitmapCompare(baselineBitmap, currentBitmap!!)) {
-                    assertTrue("Could not delete cached bitmap $testName", screenshotUtility.deleteBitmap(activity, outputFileName))
+                    assertTrue(
+                        "Could not delete cached bitmap $testName",
+                        screenshotUtility.deleteBitmap(activity, outputFileName)
+                    )
                 } else {
                     if (isRecordMode()) {
-                        instrumentationPrintln("\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName + 27.toChar() + "[0m")
+                        instrumentationPrintln(
+                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
+                                27.toChar() + "[0m"
+                        )
                     } else {
                         throw ScreenshotIsDifferentException(getModuleName(), fullyQualifiedTestPath)
                     }

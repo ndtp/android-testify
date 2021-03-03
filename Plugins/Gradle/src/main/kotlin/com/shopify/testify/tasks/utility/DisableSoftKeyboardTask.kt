@@ -40,7 +40,8 @@ open class DisableSoftKeyboardTask : TestifyUtilityTask() {
             "put",
             "secure",
             "show_ime_with_hard_keyboard",
-            "0")
+            "0"
+        )
             .execute()
 
         println("  Success")
