@@ -24,9 +24,9 @@
 package com.shopify.testify.internal.compare
 
 import android.graphics.Bitmap
-import androidx.annotation.ColorInt
 import com.github.ajalt.colormath.RGB
 import com.shopify.testify.internal.compare.colorspace.calculateDeltaE
+import java.nio.IntBuffer
 
 internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
 
@@ -39,18 +39,20 @@ internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
             return false
         }
 
-        val height = baselineBitmap.height
         val width = baselineBitmap.width
+        val height = baselineBitmap.height
 
-        for (y in 0 until height) {
-            x@ for (x in 0 until width) {
-                @ColorInt val baselineColor = baselineBitmap.getPixel(x, y)
-                @ColorInt val currentColor = currentBitmap.getPixel(x, y)
+        val baselineBuffer = IntBuffer.allocate(width * height).apply {
+            baselineBitmap.copyPixelsToBuffer(this)
+        }
 
-                if (baselineColor == currentColor) continue@x
+        val currentBuffer = IntBuffer.allocate(width * height).apply {
+            currentBitmap.copyPixelsToBuffer(this)
+        }
 
-                val baselineLab = RGB.fromInt(baselineColor).toLAB()
-                val currentLab = RGB.fromInt(currentColor).toLAB()
+        for (i in 0 until (width * height)) {
+            val baselineColor = baselineBuffer[i]
+            val currentColor = currentBuffer[i]
 
                 val deltaE = calculateDeltaE(
                     baselineLab.l,
@@ -65,6 +67,7 @@ internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
                 }
             }
         }
+
         return true
     }
 }

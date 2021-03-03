@@ -34,6 +34,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.os.Debug
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
@@ -78,6 +79,7 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.util.Date
 import java.util.HashSet
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
@@ -482,7 +484,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     else -> SameAsCompare()::compareBitmaps
                 }
 
-                if (bitmapCompare(baselineBitmap, currentBitmap!!)) {
+                val start = Date().time
+                val x = bitmapCompare(baselineBitmap, currentBitmap!!)
+                val end = Date().time
+                Log.d("JETTE", "$testName elapsed time: ${end - start}ms")
+
+                if (x) {
                     assertTrue(
                         "Could not delete cached bitmap $testName",
                         screenshotUtility.deleteBitmap(activity, outputFileName)

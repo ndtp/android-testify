@@ -28,6 +28,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Debug
 import android.util.Log
 import android.view.View
@@ -44,6 +45,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.nio.IntBuffer
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -178,9 +180,29 @@ class ScreenshotUtility {
     }
 
     fun generateDiff(activity: Activity, fileName: String, baselineBitmap: Bitmap, currentBitmap: Bitmap) {
-        if (baselineBitmap.isMutable) print("")
         val outputPath = getOutputFilePath(activity, "$fileName.diff")
-        saveBitmapToFile(activity, currentBitmap, outputPath)
+
+        val width = currentBitmap.width
+        val height = currentBitmap.height
+
+        val baselineBuffer = IntBuffer.allocate(width * height)
+        baselineBitmap.copyPixelsToBuffer(baselineBuffer)
+
+        val currentBuffer = IntBuffer.allocate(width * height)
+        currentBitmap.copyPixelsToBuffer(currentBuffer)
+
+        val diffBuffer = IntBuffer.allocate(width * height)
+        for (i in 0 until (width * height)) {
+            if (baselineBuffer[i] == currentBuffer[i]) {
+                diffBuffer.put(i, Color.BLACK)
+            } else {
+                diffBuffer.put(i, Color.RED)
+            }
+        }
+
+        val bitmap = Bitmap.createBitmap(diffBuffer.array(), width, height, Bitmap.Config.ARGB_8888)
+        saveBitmapToFile(activity, bitmap, outputPath)
+        bitmap.recycle()
     }
 
     companion object {
