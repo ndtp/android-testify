@@ -70,6 +70,7 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun default() {
+        TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule.setViewModifications { harnessRoot ->
             rule.activity.getViewState(name = "_default").let {
                 harnessRoot.clientDetailsView.render(it)
