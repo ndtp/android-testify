@@ -50,9 +50,6 @@ import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.internal.DeviceIdentifier
 import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
-import com.shopify.testify.internal.processor.compare.FuzzyCompare
-import com.shopify.testify.internal.processor.compare.RegionCompare
-import com.shopify.testify.internal.processor.compare.SameAsCompare
 import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.MissingAssertSameException
@@ -73,6 +70,10 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
+import com.shopify.testify.internal.processor.compare.FuzzyCompare
+import com.shopify.testify.internal.processor.compare.RegionCompare
+import com.shopify.testify.internal.processor.compare.SameAsCompare
+import com.shopify.testify.internal.processor.diff.HighContrastDiff
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -496,7 +497,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     )
                 } else {
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                        screenshotUtility.generateDiff(activity, outputFileName, baselineBitmap, currentBitmap)
+                        HighContrastDiff()
+                            .name(outputFileName)
+                            .baseline(baselineBitmap)
+                            .current(currentBitmap)
+                            .generate(context = activity)
                     }
                     if (isRecordMode()) {
                         instrumentationPrintln(

@@ -28,7 +28,6 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.os.Debug
 import android.util.Log
 import android.view.View
@@ -37,15 +36,14 @@ import com.shopify.testify.TestifyFeatures.CanvasCapture
 import com.shopify.testify.TestifyFeatures.PixelCopyCapture
 import com.shopify.testify.internal.DeviceIdentifier
 import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_FOLDER_FORMAT
+import com.shopify.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import com.shopify.testify.internal.processor.capture.createBitmapFromCanvas
 import com.shopify.testify.internal.processor.capture.createBitmapFromDrawingCache
 import com.shopify.testify.internal.processor.capture.createBitmapUsingPixelCopy
-import com.shopify.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.nio.IntBuffer
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -58,7 +56,7 @@ class ScreenshotUtility {
             return options
         }
 
-    private fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
+    fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
         if (bitmap == null) {
             return false
         }
@@ -177,32 +175,6 @@ class ScreenshotUtility {
     fun deleteBitmap(context: Context, fileName: String): Boolean {
         val file = File(getOutputFilePath(context, fileName))
         return file.delete()
-    }
-
-    fun generateDiff(activity: Activity, fileName: String, baselineBitmap: Bitmap, currentBitmap: Bitmap) {
-        val outputPath = getOutputFilePath(activity, "$fileName.diff")
-
-        val width = currentBitmap.width
-        val height = currentBitmap.height
-
-        val baselineBuffer = IntBuffer.allocate(width * height)
-        baselineBitmap.copyPixelsToBuffer(baselineBuffer)
-
-        val currentBuffer = IntBuffer.allocate(width * height)
-        currentBitmap.copyPixelsToBuffer(currentBuffer)
-
-        val diffBuffer = IntBuffer.allocate(width * height)
-        for (i in 0 until (width * height)) {
-            if (baselineBuffer[i] == currentBuffer[i]) {
-                diffBuffer.put(i, Color.BLACK)
-            } else {
-                diffBuffer.put(i, Color.RED)
-            }
-        }
-
-        val bitmap = Bitmap.createBitmap(diffBuffer.array(), width, height, Bitmap.Config.ARGB_8888)
-        saveBitmapToFile(activity, bitmap, outputPath)
-        bitmap.recycle()
     }
 
     companion object {
