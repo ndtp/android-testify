@@ -3,7 +3,7 @@ package com.shopify.testify
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import com.shopify.testify.internal.compare.FuzzyCompare
+import com.shopify.testify.internal.processor.compare.FuzzyCompare
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule

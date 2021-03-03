@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.internal.capture
+package com.shopify.testify.internal.processor.capture
 
 import android.app.Activity
 import android.graphics.Bitmap

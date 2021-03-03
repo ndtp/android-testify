@@ -50,9 +50,9 @@ import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.internal.DeviceIdentifier
 import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
-import com.shopify.testify.internal.compare.FuzzyCompare
-import com.shopify.testify.internal.compare.RegionCompare
-import com.shopify.testify.internal.compare.SameAsCompare
+import com.shopify.testify.internal.processor.compare.FuzzyCompare
+import com.shopify.testify.internal.processor.compare.RegionCompare
+import com.shopify.testify.internal.processor.compare.SameAsCompare
 import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.MissingAssertSameException

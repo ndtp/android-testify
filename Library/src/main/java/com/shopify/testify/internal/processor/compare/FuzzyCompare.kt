@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.internal.compare
+package com.shopify.testify.internal.processor.compare
 
 import android.graphics.Bitmap
 import com.github.ajalt.colormath.RGB
-import com.shopify.testify.internal.compare.colorspace.calculateDeltaE
+import com.shopify.testify.internal.processor.compare.colorspace.calculateDeltaE
 import java.nio.IntBuffer
 
 internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
