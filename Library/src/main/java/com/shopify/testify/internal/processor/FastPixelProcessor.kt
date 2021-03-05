@@ -1,10 +1,9 @@
 package com.shopify.testify.internal.processor
 
-import android.content.Context
 import android.graphics.Bitmap
 import java.nio.IntBuffer
 
-class FastPixelProcessor private constructor(private val context: Context) {
+class FastPixelProcessor private constructor() {
 
     private var baselineBitmap: Bitmap? = null
     private var currentBitmap: Bitmap? = null
@@ -19,27 +18,40 @@ class FastPixelProcessor private constructor(private val context: Context) {
         return this
     }
 
-    fun analyze() {
-
-    }
-
-    fun transform(transformer: (baselinePixel: Int, currentPixel: Int) -> Int): TransformResult {
+    private fun prepareBuffers(): ImageBuffers {
         val width = currentBitmap!!.width
         val height = currentBitmap!!.height
 
-        val baselineBuffer = IntBuffer.allocate(width * height)
-        baselineBitmap!!.copyPixelsToBuffer(baselineBuffer)
+        return ImageBuffers(
+            width = width,
+            height = height,
+            baselineBuffer = IntBuffer.allocate(width * height),
+            currentBuffer = IntBuffer.allocate(width * height)
+        ).apply {
+            baselineBitmap!!.copyPixelsToBuffer(baselineBuffer)
+            currentBitmap!!.copyPixelsToBuffer(currentBuffer)
+            baselineBitmap = null
+            currentBitmap = null
+        }
+    }
 
-        val currentBuffer = IntBuffer.allocate(width * height)
-        currentBitmap!!.copyPixelsToBuffer(currentBuffer)
+    fun analyze(analyzer: (baselinePixel: Int, currentPixel: Int) -> Boolean): Boolean {
+        val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
+        for (i in 0 until (width * height)) {
+            if (!analyzer(baselineBuffer[i], currentBuffer[i])) {
+                return false
+            }
+        }
+        return true
+    }
+
+    fun transform(transformer: (baselinePixel: Int, currentPixel: Int) -> Int): TransformResult {
+        val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
 
         val diffBuffer = IntBuffer.allocate(width * height)
         for (i in 0 until (width * height)) {
             diffBuffer.put(transformer(baselineBuffer[i], currentBuffer[i]))
         }
-
-        baselineBitmap = null
-        currentBitmap = null
 
         return TransformResult(
             width,
@@ -47,6 +59,13 @@ class FastPixelProcessor private constructor(private val context: Context) {
             diffBuffer.array()
         )
     }
+
+    private data class ImageBuffers(
+        val width: Int,
+        val height: Int,
+        val baselineBuffer: IntBuffer,
+        val currentBuffer: IntBuffer
+    )
 
     @Suppress("ArrayInDataClass")
     data class TransformResult(
@@ -56,8 +75,8 @@ class FastPixelProcessor private constructor(private val context: Context) {
     )
 
     companion object {
-        fun create(context: Context): FastPixelProcessor {
-            return FastPixelProcessor(context)
+        fun create(): FastPixelProcessor {
+            return FastPixelProcessor()
         }
     }
 }

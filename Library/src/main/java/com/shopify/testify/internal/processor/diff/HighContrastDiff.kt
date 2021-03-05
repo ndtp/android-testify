@@ -15,7 +15,7 @@ class HighContrastDiff {
 
     fun generate(context: Context) {
         val transformResult = FastPixelProcessor
-            .create(context)
+            .create()
             .baseline(baselineBitmap)
             .current(currentBitmap)
             .transform { baselinePixel, currentPixel ->
