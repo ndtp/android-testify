@@ -242,8 +242,8 @@ class ScreenshotRuleExampleTests {
                     avatar = R.drawable.avatar2,
                     heading = harnessRoot.context.getString(R.string.client_since, "2019")
                 )
-                harnessRoot.clientDetailsView.render(it)
-                rule.activity.title = it.name
+                harnessRoot.clientDetailsView.render(state)
+                rule.activity.title = state.name
             }
         }.assertSame()
     }
