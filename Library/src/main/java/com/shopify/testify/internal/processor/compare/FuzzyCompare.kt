@@ -54,20 +54,23 @@ internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
             val baselineColor = baselineBuffer[i]
             val currentColor = currentBuffer[i]
 
-                val deltaE = calculateDeltaE(
-                    baselineLab.l,
-                    baselineLab.a,
-                    baselineLab.b,
-                    currentLab.l,
-                    currentLab.a,
-                    currentLab.b
-                )
-                if ((100.0 - deltaE) / 100.0f < exactness) {
-                    return false
-                }
+            if (baselineColor == currentColor) continue
+
+            val baselineLab = RGB.fromInt(baselineColor).toLAB()
+            val currentLab = RGB.fromInt(currentColor).toLAB()
+
+            val deltaE = calculateDeltaE(
+                baselineLab.l,
+                baselineLab.a,
+                baselineLab.b,
+                currentLab.l,
+                currentLab.a,
+                currentLab.b
+            )
+            if ((100.0 - deltaE) / 100.0f < exactness) {
+                return false
             }
         }
-
         return true
     }
 }

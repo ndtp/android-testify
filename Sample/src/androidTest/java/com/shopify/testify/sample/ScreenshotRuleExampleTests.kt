@@ -37,6 +37,7 @@ import com.shopify.testify.TestifyFeatures
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.extensions.boundingBox
+import com.shopify.testify.internal.exception.ScreenshotIsDifferentException
 import com.shopify.testify.sample.test.TestHarnessActivity
 import com.shopify.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import com.shopify.testify.sample.test.clientDetailsView
@@ -54,7 +55,8 @@ class ScreenshotRuleExampleTests {
      * [R.id.harness_root] is the topmost/root view in the hierarchy. Testify will load views in
      * this root.
      */
-    @get:Rule var rule = ScreenshotRule(
+    @get:Rule
+    var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
         rootViewId = R.id.harness_root
@@ -70,9 +72,8 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun default() {
-        TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule.setViewModifications { harnessRoot ->
-            rule.activity.getViewState(name = "_default").let {
+            rule.activity.getViewState(name = "default").let {
                 harnessRoot.clientDetailsView.render(it)
                 rule.activity.title = it.name
             }
@@ -226,6 +227,25 @@ class ScreenshotRuleExampleTests {
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#${r}0000"))
             }
             .assertSame()
+    }
+
+
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test(expected = ScreenshotIsDifferentException::class)
+    fun generateDiffs() {
+        TestifyFeatures.GenerateDiffs.setEnabled(true)
+        rule.setViewModifications { harnessRoot ->
+            rule.activity.getViewState(name = "A Name").let {
+                val state = it.copy(
+                    name = "A Different Name",
+                    avatar = R.drawable.avatar2,
+                    heading = harnessRoot.context.getString(R.string.client_since, "2019")
+                )
+                harnessRoot.clientDetailsView.render(it)
+                rule.activity.title = it.name
+            }
+        }.assertSame()
     }
 
     /**
