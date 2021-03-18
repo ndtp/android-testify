@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,13 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.internal.compare
+package com.shopify.testify.internal.processor.compare
 
 import android.graphics.Bitmap
-import android.graphics.Rect
-import androidx.annotation.ColorInt
+import com.github.ajalt.colormath.RGB
+import com.shopify.testify.internal.processor.ParallelPixelProcessor
+import com.shopify.testify.internal.processor.compare.colorspace.calculateDeltaE
 
-internal class RegionCompare(private val exclusionRects: Set<Rect>) : BitmapCompare {
+internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
 
     override fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
         if (baselineBitmap.height != currentBitmap.height) {
@@ -38,18 +39,31 @@ internal class RegionCompare(private val exclusionRects: Set<Rect>) : BitmapComp
             return false
         }
 
-        for (y in 0 until baselineBitmap.height) {
-            loop@ for (x in 0 until baselineBitmap.width) {
-
-                for (rect in exclusionRects) {
-                    if (rect.contains(x, y)) continue@loop
-                }
-
-                @ColorInt val baselineColor = baselineBitmap.getPixel(x, y)
-                @ColorInt val currentColor = currentBitmap.getPixel(x, y)
-                if (baselineColor != currentColor) return false
-            }
+        if (baselineBitmap.sameAs(currentBitmap)) {
+            return true
         }
-        return true
+
+        return ParallelPixelProcessor
+            .create()
+            .baseline(baselineBitmap)
+            .current(currentBitmap)
+            .analyze { baselinePixel, currentPixel ->
+                if (baselinePixel == currentPixel) {
+                    /* return  */ true
+                } else {
+                    val baselineLab = RGB.fromInt(baselinePixel).toLAB()
+                    val currentLab = RGB.fromInt(currentPixel).toLAB()
+
+                    val deltaE = calculateDeltaE(
+                        baselineLab.l,
+                        baselineLab.a,
+                        baselineLab.b,
+                        currentLab.l,
+                        currentLab.a,
+                        currentLab.b
+                    )
+                    /* return  */ ((100.0 - deltaE) / 100.0f >= exactness)
+                }
+            }
     }
 }

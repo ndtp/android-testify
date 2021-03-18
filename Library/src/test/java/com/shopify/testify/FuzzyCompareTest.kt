@@ -25,7 +25,7 @@ package com.shopify.testify
 
 import com.github.ajalt.colormath.LAB
 import com.github.ajalt.colormath.RGB
-import com.shopify.testify.internal.compare.colorspace.calculateDeltaE
+import com.shopify.testify.internal.processor.compare.colorspace.calculateDeltaE
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
