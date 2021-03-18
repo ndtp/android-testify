@@ -4,6 +4,10 @@
 
 ### Library
 
+#### Added
+
+- Added `TestifyFeatures.GenerateDiffs`. When enabled, will output a `.diff.png` alongside existing baseline images. These images are high-contrast images where each difference, regardless of how minor, are indicated in red against a black background. See the `generateDiffs` test in `ScreenshotRuleExampleTests` for an example. Diff images will be pulled from the device when running `screenshotPull`.
+
 #### Changes
 
 - Optional constructor argument enableReporter added to ScreenshotRule. Allows you to specify whether to run the reporter for this test rule.
