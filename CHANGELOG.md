@@ -4,6 +4,10 @@
 
 ### Library
 
+#### Added
+
+- Added `TestifyFeatures.GenerateDiffs`. When enabled, will output a `.diff.png` alongside existing baseline images. These images are high-contrast images where each difference, regardless of how minor, are indicated in red against a black background. See the `generateDiffs` test in `ScreenshotRuleExampleTests` for an example. Diff images will be pulled from the device when running `screenshotPull`.
+
 #### Changes
 
 - FuzzyCompare (setExactness) is now multi-threaded and significantly faster.

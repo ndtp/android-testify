@@ -72,6 +72,7 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
+import com.shopify.testify.internal.processor.diff.HighContrastDiff
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -488,6 +489,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         screenshotUtility.deleteBitmap(activity, outputFileName)
                     )
                 } else {
+                    if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
+                        HighContrastDiff()
+                            .name(outputFileName)
+                            .baseline(baselineBitmap)
+                            .current(currentBitmap)
+                            .generate(context = activity)
+                    }
                     if (isRecordMode()) {
                         instrumentationPrintln(
                             "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +

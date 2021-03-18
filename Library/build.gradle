@@ -77,4 +77,4 @@ android {
 }
 
 apply from: "bintray.build.gradle"
-
+apply from: '../ktlint.gradle'

@@ -56,7 +56,7 @@ class ScreenshotUtility {
             return options
         }
 
-    private fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
+    fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
         if (bitmap == null) {
             return false
         }
@@ -83,8 +83,7 @@ class ScreenshotUtility {
     }
 
     private fun getOutputDirectoryPath(context: Context): File {
-        val path: File
-        path = if (useSdCard()) {
+        val path: File = if (useSdCard()) {
             val sdCard = context.getExternalFilesDir(null)
             File("${sdCard?.absolutePath}/$SDCARD_DESTINATION_DIR")
         } else {

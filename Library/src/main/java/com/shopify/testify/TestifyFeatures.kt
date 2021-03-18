@@ -8,6 +8,7 @@ enum class TestifyFeatures(internal val tag: String, private val defaultValue: B
     ExampleFeature("testify-example", defaultValue = true),
     ExampleDisabledFeature("testify-disabled"),
     Locale("testify-experimental-locale", defaultValue = true),
+    GenerateDiffs("testify-generate-diffs", defaultValue = false),
     CanvasCapture("testify-canvas-capture"),
     PixelCopyCapture("testify-experimental-capture");
 
