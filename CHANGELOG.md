@@ -1,5 +1,33 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+#### Changes
+
+- ScreenshotRule constructor argument activityClass is now `protected`
+- ScreenshotRule constructor argument rootViewId is now `protected`
+- ScreenshotRule constructor argument launchActivity is now `protected`
+- ScreenshotRule.testNameComponents is now `public`
+- ScreenshotRule.fullyQualifiedTestPath is now `public`
+- ScreenshotRule.getRootView is now `public`
+- ScreenshotRule.instrumentationPrintln is now `public`
+- ScreenshotRule.isRecordMode is now `public`
+- ScreenshotRule.getModuleName is now `public`
+- ScreenshotRule.beforeActivityLaunched() is now annotated with `@CallSuper`
+- ScreenshotRule.afterActivityLaunched() is now annotated with `@CallSuper`
+
+#### Added
+
+- Added method `ScreenshotRule.beforeAssertSame()`. This method is invoked immediately before assertSame and before the activity is launched.
+- Added method `ScreenshotRule.beforeInitializeView(activity: Activity)`. This method is invoked prior to any view modifications and prior to layout inflation.
+- Added method `ScreenshotRule.afterInitializeView(activity: Activity)`. This method is invoked after layout inflation and all view modifications have been applied.
+- Added method `ScreenshotRule.beforeScreenshot(activity: Activity)`. This method is invoked immediately before the screenshot is taken.
+- Added method `ScreenshotRule.afterScreenshot(activity: Activity, currentBitmap: Bitmap?)`. This method is invoked immediately after the screenshot has been taken.
+- Added method `ScreenshotRule.applyViewModifications(parentView: ViewGroup)`. This method is called on the parent view to make runtime modifications to the view properties or layout.
+
+
 ## 1.0.0-rc3
 
 ### Library
