@@ -6,6 +6,8 @@
 
 #### Changes
 
+- TestifyFeatures now support multiple named strings.
+- PixelCopyCapture can be enabled using either "testify-experimental-capture" or "testify-pixelcopy-capture" in the AndroidManifest
 - FuzzyCompare (setExactness) is now multi-threaded and significantly faster.
 
 
