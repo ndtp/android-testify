@@ -1,5 +1,12 @@
 # Testify Change Log
 
+## Unreleased
+
+#### Changes
+
+- TestifyFeatures now support multiple named strings.
+- PixelCopyCapture can be enabled using either "testify-experimental-capture" or "testify-pixelcopy-capture" in the AndroidManifest
+
 ## 1.0.0-rc3
 
 ### Library

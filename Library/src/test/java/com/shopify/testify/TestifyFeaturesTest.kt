@@ -46,7 +46,7 @@ class TestifyFeaturesTest {
         assertFalse(ExampleFeature.isEnabled())
     }
 
-    private fun mockContext(feature: TestifyFeatures, enabled: Boolean): Context {
+    private fun mockContext(tag: String, enabled: Boolean): Context {
         val mockPackageManager: PackageManager = mock()
         val mockContext: Context = mock {
             on { packageManager } doReturn mockPackageManager
@@ -54,8 +54,8 @@ class TestifyFeaturesTest {
         }
         doReturn(mock<ApplicationInfo>().apply {
             metaData = mock {
-                on { containsKey(feature.tag) } doReturn true
-                on { getBoolean(feature.tag) } doReturn enabled
+                on { containsKey(tag) } doReturn true
+                on { getBoolean(tag) } doReturn enabled
             }
         }).whenever(mockPackageManager).getApplicationInfo("com.testify.sample", GET_META_DATA)
         return mockContext
@@ -63,18 +63,18 @@ class TestifyFeaturesTest {
 
     @Test
     fun `Can use AndroidManifest to override an enabled feature`() {
-        assertFalse(ExampleFeature.isEnabled(mockContext(ExampleFeature, enabled = false)))
+        assertFalse(ExampleFeature.isEnabled(mockContext(ExampleFeature.tags.first(), enabled = false)))
     }
 
     @Test
     fun `Can use AndroidManifest to override a disabled feature`() {
-        assertTrue(ExampleDisabledFeature.isEnabled(mockContext(ExampleDisabledFeature, enabled = true)))
+        assertTrue(ExampleDisabledFeature.isEnabled(mockContext(ExampleDisabledFeature.tags.first(), enabled = true)))
     }
 
     @Test
     fun `Can use setEnabled to override a manifest change`() {
         ExampleFeature.setEnabled(enabled = true)
-        assertTrue(ExampleFeature.isEnabled(mockContext(ExampleFeature, enabled = false)))
+        assertTrue(ExampleFeature.isEnabled(mockContext(ExampleFeature.tags.first(), enabled = false)))
     }
 
     @Test
@@ -89,5 +89,15 @@ class TestifyFeaturesTest {
         ExampleDisabledFeature.setEnabled(true)
         TestifyFeatures.reset()
         assertFalse(ExampleDisabledFeature.isEnabled())
+    }
+
+    @Test
+    fun `Can not use a random name`() {
+        assertTrue(ExampleFeature.isEnabled(mockContext("random-tag", enabled = false)))
+    }
+
+    @Test
+    fun `Can use an alias in the AndroidManifest to enable a feature`() {
+        assertFalse(ExampleFeature.isEnabled(mockContext("testify-alias", enabled = false)))
     }
 }
