@@ -1,5 +1,26 @@
 # Testify Change Log
 
+
+## Unreleased
+
+### Library
+
+#### Changes
+
+- Optional constructor argument enableReporter added to ScreenshotRule. Allows you to specify whether to run the reporter for this test rule.
+
+#### Added
+
+- ScreenshotRule now supports the generation of YAML test reports.
+- Added `Reporter` feature flag to TestifyFeatures. Allows you to enable test reporting.
+
+### Gradle Plugin
+
+#### Added
+
+- Added task `reportShow` to print the test result report to the console.
+- Added task `reportPull` to copy the report file from the device and wait for it to be committed to disk.
+
 ## 1.0.0-rc3
 
 ### Library
