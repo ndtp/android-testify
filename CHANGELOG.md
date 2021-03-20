@@ -6,6 +6,7 @@
 
 #### Changes
 
+- Optional constructor argument enableReporter added to ScreenshotRule. Allows you to specify whether to run the reporter for this test rule.
 - TestifyFeatures now support multiple named strings.
 - PixelCopyCapture can be enabled using either "testify-experimental-capture" or "testify-pixelcopy-capture" in the AndroidManifest
 - FuzzyCompare (setExactness) is now multi-threaded and significantly faster.
@@ -23,6 +24,8 @@
 
 #### Added
 
+- ScreenshotRule now supports the generation of YAML test reports.
+- Added `Reporter` feature flag to TestifyFeatures. Allows you to enable test reporting.
 - Added method `ScreenshotRule.beforeAssertSame()`. This method is invoked immediately before assertSame and before the activity is launched.
 - Added method `ScreenshotRule.beforeInitializeView(activity: Activity)`. This method is invoked prior to any view modifications and prior to layout inflation.
 - Added method `ScreenshotRule.afterInitializeView(activity: Activity)`. This method is invoked after layout inflation and all view modifications have been applied.
@@ -42,6 +45,14 @@
 - Test Rules from 1.2.0 to 1.3.0
 - Test Runner from 1.1.1 to 1.3.0
 
+### Gradle Plugin
+
+#### Added
+
+- Added task `reportShow` to print the test result report to the console.
+- Added task `reportPull` to copy the report file from the device and wait for it to be committed to disk.
+
+
 ### Sample
 
 #### Updates:
@@ -49,6 +60,7 @@
 - Material from 1.1.0 to 1.3.0
 - MockitoKotlin from 2.1.0 to 2.2.0
 
+---
 
 ## 1.0.0-rc3
 
