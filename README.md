@@ -110,6 +110,19 @@ Clear any baseline images that may be remaining on your emulator.
 ./gradlew :screenshotClear
 ```
 
+### Generate a YAML test report
+
+You can optionally generate a YAML test report for offline parsing by adding `<meta-data android:name="testify-reporter" android:value="true" />` to your `AndroidManifest.xml`.
+Once enabled, Testify will create a `report.yml` cataloging the statistics about the most recent test run.
+You can view the report with:
+```bash
+./gradlew :reportShow
+```
+You can copy the report.yml file to your local project directory with:
+```bash
+./gradlew :reportPull
+```
+
 There are a variety of additional Gradle commands available through the Testify plugin. For advance usage, please refer to the [Plugin guide](Plugins/Gradle/README.md).
 
 # License
