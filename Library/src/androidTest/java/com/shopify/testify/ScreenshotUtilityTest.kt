@@ -26,6 +26,7 @@ package com.shopify.testify
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.shopify.testify.internal.output.OutputFileUtility
 import java.io.File
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -53,7 +54,7 @@ class ScreenshotUtilityTest {
         val activity = testActivityRule.activity
         val rootView = activity.findViewById<View>(R.id.test_root_view)
         val screenshotUtility = ScreenshotUtility()
-        val outputFilePath = screenshotUtility.getOutputFilePath(activity, "testing")
+        val outputFilePath = OutputFileUtility().getOutputFilePath(activity, "testing")
         val bitmapFile = File(outputFilePath)
 
         val capturedBitmap = screenshotUtility.createBitmapFromActivity(activity, "testing", rootView)
@@ -69,7 +70,7 @@ class ScreenshotUtilityTest {
         createBitmapFromActivity()
 
         val fileName = "testing"
-        val outputFilePath = screenshotUtility.getOutputFilePath(activity, fileName)
+        val outputFilePath = OutputFileUtility().getOutputFilePath(activity, fileName)
 
         screenshotUtility.deleteBitmap(activity, fileName)
         val fileThatShouldBeDeleted = File(outputFilePath)

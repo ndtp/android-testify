@@ -72,6 +72,9 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
+import com.shopify.testify.internal.output.OutputFileUtility
+import com.shopify.testify.report.ReportSession
+import com.shopify.testify.report.Reporter
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -95,14 +98,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val activityClass: Class<T>,
     @IdRes private var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    private val launchActivity: Boolean = true
+    private val launchActivity: Boolean = true,
+    enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
     @LayoutRes
     private var targetLayoutId: Int = NO_ID
 
     @Suppress("MemberVisibilityCanBePrivate")
-    lateinit var testMethodName: String
+    open lateinit var testMethodName: String
     private lateinit var testClass: String
     private lateinit var testSimpleClassName: String
     private val hideCursorViewModification = HideCursorViewModification()
@@ -111,7 +115,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification()
     private val softwareRenderViewModification = SoftwareRenderViewModification()
     private val focusModification = FocusModification()
-    private val testContext = getInstrumentation().context
+    internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
     private var exactness: Float? = null
@@ -123,12 +127,22 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
+
+    @VisibleForTesting
+    internal var reporter: Reporter? = null
+        private set
     private var orientationHelper = OrientationHelper(activityClass)
     private var exclusionRectProvider: ExclusionRectProvider? = null
     private val exclusionRects = HashSet<Rect>()
     private var orientationToIgnore: Int = SCREEN_ORIENTATION_UNSPECIFIED
     private val screenshotUtility = ScreenshotUtility()
     private lateinit var outputFileName: String
+
+    init {
+        if (enableReporter || TestifyFeatures.Reporter.isEnabled(getInstrumentation().context)) {
+            reporter = Reporter(getInstrumentation().targetContext, ReportSession(), OutputFileUtility())
+        }
+    }
 
     @Suppress("MemberVisibilityCanBePrivate")
     val testName: String
@@ -138,13 +152,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         get() = orientationHelper.deviceOrientation
 
     val outputFileExists: Boolean
-        get() = screenshotUtility.doesOutputFileExist(activity, outputFileName)
+        get() = OutputFileUtility().doesOutputFileExist(activity, outputFileName)
 
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
     }
 
-    private val testNameComponents: TestName
+    internal val testNameComponents: TestName
         get() = TestName(testSimpleClassName, testMethodName)
 
     private val fullyQualifiedTestPath: String
@@ -313,6 +327,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         testSimpleClassName = description.testClass.simpleName
         testMethodName = description.methodName
         testClass = "${description.testClass?.canonicalName}#${description.methodName}"
+
+        reporter?.startTest(this, description)
+
         val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
         return super.apply(ScreenshotStatement(base), description)
@@ -396,6 +413,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         try {
             try {
+                reporter?.captureOutput(this)
                 outputFileName = DeviceIdentifier.formatDeviceString(
                     DeviceIdentifier.DeviceStringFormatter(
                         testContext,
@@ -573,11 +591,23 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
 
         override fun evaluate() {
-            assertSameInvoked = false
-            base.evaluate()
-            // Safeguard against accidentally omitting the call to `assertSame`
-            if (!assertSameInvoked) {
-                throw MissingAssertSameException()
+            try {
+                getInstrumentation()?.run {
+                    reporter?.identifySession(this)
+                }
+
+                assertSameInvoked = false
+                base.evaluate()
+                // Safeguard against accidentally omitting the call to `assertSame`
+                if (!assertSameInvoked) {
+                    throw MissingAssertSameException()
+                }
+                reporter?.pass()
+            } catch (throwable: Throwable) {
+                reporter?.fail(throwable)
+                throw throwable
+            } finally {
+                reporter?.endTest()
             }
         }
     }
