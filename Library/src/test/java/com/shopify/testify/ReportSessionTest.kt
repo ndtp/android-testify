@@ -81,7 +81,10 @@ class ReportSessionTest {
     @Test
     fun `timestamp is correctly formatted`() {
         val date = Date(1591234567890)
-        assertEquals("2020-06-03@21:36:07", ReportSession().getTimestamp(date, TimeZone.getTimeZone("America/New_York")))
+        assertEquals(
+            "2020-06-03@21:36:07",
+            ReportSession().getTimestamp(date, TimeZone.getTimeZone("America/New_York"))
+        )
     }
 
     @Test
