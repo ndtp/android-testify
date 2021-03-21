@@ -26,6 +26,7 @@ package com.shopify.testify
 import android.app.Instrumentation
 import android.content.Context
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -37,6 +38,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.BufferedReader
 import java.util.Date
+import java.util.TimeZone
 
 class ReportSessionTest {
 
@@ -79,7 +81,7 @@ class ReportSessionTest {
     @Test
     fun `timestamp is correctly formatted`() {
         val date = Date(1591234567890)
-        assertEquals("2020-06-03@21:36:07", ReportSession().getTimestamp(date))
+        assertEquals("2020-06-03@21:36:07", ReportSession().getTimestamp(date, TimeZone.getTimeZone("America/New_York")))
     }
 
     @Test
@@ -149,7 +151,7 @@ class ReportSessionTest {
         repeat(3) { session.addTest() }
         ReportSession.injectSessionId(session, "12345678-123")
 
-        doReturn("2020-06-26@17:34:57").whenever(session).getTimestamp(any())
+        doReturn("2020-06-26@17:34:57").whenever(session).getTimestamp(any(), anyOrNull())
 
         val builder = StringBuilder()
         val info = session.insertSessionInfo(builder).toString()

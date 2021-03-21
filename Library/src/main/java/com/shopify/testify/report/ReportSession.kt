@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 internal open class ReportSession {
     @VisibleForTesting internal open lateinit var sessionId: String
@@ -79,8 +80,12 @@ internal open class ReportSession {
         return (getSessionIdFromFile(file.bufferedReader())?.endsWith(sessionId) == true)
     }
 
-    @VisibleForTesting internal open fun getTimestamp(date: Date): String {
-        return SimpleDateFormat("yyyy-MM-dd@HH:mm:ss", Locale.getDefault()).format(date)
+    @VisibleForTesting internal open fun getTimestamp(date: Date, timeZone: TimeZone? = null): String {
+        return SimpleDateFormat("yyyy-MM-dd@HH:mm:ss", Locale.getDefault()).apply {
+            if (timeZone != null) {
+                this.timeZone = timeZone
+            }
+        }.format(date)
     }
 
     companion object {
