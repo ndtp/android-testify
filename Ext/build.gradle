@@ -1,0 +1,82 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'com.github.dcendents.android-maven'
+    id 'com.jfrog.bintray'
+    id 'org.jetbrains.dokka'
+}
+
+def VERSION_NAME = "$project.versions.testify"
+
+version = VERSION_NAME
+
+android {
+    compileSdkVersion coreVersions.compileSdk
+
+    lintOptions {
+        abortOnError true
+        warningsAsErrors true
+        textOutput 'stdout'
+        textReport true
+        xmlReport false
+    }
+
+    defaultConfig {
+        minSdkVersion coreVersions.minSdk
+        targetSdkVersion coreVersions.targetSdk
+        versionCode 1
+        versionName VERSION_NAME
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${archivesBaseName}-${version}.aar"
+        }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
+            }
+        }
+    }
+
+    dependencies {
+        implementation project(":Library")
+        implementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
+        implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
+        implementation "androidx.test:rules:${versions.androidx.test.rules}"
+        implementation "androidx.test:runner:${versions.androidx.test.runner}"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+//        implementation "com.github.ajalt:colormath:${versions.colormath}"
+//        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3") {
+//            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+//            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+//            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+//            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-common'
+//        }
+//
+//        testImplementation "org.mockito:mockito-core:${versions.mockito2}"
+//        testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.mockitokotlin}"
+//
+//        androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"
+//        androidTestImplementation "androidx.test:runner:${versions.androidx.test.runner}"
+//        androidTestImplementation "androidx.test:rules:${versions.androidx.test.rules}"
+//        androidTestImplementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
+//        androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.androidx.test.espresso}"
+//        androidTestImplementation "com.google.android.material:material:${versions.material}"
+//        androidTestImplementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
+    }
+}
+
+apply from: "bintray.build.gradle"
+apply from: '../ktlint.gradle'
