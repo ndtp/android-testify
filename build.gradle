@@ -35,7 +35,7 @@ buildscript {
         coreVersions = [
                 'compileSdk': 30,
                 'minSdk'    : 19,
-                'targetSdk' : 29
+                'targetSdk' : 30
         ]
     }
 
