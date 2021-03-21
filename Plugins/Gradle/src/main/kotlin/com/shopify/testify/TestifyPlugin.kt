@@ -38,6 +38,8 @@ import com.shopify.testify.tasks.utility.HidePasswordsTasks
 import com.shopify.testify.tasks.utility.ImageMagickTask
 import com.shopify.testify.tasks.utility.LocaleTask
 import com.shopify.testify.tasks.utility.RemoveDiffImagesTask
+import com.shopify.testify.tasks.report.ReportPullTask
+import com.shopify.testify.tasks.report.ReportShowTask
 import com.shopify.testify.tasks.utility.SettingsTask
 import com.shopify.testify.tasks.utility.TimeZoneTask
 import com.shopify.testify.tasks.utility.VersionTask
@@ -88,6 +90,8 @@ class TestifyPlugin : Plugin<Project> {
         tasks.create(HidePasswordsTasks.taskName(), HidePasswordsTasks::class.java)
         tasks.create(ImageMagickTask.taskName(), ImageMagickTask::class.java)
         tasks.create(LocaleTask.taskName(), LocaleTask::class.java)
+        tasks.create(ReportPullTask.taskName(), ReportPullTask::class.java)
+        tasks.create(ReportShowTask.taskName(), ReportShowTask::class.java)
         tasks.create(RemoveDiffImagesTask.taskName(), RemoveDiffImagesTask::class.java)
         tasks.create(ScreenshotClearTask.taskName(), ScreenshotClearTask::class.java)
         tasks.create(ScreenshotPullTask.taskName(), ScreenshotPullTask::class.java)
