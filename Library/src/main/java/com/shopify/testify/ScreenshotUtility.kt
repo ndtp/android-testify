@@ -35,9 +35,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.shopify.testify.TestifyFeatures.CanvasCapture
 import com.shopify.testify.TestifyFeatures.PixelCopyCapture
 import com.shopify.testify.internal.DeviceIdentifier
-import com.shopify.testify.internal.capture.createBitmapFromCanvas
-import com.shopify.testify.internal.capture.createBitmapFromDrawingCache
-import com.shopify.testify.internal.capture.createBitmapUsingPixelCopy
+import com.shopify.testify.internal.processor.capture.createBitmapFromCanvas
+import com.shopify.testify.internal.processor.capture.createBitmapFromDrawingCache
+import com.shopify.testify.internal.processor.capture.createBitmapUsingPixelCopy
 import com.shopify.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import com.shopify.testify.internal.output.OutputFileUtility
 import com.shopify.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
@@ -59,7 +59,7 @@ class ScreenshotUtility {
             return options
         }
 
-    private fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
+    fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
         if (bitmap == null) {
             return false
         }

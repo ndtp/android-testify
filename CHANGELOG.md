@@ -6,6 +6,7 @@
 
 #### Changes
 
+- FuzzyCompare (setExactness) is now multi-threaded and significantly faster.
 - TestifyFeatures now support multiple named strings.
 - PixelCopyCapture can be enabled using either "testify-experimental-capture" or "testify-pixelcopy-capture" in the AndroidManifest
 - Optional constructor argument enableReporter added to ScreenshotRule. Allows you to specify whether to run the reporter for this test rule.
@@ -23,6 +24,7 @@
 
 #### Added
 
+- Added `TestifyFeatures.GenerateDiffs`. When enabled, will output a `.diff.png` alongside existing baseline images. These images are high-contrast images where each difference, regardless of how minor, are indicated in red against a black background. See the `generateDiffs` test in `ScreenshotRuleExampleTests` for an example. Diff images will be pulled from the device when running `screenshotPull`.
 - Added method `ScreenshotRule.beforeAssertSame()`. This method is invoked immediately before assertSame and before the activity is launched.
 - Added method `ScreenshotRule.beforeInitializeView(activity: Activity)`. This method is invoked prior to any view modifications and prior to layout inflation.
 - Added method `ScreenshotRule.afterInitializeView(activity: Activity)`. This method is invoked after layout inflation and all view modifications have been applied.

@@ -31,6 +31,7 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
     ExampleFeature(listOf("testify-example", "testify-alias"), defaultValue = true),
     ExampleDisabledFeature(listOf("testify-disabled")),
 
+    GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false),
     Locale(listOf("testify-experimental-locale"), defaultValue = true),
     CanvasCapture(listOf("testify-canvas-capture")),
     PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture"));

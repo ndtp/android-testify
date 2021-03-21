@@ -52,9 +52,9 @@ import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.internal.DeviceIdentifier
 import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
-import com.shopify.testify.internal.compare.FuzzyCompare
-import com.shopify.testify.internal.compare.RegionCompare
-import com.shopify.testify.internal.compare.SameAsCompare
+import com.shopify.testify.internal.processor.compare.FuzzyCompare
+import com.shopify.testify.internal.processor.compare.RegionCompare
+import com.shopify.testify.internal.processor.compare.SameAsCompare
 import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.MissingAssertSameException
@@ -75,6 +75,7 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
+import com.shopify.testify.internal.processor.diff.HighContrastDiff
 import com.shopify.testify.internal.output.OutputFileUtility
 import com.shopify.testify.report.ReportSession
 import com.shopify.testify.report.Reporter
@@ -543,6 +544,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         screenshotUtility.deleteBitmap(activity, outputFileName)
                     )
                 } else {
+                    if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
+                        HighContrastDiff()
+                            .name(outputFileName)
+                            .baseline(baselineBitmap)
+                            .current(currentBitmap)
+                            .generate(context = activity)
+                    }
                     if (isRecordMode()) {
                         instrumentationPrintln(
                             "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
