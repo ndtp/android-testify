@@ -21,23 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+@file:Suppress("deprecation")
+
 package com.shopify.testify
 
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import java.io.File
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class ScreenshotUtilityTest {
 
-    @get:Rule var testActivityRule = ActivityTestRule(TestActivity::class.java)
+    @get:Rule
+    var testActivityRule = ActivityTestRule(TestActivity::class.java)
 
     @Test
     fun loadBaselineBitmapForComparison() {
