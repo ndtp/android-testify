@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+@file:Suppress("deprecation")
+
 package com.shopify.testify
 
 import android.app.Activity
@@ -40,7 +42,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class BitmapCompareTest {
 
-    @get:Rule var testActivityRule = ActivityTestRule(TestActivity::class.java)
+    @get:Rule
+    var testActivityRule = ActivityTestRule(TestActivity::class.java)
 
     private val screenshotUtility = ScreenshotUtility()
     private lateinit var baselineBitmap: Bitmap
