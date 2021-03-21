@@ -60,7 +60,7 @@ internal open class ReporterTest {
     fun prepareMocks() {
         with(mockSession) {
             doReturn("SESSION-ID").whenever(this).sessionId
-            doReturn("Today").whenever(this).getTimestamp(any())
+            doReturn("Today").whenever(this).getTimestamp(any(), anyOrNull())
             doReturn(1).whenever(this).failCount
             doReturn(2).whenever(this).passCount
             doReturn(3).whenever(this).testCount
