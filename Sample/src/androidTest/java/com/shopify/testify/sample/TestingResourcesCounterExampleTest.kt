@@ -24,13 +24,13 @@
 
 package com.shopify.testify.sample
 
+import android.app.Activity
 import android.os.Build
 import androidx.test.filters.SdkSuppress
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.ext.TestHarnessActivity
 import com.shopify.testify.internal.exception.ActivityMustImplementResourceOverrideException
 import com.shopify.testify.internal.exception.TestMustLaunchActivityException
 import com.shopify.testify.internal.exception.TestMustWrapContextException
@@ -77,8 +77,8 @@ class TestingResourcesCounterExampleTest {
     @Test(expected = ActivityMustImplementResourceOverrideException::class)
     fun usingSetLocaleRequiresActivityToImplementResourceOverride() {
 
-        val activity = mock<TestHarnessActivity>().apply {
-            doReturn("TestHarnessActivity").whenever(this).localClassName
+        val activity = mock<Activity>().apply {
+            doReturn("Activity").whenever(this).localClassName
         }
 
         ResourceWrapper.addOverride(WrappedLocale(Locale.FRANCE))

@@ -25,6 +25,7 @@
 
 package com.shopify.testify.ext
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -34,6 +35,8 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.rule.ActivityTestRule
 import com.shopify.testify.ScreenshotRule
+import com.shopify.testify.resources.TestifyResourcesOverride
+import java.util.Locale
 
 /**
  * The TestHarnessActivity is used as scaffolding for testing arbitrary views.
@@ -42,7 +45,7 @@ import com.shopify.testify.ScreenshotRule
  * This empty activity can be used as a generic container for testing your custom [View] classes.
  */
 @VisibleForTesting
-open class TestHarnessActivity : AppCompatActivity() {
+open class TestHarnessActivity : AppCompatActivity(), TestifyResourcesOverride {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +56,21 @@ open class TestHarnessActivity : AppCompatActivity() {
             id = R.id.harness_root
         })
 
-        if (intent?.hasExtra(EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE) == true) {
-            title = intent.getStringExtra(EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE)
+        intent.getStringExtra(EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE)?.let {
+            title = it
         }
+    }
+
+    /**
+     *
+     * Starting in Android API Version 24 (Nougat), the proper way to dynamically alter an Activity's
+     * resources and locale is to wrap the base [Context] in [AppCompatActivity.attachBaseContext]
+     * with a Context that has been updated with a new [Locale]. Testify provides a helper interface,
+     * [TestifyResourcesOverride] which provides a Context extension method, [TestifyResourcesOverride.wrap].
+     *
+     */
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase?.wrap())
     }
 
     companion object {
