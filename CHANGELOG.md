@@ -6,6 +6,8 @@
 
 #### Changes
 
+- TestifyFeatures now support multiple named strings.
+- PixelCopyCapture can be enabled using either "testify-experimental-capture" or "testify-pixelcopy-capture" in the AndroidManifest
 - Optional constructor argument enableReporter added to ScreenshotRule. Allows you to specify whether to run the reporter for this test rule.
 - ScreenshotRule constructor argument activityClass is now `protected`
 - ScreenshotRule constructor argument rootViewId is now `protected`
