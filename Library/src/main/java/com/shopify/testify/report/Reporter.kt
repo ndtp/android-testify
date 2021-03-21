@@ -66,10 +66,10 @@ internal open class Reporter(
     fun startTest(rule: ScreenshotRule<*>, description: Description) {
         session.addTest()
 
-        builder.appendln("- test:", indent = 4)
-        builder.appendln("name: ${rule.testMethodName}", indent = 8)
-        builder.appendln("class: ${description.testClass.simpleName}", indent = 8)
-        builder.appendln("package: ${description.testClass.`package`?.name}", indent = 8)
+        builder.appendLine("- test:", indent = 4)
+        builder.appendLine("name: ${rule.testMethodName}", indent = 8)
+        builder.appendLine("class: ${description.testClass.simpleName}", indent = 8)
+        builder.appendLine("package: ${description.testClass.`package`?.name}", indent = 8)
     }
 
     /**
@@ -78,8 +78,8 @@ internal open class Reporter(
      * modifications have been applied
      */
     fun captureOutput(rule: ScreenshotRule<*>) {
-        builder.appendln("baseline_image: assets/${getBaselinePath(rule)}", indent = 8)
-        builder.appendln("test_image: ${getOutputPath(rule)}", indent = 8)
+        builder.appendLine("baseline_image: assets/${getBaselinePath(rule)}", indent = 8)
+        builder.appendLine("test_image: ${getOutputPath(rule)}", indent = 8)
     }
 
     /**
@@ -87,7 +87,7 @@ internal open class Reporter(
      */
     fun pass() {
         session.pass()
-        builder.appendln("status: ${TestStatus.PASS.name}", indent = 8)
+        builder.appendLine("status: ${TestStatus.PASS.name}", indent = 8)
     }
 
     /**
@@ -95,10 +95,10 @@ internal open class Reporter(
      */
     fun fail(throwable: Throwable) {
         session.fail()
-        builder.appendln("status: ${TestStatus.FAIL.name}", indent = 8)
+        builder.appendLine("status: ${TestStatus.FAIL.name}", indent = 8)
         val cause = ErrorCause.match(throwable)
-        builder.appendln("cause: ${cause.name}", indent = 8)
-        builder.appendln("description: \"${cause.description}\"", indent = 8)
+        builder.appendLine("cause: ${cause.name}", indent = 8)
+        builder.appendLine("description: \"${cause.description}\"", indent = 8)
     }
 
     /**
@@ -115,8 +115,8 @@ internal open class Reporter(
         file.appendText(builder.toString())
     }
 
-    private fun StringBuilder.appendln(value: String, indent: Int): StringBuilder {
-        return append("".padStart(indent)).appendln(value)
+    private fun StringBuilder.appendLine(value: String, indent: Int): StringBuilder {
+        return append("".padStart(indent)).appendLine(value)
     }
 
     @VisibleForTesting
@@ -195,7 +195,7 @@ internal open class Reporter(
 
         insertHeader()
         lines.forEach {
-            builder.appendln(it)
+            builder.appendLine(it)
         }
     }
 

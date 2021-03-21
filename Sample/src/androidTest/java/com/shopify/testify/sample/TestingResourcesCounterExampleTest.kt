@@ -30,13 +30,13 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.shopify.testify.ScreenshotRule
+import com.shopify.testify.ext.TestHarnessActivity
 import com.shopify.testify.internal.exception.ActivityMustImplementResourceOverrideException
 import com.shopify.testify.internal.exception.TestMustLaunchActivityException
 import com.shopify.testify.internal.exception.TestMustWrapContextException
 import com.shopify.testify.internal.helpers.ResourceWrapper
 import com.shopify.testify.internal.helpers.WrappedLocale
 import com.shopify.testify.resources.TestifyResourcesOverride
-import com.shopify.testify.sample.test.TestHarnessActivity
 import com.shopify.testify.sample.test.TestLocaleHarnessActivity
 import com.shopify.testify.sample.test.TestLocaleHarnessNoWrapActivity
 import org.junit.After
@@ -63,7 +63,7 @@ class TestingResourcesCounterExampleTest {
 
         val rule = ScreenshotRule(
             activityClass = TestLocaleHarnessActivity::class.java,
-            rootViewId = R.id.harness_root
+            rootViewId = com.shopify.testify.ext.R.id.harness_root
         )
 
         rule.setLocale(Locale.FRANCE)
@@ -95,7 +95,7 @@ class TestingResourcesCounterExampleTest {
         val rule = ScreenshotRule(
             activityClass = TestLocaleHarnessNoWrapActivity::class.java,
             launchActivity = false,
-            rootViewId = R.id.harness_root
+            rootViewId = com.shopify.testify.ext.R.id.harness_root
         ).apply {
             isDebugMode = true
         }

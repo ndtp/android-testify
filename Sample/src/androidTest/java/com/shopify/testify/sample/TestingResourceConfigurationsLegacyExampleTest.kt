@@ -29,8 +29,7 @@ import android.os.Build
 import androidx.test.filters.SdkSuppress
 import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
-import com.shopify.testify.annotation.TestifyLayout
-import com.shopify.testify.sample.test.TestHarnessActivity
+import com.shopify.testify.ext.TestHarnessActivity
 import com.shopify.testify.sample.test.clientDetailsView
 import com.shopify.testify.sample.test.getViewState
 import org.junit.Rule
@@ -47,7 +46,7 @@ class TestingResourceConfigurationsLegacyExampleTest {
     @get:Rule var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
-        rootViewId = R.id.harness_root
+        rootViewId = com.shopify.testify.ext.R.id.harness_root
     )
 
     /**

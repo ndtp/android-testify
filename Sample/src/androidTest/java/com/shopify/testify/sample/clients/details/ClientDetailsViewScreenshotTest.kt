@@ -27,8 +27,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
+import com.shopify.testify.ext.TestHarnessActivity
 import com.shopify.testify.sample.R
-import com.shopify.testify.sample.test.TestHarnessActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,7 +39,7 @@ class ClientDetailsViewScreenshotTest {
     @get:Rule
     var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
-        rootViewId = R.id.harness_root,
+        rootViewId = com.shopify.testify.ext.R.id.harness_root,
         enableReporter = true
     )
 

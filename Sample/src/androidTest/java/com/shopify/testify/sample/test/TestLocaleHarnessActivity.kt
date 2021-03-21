@@ -26,6 +26,7 @@ package com.shopify.testify.sample.test
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
+import com.shopify.testify.ext.TestHarnessActivity
 import com.shopify.testify.resources.TestifyResourcesOverride
 import com.shopify.testify.sample.TestingResourceConfigurationsExampleTest
 import java.util.Locale

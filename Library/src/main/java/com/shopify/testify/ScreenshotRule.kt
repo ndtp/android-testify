@@ -52,9 +52,6 @@ import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.internal.DeviceIdentifier
 import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
-import com.shopify.testify.internal.processor.compare.FuzzyCompare
-import com.shopify.testify.internal.processor.compare.RegionCompare
-import com.shopify.testify.internal.processor.compare.SameAsCompare
 import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.MissingAssertSameException
@@ -75,8 +72,11 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
-import com.shopify.testify.internal.processor.diff.HighContrastDiff
 import com.shopify.testify.internal.output.OutputFileUtility
+import com.shopify.testify.internal.processor.compare.FuzzyCompare
+import com.shopify.testify.internal.processor.compare.RegionCompare
+import com.shopify.testify.internal.processor.compare.SameAsCompare
+import com.shopify.testify.internal.processor.diff.HighContrastDiff
 import com.shopify.testify.report.ReportSession
 import com.shopify.testify.report.Reporter
 import org.junit.Assert.assertFalse
@@ -99,9 +99,10 @@ typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableS
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
+    protected val activityClass: Class<T>,
     @IdRes protected var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    protected val launchActivity: Boolean = true
+    protected val launchActivity: Boolean = true,
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 

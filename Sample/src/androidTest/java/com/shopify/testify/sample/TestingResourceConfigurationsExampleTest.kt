@@ -47,7 +47,7 @@ class TestingResourceConfigurationsExampleTest {
     @get:Rule var rule = ScreenshotRule(
         activityClass = TestLocaleHarnessActivity::class.java,
         launchActivity = false,
-        rootViewId = R.id.harness_root
+        rootViewId = com.shopify.testify.ext.R.id.harness_root
     )
 
     /**

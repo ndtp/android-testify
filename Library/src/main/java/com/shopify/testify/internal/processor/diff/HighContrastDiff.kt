@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import com.shopify.testify.ScreenshotUtility
+import com.shopify.testify.internal.output.OutputFileUtility
 import com.shopify.testify.internal.processor.ParallelPixelProcessor
 import com.shopify.testify.internal.processor.createBitmap
 
@@ -30,7 +31,7 @@ class HighContrastDiff {
         screenshotUtility.saveBitmapToFile(
             context = context,
             bitmap = transformResult.createBitmap(),
-            outputFilePath = screenshotUtility.getOutputFilePath(context, "$fileName.diff")
+            outputFilePath = OutputFileUtility().getOutputFilePath(context, "$fileName.diff")
         )
     }
 

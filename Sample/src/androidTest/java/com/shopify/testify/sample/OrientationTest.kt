@@ -4,8 +4,8 @@ import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
+import com.shopify.testify.ext.TestHarnessActivity
 import com.shopify.testify.sample.clients.details.ClientDetailsView
-import com.shopify.testify.sample.test.TestHarnessActivity
 import com.shopify.testify.sample.test.getViewState
 import org.junit.Assert.assertFalse
 import org.junit.Rule
@@ -23,7 +23,7 @@ class OrientationTest {
     var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
-        rootViewId = R.id.harness_root
+        rootViewId = com.shopify.testify.ext.R.id.harness_root
     )
 
     @Test
@@ -62,7 +62,8 @@ class OrientationTest {
             .setTargetLayoutId(R.layout.view_client_details)
             .setOrientation(orientation)
             .setViewModifications { harnessRoot ->
-                val viewState = harnessRoot.context.getViewState(title + if (orientation == SCREEN_ORIENTATION_PORTRAIT) " Portrait" else " Landscape")
+                val viewState =
+                    harnessRoot.context.getViewState(title + if (orientation == SCREEN_ORIENTATION_PORTRAIT) " Portrait" else " Landscape")
                 val view = harnessRoot.getChildAt(0) as ClientDetailsView
                 view.render(viewState)
                 rule.activity.title = viewState.name

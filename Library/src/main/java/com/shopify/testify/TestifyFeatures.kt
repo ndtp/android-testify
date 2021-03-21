@@ -34,7 +34,7 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
     GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false),
     Locale(listOf("testify-experimental-locale"), defaultValue = true),
     CanvasCapture(listOf("testify-canvas-capture")),
-    PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture"));
+    PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture")),
     Reporter(listOf("testify-reporter"));
 
     private var override: Boolean? = null

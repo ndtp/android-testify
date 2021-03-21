@@ -55,6 +55,7 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.0.0'
 
     androidTestImplementation project(":Library")
+    androidTestImplementation project(":Ext")
     androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.androidx.test.espresso}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
     androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"

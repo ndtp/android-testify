@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.shopify.testify.sample.test.TestHarnessActivity" />
+        <!--suppress AndroidDomInspection -->
+        <activity android:name="com.shopify.testify.ext.TestHarnessActivity" />
         <activity android:name="com.shopify.testify.sample.test.TestLocaleHarnessActivity" />
         <activity android:name="com.shopify.testify.sample.test.TestLocaleHarnessNoWrapActivity" />
         <activity

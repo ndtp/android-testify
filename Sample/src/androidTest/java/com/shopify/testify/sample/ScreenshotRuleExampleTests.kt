@@ -36,10 +36,10 @@ import com.shopify.testify.ScreenshotRule
 import com.shopify.testify.TestifyFeatures
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
+import com.shopify.testify.ext.TestHarnessActivity
+import com.shopify.testify.ext.TestHarnessActivity.Companion.EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE
 import com.shopify.testify.extensions.boundingBox
 import com.shopify.testify.internal.exception.ScreenshotIsDifferentException
-import com.shopify.testify.sample.test.TestHarnessActivity
-import com.shopify.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import com.shopify.testify.sample.test.clientDetailsView
 import com.shopify.testify.sample.test.getViewState
 import org.junit.Rule
@@ -59,7 +59,7 @@ class ScreenshotRuleExampleTests {
     var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
-        rootViewId = R.id.harness_root
+        rootViewId = com.shopify.testify.ext.R.id.harness_root
     )
 
     /**
@@ -93,7 +93,7 @@ class ScreenshotRuleExampleTests {
     fun addIntentExtras() {
         rule
             .addIntentExtras {
-                it.putString(EXTRA_TITLE, "addIntentExtras")
+                it.putString(EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE, "addIntentExtras")
             }
             .assertSame()
     }

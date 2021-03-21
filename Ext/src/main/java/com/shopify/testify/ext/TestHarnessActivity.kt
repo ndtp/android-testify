@@ -21,6 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+@file:Suppress("deprecation")
+
 package com.shopify.testify.ext
 
 import android.graphics.Color
@@ -50,5 +52,14 @@ open class TestHarnessActivity : AppCompatActivity() {
             setBackgroundColor(Color.WHITE)
             id = R.id.harness_root
         })
+
+        if (intent?.hasExtra(EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE) == true) {
+            title = intent.getStringExtra(EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE)
+        }
     }
+
+    companion object {
+        const val EXTRA_TESTIFY_HARNESS_ACTIVITY_TITLE = "extra_title"
+    }
+
 }
