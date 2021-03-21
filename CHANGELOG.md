@@ -1,6 +1,5 @@
 # Testify Change Log
 
-
 ## Unreleased
 
 ### Library
@@ -8,22 +7,40 @@
 #### Changes
 
 - Optional constructor argument enableReporter added to ScreenshotRule. Allows you to specify whether to run the reporter for this test rule.
+- ScreenshotRule constructor argument activityClass is now `protected`
+- ScreenshotRule constructor argument rootViewId is now `protected`
+- ScreenshotRule constructor argument launchActivity is now `protected`
+- ScreenshotRule.testNameComponents is now `public`
+- ScreenshotRule.fullyQualifiedTestPath is now `public`
+- ScreenshotRule.getRootView is now `public`
+- ScreenshotRule.instrumentationPrintln is now `public`
+- ScreenshotRule.isRecordMode is now `public`
+- ScreenshotRule.getModuleName is now `public`
+- ScreenshotRule.beforeActivityLaunched() is now annotated with `@CallSuper`
+- ScreenshotRule.afterActivityLaunched() is now annotated with `@CallSuper`
 
 #### Added
 
+- Added method `ScreenshotRule.beforeAssertSame()`. This method is invoked immediately before assertSame and before the activity is launched.
+- Added method `ScreenshotRule.beforeInitializeView(activity: Activity)`. This method is invoked prior to any view modifications and prior to layout inflation.
+- Added method `ScreenshotRule.afterInitializeView(activity: Activity)`. This method is invoked after layout inflation and all view modifications have been applied.
+- Added method `ScreenshotRule.beforeScreenshot(activity: Activity)`. This method is invoked immediately before the screenshot is taken.
+- Added method `ScreenshotRule.afterScreenshot(activity: Activity, currentBitmap: Bitmap?)`. This method is invoked immediately after the screenshot has been taken.
+- Added method `ScreenshotRule.applyViewModifications(parentView: ViewGroup)`. This method is called on the parent view to make runtime modifications to the view properties or layout.
 - ScreenshotRule now supports the generation of YAML test reports.
 - Added `Reporter` feature flag to TestifyFeatures. Allows you to enable test reporting.
 
-- Updates:
-    - Compile and Target SDK from 29 to 30
-    - AGP from 4.1.0 to 4.2.0-beta6
-    - Gradle from 6.5 to 6.7.1
-    - Kotlin from 1.3.72 to 1.4.31
-    - AppCompat from 1.1.0 to 1.2.0
-    - Espresso from 3.2.0 to 3.3.0
-    - JUnit from 1.1.1 to 1.1.2
-    - Test Rules from 1.2.0 to 1.3.0
-    - Test Runner from 1.1.1 to 1.3.0
+#### Updated
+
+- Compile and Target SDK from 29 to 30
+- AGP from 4.1.0 to 4.2.0-beta6
+- Gradle from 6.5 to 6.7.1
+- Kotlin from 1.3.72 to 1.4.31
+- AppCompat from 1.1.0 to 1.2.0
+- Espresso from 3.2.0 to 3.3.0
+- JUnit from 1.1.1 to 1.1.2
+- Test Rules from 1.2.0 to 1.3.0
+- Test Runner from 1.1.1 to 1.3.0
 
 ### Sample
 

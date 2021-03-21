@@ -38,6 +38,7 @@ import android.os.Debug
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.VisibleForTesting
@@ -95,12 +96,11 @@ typealias BitmapCompare = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boo
 typealias ExtrasProvider = (bundle: Bundle) -> Unit
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
-    private val activityClass: Class<T>,
-    @IdRes private var rootViewId: Int = android.R.id.content,
+    @IdRes protected var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    private val launchActivity: Boolean = true,
+    protected val launchActivity: Boolean = true
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
@@ -160,10 +160,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return Looper.getMainLooper().thread == Thread.currentThread()
     }
 
-    internal val testNameComponents: TestName
+    val testNameComponents: TestName
         get() = TestName(testSimpleClassName, testMethodName)
 
-    private val fullyQualifiedTestPath: String
+    val fullyQualifiedTestPath: String
         get() = testClass
 
     fun setExactness(exactness: Float): ScreenshotRule<T> {
@@ -211,11 +211,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         this.focusModification.isEnabled = enabled
         this.focusModification.focusTargetId = focusTargetId
         return this
-    }
-
-    @IdRes
-    fun getRootViewId(): Int {
-        return rootViewId
     }
 
     fun setRootViewId(@IdRes rootViewId: Int): ScreenshotRule<T> {
@@ -305,12 +300,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
+    @CallSuper
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
         orientationHelper.afterActivityLaunched(this)
     }
 
+    @CallSuper
     override fun beforeActivityLaunched() {
         super.beforeActivityLaunched()
         locale?.let {
@@ -406,8 +403,40 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Test lifecycle method.
+     * Invoked immediately before assertSame and before the activity is launched.
+     */
+    open fun beforeAssertSame() {}
+
+    /**
+     * Test lifecycle method.
+     * Invoked prior to any view modifications and prior to layout inflation.
+     */
+    open fun beforeInitializeView(activity: Activity) {}
+
+    /**
+     * Test lifecycle method.
+     * Invoked after layout inflation and all view modifications have been applied.
+     */
+    open fun afterInitializeView(activity: Activity) {}
+
+    /**
+     * Test lifecycle method.
+     * Invoked immediately before the screenshot is taken.
+     */
+    open fun beforeScreenshot(activity: Activity) {}
+
+    /**
+     * Test lifecycle method.
+     * Invoked immediately after the screenshot has been taken.
+     */
+    open fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {}
+
     fun assertSame() {
         assertSameInvoked = true
+
+        beforeAssertSame()
 
         if (!launchActivity) {
             launchActivity(activityIntent)
@@ -441,7 +470,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     return
                 }
 
+                beforeInitializeView(activity)
                 initializeView(activity)
+                afterInitializeView(activity)
 
                 if (espressoActions != null) {
                     espressoActions!!.invoke()
@@ -464,12 +495,16 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     provider(getRootView(activity), exclusionRects)
                 }
 
+                beforeScreenshot(activity)
+
                 val currentBitmap = screenshotUtility.createBitmapFromActivity(
                     activity,
                     outputFileName,
                     screenshotView
                 )
                 assertNotNull("Failed to capture bitmap from activity", currentBitmap)
+
+                afterScreenshot(activity, currentBitmap)
 
                 if (isLayoutInspectionModeEnabled) {
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
@@ -531,6 +566,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
+    @CallSuper
+    open fun applyViewModifications(parentView: ViewGroup) {
+        hideScrollbarsViewModification.modify(parentView)
+        hideTextSuggestionsViewModification.modify(parentView)
+        hidePasswordViewModification.modify(parentView)
+        softwareRenderViewModification.modify(parentView)
+        hideCursorViewModification.modify(parentView)
+    }
+
     private fun initializeView(activity: Activity) {
         val parentView = getRootView(activity)
         val latch = CountDownLatch(1)
@@ -549,11 +593,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 }
             }
 
-            hideScrollbarsViewModification.modify(parentView)
-            hideTextSuggestionsViewModification.modify(parentView)
-            hidePasswordViewModification.modify(parentView)
-            softwareRenderViewModification.modify(parentView)
-            hideCursorViewModification.modify(parentView)
+            applyViewModifications(parentView)
 
             latch.countDown()
         }
@@ -569,23 +609,23 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    private fun getRootView(activity: Activity): ViewGroup {
+    fun getRootView(activity: Activity): ViewGroup {
         return activity.findViewById(rootViewId)
             ?: throw RootViewNotFoundException(activity, rootViewId)
     }
 
-    private fun instrumentationPrintln(str: String) {
+    fun instrumentationPrintln(str: String) {
         val b = Bundle()
         b.putString(Instrumentation.REPORT_KEY_STREAMRESULT, "\n" + str)
         getInstrumentation().sendStatus(0, b)
     }
 
-    private fun isRecordMode(): Boolean {
+    fun isRecordMode(): Boolean {
         val extras = InstrumentationRegistry.getArguments()
         return extras.containsKey("isRecordMode") && extras.get("isRecordMode") == "true"
     }
 
-    private fun getModuleName(): String {
+    fun getModuleName(): String {
         val extras = InstrumentationRegistry.getArguments()
         return if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
     }
