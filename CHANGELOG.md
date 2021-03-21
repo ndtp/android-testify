@@ -30,6 +30,26 @@
 - Added method `ScreenshotRule.afterScreenshot(activity: Activity, currentBitmap: Bitmap?)`. This method is invoked immediately after the screenshot has been taken.
 - Added method `ScreenshotRule.applyViewModifications(parentView: ViewGroup)`. This method is called on the parent view to make runtime modifications to the view properties or layout.
 
+#### Updates:
+
+- Compile and Target SDK from 29 to 30
+- AGP from 4.1.0 to 4.2.0-beta6
+- Gradle from 6.5 to 6.7.1
+- Kotlin from 1.3.72 to 1.4.31
+- AppCompat from 1.1.0 to 1.2.0
+- Espresso from 3.2.0 to 3.3.0
+- JUnit from 1.1.1 to 1.1.2
+- Test Rules from 1.2.0 to 1.3.0
+- Test Runner from 1.1.1 to 1.3.0
+
+### Sample
+
+#### Updates:
+
+- Material from 1.1.0 to 1.3.0
+- MockitoKotlin from 2.1.0 to 2.2.0
+
+
 ## 1.0.0-rc3
 
 ### Library
