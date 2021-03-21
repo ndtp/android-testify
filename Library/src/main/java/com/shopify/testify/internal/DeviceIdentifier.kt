@@ -38,9 +38,11 @@ internal object DeviceIdentifier {
 
     @JvmStatic
     val DEFAULT_FOLDER_FORMAT = "a-wxh@d-l"
+
     @JvmStatic
     val DEFAULT_NAME_FORMAT = "c_n"
 
+    @Suppress("DEPRECATION")
     private fun getDeviceDimensions(context: Context): Pair<Int, Int> {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val metrics = DisplayMetrics()

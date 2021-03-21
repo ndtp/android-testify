@@ -33,7 +33,7 @@ buildscript {
                 'testify'            : '1.0.0',             // https://github.com/Shopify/android-testify/releases
         ]
         coreVersions = [
-                'compileSdk': 29,
+                'compileSdk': 30,
                 'minSdk'    : 19,
                 'targetSdk' : 29
         ]
