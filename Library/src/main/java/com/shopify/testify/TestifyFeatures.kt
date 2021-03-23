@@ -3,13 +3,14 @@ package com.shopify.testify
 import android.content.Context
 import android.content.pm.PackageManager
 
-enum class TestifyFeatures(internal val tag: String, private val defaultValue: Boolean = false) {
+enum class TestifyFeatures(internal val tags: List<String>, private val defaultValue: Boolean = false) {
 
-    ExampleFeature("testify-example", defaultValue = true),
-    ExampleDisabledFeature("testify-disabled"),
-    Locale("testify-experimental-locale", defaultValue = true),
-    CanvasCapture("testify-canvas-capture"),
-    PixelCopyCapture("testify-experimental-capture");
+    ExampleFeature(listOf("testify-example", "testify-alias"), defaultValue = true),
+    ExampleDisabledFeature(listOf("testify-disabled")),
+
+    Locale(listOf("testify-experimental-locale"), defaultValue = true),
+    CanvasCapture(listOf("testify-canvas-capture")),
+    PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture"));
 
     private var override: Boolean? = null
 
@@ -29,7 +30,11 @@ enum class TestifyFeatures(internal val tag: String, private val defaultValue: B
         get() {
             val applicationInfo = this?.packageManager?.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
             val metaData = applicationInfo?.metaData
-            return if (metaData?.containsKey(tag) == true) metaData.getBoolean(tag) else null
+
+            val tag = tags.find { tag ->
+                metaData?.containsKey(tag) == true
+            }
+            return if (tag != null) metaData?.getBoolean(tag) else null
         }
 
     companion object {
