@@ -21,23 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.internal.capture
 
-import android.app.Activity
+package com.shopify.testify.internal.processor.compare
+
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.view.View
 
-@Suppress("unused")
-fun createBitmapFromCanvas(activity: Activity, targetView: View?): Bitmap {
-    val view: View = targetView ?: activity.window.decorView
-    val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(bitmap)
-    val drawable = view.background
+class SameAsCompare : BitmapCompare {
 
-    drawable?.draw(canvas) ?: canvas.drawColor(Color.WHITE)
-    view.draw(canvas)
-
-    return bitmap
+    /**
+     * Compare two bitmaps using android.graphics.Bitmap.sameAs()
+     */
+    override fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
+        return baselineBitmap.sameAs(currentBitmap)
+    }
 }

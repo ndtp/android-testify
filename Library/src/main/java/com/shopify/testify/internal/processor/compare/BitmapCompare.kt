@@ -21,19 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.internal.capture
+package com.shopify.testify.internal.processor.compare
 
-import android.app.Activity
 import android.graphics.Bitmap
-import android.view.View
 
-@Suppress("DEPRECATION")
-fun createBitmapFromDrawingCache(activity: Activity, targetView: View?): Bitmap {
-    val view: View = targetView ?: activity.window.decorView
-
-    view.isDrawingCacheEnabled = true
-    val bitmap = Bitmap.createBitmap(view.drawingCache)
-    view.isDrawingCacheEnabled = false
-
-    return bitmap
+internal interface BitmapCompare {
+    fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean
 }

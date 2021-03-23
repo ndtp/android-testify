@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.internal.compare.colorspace
+package com.shopify.testify.internal.processor.compare.colorspace
 
 import kotlin.math.abs
 import kotlin.math.atan2

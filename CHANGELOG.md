@@ -1,5 +1,14 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+#### Changes
+
+- FuzzyCompare (setExactness) is now multi-threaded and significantly faster.
+
+
 ## 1.0.0-rc3
 
 ### Library
