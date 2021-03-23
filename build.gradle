@@ -7,35 +7,35 @@ buildscript {
 
     ext {
         versions = [
-                'androidGradlePlugin': '4.1.0',             // https://developer.android.com/studio/releases/gradle-plugin.html
+                'androidGradlePlugin': '4.2.0-beta06',      // https://developer.android.com/studio/releases/gradle-plugin.html
                 'androidx'           : [
                         'constraintLayout': '2.0.0-beta4',  // https://developer.android.com/jetpack/androidx/releases
-                        'appCompat'       : '1.1.0',        // https://developer.android.com/jetpack/androidx/releases
+                        'appCompat'       : '1.2.0',        // https://developer.android.com/jetpack/androidx/releases
                         'coreKtx'         : '1.1.0',        // https://developer.android.com/jetpack/androidx/releases
                         'test'            : [
                                 'core'    : '2.1.0',        // https://developer.android.com/jetpack/androidx/releases
-                                'espresso': '3.2.0',        // https://developer.android.com/jetpack/androidx/releases
-                                'junit'   : '1.1.1',        // https://developer.android.com/jetpack/androidx/releases
-                                'rules'   : '1.2.0',        // https://developer.android.com/jetpack/androidx/releases
-                                'runner'  : '1.1.1',        // https://developer.android.com/jetpack/androidx/releases
+                                'espresso': '3.3.0',        // https://developer.android.com/jetpack/androidx/releases
+                                'junit'   : '1.1.2',        // https://developer.android.com/jetpack/androidx/releases
+                                'rules'   : '1.3.0',        // https://developer.android.com/jetpack/androidx/releases
+                                'runner'  : '1.3.0',        // https://developer.android.com/jetpack/androidx/releases
                         ]
                 ],
                 'bintray'            : '1.8.4',             // https://github.com/bintray/gradle-bintray-plugin/releases
                 'colormath'          : '1.4.1',             // https://github.com/ajalt/colormath/releases
                 'dokka'              : '0.10.0',            // https://github.com/Kotlin/dokka/releases
-                'kotlin'             : '1.3.72',            // https://kotlinlang.org/
+                'kotlin'             : '1.4.31',            // https://kotlinlang.org/
                 'ktlint'             : '0.36.0',            // https://github.com/pinterest/ktlint
                 'maven'              : '2.1',               // https://github.com/dcendents/android-maven-gradle-plugin/releases
-                'material'           : '1.1.0',             // https://material.io/develop/android/docs/getting-started/
+                'material'           : '1.3.0',             // https://material.io/develop/android/docs/getting-started/
                 'mockito2'           : '3.3.3',             // https://github.com/mockito/mockito/releases
                 'mockitoAndroid'     : '3.3.3',             // https://mvnrepository.com/artifact/org.mockito/mockito-android
-                'mockitokotlin'      : '2.1.0',             // https://github.com/nhaarman/mockito-kotlin
+                'mockitokotlin'      : '2.2.0',             // https://github.com/nhaarman/mockito-kotlin
                 'testify'            : '1.0.0',             // https://github.com/Shopify/android-testify/releases
         ]
         coreVersions = [
-                'compileSdk': 29,
+                'compileSdk': 30,
                 'minSdk'    : 19,
-                'targetSdk' : 29
+                'targetSdk' : 30
         ]
     }
 
