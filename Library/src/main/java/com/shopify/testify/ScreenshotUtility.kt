@@ -59,7 +59,7 @@ class ScreenshotUtility {
             return options
         }
 
-    private fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
+    fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
         if (bitmap == null) {
             return false
         }
