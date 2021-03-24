@@ -1,12 +1,8 @@
 # Testify Change Log
 
-## Unreleased
+## 1.1.0-beta1
 
 ### Library
-
-#### Added
-
-- Added `TestifyFeatures.GenerateDiffs`. When enabled, will output a `.diff.png` alongside existing baseline images. These images are high-contrast images where each difference, regardless of how minor, are indicated in red against a black background. See the `generateDiffs` test in `ScreenshotRuleExampleTests` for an example. Diff images will be pulled from the device when running `screenshotPull`.
 
 #### Changes
 
@@ -28,6 +24,7 @@
 
 #### Added
 
+- Added `TestifyFeatures.GenerateDiffs`. When enabled, will output a `.diff.png` alongside existing baseline images. These images are high-contrast images where each difference, regardless of how minor, are indicated in red against a black background. See the `generateDiffs` test in `ScreenshotRuleExampleTests` for an example. Diff images will be pulled from the device when running `screenshotPull`.
 - ScreenshotRule now supports the generation of YAML test reports.
 - Added `Reporter` feature flag to TestifyFeatures. Allows you to enable test reporting.
 - Added method `ScreenshotRule.beforeAssertSame()`. This method is invoked immediately before assertSame and before the activity is launched.
