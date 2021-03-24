@@ -55,7 +55,8 @@ internal open class ReportSession {
         initFromLines(file.readLines())
     }
 
-    @VisibleForTesting internal fun initFromLines(lines: List<String>) {
+    @VisibleForTesting
+    internal fun initFromLines(lines: List<String>) {
         failCount += lines[3].substringAfterLast(": ").toInt()
         passCount += lines[4].substringAfterLast(": ").toInt()
         testCount += lines[5].substringAfterLast(": ").toInt()
@@ -63,12 +64,12 @@ internal open class ReportSession {
 
     fun insertSessionInfo(builder: StringBuilder): StringBuilder {
         return builder.insert(0, StringBuilder().apply {
-            appendln("- session: $sessionId")
+            appendLine("- session: $sessionId")
             val timestamp = getTimestamp(Calendar.getInstance().time)
-            appendln("- date: $timestamp")
-            appendln("- failed: $failCount")
-            appendln("- passed: $passCount")
-            appendln("- total: $testCount")
+            appendLine("- date: $timestamp")
+            appendLine("- failed: $failCount")
+            appendLine("- passed: $passCount")
+            appendLine("- total: $testCount")
         })
     }
 
@@ -80,7 +81,8 @@ internal open class ReportSession {
         return (getSessionIdFromFile(file.bufferedReader())?.endsWith(sessionId) == true)
     }
 
-    @VisibleForTesting internal open fun getTimestamp(date: Date, timeZone: TimeZone? = null): String {
+    @VisibleForTesting
+    internal open fun getTimestamp(date: Date, timeZone: TimeZone? = null): String {
         return SimpleDateFormat("yyyy-MM-dd@HH:mm:ss", Locale.getDefault()).apply {
             if (timeZone != null) {
                 this.timeZone = timeZone
@@ -90,11 +92,13 @@ internal open class ReportSession {
 
     companion object {
 
-        @VisibleForTesting internal fun injectSessionId(session: ReportSession, id: String) {
+        @VisibleForTesting
+        internal fun injectSessionId(session: ReportSession, id: String) {
             session.sessionId = id
         }
 
-        @VisibleForTesting internal fun getSessionIdFromFile(bufferedReader: BufferedReader): String? {
+        @VisibleForTesting
+        internal fun getSessionIdFromFile(bufferedReader: BufferedReader): String? {
             val secondLine = bufferedReader.use {
                 it.readLine()
                 it.readLine()
@@ -102,7 +106,8 @@ internal open class ReportSession {
             return secondLine?.substringAfterLast(": ")
         }
 
-        @VisibleForTesting internal fun getSessionId(instrumentation: Instrumentation, thread: Thread): String {
+        @VisibleForTesting
+        internal fun getSessionId(instrumentation: Instrumentation, thread: Thread): String {
             return "${instrumentation.context.hashCode().toString(16).padStart(8, '0')}-${thread.id}"
         }
     }
