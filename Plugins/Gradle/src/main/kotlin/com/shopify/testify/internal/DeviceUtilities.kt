@@ -26,8 +26,8 @@ package com.shopify.testify.internal
 
 import com.shopify.testify.internal.StreamData.ConsoleStream
 import com.shopify.testify.testifySettings
-import java.io.File
 import org.gradle.api.Project
+import java.io.File
 
 internal val Project.deviceImageDirectory: String
     get() {
@@ -40,7 +40,7 @@ internal val Project.deviceImageDirectory: String
 internal val Project.screenshotDirectory: String
     get() = "${this.deviceImageDirectory}$SCREENSHOT_DIR"
 
-private fun Adb.listFiles(path: String): List<String> {
+internal fun Adb.listFiles(path: String): List<String> {
     val log = this
         .argument("ls $path")
         .argument("2>/dev/null")
@@ -76,6 +76,15 @@ internal fun Project.listFailedScreenshots(): List<String> {
     val files = this.listFailedScreenshotsWithPath()
     return files.map { it.replace(src, dst) }
 }
+
+internal val Project.reportFilePath: String
+    get() {
+        return if (this.testifySettings.useSdCard) {
+            "/sdcard/testify"
+        } else {
+            "/data/data/${this.testifySettings.targetPackageId}/app_testify"
+        }
+    }
 
 internal fun File.deleteOnDevice(targetPackageId: String) {
     Adb()

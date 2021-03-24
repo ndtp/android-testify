@@ -3,6 +3,7 @@
     package="com.shopify.testify">
 
     <application android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
+        <meta-data android:name="testify-reporter" android:value="true" />
         <activity android:name=".TestActivity" />
     </application>
 
