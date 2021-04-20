@@ -1,5 +1,20 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+#### Updates
+
+- AGP from 4.2.0-beta6 to 4.2.0-rc1
+
+### Sample
+
+#### Changes
+
+-  Remove kotlin-android-extensions from Sample and replace with viewBinding
+
+
 ## 1.1.0-beta1
 
 ### Library
