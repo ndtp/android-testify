@@ -1,14 +1,29 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'com.github.dcendents.android-maven'
-    id 'com.jfrog.bintray'
+    id 'maven'
+    id 'signing'
     id 'org.jetbrains.dokka'
+}
+
+ext {
+    pom = [
+            publishedGroupId  : 'com.shopify.testify',
+            artifact          : 'testify',
+            libraryName       : 'testify',
+            libraryDescription: 'Android screenshot instrumentation tests.',
+            siteUrl           : 'https://github.com/Shopify/android-testify',
+            gitUrl            : 'https://github.com/Shopify/android-testify.git',
+            licenseName       : 'The MIT License',
+            licenseUrl        : 'https://opensource.org/licenses/MIT',
+            author            : 'Shopify Inc.'
+    ]
 }
 
 def VERSION_NAME = "$project.versions.testify"
 
 version = VERSION_NAME
+archivesBaseName = pom.artifact
 
 android {
     compileSdkVersion coreVersions.compileSdk
@@ -76,5 +91,8 @@ android {
     }
 }
 
-apply from: "bintray.build.gradle"
+afterEvaluate { project ->
+    apply from: "publish.build.gradle"
+}
+
 apply from: '../ktlint.gradle'
