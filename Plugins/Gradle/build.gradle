@@ -1,6 +1,5 @@
 buildscript {
     repositories {
-        jcenter()
         mavenCentral()
     }
     dependencies {
@@ -11,9 +10,9 @@ buildscript {
 plugins {
     id 'groovy'
     id 'kotlin'
-    id 'com.github.dcendents.android-maven'
-    id 'com.jfrog.bintray'
     id 'org.jetbrains.dokka'
+    id 'maven'
+    id 'signing'
 }
 
 def VERSION_NAME = "$project.versions.testify"
@@ -56,18 +55,13 @@ ext {
             siteUrl           : 'https://github.com/Shopify/android-testify',
             gitUrl            : 'https://github.com/Shopify/android-testify.git',
             licenseName       : 'The MIT License',
-            licenseUrl        : 'https://opensource.org/licenses/MIT'
-    ]
-
-    bintray = [
-            org        : 'shopify',
-            repo       : 'shopify-android',
-            name       : 'testify-plugin',
-            allLicenses: ["MIT"]
+            licenseUrl        : 'https://opensource.org/licenses/MIT',
+            author            : 'Shopify Inc.'
     ]
 }
 
 group = pom.publishedGroupId
+archivesBaseName = pom.artifact
 version = VERSION_NAME
 
 jar {
@@ -75,32 +69,6 @@ jar {
         attributes "Implementation-Title": "Testify"
         attributes "Implementation-Vendor": "Shopify"
         attributes "Implementation-Version": version
-    }
-}
-
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'jar'
-                groupId project.ext.pom.publishedGroupId
-                artifactId project.ext.pom.artifact
-                name project.ext.pom.libraryName
-                description project.ext.pom.libraryDescription
-                url project.ext.pom.siteUrl
-                licenses {
-                    license {
-                        name project.ext.pom.licenseName
-                        url project.ext.pom.licenseUrl
-                    }
-                }
-                scm {
-                    connection project.ext.pom.gitUrl
-                    developerConnection project.ext.pom.gitUrl
-                    url project.ext.pom.siteUrl
-                }
-            }
-        }
     }
 }
 
@@ -131,42 +99,6 @@ artifacts {
     archives sourcesJar
 }
 
-bintray {
-    // These values can be found on https://bintray.com/profile/edit
-    user = System.getenv('BINTRAY_USER')
-    // BINTRAY_USER : your personal profile name (from "Your Profile")
-    key = System.getenv('BINTRAY_KEY') // BINTRAY_KEY : found on the left menu, under "API Key"
-
-    configurations = ['archives']
-
-    pkg {
-        userOrg = project.ext.bintray.org
-        repo = project.ext.bintray.repo
-        name = project.ext.bintray.name
-        desc = project.ext.pom.libraryDescription
-        websiteUrl = project.ext.pom.siteUrl
-        vcsUrl = project.ext.pom.gitUrl
-        licenses = project.ext.bintray.allLicenses
-        publish = true
-        publicDownloadNumbers = true
-        version {
-            desc = project.ext.pom.libraryDescription
-        }
-    }
-}
-
-bintrayUpload {
-    dependsOn install
-    doFirst {
-        if (System.getenv('BINTRAY_USER') == null || System.getenv('BINTRAY_USER').isEmpty()) {
-            throw new IllegalArgumentException("BINTRAY_USER must be defined")
-        }
-        if (System.getenv('BINTRAY_KEY') == null || System.getenv('BINTRAY_KEY').isEmpty()) {
-            throw new IllegalArgumentException("BINTRAY_KEY must be defined")
-        }
-    }
-}
-
 task configureLocal {
     doFirst {
         version = "local"
@@ -186,6 +118,61 @@ task assembleLocal(description: 'Assembles the outputs of this project for use l
 
     build.mustRunAfter configureLocal
     copyLocal.mustRunAfter build
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: System.getenv("OSSRH_USERNAME"), password: System.getenv("OSSRH_PASSWORD"))
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: System.getenv("OSSRH_USERNAME"), password: System.getenv("OSSRH_PASSWORD"))
+            }
+
+            pom {
+                project {
+                    groupId project.ext.pom.publishedGroupId
+                    artifactId project.ext.pom.artifact
+
+                    name project.ext.pom.libraryName
+                    description project.ext.pom.libraryDescription
+                    url project.ext.pom.siteUrl
+
+                    developers {
+                        developer {
+                            name project.ext.pom.author
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name project.ext.pom.licenseName
+                            url project.ext.pom.licenseUrl
+                        }
+                    }
+
+                    scm {
+                        connection = project.ext.pom.gitUrl
+                        developerConnection = project.ext.pom.gitUrl
+                        url = project.ext.pom.siteUrl
+                    }
+                }
+            }
+        }
+    }
 }
 
 apply from: '../../ktlint.gradle'
