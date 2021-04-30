@@ -8,15 +8,15 @@ plugins {
 
 ext {
     pom = [
-            publishedGroupId  : 'com.shopify.testify',
-            artifact          : 'testify',
-            libraryName       : 'testify',
-            libraryDescription: 'Android screenshot instrumentation tests.',
-            siteUrl           : 'https://github.com/Shopify/android-testify',
-            gitUrl            : 'https://github.com/Shopify/android-testify.git',
-            licenseName       : 'The MIT License',
-            licenseUrl        : 'https://opensource.org/licenses/MIT',
-            author            : 'Shopify Inc.'
+        publishedGroupId  : 'com.shopify.testify',
+        artifact          : 'testify',
+        libraryName       : 'testify',
+        libraryDescription: 'Android screenshot instrumentation tests.',
+        siteUrl           : 'https://github.com/Shopify/android-testify',
+        gitUrl            : 'https://github.com/Shopify/android-testify.git',
+        licenseName       : 'The MIT License',
+        licenseUrl        : 'https://opensource.org/licenses/MIT',
+        author            : 'Shopify Inc.'
     ]
 }
 
@@ -91,8 +91,13 @@ android {
     }
 }
 
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
 afterEvaluate { project ->
-    apply from: "publish.build.gradle"
+    apply from: "../publish.build.gradle"
 }
 
 apply from: '../ktlint.gradle'

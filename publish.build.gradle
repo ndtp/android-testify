@@ -16,11 +16,6 @@ task javadocJar(type: Jar, dependsOn: dokka) {
     from dokka.outputDirectory
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
 artifacts {
     archives javadocJar
     archives sourcesJar
