@@ -83,7 +83,7 @@ Testify works by referencing a PNG baseline found in your `androidTest/assets` d
 Run all the screenshot tests in your app and update the local baseline.
 
 ```bash
-./gradlew :screenshotRecord
+./gradlew screenshotRecord
 ```
 
 ### Verify the tests
@@ -91,7 +91,7 @@ Run all the screenshot tests in your app and update the local baseline.
 Run all the screenshot tests in your app and fail if any differences from the baseline are detected.
 
 ```bash
-./gradlew :screenshotTest
+./gradlew screenshotTest
 ```
 
 ### Pull images from the device
@@ -99,7 +99,7 @@ Run all the screenshot tests in your app and fail if any differences from the ba
 Copy images from the `app_images` directory on your emulator to your local `androidTest/assets` directory.
 
 ```bash
-./gradlew :screenshotPull
+./gradlew screenshotPull
 ```
 
 ### Erase any existing images from the device
@@ -107,7 +107,7 @@ Copy images from the `app_images` directory on your emulator to your local `andr
 Clear any baseline images that may be remaining on your emulator.
 
 ```bash
-./gradlew :screenshotClear
+./gradlew screenshotClear
 ```
 
 ### Generate a YAML test report
@@ -116,11 +116,11 @@ You can optionally generate a YAML test report for offline parsing by adding `<m
 Once enabled, Testify will create a `report.yml` cataloging the statistics about the most recent test run.
 You can view the report with:
 ```bash
-./gradlew :reportShow
+./gradlew reportShow
 ```
 You can copy the report.yml file to your local project directory with:
 ```bash
-./gradlew :reportPull
+./gradlew reportPull
 ```
 
 There are a variety of additional Gradle commands available through the Testify plugin. For advance usage, please refer to the [Plugin guide](Plugins/Gradle/README.md).
