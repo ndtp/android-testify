@@ -23,7 +23,6 @@
  */
 package com.shopify.testify.sample.clients.index
 
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,38 +33,35 @@ import androidx.recyclerview.widget.RecyclerView
 import com.shopify.testify.sample.R
 import com.shopify.testify.sample.clients.MockClientData
 import com.shopify.testify.sample.clients.index.ClientListFragment.OnListFragmentInteractionListener
-import kotlinx.android.synthetic.main.client_list_item.view.description
-import kotlinx.android.synthetic.main.client_list_item.view.name
-import kotlinx.android.synthetic.main.client_list_item.view.profile_image
+import com.shopify.testify.sample.databinding.ClientListItemBinding
 
+class ClientListRecyclerViewAdapter(
+    private val values: List<MockClientData.Client>,
+    private val listener: OnListFragmentInteractionListener?
+) : RecyclerView.Adapter<ClientListRecyclerViewAdapter.ViewHolder>() {
 
-class ClientListRecyclerViewAdapter(private val values: List<MockClientData.Client>, private val listener: OnListFragmentInteractionListener?) : RecyclerView.Adapter<ClientListRecyclerViewAdapter.ViewHolder>() {
-
-    private val onClickListener: View.OnClickListener
-
-    init {
-        onClickListener = View.OnClickListener { v ->
-            val item = v.tag as MockClientData.Client
-            listener?.onListFragmentInteraction(item)
-        }
+    private val onClickListener: View.OnClickListener = View.OnClickListener { v ->
+        val item = v.tag as MockClientData.Client
+        listener?.onListFragmentInteraction(item)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.client_list_item, parent, false)
-        return ViewHolder(view)
+        val binding = ClientListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
 
-        val context = holder.view.context
-        @DrawableRes val avatarDrawableId = context.resources.getIdentifier(item.avatar, "drawable", context.packageName)
+        val context = holder.itemView.context
+        @DrawableRes val avatarDrawableId =
+            context.resources.getIdentifier(item.avatar, "drawable", context.packageName)
 
         holder.nameView.text = item.name
         holder.descriptionView.text = context.getString(R.string.client_since, item.date)
         holder.avatar.setImageResource(avatarDrawableId)
 
-        with(holder.view) {
+        with(holder.itemView) {
             tag = item
             setOnClickListener(onClickListener)
         }
@@ -73,9 +69,9 @@ class ClientListRecyclerViewAdapter(private val values: List<MockClientData.Clie
 
     override fun getItemCount(): Int = values.size
 
-    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val nameView: TextView = view.name
-        val descriptionView: TextView = view.description
-        val avatar: ImageView = view.profile_image
+    inner class ViewHolder(binding: ClientListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        val nameView: TextView = binding.name
+        val descriptionView: TextView = binding.description
+        val avatar: ImageView = binding.profileImage
     }
 }
