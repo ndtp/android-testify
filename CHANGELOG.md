@@ -6,7 +6,7 @@
 
 #### Updates
 
-- AGP from 4.2.0-beta6 to 4.2.0-rc1
+- AGP from 4.2.0-beta6 to 4.2.0
 
 ### Sample
 
