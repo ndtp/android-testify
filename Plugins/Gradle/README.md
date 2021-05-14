@@ -74,7 +74,7 @@ You can customize the destination path and file name for the report file by prov
 Example:
 
 ```bash
-./gradlew :reportPull -PreportPath="/user/testify/" -PreportFileName="my-report.yml"
+./gradlew Sample:reportPull -PreportPath="/user/testify/" -PreportFileName="my-report.yml"
 ```
 
 ### reportShow

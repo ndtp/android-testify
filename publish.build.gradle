@@ -1,0 +1,77 @@
+group = pom.publishedGroupId
+
+dokka {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/javadoc"
+
+    configuration {
+        includeNonPublic = false
+        reportUndocumented = false
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: dokka) {
+    classifier = 'javadoc'
+    baseName = 'testify'
+    from dokka.outputDirectory
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    required { gradle.taskGraph.hasTask("uploadArchives") }
+    def signingKeyId = findProperty("signingKeyId")
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: System.getenv("OSSRH_USERNAME"), password: System.getenv("OSSRH_PASSWORD"))
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: System.getenv("OSSRH_USERNAME"), password: System.getenv("OSSRH_PASSWORD"))
+            }
+
+            pom {
+                project {
+                    groupId project.ext.pom.publishedGroupId
+                    artifactId project.ext.pom.artifact
+
+                    name project.ext.pom.libraryName
+                    description project.ext.pom.libraryDescription
+                    url project.ext.pom.siteUrl
+
+                    developers {
+                        developer {
+                            name project.ext.pom.author
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name project.ext.pom.licenseName
+                            url project.ext.pom.licenseUrl
+                        }
+                    }
+
+                    scm {
+                        connection = project.ext.pom.gitUrl
+                        developerConnection = project.ext.pom.gitUrl
+                        url = project.ext.pom.siteUrl
+                    }
+                }
+            }
+        }
+    }
+}
