@@ -27,23 +27,26 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
-import kotlinx.android.synthetic.main.view_client_details.view.address as addressView
-import kotlinx.android.synthetic.main.view_client_details.view.address_row as addressRowViewGroup
-import kotlinx.android.synthetic.main.view_client_details.view.heading as headingView
-import kotlinx.android.synthetic.main.view_client_details.view.phone as phoneView
-import kotlinx.android.synthetic.main.view_client_details.view.phone_row as phoneRowViewGroup
-import kotlinx.android.synthetic.main.view_client_details.view.profile_image as profileImage
+import com.shopify.testify.sample.databinding.ViewClientDetailsBinding
 
-class ClientDetailsView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
+class ClientDetailsView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+    LinearLayout(context, attrs) {
+
+    lateinit var binding: ViewClientDetailsBinding
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        binding = ViewClientDetailsBinding.bind(this)
+    }
 
     fun render(state: ClientDetailsViewState) {
-        profileImage.setImageResource(state.avatar)
-        headingView.text = state.heading
+        binding.profileImage.setImageResource(state.avatar)
+        binding.heading.text = state.heading
 
-        addressRowViewGroup.isVisible = state.address != null
-        addressView.text = state.address
+        binding.addressRow.isVisible = state.address != null
+        binding.address.text = state.address
 
-        phoneRowViewGroup.isVisible = state.phoneNumber != null
-        phoneView.text = state.phoneNumber
+        binding.phoneRow.isVisible = state.phoneNumber != null
+        binding.phone.text = state.phoneNumber
     }
 }

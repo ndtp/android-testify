@@ -29,8 +29,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.shopify.testify.sample.R
 import com.shopify.testify.sample.clients.MockClientData
 import com.shopify.testify.sample.clients.details.ClientDetailsActivity.Companion.startClientDetailsActivity
-import kotlinx.android.synthetic.main.activity_client_list.fab
-import kotlinx.android.synthetic.main.activity_client_list.root_view as rootView
+import com.shopify.testify.sample.databinding.ActivityClientListBinding
 
 class ClientListActivity : AppCompatActivity(), ClientListFragment.OnListFragmentInteractionListener {
 
@@ -40,11 +39,13 @@ class ClientListActivity : AppCompatActivity(), ClientListFragment.OnListFragmen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_client_list)
+
+        val binding = ActivityClientListBinding.inflate(layoutInflater)
+        setContentView(binding.rootView)
 
         supportActionBar?.title = getString(R.string.client_list_title)
 
-        fab.setOnClickListener { view ->
+        binding.fab.setOnClickListener { view ->
             Snackbar.make(view, "TODO: Add a client", Snackbar.LENGTH_LONG).show()
         }
     }
