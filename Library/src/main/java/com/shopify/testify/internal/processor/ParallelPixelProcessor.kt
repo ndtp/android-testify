@@ -87,7 +87,7 @@ class ParallelPixelProcessor private constructor() {
         val diffBuffer = IntBuffer.allocate(chunkData.size)
 
         runBlockingInChunks(chunkData) { _, index ->
-            diffBuffer.put(transformer(baselineBuffer[index], currentBuffer[index]))
+            diffBuffer.put(index, transformer(baselineBuffer[index], currentBuffer[index]))
             true
         }
 
