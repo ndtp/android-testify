@@ -1,8 +1,13 @@
 # Testify Change Log
 
-## Unreleased
+## 1.1.0-beta2
 
 ### Library
+
+#### Bug fixes
+
+- Fix "ParallelPixelProcessor.kt:90 - java.lang.IndexOutOfBoundsException: index=315250 out of bounds (limit=315250)"
+    https://github.com/Shopify/android-testify/issues/215
 
 #### Updates
 
