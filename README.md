@@ -2,7 +2,7 @@
 
 Add screenshots to your Android tests
 
-<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=master"/></a> <a href='https://bintray.com/shopify/shopify-android/testify-plugin/1.0.0/link' alt="Testify download"><img src='https://api.bintray.com/packages/shopify/shopify-android/testify-plugin/images/download.svg?version=1.0.0'></a>
+<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=master"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/testify"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/testify?color=%236e40ed&label=com.shopify.testify%3Atestify"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/plugin?color=%234da1ea&label=com.shopify.testify%3Aplugin"/></a>
 ---
 
 Expand your test coverage by including the View-layer. Testify allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.
@@ -21,7 +21,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.0.0"
+        classpath "com.shopify.testify:plugin:1.1.0-beta2"
     }
 }
 
@@ -83,7 +83,7 @@ Testify works by referencing a PNG baseline found in your `androidTest/assets` d
 Run all the screenshot tests in your app and update the local baseline.
 
 ```bash
-./gradlew :screenshotRecord
+./gradlew screenshotRecord
 ```
 
 ### Verify the tests
@@ -91,7 +91,7 @@ Run all the screenshot tests in your app and update the local baseline.
 Run all the screenshot tests in your app and fail if any differences from the baseline are detected.
 
 ```bash
-./gradlew :screenshotTest
+./gradlew screenshotTest
 ```
 
 ### Pull images from the device
@@ -99,7 +99,7 @@ Run all the screenshot tests in your app and fail if any differences from the ba
 Copy images from the `app_images` directory on your emulator to your local `androidTest/assets` directory.
 
 ```bash
-./gradlew :screenshotPull
+./gradlew screenshotPull
 ```
 
 ### Erase any existing images from the device
@@ -107,7 +107,20 @@ Copy images from the `app_images` directory on your emulator to your local `andr
 Clear any baseline images that may be remaining on your emulator.
 
 ```bash
-./gradlew :screenshotClear
+./gradlew screenshotClear
+```
+
+### Generate a YAML test report
+
+You can optionally generate a YAML test report for offline parsing by adding `<meta-data android:name="testify-reporter" android:value="true" />` to your `AndroidManifest.xml`.
+Once enabled, Testify will create a `report.yml` cataloging the statistics about the most recent test run.
+You can view the report with:
+```bash
+./gradlew reportShow
+```
+You can copy the report.yml file to your local project directory with:
+```bash
+./gradlew reportPull
 ```
 
 There are a variety of additional Gradle commands available through the Testify plugin. For advance usage, please refer to the [Plugin guide](Plugins/Gradle/README.md).

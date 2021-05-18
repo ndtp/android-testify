@@ -63,6 +63,48 @@ Hides passwords fully on the device
 
 Delete all generated diff images from your local machine.
 
+### reportPull
+
+Pull the report file from the device and wait for it to be committed to disk.
+You can customize the destination path and file name for the report file by providing the `reportFileName` or `reportPath` paramaters to the gradle command.
+
+- `reportFileName` :  Override the default file name used locally when copying the file.
+- `reportPath` : Override the default path to copy the report file to.
+
+Example:
+
+```bash
+./gradlew Sample:reportPull -PreportPath="/user/testify/" -PreportFileName="my-report.yml"
+```
+
+### reportShow
+
+Print the test result report to the console.
+
+```
+~/: ./gradlew Sample:reportShow
+> Task :Sample:reportShow
+
+------------------------------------------------------------
+Print the test result report to the console
+------------------------------------------------------------
+
+---
+- session: 06583e71-665
+- date: 2021-03-19@20:37:32
+- failed: 0
+- passed: 1
+- total: 1
+- tests:
+    - test:
+        name: withFocusOnBackground
+        class: ClientListActivityScreenshotTest
+        package: com.shopify.testify.sample.clients.index
+        baseline_image: assets/screenshots/29-1080x2220@440dp-en_US/withFocusOnBackground.png
+        test_image: /data/user/0/com.shopify.testify.sample/app_images/screenshots/29-1080x2220@440dp-en_US/ClientListActivityScreenshotTest_withFocusOnBackground.png
+        status: PASS
+```
+
 ### testifyDevices
 
 Displays the connected devices.
