@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.1]
+
+### Updated
+
+- Intellij plugin now supports Android Studio Arctic Fox | 2020.3.1 Beta 2
+  Build 203.*
+
 ## [0.1.0]
 
 ### Added
