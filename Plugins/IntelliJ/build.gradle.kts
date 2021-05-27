@@ -47,7 +47,7 @@ intellij {
     downloadSources = platformDownloadSources.toBoolean()
     updateSinceUntilBuild = true
 
-    alternativeIdePath = "/Applications/Android Studio 4.2 Preview.app"
+    alternativeIdePath = "/Applications/Android Studio Preview.app"
 
 //  Plugin Dependencies:
 //  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
