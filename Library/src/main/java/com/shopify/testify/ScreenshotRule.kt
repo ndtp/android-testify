@@ -168,6 +168,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     val fullyQualifiedTestPath: String
         get() = testClass
 
+    fun getExactness(): Float? {
+        return exactness
+    }
+
     fun setExactness(exactness: Float): ScreenshotRule<T> {
         require(exactness in 0.0..1.0)
         this.exactness = exactness
@@ -534,8 +538,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     }
 
                 val bitmapCompare: BitmapCompare = when {
-                    exclusionRects.isNotEmpty() -> RegionCompare(exclusionRects)::compareBitmaps
-                    exactness != null -> FuzzyCompare(exactness!!)::compareBitmaps
+//                    exclusionRects.isNotEmpty() -> RegionCompare(exclusionRects)::compareBitmaps
+                    exactness != null -> FuzzyCompare(exactness!!, exclusionRects)::compareBitmaps
                     else -> SameAsCompare()::compareBitmaps
                 }
 
@@ -546,10 +550,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     )
                 } else {
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                        HighContrastDiff()
+                        HighContrastDiff(exclusionRects)
                             .name(outputFileName)
                             .baseline(baselineBitmap)
                             .current(currentBitmap)
+                            .exactness(exactness)
                             .generate(context = activity)
                     }
                     if (isRecordMode()) {

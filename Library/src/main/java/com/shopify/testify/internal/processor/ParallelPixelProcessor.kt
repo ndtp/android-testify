@@ -3,9 +3,9 @@ package com.shopify.testify.internal.processor
 import android.graphics.Bitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.awaitAll
 import java.nio.IntBuffer
 import java.util.BitSet
 import kotlin.math.ceil
@@ -63,14 +63,19 @@ class ParallelPixelProcessor private constructor() {
         }
     }
 
-    fun analyze(analyzer: (baselinePixel: Int, currentPixel: Int) -> Boolean): Boolean {
+    fun analyze(analyzer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Boolean): Boolean {
         val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
 
         val chunkData = getChunkData(width, height)
         val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
 
         runBlockingInChunks(chunkData) { chunk, index ->
-            if (!analyzer(baselineBuffer[index], currentBuffer[index])) {
+
+            val globalOffset = chunk * chunkData.chunkSize + index
+            val x = globalOffset % width
+            val y = globalOffset / height
+
+            if (!analyzer(baselineBuffer[index], currentBuffer[index], Pair(x, y))) {
                 results.clear(chunk)
                 false
             } else {
@@ -80,14 +85,19 @@ class ParallelPixelProcessor private constructor() {
         return results.cardinality() == chunkData.chunks
     }
 
-    fun transform(transformer: (baselinePixel: Int, currentPixel: Int) -> Int): TransformResult {
+    fun transform(transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int): TransformResult {
         val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
 
         val chunkData = getChunkData(width, height)
         val diffBuffer = IntBuffer.allocate(chunkData.size)
 
-        runBlockingInChunks(chunkData) { _, index ->
-            diffBuffer.put(index, transformer(baselineBuffer[index], currentBuffer[index]))
+        runBlockingInChunks(chunkData) { chunk, index ->
+
+            val globalOffset = chunk * chunkData.chunkSize + index
+            val x = globalOffset % width
+            val y = globalOffset / height
+
+            diffBuffer.put(index, transformer(baselineBuffer[index], currentBuffer[index], Pair(x, y)))
             true
         }
 

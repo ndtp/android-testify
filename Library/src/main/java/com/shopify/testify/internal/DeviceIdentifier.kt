@@ -34,7 +34,7 @@ import java.util.Locale
 
 typealias TestName = Pair<String, String>
 
-internal object DeviceIdentifier {
+object DeviceIdentifier {
 
     @JvmStatic
     val DEFAULT_FOLDER_FORMAT = "a-wxh@d-l"
@@ -43,7 +43,7 @@ internal object DeviceIdentifier {
     val DEFAULT_NAME_FORMAT = "c_n"
 
     @Suppress("DEPRECATION")
-    private fun getDeviceDimensions(context: Context): Pair<Int, Int> {
+    fun getDeviceDimensions(context: Context): Pair<Int, Int> {
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val metrics = DisplayMetrics()
         val display = windowManager.defaultDisplay

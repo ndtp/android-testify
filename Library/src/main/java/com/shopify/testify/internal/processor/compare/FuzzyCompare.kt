@@ -24,11 +24,17 @@
 package com.shopify.testify.internal.processor.compare
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 import com.github.ajalt.colormath.RGB
 import com.shopify.testify.internal.processor.ParallelPixelProcessor
 import com.shopify.testify.internal.processor.compare.colorspace.calculateDeltaE
+import kotlin.math.abs
 
-internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
+fun RGB.diff(other: RGB): Int {
+    return abs(other.g - this.g) + abs(other.r - this.r) + abs(other.b - this.b)
+}
+
+internal class FuzzyCompare(private val exactness: Float, private val exclusionRects: Set<Rect>) : BitmapCompare {
 
     override fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
         if (baselineBitmap.height != currentBitmap.height) {
@@ -47,22 +53,33 @@ internal class FuzzyCompare(private val exactness: Float) : BitmapCompare {
             .create()
             .baseline(baselineBitmap)
             .current(currentBitmap)
-            .analyze { baselinePixel, currentPixel ->
+            .analyze { baselinePixel, currentPixel , (x,y) ->
                 if (baselinePixel == currentPixel) {
                     /* return  */ true
                 } else {
-                    val baselineLab = RGB.fromInt(baselinePixel).toLAB()
-                    val currentLab = RGB.fromInt(currentPixel).toLAB()
+                    var exclude = false
+                    for (rect in exclusionRects) {
+                        if (rect.contains(x, y)) {
+                            exclude = true
+                            break
+                        }
+                    }
+                    if (exclude) {
+                        true // return ^analyze
+                    } else {
+                        val baselineLab = RGB.fromInt(baselinePixel).toLAB()
+                        val currentLab = RGB.fromInt(currentPixel).toLAB()
 
-                    val deltaE = calculateDeltaE(
-                        baselineLab.l,
-                        baselineLab.a,
-                        baselineLab.b,
-                        currentLab.l,
-                        currentLab.a,
-                        currentLab.b
-                    )
-                    /* return  */ ((100.0 - deltaE) / 100.0f >= exactness)
+                        val deltaE = calculateDeltaE(
+                            baselineLab.l,
+                            baselineLab.a,
+                            baselineLab.b,
+                            currentLab.l,
+                            currentLab.a,
+                            currentLab.b
+                        )
+                        /* return  */ ((100.0 - deltaE) / 100.0f >= exactness)
+                    }
                 }
             }
     }
