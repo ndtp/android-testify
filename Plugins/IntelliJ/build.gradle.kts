@@ -30,7 +30,6 @@ version = pluginVersion
 // Configure project's dependencies
 repositories {
     mavenCentral()
-    jcenter()
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
