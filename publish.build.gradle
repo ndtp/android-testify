@@ -1,20 +1,20 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-dokka {
-    outputFormat = "html"
-    outputDirectory = "$buildDir/javadoc"
-
-    configuration {
-        includeNonPublic = false
-        reportUndocumented = false
+dokkaJavadoc {
+    dokkaSourceSets {
+        configureEach {
+            includeNonPublic.set(false)
+            reportUndocumented.set(false)
+            noAndroidSdkLink.set(false)
+        }
     }
 }
 
-task javadocJar(type: Jar, dependsOn: dokka) {
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
     archiveClassifier.set('javadoc')
     archiveBaseName.set('testify')
-    from dokka.outputDirectory
+    from dokkaJavadoc.outputDirectory
 }
 
 publishing {
