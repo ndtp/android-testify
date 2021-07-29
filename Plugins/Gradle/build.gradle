@@ -11,8 +11,6 @@ plugins {
     id 'groovy'
     id 'kotlin'
     id 'org.jetbrains.dokka'
-    id 'maven'
-    id 'signing'
 }
 
 ext {
@@ -29,7 +27,11 @@ ext {
     ]
 }
 
-def VERSION_NAME = "$project.versions.testify"
+version = "$project.versions.testify"
+group = pom.publishedGroupId
+archivesBaseName = pom.artifact
+
+
 sourceCompatibility = 1.8
 
 test {
@@ -62,15 +64,11 @@ compileTestKotlin {
     }
 }
 
-group = pom.publishedGroupId
-archivesBaseName = pom.artifact
-version = VERSION_NAME
-
 jar {
     manifest {
         attributes "Implementation-Title": "Testify"
         attributes "Implementation-Vendor": "Shopify"
-        attributes "Implementation-Version": version
+        attributes "Implementation-Version": archiveVersion
     }
 }
 

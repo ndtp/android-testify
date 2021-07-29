@@ -15,7 +15,7 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
       - name: Publish Testify Library
-        run: ./gradlew Library:uploadArchives
+        run: ./gradlew Library:publish
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
@@ -23,7 +23,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
       - name: Publish Testify Gradle plugin
-        run: ./gradlew Plugin:uploadArchives
+        run: ./gradlew Plugin:publish
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

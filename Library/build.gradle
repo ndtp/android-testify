@@ -1,8 +1,6 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'maven'
-    id 'signing'
     id 'org.jetbrains.dokka'
 }
 
@@ -20,9 +18,8 @@ ext {
     ]
 }
 
-def VERSION_NAME = "$project.versions.testify"
-
-version = VERSION_NAME
+version = "$project.versions.testify"
+group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
 android {
@@ -40,7 +37,7 @@ android {
         minSdkVersion coreVersions.minSdk
         targetSdkVersion coreVersions.targetSdk
         versionCode 1
-        versionName VERSION_NAME
+        versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kotlinOptions {
@@ -96,7 +93,7 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
-afterEvaluate { project ->
+afterEvaluate {
     apply from: "../publish.build.gradle"
 }
 
