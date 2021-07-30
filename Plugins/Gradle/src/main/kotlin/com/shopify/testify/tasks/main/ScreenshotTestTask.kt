@@ -40,9 +40,11 @@ import com.shopify.testify.tasks.utility.LocaleTask
 import com.shopify.testify.tasks.utility.TimeZoneTask
 import com.shopify.testify.testifySettings
 import org.gradle.api.Project
+import org.gradle.api.tasks.Internal
 
 open class ScreenshotTestTask : TestifyDefaultTask() {
 
+    @get:Internal
     open val isRecordMode: Boolean = false
 
     override fun getDescription() = "Run the Testify screenshot tests"

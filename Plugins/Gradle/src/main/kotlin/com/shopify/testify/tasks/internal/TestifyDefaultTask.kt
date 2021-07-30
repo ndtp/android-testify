@@ -29,6 +29,7 @@ import com.shopify.testify.internal.Devices
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 interface TaskNameProvider {
@@ -41,10 +42,16 @@ internal interface TaskDependencyProvider {
 
 abstract class TestifyDefaultTask : DefaultTask() {
 
+    @Internal
+    override fun getDescription() = super.getDescription()
+
+    @get:Internal
     open val isHidden = false
 
+    @Internal
     override fun getGroup() = if (isHidden) null else "Testify"
 
+    @get:Internal
     protected val divider = "-".repeat(60)
 
     protected open fun beforeAction() {
