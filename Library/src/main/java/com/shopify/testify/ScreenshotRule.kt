@@ -100,11 +100,14 @@ typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableS
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected val activityClass: Class<T>,
-    @IdRes protected var rootViewId: Int = android.R.id.content,
+    @IdRes rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
     protected val launchActivity: Boolean = true,
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
+
+    @IdRes protected var rootViewId = rootViewId
+        @JvmName("rootViewIdResource") set
 
     @LayoutRes
     private var targetLayoutId: Int = NO_ID
