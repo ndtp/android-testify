@@ -36,8 +36,6 @@ android {
     defaultConfig {
         minSdkVersion coreVersions.minSdk
         targetSdkVersion coreVersions.targetSdk
-        versionCode 1
-        versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         kotlinOptions {
