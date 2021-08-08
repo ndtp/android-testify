@@ -13,7 +13,7 @@ fun ParallelPixelProcessor.TransformResult.createBitmap(): Bitmap {
     )
 }
 
-val numberOfCores by lazy { Runtime.getRuntime().availableProcessors() }
+var numberOfCores = Runtime.getRuntime().availableProcessors()
 val executorDispatcher by lazy {
     Executors.newFixedThreadPool(numberOfCores).asCoroutineDispatcher()
 }

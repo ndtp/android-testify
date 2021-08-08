@@ -52,9 +52,6 @@ import com.shopify.testify.annotation.TestifyLayout
 import com.shopify.testify.internal.DeviceIdentifier
 import com.shopify.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import com.shopify.testify.internal.TestName
-import com.shopify.testify.internal.processor.compare.FuzzyCompare
-import com.shopify.testify.internal.processor.compare.RegionCompare
-import com.shopify.testify.internal.processor.compare.SameAsCompare
 import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
 import com.shopify.testify.internal.exception.MissingAssertSameException
@@ -75,8 +72,10 @@ import com.shopify.testify.internal.modification.HidePasswordViewModification
 import com.shopify.testify.internal.modification.HideScrollbarsViewModification
 import com.shopify.testify.internal.modification.HideTextSuggestionsViewModification
 import com.shopify.testify.internal.modification.SoftwareRenderViewModification
-import com.shopify.testify.internal.processor.diff.HighContrastDiff
 import com.shopify.testify.internal.output.OutputFileUtility
+import com.shopify.testify.internal.processor.compare.FuzzyCompare
+import com.shopify.testify.internal.processor.compare.SameAsCompare
+import com.shopify.testify.internal.processor.diff.HighContrastDiff
 import com.shopify.testify.report.ReportSession
 import com.shopify.testify.report.Reporter
 import org.junit.Assert.assertFalse
@@ -171,8 +170,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     val fullyQualifiedTestPath: String
         get() = testClass
 
-    fun setExactness(exactness: Float): ScreenshotRule<T> {
-        require(exactness in 0.0..1.0)
+    fun getExactness(): Float? {
+        return exactness
+    }
+
+    fun setExactness(exactness: Float?): ScreenshotRule<T> {
+        require(exactness == null || exactness in 0.0..1.0)
         this.exactness = exactness
         return this
     }
@@ -537,8 +540,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     }
 
                 val bitmapCompare: BitmapCompare = when {
-                    exclusionRects.isNotEmpty() -> RegionCompare(exclusionRects)::compareBitmaps
-                    exactness != null -> FuzzyCompare(exactness!!)::compareBitmaps
+                    exclusionRects.isNotEmpty() || exactness != null -> {
+                        FuzzyCompare(exactness, exclusionRects)::compareBitmaps
+                    }
                     else -> SameAsCompare()::compareBitmaps
                 }
 
@@ -549,10 +553,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     )
                 } else {
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                        HighContrastDiff()
+                        HighContrastDiff(exclusionRects)
                             .name(outputFileName)
                             .baseline(baselineBitmap)
                             .current(currentBitmap)
+                            .exactness(exactness)
                             .generate(context = activity)
                     }
                     if (isRecordMode()) {

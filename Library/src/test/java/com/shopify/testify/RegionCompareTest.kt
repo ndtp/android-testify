@@ -30,7 +30,7 @@ import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.shopify.testify.internal.processor.compare.RegionCompare
+import com.shopify.testify.internal.processor.compare.FuzzyCompare
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -38,7 +38,7 @@ import org.junit.Test
 class RegionCompareTest {
 
     private val rectSet = HashSet<Rect>()
-    private val regionCompare = RegionCompare(rectSet)
+    private val regionCompare = FuzzyCompare(null, rectSet)
 
     @Test
     fun `compareBitmaps succeeds when bitmaps are identical`() {
