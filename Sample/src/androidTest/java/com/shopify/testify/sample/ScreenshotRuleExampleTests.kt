@@ -290,7 +290,10 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun exclusions() {
+        TestifyFeatures.PixelCopyCapture.setEnabled(true)
+        TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule
+            .setExactness(0.9f)
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 val g = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
