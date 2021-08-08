@@ -1,5 +1,36 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+#### Bug fixes
+
+- https://github.com/Shopify/android-testify/issues/216
+    You can now use `ScreenshotRule.setExactness()` in conjunction with `ScreenshotRule.defineExclusionRects()`. You can now define both an exclusion area and an exactness threshold.
+
+#### Added
+
+- Method `ScreenshotRule.getExactness():Float?` added.
+
+#### Changes
+
+- Method `ScreenshotRule.setExactness(exactness: Float?): ScreenshotRule<T>` now accepts a nullable value.
+- `TestifyFeatures.GenerateDiffs` now visualizes exclusion regions and the exactness tolerance.
+    When enabled, GenerateDiffs will write a companion image for your screenshot test which can help you more easily
+    identify which areas of your test have triggered the screenshot failure.
+    Diff files are only generated for failing tests.
+    The generated file will be created in the same directory as your baseline images. Diff files can be pulled from
+    the device using `:screenshotPull`.
+    
+    - Black pixels are identical between the baseline and test image
+    - Grey pixels have been excluded from the comparison
+    - Yellow pixels are different, but within the Exactness threshold
+    - Red pixels are different
+- Method `DeviceIdentifier.getDeviceDimensions(context: Context): Pair<Int, Int>` is now public.
+
+---
+
 ## 1.1.0-beta3
 
 ### Library
