@@ -34,12 +34,12 @@ import org.gradle.api.Project
 
 internal data class TestifySettings(
 
-    var baselineSourceDir: String,
-    var moduleName: String,
-    var outputFileNameFormat: String?,
-    var pullWaitTime: Long = 0L,
-    var testRunner: String,
-    var useSdCard: Boolean,
+    val baselineSourceDir: String,
+    val moduleName: String,
+    val outputFileNameFormat: String?,
+    val pullWaitTime: Long = 0L,
+    val testRunner: String,
+    val useSdCard: Boolean,
 
     /**
      * The package ID for the test APK
@@ -49,7 +49,7 @@ internal data class TestifySettings(
      *
      * e.g. com.testify.example.test
      */
-    var testPackageId: String,
+    val testPackageId: String,
 
     /**
      * The package ID for the APK under test
@@ -59,61 +59,65 @@ internal data class TestifySettings(
      *
      * e.g. com.testify.example
      */
-    var targetPackageId: String,
-    var installTask: String?,
-    var installAndroidTestTask: String?,
-    var autoImplementLibrary: Boolean = true
+    val targetPackageId: String,
+    val installTask: String?,
+    val installAndroidTestTask: String?,
+    val autoImplementLibrary: Boolean = true
 ) {
 
-    fun override(extension: TestifyExtension): TestifySettings {
-        if (extension.baselineSourceDir?.isNotEmpty() == true) {
-            this.baselineSourceDir = extension.baselineSourceDir!!
+    internal companion object {
+        fun create(project: Project): TestifySettings {
+            val android = project.android
+            val extension = project.getTestifyExtension()
+
+            val assetsSet = android.sourceSets.getByName("""androidTest""").assets
+            val baselineSourceDir = extension.baselineSourceDir ?: assetsSet.srcDirs.first().path
+            val testRunner = extension.testRunner ?: android.defaultConfig.testInstrumentationRunner ?: "unknown"
+            val pullWaitTime = extension.pullWaitTime ?: 0L
+            val testPackageId = extension.testPackageId ?: project.inferredDefaultTestVariantId
+            val targetPackageId = extension.applicationPackageId ?: project.inferredTargetPackageId
+            val version = TestifySettings::class.java.getPackage().implementationVersion
+            val autoImplementLibrary = extension.autoImplementLibrary
+                ?: version?.contains("local", ignoreCase = true) == false
+            val useSdCard = extension.useSdCard ?: false
+            val installTask = extension.installTask ?: project.inferredInstallTask
+            val outputFileNameFormat = extension.outputFileNameFormat
+            val installAndroidTestTask = extension.installAndroidTestTask ?: project.inferredAndroidTestInstallTask
+            val moduleName = extension.moduleName ?: project.name
+
+            return TestifySettings(
+                baselineSourceDir = baselineSourceDir,
+                moduleName = moduleName,
+                outputFileNameFormat = outputFileNameFormat,
+                pullWaitTime = pullWaitTime,
+                testRunner = testRunner,
+                useSdCard = useSdCard,
+                testPackageId = testPackageId,
+                targetPackageId = targetPackageId,
+                installTask = installTask,
+                installAndroidTestTask = installAndroidTestTask,
+                autoImplementLibrary = autoImplementLibrary
+            )
         }
-        if (extension.moduleName?.isNotEmpty() == true) {
-            this.moduleName = extension.moduleName!!
-        }
-        if (extension.outputFileNameFormat?.isNotEmpty() == true) {
-            this.outputFileNameFormat = extension.outputFileNameFormat!!
-        }
-        if (extension.pullWaitTime != null) {
-            this.pullWaitTime = extension.pullWaitTime!!
-        }
-        if (extension.testRunner?.isNotEmpty() == true) {
-            this.testRunner = extension.testRunner!!
-        }
-        if (extension.useSdCard != null) {
-            this.useSdCard = extension.useSdCard!!
-        }
-        if (extension.testPackageId?.isNotEmpty() == true) {
-            this.testPackageId = extension.testPackageId!!
-        }
-        if (extension.applicationPackageId?.isNotEmpty() == true) {
-            this.targetPackageId = extension.applicationPackageId!!
-        }
-        if (extension.installTask?.isNotEmpty() == true) {
-            this.installTask = extension.installTask
-        }
-        if (extension.installAndroidTestTask?.isNotEmpty() == true) {
-            this.installAndroidTestTask = extension.installAndroidTestTask
-        }
-        if (extension.autoImplementLibrary != null) {
-            this.autoImplementLibrary = extension.autoImplementLibrary!!
-        }
-        return this
     }
 
     fun validate() {
-        if (targetPackageId.isEmpty()) {
-            throw GradleExtensionException(
-                """
+        val (propertyName, examplePackage) = when {
+            targetPackageId.isEmpty() -> "applicationPackageId" to "com.example.app"
+            testPackageId.isEmpty() -> "testPackageId" to "com.example.app.test"
+            else -> null to null
+        }
 
-  You must define an `applicationPackageId` in your `testify` gradle extension block:
+        propertyName?.let {
+            val message = """
+
+  You must define `$it` in your `testify` gradle extension block:
 
       testify {
-          applicationPackageId "com.example.app"
+          $it "$examplePackage"
       }
       """
-            )
+            throw GradleExtensionException(message)
         }
     }
 }
@@ -138,39 +142,6 @@ private val Project.inferredTargetPackageId: String
 
         return targetPackageId
     }
-
-internal class TestifySettingsFactory {
-
-    companion object {
-
-        fun create(project: Project): TestifySettings {
-            val android = project.android
-            val assetsSet = android.sourceSets.getByName("""androidTest""").assets
-            val baselineSourceDir = "${assetsSet?.srcDirs?.first()?.path}"
-            val testRunner = android.defaultConfig.testInstrumentationRunner ?: "unknown"
-            val testPackageId = project.inferredDefaultTestVariantId
-            val targetPackageId = project.inferredTargetPackageId
-            val installTask = project.inferredInstallTask
-            val installAndroidTestTask = project.inferredAndroidTestInstallTask
-            val version = TestifySettingsFactory::class.java.getPackage().implementationVersion
-
-            // Defaults
-            return TestifySettings(
-                baselineSourceDir = baselineSourceDir,
-                moduleName = project.name,
-                outputFileNameFormat = null,
-                pullWaitTime = 0L,
-                testRunner = testRunner,
-                useSdCard = false,
-                testPackageId = testPackageId,
-                targetPackageId = targetPackageId,
-                installTask = installTask,
-                installAndroidTestTask = installAndroidTestTask,
-                autoImplementLibrary = version?.contains("local", ignoreCase = true) == false
-            )
-        }
-    }
-}
 
 open class TestifyExtension {
 
