@@ -1,6 +1,6 @@
 # Testify Change Log
 
-## Unreleased
+## 1.1.0-beta3
 
 ### Library
 
@@ -8,8 +8,17 @@
 
 #### Bug fixes
 
+- Several internal changes to support Gradle 7.
+- Fix https://github.com/Shopify/android-testify/issues/225
+    Apply annotations to task properties for up-to-date checks. Adds missing annotations on public properties in Tasks to assist with up-to-date checks. Missing annotations are now errors in Gradle 7.0+.
 - Fix https://github.com/Shopify/android-testify/issues/234
     Using the Testify plugin with AGP 7+ would generate the error "Cannot query the value of property 'applicationId' because configuration of project ':app' has not completed yet". Fixed by catching the error and providing a sensible default. In the case where the test packaged ID is incorrectly inferred, the user can specify `testify { testPackageId "my.custom.package.test" }` in their build.gradle to override the inferred value.
+
+### Library
+
+#### Changes
+
+- Renamed the `rootViewId` setter on `ScreenshotTestRule` for better Java interoperability. It has been renamed to `setRootViewIdResource`.
 
 ---
 

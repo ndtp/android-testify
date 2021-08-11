@@ -28,7 +28,7 @@ buildscript {
                 'mockito2'           : '3.3.3',             // https://github.com/mockito/mockito/releases
                 'mockitoAndroid'     : '3.3.3',             // https://mvnrepository.com/artifact/org.mockito/mockito-android
                 'mockitokotlin'      : '2.2.0',             // https://github.com/nhaarman/mockito-kotlin
-                'testify'            : '1.1.0-beta2',       // https://github.com/Shopify/android-testify/releases
+                'testify'            : '1.1.0-beta3',       // https://github.com/Shopify/android-testify/releases
         ]
         coreVersions = [
                 'compileSdk': 30,
