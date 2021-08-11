@@ -60,9 +60,9 @@ class TestifyPlugin : Plugin<Project> {
 
     private object AfterEvaluate : Action<Project> {
         override fun execute(project: Project) {
-            val settings = TestifySettingsFactory.create(project)
             project.validateExtension()
-            settings.override(project.getTestifyExtension()).validate()
+            val settings = TestifySettings.create(project)
+            settings.validate()
             project.extensions.add(EVALUATED_SETTINGS, settings)
 
             project.addDependencies()
