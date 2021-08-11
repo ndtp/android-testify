@@ -24,8 +24,8 @@
 
 package com.shopify.testify
 
-import com.android.build.gradle.AppExtension
 import com.shopify.testify.internal.android
+import com.shopify.testify.internal.applicationTargetPackageId
 import com.shopify.testify.internal.inferredAndroidTestInstallTask
 import com.shopify.testify.internal.inferredDefaultTestVariantId
 import com.shopify.testify.internal.inferredInstallTask
@@ -128,21 +128,7 @@ internal data class TestifySettings(
  */
 private val Project.inferredTargetPackageId: String
     get() {
-        var targetPackageId: String? = null
-
-        // Prefer the debug variant
-        if (this.android is AppExtension) {
-            val appExtension = this.android as AppExtension
-            val allDebugVariants = appExtension.applicationVariants.filter {
-                it.name == "debug" || it.name.endsWith("Debug")
-            }.sortedBy { it.name }
-            targetPackageId = allDebugVariants.firstOrNull()?.applicationId
-        }
-
-        // For apks without a debug variant, use the default applicationId
-        if (targetPackageId.isNullOrEmpty()) {
-            targetPackageId = this.android.defaultConfig.applicationId
-        }
+        var targetPackageId: String? = this.applicationTargetPackageId
 
         // If we still do not have a targetPackageId, it is likely a library project
         // Infer the package from the test configuration

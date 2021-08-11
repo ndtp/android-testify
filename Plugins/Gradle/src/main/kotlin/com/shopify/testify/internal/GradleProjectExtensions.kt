@@ -24,6 +24,7 @@
 
 package com.shopify.testify.internal
 
+import com.android.build.gradle.AppExtension
 import com.android.build.gradle.TestedExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -54,5 +55,30 @@ val Project.inferredAndroidTestInstallTask: String?
 
 val Project.inferredDefaultTestVariantId: String
     get() {
-        return this.android.testVariants.minBy { it.testedVariant.flavorName }?.applicationId ?: ""
+        val testVariant = this.android.testVariants.sortedBy { it.testedVariant.flavorName }.firstOrNull()
+        return try {
+            testVariant?.applicationId
+        } catch (e: Throwable) {
+            this.applicationTargetPackageId?.let { "$it.test" } ?: ""
+        } ?: ""
+    }
+
+val Project.applicationTargetPackageId: String?
+    get() {
+        var targetPackageId: String? = null
+
+        // Prefer the debug variant
+        if (this.android is AppExtension) {
+            val appExtension = this.android as AppExtension
+            val allDebugVariants = appExtension.applicationVariants.filter {
+                it.name == "debug" || it.name.endsWith("Debug")
+            }.sortedBy { it.name }
+            targetPackageId = allDebugVariants.firstOrNull()?.applicationId
+        }
+
+        // For apks without a debug variant, use the default applicationId
+        if (targetPackageId.isNullOrEmpty()) {
+            targetPackageId = this.android.defaultConfig.applicationId
+        }
+        return targetPackageId
     }

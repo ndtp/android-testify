@@ -1,5 +1,18 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+### Gradle Plugin
+
+#### Bug fixes
+
+- Fix https://github.com/Shopify/android-testify/issues/234
+    Using the Testify plugin with AGP 7+ would generate the error "Cannot query the value of property 'applicationId' because configuration of project ':app' has not completed yet". Fixed by catching the error and providing a sensible default. In the case where the test packaged ID is incorrectly inferred, the user can specify `testify { testPackageId "my.custom.package.test" }` in their build.gradle to override the inferred value.
+
+---
+
 ## 1.1.0-beta2
 
 ### Library
