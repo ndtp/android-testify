@@ -45,7 +45,7 @@ class ParallelPixelProcessor private constructor() {
 
     private fun getChunkData(width: Int, height: Int): ChunkData {
         val size = width * height
-        val chunkSize = size / numberOfCores
+        val chunkSize = size / maxNumberOfChunkThreads
         val chunks = ceil(size.toFloat() / chunkSize.toFloat()).toInt()
         return ChunkData(size, chunks, chunkSize)
     }
@@ -55,7 +55,9 @@ class ParallelPixelProcessor private constructor() {
             launch(executorDispatcher) {
                 (0 until chunkData.chunks).map { chunk ->
                     async {
-                        for (i in (chunk * chunkData.chunkSize) until ((chunk + 1) * chunkData.chunkSize)) {
+                        val start = chunk * chunkData.wholeChunkSize
+                        val end = start + chunkData.getSizeOfChunk(chunk)
+                        for (i in start until end) {
                             if (!fn(chunk, i)) break
                         }
                     }
@@ -113,8 +115,17 @@ class ParallelPixelProcessor private constructor() {
     private data class ChunkData(
         val size: Int,
         val chunks: Int,
-        val chunkSize: Int
-    )
+        val wholeChunkSize: Int
+    ) {
+        fun getSizeOfChunk(chunk: Int) = if (isLastChunk(chunk) && isUnevenChunkSize()) {
+            size % wholeChunkSize
+        } else {
+            wholeChunkSize
+        }
+
+        private fun isLastChunk(chunk: Int) = (chunk == chunks - 1)
+        private fun isUnevenChunkSize(): Boolean = (size % wholeChunkSize != 0)
+    }
 
     private data class ImageBuffers(
         val width: Int,

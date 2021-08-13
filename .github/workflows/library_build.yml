@@ -67,3 +67,10 @@ jobs:
       # Run test Gradle task
       - name: Run JVM Tests
         run: ./gradlew :Library:test
+
+      - name: Archive test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: junit-test-results
+          path: ./Library/build/reports/tests/**/**
