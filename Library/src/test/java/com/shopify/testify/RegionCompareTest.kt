@@ -26,6 +26,7 @@ package com.shopify.testify
 import android.graphics.Bitmap
 import android.graphics.Rect
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyOrNull
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -34,6 +35,7 @@ import com.shopify.testify.internal.processor.compare.FuzzyCompare
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.nio.IntBuffer
 
 class RegionCompareTest {
 
@@ -106,15 +108,17 @@ class RegionCompareTest {
         return mock<Bitmap>().apply {
             doReturn(100).whenever(this).height
             doReturn(100).whenever(this).width
+            doReturn(false).whenever(this).sameAs(anyOrNull())
 
-            if (alternateColor != null) {
-                whenever(this.getPixel(any(), any())).thenAnswer {
-                    val x = it.arguments[0] as Int
-                    val y = it.arguments[1] as Int
-                    alternateColor(color, x, y)
+            whenever(this.copyPixelsToBuffer(any())).thenAnswer {
+                val buffer = it.arguments[0] as IntBuffer
+
+                var index = 0
+                (0 until 100).forEach { x ->
+                    (0 until 100).forEach { y ->
+                        buffer.put(index++, if (alternateColor != null) alternateColor(color, x, y) else color)
+                    }
                 }
-            } else {
-                doReturn(color).whenever(this).getPixel(any(), any())
             }
         }
     }

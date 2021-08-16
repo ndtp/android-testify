@@ -89,7 +89,9 @@ class ParallelPixelProcessor private constructor() {
         return results.cardinality() == chunkData.chunks
     }
 
-    fun transform(transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int): TransformResult {
+    fun transform(
+        transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int
+    ): TransformResult {
         val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
 
         val chunkData = getChunkData(width, height)

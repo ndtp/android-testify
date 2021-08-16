@@ -1,7 +1,6 @@
 package com.shopify.testify
 
 import android.graphics.Bitmap
-import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
@@ -9,7 +8,6 @@ import com.shopify.testify.internal.processor.ParallelPixelProcessor
 import com.shopify.testify.internal.processor.numberOfCores
 import org.junit.Assert.assertEquals
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
 class ParallelPixelProcessorTest {
@@ -23,7 +21,6 @@ class ParallelPixelProcessorTest {
         return mock<Bitmap>().apply {
             doReturn(WIDTH).whenever(this).height
             doReturn(HEIGHT).whenever(this).width
-            doReturn(0xffffffff.toInt()).whenever(this).getPixel(any(), any())
         }
     }
 
@@ -47,18 +44,6 @@ class ParallelPixelProcessorTest {
         pixelProcessor.analyze { _, _, (x, y) ->
             assertEquals(expectedX[index], x)
             assertEquals(expectedY[index], y)
-            index++
-            true
-        }
-    }
-
-    @Ignore("Bug https://github.com/Shopify/android-testify/issues/228")
-    @Test
-    fun oddNumberOfCores() {
-        numberOfCores = 7
-
-        var index = 0
-        pixelProcessor.analyze { _, _, _ ->
             index++
             true
         }
