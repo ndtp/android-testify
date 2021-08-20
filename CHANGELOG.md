@@ -6,6 +6,10 @@
 
 #### Bug fixes
 
+- https://github.com/Shopify/android-testify/issues/228, https://github.com/Shopify/android-testify/issues/215
+    Account for uneven processing chunk sizes. As Testify processes, it divides the images into chunks for faster, parallel processing.
+    A bug in the original code assumed that each processing chunk would be equally sized. This caused an out-of-bounds exception in any case where the number of pixels in the image could not be evenly divided.
+
 - https://github.com/Shopify/android-testify/issues/216
     You can now use `ScreenshotRule.setExactness()` in conjunction with `ScreenshotRule.defineExclusionRects()`. You can now define both an exclusion area and an exactness threshold.
 
