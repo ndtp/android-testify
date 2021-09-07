@@ -23,6 +23,7 @@
  */
 package com.shopify.testify.internal.processor.compare.colorspace
 
+import com.github.ajalt.colormath.RGB
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -116,6 +117,19 @@ fun calculateDeltaE(L1: Double, a1: Double, b1: Double, L2: Double, a2: Double, 
             deltaCPrime / (KC * sC) * (deltaCPrime / (KC * sC)) +
             deltaHPrime / (KH * sH) * (deltaHPrime / (KH * sH)) +
             rT * (deltaCPrime / (KC * sC)) * (deltaHPrime / (KH * sH))
+    )
+}
+
+fun calculateDeltaE(baselinePixel: Int, currentPixel: Int): Double {
+    val baselineLab = RGB.fromInt(baselinePixel).toLAB()
+    val currentLab = RGB.fromInt(currentPixel).toLAB()
+    return calculateDeltaE(
+        baselineLab.l,
+        baselineLab.a,
+        baselineLab.b,
+        currentLab.l,
+        currentLab.a,
+        currentLab.b
     )
 }
 

@@ -32,6 +32,19 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
     ExampleDisabledFeature(listOf("testify-disabled")),
 
     Reporter(listOf("testify-reporter")),
+
+    /**
+     * When enabled, GenerateDiffs will write a companion image for your screenshot test which can help you more easily
+     * identify which areas of your test have triggered the screenshot failure.
+     * Diff files are only generated for failing tests.
+     * The generated file will be created in the same directory as your baseline images. Diff files can be pulled from
+     * the device using `:screenshotPull`.
+     *
+     * - Black pixels are identical between the baseline and test image
+     * - Grey pixels have been excluded from the comparison
+     * - Yellow pixels are different, but within the Exactness threshold
+     * - Red pixels are different
+     */
     GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false),
     Locale(listOf("testify-experimental-locale"), defaultValue = true),
     CanvasCapture(listOf("testify-canvas-capture")),

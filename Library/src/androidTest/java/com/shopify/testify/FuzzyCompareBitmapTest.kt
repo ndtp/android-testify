@@ -54,8 +54,8 @@ class FuzzyCompareBitmapTest {
         val similarBitmap = baselineBitmap.copy(baselineBitmap.config, true)!!
         similarBitmap.setPixel(0, 0, similarBitmap.getPixel(0, 0) + 1)
 
-        assertFalse(FuzzyCompare(1.0f).compareBitmaps(similarBitmap, baselineBitmap))
-        assertTrue(FuzzyCompare(0.99f).compareBitmaps(similarBitmap, baselineBitmap))
+        assertFalse(FuzzyCompare(1.0f, emptySet()).compareBitmaps(similarBitmap, baselineBitmap))
+        assertTrue(FuzzyCompare(0.99f, emptySet()).compareBitmaps(similarBitmap, baselineBitmap))
     }
 
     @Test
@@ -68,7 +68,7 @@ class FuzzyCompareBitmapTest {
          of the text whose black values are shifted slightly so that it varies from
          solid 0,0,0 black to fully-saturated, nearly black 0,1,0.004
          */
-        assertTrue(FuzzyCompare(0.975f).compareBitmaps(baselineBitmap, currentBitmap))
+        assertTrue(FuzzyCompare(0.975f, emptySet()).compareBitmaps(baselineBitmap, currentBitmap))
     }
 
     /**
@@ -79,6 +79,6 @@ class FuzzyCompareBitmapTest {
     fun compareWorstCase() {
         val baselineBitmap = loadBitmap("benchmark_baseline")
         val currentBitmap = loadBitmap("benchmark_current")
-        assertTrue(FuzzyCompare(0.95f).compareBitmaps(baselineBitmap, currentBitmap))
+        assertTrue(FuzzyCompare(0.95f, emptySet()).compareBitmaps(baselineBitmap, currentBitmap))
     }
 }
