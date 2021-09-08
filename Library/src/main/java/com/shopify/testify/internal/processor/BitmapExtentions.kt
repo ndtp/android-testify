@@ -1,6 +1,8 @@
 package com.shopify.testify.internal.processor
 
 import android.graphics.Bitmap
+import androidx.annotation.VisibleForTesting
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
@@ -13,7 +15,17 @@ fun ParallelPixelProcessor.TransformResult.createBitmap(): Bitmap {
     )
 }
 
-var numberOfCores = Runtime.getRuntime().availableProcessors()
+private val numberOfAvailableCores = Runtime.getRuntime().availableProcessors()
+
+@VisibleForTesting
+var maxNumberOfChunkThreads = numberOfAvailableCores
+
+@VisibleForTesting
+var _executorDispatcher: CoroutineDispatcher? = null
+
 val executorDispatcher by lazy {
-    Executors.newFixedThreadPool(numberOfCores).asCoroutineDispatcher()
+    if (_executorDispatcher == null) {
+        _executorDispatcher = Executors.newFixedThreadPool(numberOfAvailableCores).asCoroutineDispatcher()
+    }
+    _executorDispatcher!!
 }
