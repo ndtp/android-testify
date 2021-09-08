@@ -1,6 +1,6 @@
 # Testify Change Log
 
-## Unreleased
+## 1.1.0-rc01
 
 ### Library
 
