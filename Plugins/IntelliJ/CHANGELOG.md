@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.2]
+
+### Updated
+
+- Intellij plugin now supports Android Studio Bumblebee | 2021.1.1 Canary 9
+  Build 211.*
+
 ## [0.1.1]
 
 ### Updated
