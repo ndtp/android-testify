@@ -24,11 +24,10 @@
 package com.shopify.testify.extensions
 
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
+import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.DefaultActionGroup
-import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopup
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.vfs.VirtualFile
@@ -41,11 +40,14 @@ import com.shopify.testify.actions.screenshot.ScreenshotClearAction
 import com.shopify.testify.actions.screenshot.ScreenshotPullAction
 import com.shopify.testify.actions.screenshot.ScreenshotRecordAction
 import com.shopify.testify.actions.screenshot.ScreenshotTestAction
+import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
 
 class ScreenshotClassNavHandler(private val anchorElement: PsiElement) : GutterIconNavigationHandler<PsiElement> {
 
     override fun navigate(e: MouseEvent?, nameIdentifier: PsiElement) {
+        if (e == null) return
+
         val listOwner = nameIdentifier.parent
         val containingFile = listOwner.containingFile
         val virtualFile: VirtualFile? = PsiUtilCore.getVirtualFile(listOwner)
@@ -56,14 +58,14 @@ class ScreenshotClassNavHandler(private val anchorElement: PsiElement) : GutterI
                 editor.caretModel.moveToOffset(nameIdentifier.textOffset)
                 val file: PsiFile? = PsiDocumentManager.getInstance(project).getPsiFile(editor.document)
                 if (file != null && virtualFile == file.virtualFile) {
-                    val popup: JBPopup? = createActionGroupPopup(anchorElement, project)
-                    popup?.show(RelativePoint(e!!))
+                    val popup: JBPopup = createActionGroupPopup(e, anchorElement)
+                    popup.show(RelativePoint(e))
                 }
             }
         }
     }
 
-    private fun createActionGroupPopup(anchorElement: PsiElement, project: Project): JBPopup? {
+    private fun createActionGroupPopup(event: ComponentEvent, anchorElement: PsiElement): JBPopup {
 
         val group = DefaultActionGroup(
             ScreenshotTestAction(anchorElement),
@@ -71,11 +73,11 @@ class ScreenshotClassNavHandler(private val anchorElement: PsiElement) : GutterI
             ScreenshotPullAction(anchorElement),
             ScreenshotClearAction(anchorElement)
         )
-
+        val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(
             "",
             group,
-            SimpleDataContext.getProjectContext(project),
+            dataContext,
             true,
             null,
             group.childrenCount
