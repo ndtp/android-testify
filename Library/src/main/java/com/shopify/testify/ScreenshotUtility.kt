@@ -53,7 +53,7 @@ import java.util.concurrent.TimeUnit
  * Returns a [Bitmap] from the provided [activity] and [targetView]
  * Invoked from the UI thread
  */
-typealias CaptureMethod = (activity: Activity, targetView: View?) -> Bitmap
+typealias CaptureMethod = (activity: Activity, targetView: View?) -> Bitmap?
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class ScreenshotUtility {
@@ -133,7 +133,7 @@ open class ScreenshotUtility {
     }
 
     @UiThread
-    protected fun createBitmapFromView(activity: Activity, targetView: View?): Bitmap {
+    fun createBitmapFromView(activity: Activity, targetView: View?): Bitmap {
         return when {
             PixelCopyCapture.isEnabled(activity) -> createBitmapUsingPixelCopy(activity, targetView)
             CanvasCapture.isEnabled(activity) -> createBitmapFromCanvas(activity, targetView)

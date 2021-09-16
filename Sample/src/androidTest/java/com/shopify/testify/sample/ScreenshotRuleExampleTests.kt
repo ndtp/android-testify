@@ -26,13 +26,17 @@ package com.shopify.testify.sample
 
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.shopify.testify.ScreenshotRule
+import com.shopify.testify.ScreenshotUtility
 import com.shopify.testify.TestifyFeatures
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.annotation.TestifyLayout
@@ -303,6 +307,59 @@ class ScreenshotRuleExampleTests {
             .defineExclusionRects { rootView, exclusionRects ->
                 val card = rootView.findViewById<View>(R.id.info_card)
                 exclusionRects.add(card.boundingBox)
+            }
+            .assertSame()
+    }
+
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun customCapture() {
+        rule
+            .setViewModifications { harnessRoot ->
+                rule.activity.getViewState(name = "John Doe").let {
+                    harnessRoot.clientDetailsView.render(it)
+                    rule.activity.title = it.name
+                }
+            }
+            .setCaptureMethod { activity, targetView ->
+                val bitmap = ScreenshotUtility().createBitmapFromView(
+                    activity,
+                    targetView
+                )
+                val obfuscatedColor = Paint().apply {
+                    color = Color.BLACK
+                }
+                Canvas(bitmap).apply {
+                    // Obfuscate name
+                    drawRect(40f, 100f, 400f, 200f, obfuscatedColor)
+
+                    // Obfuscate address
+                    activity.findViewById<View>(R.id.address).let {
+                        val position = Rect()
+                        it.getGlobalVisibleRect(position)
+                        drawRect(
+                            position.left.toFloat(),
+                            position.top.toFloat(),
+                            position.right.toFloat(),
+                            position.bottom.toFloat(),
+                            obfuscatedColor
+                        )
+                    }
+                    // Obfuscate phone numbers
+                    activity.findViewById<View>(R.id.phone).let {
+                        val position = Rect()
+                        it.getGlobalVisibleRect(position)
+                        drawRect(
+                            position.left.toFloat(),
+                            position.top.toFloat(),
+                            position.right.toFloat(),
+                            position.bottom.toFloat(),
+                            obfuscatedColor
+                        )
+                    }
+                }
+                bitmap
             }
             .assertSame()
     }
