@@ -133,6 +133,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
+    private var captureMethod: CaptureMethod? = null
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
@@ -308,6 +309,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
+    /**
+     * Allow the test to define a custom bitmap capture method.
+     * The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
+     */
+    fun setCaptureMethod(captureMethod: CaptureMethod?) : ScreenshotRule<T> {
+        this.captureMethod = captureMethod
+        return this
+    }
+
     @CallSuper
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
@@ -436,6 +446,31 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     open fun beforeScreenshot(activity: Activity) {}
 
     /**
+     * Capture a bitmap from the given Activity and save it to the screenshot directory.
+     *
+     * @param activity The [Activity] instance to capture.
+     * @param fileName The name to use when writing the captured image to disk.
+     * @param screenshotView A [View] found in the [activity]'s view hierarchy.
+     *          If screenshotView is null, defaults to activity.window.decorView.
+     *
+     * @return A [Bitmap] representing the captured [screenshotView] in [activity]
+     *          Will return [null] if there is an error capturing the bitmap.
+     */
+    open fun takeScreenshot(
+        activity: Activity,
+        fileName: String,
+        screenshotView: View?,
+        captureMethod: CaptureMethod? = this.captureMethod
+    ): Bitmap? {
+        return screenshotUtility.createBitmapFromActivity(
+            activity,
+            fileName,
+            screenshotView,
+            captureMethod
+        )
+    }
+
+    /**
      * Test lifecycle method.
      * Invoked immediately after the screenshot has been taken.
      */
@@ -505,7 +540,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 beforeScreenshot(activity)
 
-                val currentBitmap = screenshotUtility.createBitmapFromActivity(
+                val currentBitmap = takeScreenshot(
                     activity,
                     outputFileName,
                     screenshotView
