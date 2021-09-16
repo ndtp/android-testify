@@ -49,12 +49,6 @@ import java.io.InputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-/**
- * Returns a [Bitmap] from the provided [activity] and [targetView]
- * Invoked from the UI thread
- */
-typealias CaptureMethod = (activity: Activity, targetView: View?) -> Bitmap?
-
 @Suppress("MemberVisibilityCanBePrivate")
 open class ScreenshotUtility {
 
