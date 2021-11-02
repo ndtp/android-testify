@@ -1,5 +1,9 @@
 # Testify Change Log
 
+## 1.1.0
+
+Library and plugin released without additional changes.
+
 ## 1.1.0-rc01
 
 ### Library
