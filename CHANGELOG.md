@@ -2,14 +2,40 @@
 
 ## Unreleased
 
-### Library
-
 - Bump Testify core version to 1.2.0-alpha01
+
+### Library
 
 #### Updates
 
+- kotlin upgraded from 1.4.31 to 1.5.31
+- androidx.appcompat:appcompat from 1.2.0 to 1.3.1
+- androidx.test.espresso from 3.3.0 to 3.4.0
+- androidx.test.ext:junit from 1.1.2 to 1.1.3
+- androidx.test:rules and androidx.test:runner from 1.3.0 to 1.4.0
+- kotlinx-coroutines from 1.4.3 to 1.5.1
+- com.google.android.material from 1.3.0 to 1.4.0
 - mockito from 3.3.3 to 4.0.0
 - mockito-android from 3.3.3 to 4.0.0
+
+### Gradle Plugin
+
+#### Updates
+
+- kotlin upgraded from 1.4.31 to 1.5.31
+
+### Sample
+
+#### Added
+
+- Support for Jetpack Compose 1.0.5
+- ComposeActivity
+- ComposeActivityScreenshotTest
+
+#### Updates
+
+- compileSdkVersion from 29 to 31
+- targetSdkVersion from 29 to 31
 
 ---
 
