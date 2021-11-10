@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
@@ -46,6 +46,11 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_clients -> {
                 val intent = Intent(this, ClientListActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.action_compose -> {
+                val intent = Intent(this, ComposeActivity::class.java)
                 startActivity(intent)
                 return true
             }
