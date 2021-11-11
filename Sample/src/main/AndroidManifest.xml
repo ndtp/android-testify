@@ -27,6 +27,9 @@
             android:name=".test.TestLocaleHarnessNoWrapActivity"
             android:exported="false" />
         <activity
+            android:name="com.shopify.testify.ComposableTestActivity"
+            android:exported="false" />
+        <activity
             android:name=".clients.details.ClientDetailsActivity"
             android:exported="false"
             android:parentActivityName=".clients.index.ClientListActivity" />

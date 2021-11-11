@@ -95,7 +95,7 @@ class ComposeActivity : ComponentActivity() {
 }
 
 @Composable
-private fun TopAppBar() {
+fun TopAppBar() {
     TopAppBar(
         title = { Text(text = "Compose Sample") },
         contentColor = Color.White,
@@ -111,9 +111,9 @@ private fun TopAppBar() {
 }
 
 @Composable
-fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String) {
+fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clickable { },

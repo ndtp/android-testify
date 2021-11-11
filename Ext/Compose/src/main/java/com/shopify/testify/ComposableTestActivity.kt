@@ -21,38 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.sample
+package com.shopify.testify
 
-import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.TestifyFeatures
-import com.shopify.testify.annotation.ScreenshotInstrumentation
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import android.graphics.Color
+import android.os.Bundle
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.platform.ComposeView
+import com.shopify.testify.compose.R
 
-class ComposeActivityScreenshotTest {
+open class ComposableTestActivity : AppCompatActivity() {
 
-    @get:Rule var rule = ScreenshotRule(ComposeActivity::class.java)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    @Before
-    fun setUp() {
-        /**
-         * It is important to enable PixelCopy as your capture method for Jetpack Compose-based UI.
-         * PixelCopy will accurately capture elevation, shadows and any GPU-accelerated features.
-         */
-        TestifyFeatures.PixelCopyCapture.setEnabled(true)
-    }
-
-    /**
-     * This test demonstrates the Testify compatibility with Compose UI activities.
-     * The exactness of this test is lowered to account for differences in rendering caused by hardware variations
-     * between different machines.
-     */
-    @ScreenshotInstrumentation
-    @Test
-    fun default() {
-        rule
-            .setExactness(0.9f)
-            .assertSame()
+        setContentView(ComposeView(this).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            setBackgroundColor(Color.WHITE)
+            id = R.id.compose_container
+        })
     }
 }
