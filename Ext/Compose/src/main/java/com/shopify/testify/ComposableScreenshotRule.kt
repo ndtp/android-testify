@@ -29,11 +29,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import com.shopify.testify.compose.R
 import com.shopify.testify.internal.disposeComposition
+import org.junit.Before
 
 /**
  * Helper extension of [ScreenshotRule] which simplifies testing [Composable] functions.
  */
-open class ComposableScreenshotRule : ScreenshotRule<ComposableTestActivity>(
+open class ComposableScreenshotRule(
+    var exactness: Float = 0.9f
+) : ScreenshotRule<ComposableTestActivity>(
     ComposableTestActivity::class.java,
     launchActivity = false,
 ) {
@@ -48,6 +51,8 @@ open class ComposableScreenshotRule : ScreenshotRule<ComposableTestActivity>(
      */
     override fun beforeAssertSame() {
         super.beforeAssertSame()
+        TestifyFeatures.PixelCopyCapture.setEnabled(true)
+        setExactness(exactness)
         setScreenshotViewProvider {
             it.getChildAt(0)
         }

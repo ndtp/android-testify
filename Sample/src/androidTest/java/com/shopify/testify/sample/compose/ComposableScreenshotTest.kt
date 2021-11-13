@@ -25,24 +25,24 @@ package com.shopify.testify.sample.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shopify.testify.ComposableScreenshotRule
-import com.shopify.testify.TestifyFeatures
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.sample.ClientListItem
 import com.shopify.testify.sample.R
 import com.shopify.testify.sample.TopAppBar
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -55,10 +55,15 @@ class ComposableScreenshotTest {
     @get:Rule
     val rule = ComposableScreenshotRule()
 
-    @Before
-    fun setUp() {
-        TestifyFeatures.PixelCopyCapture.setEnabled(true)
-        rule.setExactness(0.9f)
+    @Composable
+    private fun PaddedBox(color: Color, content: @Composable BoxScope.() -> Unit) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .background(color),
+            content = content
+        )
     }
 
     @ScreenshotInstrumentation
@@ -66,18 +71,18 @@ class ComposableScreenshotTest {
     fun default() {
         rule
             .setCompose {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                        .background(Color.Gray)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
-                            .background(Color.LightGray)
-                    ) {
+                Text(text = "Hello, Testify!")
+            }
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun _default() {
+        rule
+            .setCompose {
+                PaddedBox(Color.Gray) {
+                    PaddedBox(Color.LightGray) {
                         Text(
                             modifier = Modifier.align(Alignment.Center),
                             text = "Hello, Testify!",
