@@ -15,17 +15,27 @@ You can easily capture screenshots with different resolutions, orientations, API
 
 Before building your screenshot test with Testify, make sure to set a dependency reference to the Testify plugin:
 
+**Root build.gradle**
 ```groovy
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.1.0"
+        classpath "com.shopify.testify:plugin:1.2.0-alpha01"
     }
 }
+```
 
-apply plugin: 'com.shopify.testify'
+**Application build.gradle**
+```groovy
+plugins {
+    id("com.shopify.testify")
+}
+
+dependencies {
+    androidTestImplementation "androidx.test:rules:1.4.0"
+}
 ```
 
 ## Device Configuration
