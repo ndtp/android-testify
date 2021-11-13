@@ -1,5 +1,18 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+- Bump Testify core version to 1.2.0-alpha01
+
+#### Updates
+
+- mockito from 3.3.3 to 4.0.0
+- mockito-android from 3.3.3 to 4.0.0
+
+---
+
 ## 1.1.0
 
 Library and plugin released without additional changes.
