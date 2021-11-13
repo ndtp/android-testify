@@ -24,8 +24,6 @@
 package com.shopify.testify
 
 import android.app.Activity
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.shopify.testify.internal.exception.ActivityMustImplementResourceOverrideException
 import com.shopify.testify.internal.exception.ActivityNotRegisteredException
 import com.shopify.testify.internal.exception.AssertSameMustBeLastException
@@ -42,6 +40,8 @@ import com.shopify.testify.internal.exception.ViewModificationException
 import com.shopify.testify.report.ErrorCause
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 class ErrorCauseTest {
 

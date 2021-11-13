@@ -74,7 +74,7 @@ android {
         }
 
         testImplementation "org.mockito:mockito-core:${versions.mockito2}"
-        testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:${versions.mockitokotlin}"
+        testImplementation "org.mockito.kotlin:mockito-kotlin:${versions.mockitokotlin}"
         testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinx}"
 
         androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"

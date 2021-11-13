@@ -23,12 +23,12 @@
  */
 package com.shopify.testify
 
-import com.nhaarman.mockitokotlin2.whenever
 import com.shopify.testify.internal.DeviceIdentifier
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
+import org.mockito.kotlin.whenever
 
 class DeviceIdentifierTest {
 

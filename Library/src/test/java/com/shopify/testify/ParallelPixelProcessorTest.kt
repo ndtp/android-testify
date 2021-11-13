@@ -1,10 +1,6 @@
 package com.shopify.testify
 
 import android.graphics.Bitmap
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.shopify.testify.internal.processor.ParallelPixelProcessor
 import com.shopify.testify.internal.processor._executorDispatcher
 import com.shopify.testify.internal.processor.maxNumberOfChunkThreads
@@ -19,6 +15,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.doReturn
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.util.concurrent.atomic.AtomicInteger
 
 @ObsoleteCoroutinesApi
