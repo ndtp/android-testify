@@ -6,7 +6,7 @@ plugins {
 
 ext {
     pom = [
-            publishedGroupId  : 'com.shopify.testify.compose',
+            publishedGroupId  : 'com.shopify.testify',
             artifact          : 'testify-compose',
             libraryName       : 'testify-compose',
             libraryDescription: 'Jetpack Compose extensions for Android Testify',
