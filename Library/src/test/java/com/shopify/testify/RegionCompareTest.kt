@@ -25,12 +25,6 @@ package com.shopify.testify
 
 import android.graphics.Bitmap
 import android.graphics.Rect
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import com.shopify.testify.internal.processor._executorDispatcher
 import com.shopify.testify.internal.processor.compare.FuzzyCompare
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +38,12 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.nio.IntBuffer
 
 @ObsoleteCoroutinesApi
