@@ -8,6 +8,10 @@
 
 #### Updates
 
+- Compile SDK from 30 to 31
+- Target SDK from 30 to 31
+- Gradle Wrapper from 6.7.1 to 7.0.2
+- Android Gradle Plugin from 4.2.0 to 7.0.3
 - kotlin upgraded from 1.4.31 to 1.5.31
 - androidx.appcompat:appcompat from 1.2.0 to 1.3.1
 - androidx.test.espresso from 3.3.0 to 3.4.0

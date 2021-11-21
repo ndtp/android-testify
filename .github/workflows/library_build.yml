@@ -13,6 +13,12 @@ jobs:
       - name: Fetch Sources
         uses: actions/checkout@v2
 
+      # Setup Java 11 environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
       # Validate wrapper
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1
@@ -25,6 +31,12 @@ jobs:
 
     - name: Fetch Sources
       uses: actions/checkout@v2
+
+      # Setup Java 11 environment for the next steps
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
 
     - name: Validate Build
       run: ./gradlew :Library:assemble
@@ -48,11 +60,11 @@ jobs:
       - name: Fetch Sources
         uses: actions/checkout@v2
 
-      # Setup Java 1.8 environment for the next steps
+      # Setup Java 11 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
 
       # Cache Gradle dependencies
       - name: Setup Cache
