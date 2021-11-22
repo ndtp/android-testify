@@ -78,7 +78,7 @@ class ComposableScreenshotTest {
 
     @ScreenshotInstrumentation
     @Test
-    fun _default() {
+    fun paddedBoxes() {
         rule
             .setCompose {
                 PaddedBox(Color.Gray) {

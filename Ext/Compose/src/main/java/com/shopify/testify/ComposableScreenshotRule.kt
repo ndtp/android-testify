@@ -27,9 +27,12 @@ import android.app.Activity
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
+import androidx.test.espresso.Espresso
 import com.shopify.testify.compose.R
 import com.shopify.testify.internal.disposeComposition
-import org.junit.Before
+import org.junit.Assert.assertTrue
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 /**
  * Helper extension of [ScreenshotRule] which simplifies testing [Composable] functions.
@@ -62,12 +65,17 @@ open class ComposableScreenshotRule(
      * Render the composable function after the activity has loaded.
      */
     override fun afterActivityLaunched() {
+        Espresso.onIdle()
+        val latch = CountDownLatch(1)
         activity.runOnUiThread {
             val composeView = activity.findViewById<ComposeView>(R.id.compose_container)
             composeView.setContent {
                 composeFunction()
+                latch.countDown()
             }
         }
+        assertTrue(latch.await(COMPOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS))
+        Espresso.onIdle()
         super.afterActivityLaunched()
     }
 
@@ -85,5 +93,9 @@ open class ComposableScreenshotRule(
     fun setCompose(composable: @Composable () -> Unit): ComposableScreenshotRule {
         composeFunction = composable
         return this
+    }
+
+    companion object {
+        private const val COMPOSE_TIMEOUT_SECONDS: Long = 15
     }
 }
