@@ -37,7 +37,7 @@ android {
         minSdkVersion coreVersions.minSdk
         targetSdkVersion coreVersions.targetSdk
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        multiDexEnabled = true
         kotlinOptions {
             allWarningsAsErrors = true
         }
@@ -84,6 +84,7 @@ android {
         androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.androidx.test.espresso}"
         androidTestImplementation "com.google.android.material:material:${versions.material}"
         androidTestImplementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
+        androidTestImplementation "androidx.multidex:multidex:2.0.1"
     }
 }
 

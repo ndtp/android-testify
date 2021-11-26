@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,38 +23,36 @@
  */
 package com.shopify.testify.sample
 
-import android.content.Intent
-import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
-import com.shopify.testify.sample.clients.index.ClientListActivity
+import com.shopify.testify.ScreenshotRule
+import com.shopify.testify.TestifyFeatures
+import com.shopify.testify.annotation.ScreenshotInstrumentation
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 
-class MainActivity : AppCompatActivity() {
+class ComposeActivityScreenshotTest {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    @get:Rule var rule = ScreenshotRule(ComposeActivity::class.java)
+
+    @Before
+    fun setUp() {
+        /**
+         * It is important to enable PixelCopy as your capture method for Jetpack Compose-based UI.
+         * PixelCopy will accurately capture elevation, shadows and any GPU-accelerated features.
+         */
+        TestifyFeatures.PixelCopyCapture.setEnabled(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_clients -> {
-                val intent = Intent(this, ClientListActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.action_compose -> {
-                val intent = Intent(this, ComposeActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
+    /**
+     * This test demonstrates the Testify compatibility with Compose UI activities.
+     * The exactness of this test is lowered to account for differences in rendering caused by hardware variations
+     * between different machines.
+     */
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setExactness(0.9f)
+            .assertSame()
     }
 }

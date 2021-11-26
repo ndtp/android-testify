@@ -12,17 +12,32 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name="com.shopify.testify.sample.test.TestHarnessActivity" />
-        <activity android:name="com.shopify.testify.sample.test.TestLocaleHarnessActivity" />
-        <activity android:name="com.shopify.testify.sample.test.TestLocaleHarnessNoWrapActivity" />
+        <activity
+            android:name=".ComposeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_compose"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".test.TestHarnessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".test.TestLocaleHarnessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".test.TestLocaleHarnessNoWrapActivity"
+            android:exported="false" />
         <activity
             android:name=".clients.details.ClientDetailsActivity"
+            android:exported="false"
             android:parentActivityName=".clients.index.ClientListActivity" />
         <activity
             android:name=".clients.index.ClientListActivity"
+            android:exported="false"
             android:label="@string/title_activity_client"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
