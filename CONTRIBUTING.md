@@ -14,7 +14,7 @@
 
 ## Workflow
 
-* Fork the repo and branch off of `master`
+* Fork the repo and branch off of `main`
 * Create a new branch in your fork
 * Add tests for your code
 * Make sure all tests pass
