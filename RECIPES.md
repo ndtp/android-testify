@@ -45,9 +45,9 @@ Using `ScreenshotRule.setScreenshotViewProvider`, you myst return a `View` refer
 
 It is often desirable to test your View or Activity in multiple locales. Testify allows you to dynamically change the locale on a per-test basis. 
 
-To begin, if you are targeting an emulator running Android API 24 or higher, your activity under test must implement the [TestifyResourcesOverride](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/resources/TestifyResourcesOverride.kt) interface. This allows Testify to attach a new `Context` with the appropriate locale loaded. It is highly recommended that you employ a _test harness activity_ for this purpose. Please see the [TestHarnessActivity](https://github.com/Shopify/android-testify/blob/master/Sample/src/androidTest/java/com/shopify/testify/sample/test/TestLocaleHarnessActivity.kt) in the provided Sample.
+To begin, if you are targeting an emulator running Android API 24 or higher, your activity under test must implement the [TestifyResourcesOverride](https://github.com/Shopify/android-testify/blob/main/Library/src/main/java/com/shopify/testify/resources/TestifyResourcesOverride.kt) interface. This allows Testify to attach a new `Context` with the appropriate locale loaded. It is highly recommended that you employ a _test harness activity_ for this purpose. Please see the [TestHarnessActivity](https://github.com/Shopify/android-testify/blob/main/Sample/src/androidTest/java/com/shopify/testify/sample/test/TestLocaleHarnessActivity.kt) in the provided Sample.
 
-With an Activity which implements `TestifyResourcesOverride`, you can now invoke the [setLocale](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/ScreenshotRule.kt#L205) method on the `ScreenshotTestRule`. `setLocale` accepts any valid [Locale](https://docs.oracle.com/javase/7/docs/api/java/util/Locale.html) instance.
+With an Activity which implements `TestifyResourcesOverride`, you can now invoke the [setLocale](https://github.com/Shopify/android-testify/blob/main/Library/src/main/java/com/shopify/testify/ScreenshotRule.kt#L205) method on the `ScreenshotTestRule`. `setLocale` accepts any valid [Locale](https://docs.oracle.com/javase/7/docs/api/java/util/Locale.html) instance.
 
 _Example Test:_
 ```kotlin
@@ -333,7 +333,7 @@ The three capture methods available are:
 For legacy compatibility reasons, `DrawingCache` mode is the default Testify capture method.
 
 If you wish to select an alternative capture method, you can enable the experimental feature either in code, or in your manifest.
-Available features can be found in [TestifyFeatures](https://github.com/Shopify/android-testify/blob/master/Library/src/main/java/com/shopify/testify/TestifyFeatures.kt#L10)
+Available features can be found in [TestifyFeatures](https://github.com/Shopify/android-testify/blob/main/Library/src/main/java/com/shopify/testify/TestifyFeatures.kt#L10)
 
 **Code:**
 ```kotlin

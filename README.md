@@ -2,7 +2,7 @@
 
 Add screenshots to your Android tests
 
-<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=master"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/testify"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/testify?color=%236e40ed&label=com.shopify.testify%3Atestify"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/plugin?color=%234da1ea&label=com.shopify.testify%3Aplugin"/></a>
+<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=main"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/testify"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/testify?color=%236e40ed&label=com.shopify.testify%3Atestify"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/plugin?color=%234da1ea&label=com.shopify.testify%3Aplugin"/></a>
 ---
 
 Expand your test coverage by including the View-layer. Testify allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.
@@ -15,17 +15,27 @@ You can easily capture screenshots with different resolutions, orientations, API
 
 Before building your screenshot test with Testify, make sure to set a dependency reference to the Testify plugin:
 
+**Root build.gradle**
 ```groovy
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.1.0"
+        classpath "com.shopify.testify:plugin:1.2.0-alpha01"
     }
 }
+```
 
-apply plugin: 'com.shopify.testify'
+**Application build.gradle**
+```groovy
+plugins {
+    id("com.shopify.testify")
+}
+
+dependencies {
+    androidTestImplementation "androidx.test:rules:1.4.0"
+}
 ```
 
 ## Device Configuration
@@ -129,7 +139,7 @@ There are a variety of additional Gradle commands available through the Testify 
 
     MIT License
     
-    Copyright (c) 2021 Shopify
+    Copyright (c) 2022 Shopify
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

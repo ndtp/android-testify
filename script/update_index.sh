@@ -6,7 +6,7 @@ INDEX_FILE="${BASEDIR}/../index.md"
 BRANCH=$1
 if [[ "${BRANCH}" == "" ]]
 	then
-		BRANCH="master"
+		BRANCH="main"
 fi
 
 git checkout $BRANCH "${BASEDIR}/../LICENSE"
