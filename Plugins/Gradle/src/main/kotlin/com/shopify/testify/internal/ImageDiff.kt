@@ -29,7 +29,7 @@ import java.io.File
 
 private fun generateDiff(sourceFile: File, diffFile: String) {
     print("    Extracting differences for ${sourceFile.nameWithoutExtension}")
-    val baselineFile = File("${sourceFile.parent}/master-${sourceFile.name}")
+    val baselineFile = File("${sourceFile.parent}/main-${sourceFile.name}")
     print(".")
 
     Git.fetchOriginal(sourceFile, baselineFile)

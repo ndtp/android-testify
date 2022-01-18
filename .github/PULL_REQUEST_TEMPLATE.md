@@ -11,8 +11,8 @@ Resolves <issues>
 
 ### Notice
 
-This change must keep `master` in a shippable state; **it may be shipped without further notice**.
+This change must keep `main` in a shippable state; **it may be shipped without further notice**.
 
 <!--
-Need help in filling this out? See the [guide](https://github.com/Shopify/android-testify/blob/master/CONTRIBUTING.md).
+Need help in filling this out? See the [guide](https://github.com/Shopify/android-testify/blob/main/CONTRIBUTING.md).
 -->
