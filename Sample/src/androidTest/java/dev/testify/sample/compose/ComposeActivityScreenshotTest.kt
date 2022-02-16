@@ -34,7 +34,8 @@ import org.junit.Test
 
 class ComposeActivityScreenshotTest {
 
-    @get:Rule var rule = ScreenshotRule(ComposeActivity::class.java)
+    @get:Rule
+    var rule = ScreenshotRule(ComposeActivity::class.java, launchActivity = false)
 
     @Before
     fun setUp() {
@@ -56,6 +57,17 @@ class ComposeActivityScreenshotTest {
         rule
             .configure {
                 exactness = 0.95f
+            }
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun drowDown() {
+        rule
+            .setExactness(0.9f)
+            .addIntentExtras {
+                it.putBoolean(ComposeActivity.EXTRA_DROPDOWN, true)
             }
             .assertSame()
     }

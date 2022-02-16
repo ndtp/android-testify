@@ -131,4 +131,21 @@ class ComposableScreenshotTest {
             }
             .assertSame()
     }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun dropdownMenu() {
+        rule
+            .setCompose {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp)
+                        .padding(top = 20.dp)
+                ) {
+                    DropdownDemo(true)
+                }
+            }
+            .assertSame()
+    }
 }
