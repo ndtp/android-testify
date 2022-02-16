@@ -31,6 +31,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,9 +39,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -48,6 +52,12 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -59,11 +69,22 @@ import dev.testify.sample.clients.MockClientData
 import dev.testify.sample.ui.theme.TestifyTheme
 
 class ComposeActivity : ComponentActivity() {
+
+    companion object {
+        const val EXTRA_DROPDOWN = "extra_dropdown"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val expand = if (intent?.hasExtra(EXTRA_DROPDOWN) == true) {
+            intent.getBooleanExtra(EXTRA_DROPDOWN, false)
+        } else {
+            false
+        }
         composableContent {
             Column {
                 TopAppBar()
+                DropdownDemo(expand)
                 LazyColumn {
                     MockClientData.CLIENTS.forEach {
                         item {
@@ -140,6 +161,55 @@ fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String, modifi
                 Text(text = name)
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = "Client since $since", color = Color.Gray)
+            }
+        }
+    }
+}
+
+/**
+ * Modified from https://foso.github.io/Jetpack-Compose-Playground/material/dropdownmenu/
+ */
+
+@Composable
+fun DropdownDemo(expand: Boolean) {
+    var expanded by remember { mutableStateOf(expand) }
+    val items = listOf("Selection 1", "Selection 2", "Selection 3")
+    var selectedIndex: Int? by remember { mutableStateOf(null) }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.TopStart)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .clickable(onClick = { expanded = true })
+                .border(width = 1.dp, color = Color.Black)
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        ) {
+            Text(
+                selectedIndex?.let { items[it] } ?: "Placeholder Text",
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                modifier = Modifier.align(CenterVertically),
+                painter = painterResource(R.drawable.ic_drop_down),
+                contentDescription = "Drop down"
+            )
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items.forEachIndexed { index, s ->
+                DropdownMenuItem(onClick = {
+                    selectedIndex = index
+                    expanded = false
+                }) {
+                    Text(text = s)
+                }
             }
         }
     }
