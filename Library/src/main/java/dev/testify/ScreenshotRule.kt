@@ -354,19 +354,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         testMethodName = methodName
         this.testClass = "${testClass.canonicalName}#$methodName"
 
-//        reporter?.startTest(this, description)
-//
+        reporter?.startTest(this, testClass)
+
         val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
     }
 
     override fun apply(base: Statement, description: Description): Statement {
         val methodAnnotations = description.annotations
-
         apply(description.methodName, description.testClass, methodAnnotations)
-
-        reporter?.startTest(this, description)
-
         return super.apply(ScreenshotStatement(base), description)
     }
 
