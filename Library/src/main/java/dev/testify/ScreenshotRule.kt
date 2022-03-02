@@ -84,8 +84,7 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.HashSet
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -105,7 +104,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
-    @IdRes protected var rootViewId = rootViewId
+    @IdRes
+    protected var rootViewId = rootViewId
         @JvmName("rootViewIdResource") set
 
     @LayoutRes
@@ -327,8 +327,34 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         ResourceWrapper.beforeActivityLaunched()
     }
 
+    open fun apply(
+        methodName: String,
+        classAnnotation: ScreenshotInstrumentation?,
+        methodAnnotation: ScreenshotInstrumentation?
+    ) {
+        checkForScreenshotInstrumentationAnnotation(methodName, classAnnotation, methodAnnotation)
+
+//        applyExactness(description)
+//        espressoActions = null
+//        testSimpleClassName = description.testClass.simpleName
+//        testMethodName = description.methodName
+//        testClass = "${description.testClass?.canonicalName}#${description.methodName}"
+//
+//        reporter?.startTest(this, description)
+//
+//        val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
+//        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
+    }
+
     override fun apply(base: Statement, description: Description): Statement {
-        checkForScreenshotInstrumentationAnnotation(description)
+        val classAnnotation = description.testClass.getAnnotation(ScreenshotInstrumentation::class.java)
+        val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
+
+        apply(description.methodName, classAnnotation, methodAnnotation)
+
+
+
+
         applyExactness(description)
         espressoActions = null
         testSimpleClassName = description.testClass.simpleName
@@ -352,12 +378,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             return layoutId
         }
 
-    private fun checkForScreenshotInstrumentationAnnotation(description: Description) {
-        val classAnnotation = description.testClass.getAnnotation(ScreenshotInstrumentation::class.java)
+    private fun checkForScreenshotInstrumentationAnnotation(
+        methodName: String,
+        classAnnotation: ScreenshotInstrumentation?,
+        methodAnnotation: ScreenshotInstrumentation?
+    ) {
         if (classAnnotation == null) {
-            val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
             if (methodAnnotation == null) {
-                this.throwable = MissingScreenshotInstrumentationAnnotationException(description.methodName)
+                this.throwable = MissingScreenshotInstrumentationAnnotationException(methodName)
             } else {
                 orientationToIgnore = methodAnnotation.orientationToIgnore
             }
