@@ -676,26 +676,41 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
     }
 
+    protected fun evaluateBeforeEach() {
+        getInstrumentation()?.run {
+            reporter?.identifySession(this)
+        }
+        assertSameInvoked = false
+    }
+
+    protected fun evaluateAfterEach() {
+        // Safeguard against accidentally omitting the call to `assertSame`
+        if (!assertSameInvoked) {
+            throw MissingAssertSameException()
+        }
+        reporter?.pass()
+    }
+
+    protected fun evaluateAfterTestExecution() {
+        reporter?.endTest()
+    }
+
+    protected fun handleTestException(throwable: Throwable) {
+        reporter?.fail(throwable)
+        throw throwable
+    }
+
     private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
 
         override fun evaluate() {
             try {
-                getInstrumentation()?.run {
-                    reporter?.identifySession(this)
-                }
-
-                assertSameInvoked = false
+                evaluateBeforeEach()
                 base.evaluate()
-                // Safeguard against accidentally omitting the call to `assertSame`
-                if (!assertSameInvoked) {
-                    throw MissingAssertSameException()
-                }
-                reporter?.pass()
+                evaluateAfterEach()
             } catch (throwable: Throwable) {
-                reporter?.fail(throwable)
-                throw throwable
+                handleTestException(throwable)
             } finally {
-                reporter?.endTest()
+                evaluateAfterTestExecution()
             }
         }
     }
