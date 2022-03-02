@@ -3,10 +3,13 @@ package com.shopify.testify.sample
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.sample.test.ScreenshotExtension
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 
-@DisplayName("Give the MainActivity is loaded")
+@DisplayName("Given the MainActivity is loaded")
 class Junit5ExampleTests {
 
     @JvmField
@@ -18,5 +21,28 @@ class Junit5ExampleTests {
     @DisplayName("Then the default state is rendered")
     fun default() {
         rule.assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @ParameterizedTest
+    @ValueSource(strings = ["A", "B", "C"])
+    @DisplayName("Then the letter is rendered")
+    fun parameterized(values: String) {
+        rule
+            .setViewModifications {
+                rule.activity.title = values
+            }
+            .assertSame()
+    }
+
+    @DisplayName("With a nested test")
+    @Nested
+    inner class NestedTest {
+        @ScreenshotInstrumentation
+        @Test
+        @DisplayName("Then the default state is rendered")
+        fun default() {
+            rule.assertSame()
+        }
     }
 }
