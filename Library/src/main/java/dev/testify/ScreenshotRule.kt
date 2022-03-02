@@ -327,14 +327,27 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         ResourceWrapper.beforeActivityLaunched()
     }
 
+    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
+        return this.find { it is T } as? T
+    }
+
     open fun apply(
         methodName: String,
-        classAnnotation: ScreenshotInstrumentation?,
-        methodAnnotation: ScreenshotInstrumentation?
+        classAnnotations: Collection<Annotation>?,
+        methodAnnotations: Collection<Annotation>?
     ) {
-        checkForScreenshotInstrumentationAnnotation(methodName, classAnnotation, methodAnnotation)
+        val classScreenshotInstrumentation = classAnnotations?.getAnnotation<ScreenshotInstrumentation>()
+        val methodScreenshotInstrumentation = methodAnnotations?.getAnnotation<ScreenshotInstrumentation>()
 
-//        applyExactness(description)
+        checkForScreenshotInstrumentationAnnotation(
+            methodName,
+            classScreenshotInstrumentation,
+            methodScreenshotInstrumentation
+        )
+
+        val bitmapComparison = classAnnotations?.getAnnotation<BitmapComparisonExactness>()
+        applyExactness(bitmapComparison)
+
 //        espressoActions = null
 //        testSimpleClassName = description.testClass.simpleName
 //        testMethodName = description.methodName
@@ -347,15 +360,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     override fun apply(base: Statement, description: Description): Statement {
-        val classAnnotation = description.testClass.getAnnotation(ScreenshotInstrumentation::class.java)
-        val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
+        val classAnnotations = description.testClass.annotations.asList()
+        val methodAnnotations = description.annotations
 
-        apply(description.methodName, classAnnotation, methodAnnotation)
+        apply(description.methodName, classAnnotations, methodAnnotations)
 
-
-
-
-        applyExactness(description)
         espressoActions = null
         testSimpleClassName = description.testClass.simpleName
         testMethodName = description.methodName
@@ -421,9 +430,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return intent
     }
 
-    private fun applyExactness(description: Description) {
+    private fun applyExactness(bitmapComparison: BitmapComparisonExactness?) {
         if (exactness == null) {
-            val bitmapComparison = description.getAnnotation(BitmapComparisonExactness::class.java)
             exactness = bitmapComparison?.exactness
         }
     }
