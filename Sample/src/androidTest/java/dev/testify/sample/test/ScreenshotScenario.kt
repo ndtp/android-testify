@@ -15,10 +15,9 @@ class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
         if (context == null) return
 
         val testMethod = context.testMethod?.get() ?: return
-        val testClassAnnotations = context.testClass?.get()?.annotations?.asList()
         val methodAnnotations = testMethod.annotations.asList()
 
-        apply(testMethod.name, testClassAnnotations, methodAnnotations)
+        apply(testMethod.name, context.testClass?.get()!!, methodAnnotations)
     }
 
     override fun afterEach(context: ExtensionContext?) {

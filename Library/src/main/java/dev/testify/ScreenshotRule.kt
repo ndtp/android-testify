@@ -333,10 +333,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     open fun apply(
         methodName: String,
-        classAnnotations: Collection<Annotation>?,
+        testClass: Class<*>,
         methodAnnotations: Collection<Annotation>?
     ) {
-        val classScreenshotInstrumentation = classAnnotations?.getAnnotation<ScreenshotInstrumentation>()
+        val classAnnotations = testClass.annotations.asList()
+        val classScreenshotInstrumentation = classAnnotations.getAnnotation<ScreenshotInstrumentation>()
         val methodScreenshotInstrumentation = methodAnnotations?.getAnnotation<ScreenshotInstrumentation>()
 
         checkForScreenshotInstrumentationAnnotation(
@@ -345,14 +346,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             methodScreenshotInstrumentation
         )
 
-        val bitmapComparison = classAnnotations?.getAnnotation<BitmapComparisonExactness>()
+        val bitmapComparison = classAnnotations.getAnnotation<BitmapComparisonExactness>()
         applyExactness(bitmapComparison)
 
         espressoActions = null
-//        testSimpleClassName = description.testClass.simpleName
-//        testMethodName = description.methodName
-//        testClass = "${description.testClass?.canonicalName}#${description.methodName}"
-//
+        testSimpleClassName = testClass.simpleName
+        testMethodName = methodName
+        this.testClass = "${testClass.canonicalName}#$methodName"
+
 //        reporter?.startTest(this, description)
 //
 //        val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
@@ -360,14 +361,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     override fun apply(base: Statement, description: Description): Statement {
-        val classAnnotations = description.testClass.annotations.asList()
         val methodAnnotations = description.annotations
 
-        apply(description.methodName, classAnnotations, methodAnnotations)
-
-        testSimpleClassName = description.testClass.simpleName
-        testMethodName = description.methodName
-        testClass = "${description.testClass?.canonicalName}#${description.methodName}"
+        apply(description.methodName, description.testClass, methodAnnotations)
 
         reporter?.startTest(this, description)
 
