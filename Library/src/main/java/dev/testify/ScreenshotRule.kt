@@ -348,7 +348,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         val bitmapComparison = classAnnotations?.getAnnotation<BitmapComparisonExactness>()
         applyExactness(bitmapComparison)
 
-//        espressoActions = null
+        espressoActions = null
 //        testSimpleClassName = description.testClass.simpleName
 //        testMethodName = description.methodName
 //        testClass = "${description.testClass?.canonicalName}#${description.methodName}"
@@ -365,7 +365,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         apply(description.methodName, classAnnotations, methodAnnotations)
 
-        espressoActions = null
         testSimpleClassName = description.testClass.simpleName
         testMethodName = description.methodName
         testClass = "${description.testClass?.canonicalName}#${description.methodName}"
