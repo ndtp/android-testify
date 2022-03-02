@@ -356,8 +356,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
 //        reporter?.startTest(this, description)
 //
-//        val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
-//        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
+        val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
+        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
     }
 
     override fun apply(base: Statement, description: Description): Statement {
@@ -367,8 +367,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         reporter?.startTest(this, description)
 
-        val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
-        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
         return super.apply(ScreenshotStatement(base), description)
     }
 
