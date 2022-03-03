@@ -14,11 +14,26 @@ class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
     BeforeEachCallback,
     AfterTestExecutionCallback,
     TestExecutionExceptionHandler {
+
+    private val ExtensionContext.testMethodName: String
+        get() {
+            val id = uniqueId
+            val parameterizedName = id.substringAfter("test-template:", "").substringBefore("(", "")
+            val methodName = if (parameterizedName.isNotEmpty()) {
+                val invocation = id.substringAfter("test-template-invocation:", "").removePrefix("#").removeSuffix("]")
+                "$parameterizedName$invocation"
+            } else {
+                id.substringAfter("method:", "").substringBefore("(", "")
+            }
+            return methodName.ifEmpty { this.requiredTestMethod.name }
+        }
+
     private fun initialize(context: ExtensionContext) {
         val testMethod = context.testMethod?.get() ?: return
         val methodAnnotations = testMethod.annotations.asList()
+        val name = context.testMethodName
 
-        apply(testMethod.name, context.testClass?.get()!!, methodAnnotations)
+        apply(name, context.testClass?.get()!!, methodAnnotations)
     }
 
     override fun beforeEach(context: ExtensionContext?) {
