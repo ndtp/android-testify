@@ -7,7 +7,8 @@ buildscript {
     }
     ext {
         versions = [
-                'compose': '1.0.5'
+                'compose': '1.0.5',
+                'landscapist'        : '1.4.9',             // https://github.com/skydoves/landscapist/releases
         ]
     }
 }
@@ -82,7 +83,8 @@ dependencies {
     implementation "androidx.compose.material:material:${versions.compose}"
     implementation "androidx.compose.ui:ui-tooling-preview:${versions.compose}"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
-    implementation 'androidx.activity:activity-compose:1.4.0'
+    implementation "androidx.activity:activity-compose:1.4.0"
+    implementation "com.github.skydoves:landscapist-glide:${versions.landscapist}"
 
     debugImplementation "androidx.compose.ui:ui-tooling:${versions.compose}"
 

@@ -23,6 +23,7 @@
  */
 package com.shopify.testify.sample
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -54,8 +55,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.shopify.testify.sample.clients.MockClientData
 import com.shopify.testify.sample.ui.theme.TestifyTheme
+import com.skydoves.landscapist.glide.GlideImage
 
 class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,4 +148,33 @@ fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String, modifi
             }
         }
     }
+}
+
+@Composable
+fun ImageDemo(onImageLoaded: () -> Unit) {
+    GlideImage(
+        imageModel = R.drawable.avatar1,
+        requestListener = object : RequestListener<Drawable> {
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean
+            ): Boolean {
+                onImageLoaded()
+                return false
+            }
+        },
+        modifier = Modifier.size(42.dp)
+    )
 }
