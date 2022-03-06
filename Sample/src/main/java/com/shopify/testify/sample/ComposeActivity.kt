@@ -55,6 +55,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.idling.CountingIdlingResource
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -150,17 +152,37 @@ fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String, modifi
     }
 }
 
+private fun Any.registerIdlingRegistry() {
+    CountingIdlingResource(hashCode().toString()).apply {
+        increment()
+        IdlingRegistry.getInstance().register(this)
+    }
+}
+
+private fun Any.releaseIdlingRegistry() {
+    val key = hashCode().toString()
+    IdlingRegistry.getInstance().resources.find { it.name == key }?.let { idlingResource ->
+        (idlingResource as CountingIdlingResource).decrement()
+        IdlingRegistry.getInstance().unregister(idlingResource)
+    }
+}
+
 @Composable
-fun ImageDemo(onImageLoaded: () -> Unit) {
+fun ImageDemo() {
     GlideImage(
         imageModel = R.drawable.avatar1,
         requestListener = object : RequestListener<Drawable> {
+            init {
+                registerIdlingRegistry()
+            }
+
             override fun onLoadFailed(
                 e: GlideException?,
                 model: Any?,
                 target: Target<Drawable>?,
                 isFirstResource: Boolean
             ): Boolean {
+                releaseIdlingRegistry()
                 return false
             }
 
@@ -171,7 +193,7 @@ fun ImageDemo(onImageLoaded: () -> Unit) {
                 dataSource: DataSource?,
                 isFirstResource: Boolean
             ): Boolean {
-                onImageLoaded()
+                releaseIdlingRegistry()
                 return false
             }
         },
