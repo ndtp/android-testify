@@ -38,8 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.idling.CountingIdlingResource
 import com.shopify.testify.ComposableScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.sample.ClientListItem
@@ -137,10 +135,6 @@ class ComposableScreenshotTest {
     @ScreenshotInstrumentation
     @Test
     fun image() {
-        val idlingResource = CountingIdlingResource("ImageLoadCompletionResource", true).apply {
-            increment()
-        }
-
         rule
             .setCompose {
                 Box(
@@ -148,9 +142,8 @@ class ComposableScreenshotTest {
                         .fillMaxWidth()
                         .wrapContentHeight()
                 ) {
-                    ImageDemo(onImageLoaded = { idlingResource.decrement() })
+                    ImageDemo()
                 }
-                IdlingRegistry.getInstance().register(idlingResource)
             }
             .assertSame()
     }
