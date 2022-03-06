@@ -42,6 +42,7 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.idling.CountingIdlingResource
 import com.shopify.testify.ComposableScreenshotRule
 import com.shopify.testify.annotation.ScreenshotInstrumentation
+import com.shopify.testify.sample.Avatar
 import com.shopify.testify.sample.ClientListItem
 import com.shopify.testify.sample.ImageDemo
 import com.shopify.testify.sample.R
@@ -137,9 +138,9 @@ class ComposableScreenshotTest {
     @ScreenshotInstrumentation
     @Test
     fun image() {
-        val idlingResource = CountingIdlingResource("ImageLoadCompletionResource", true).apply {
-            increment()
-        }
+//        val idlingResource = CountingIdlingResource("ImageLoadCompletionResource", true).apply {
+//            increment()
+//        }
 
         rule
             .setCompose {
@@ -148,9 +149,25 @@ class ComposableScreenshotTest {
                         .fillMaxWidth()
                         .wrapContentHeight()
                 ) {
-                    ImageDemo(onImageLoaded = { idlingResource.decrement() })
+                    ImageDemo(onImageLoaded = {  })
                 }
-                IdlingRegistry.getInstance().register(idlingResource)
+//                IdlingRegistry.getInstance().register(idlingResource)
+            }
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun synchronizedImage() {
+        rule
+            .setCompose {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                ) {
+                    Avatar(R.drawable.avatar1)
+                }
             }
             .assertSame()
     }

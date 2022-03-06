@@ -85,6 +85,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
     implementation "androidx.activity:activity-compose:1.4.0"
     implementation "com.github.skydoves:landscapist-glide:${versions.landscapist}"
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.1.1'
 
     debugImplementation "androidx.compose.ui:ui-tooling:${versions.compose}"
 

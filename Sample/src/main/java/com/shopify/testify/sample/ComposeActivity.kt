@@ -25,10 +25,10 @@ package com.shopify.testify.sample
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -128,15 +128,7 @@ fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String, modifi
         Row(
             modifier = Modifier.padding(15.dp),
         ) {
-            Image(
-                painter = painterResource(id = avatar),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .border(2.dp, Color.Gray, CircleShape)
-            )
+            Avatar(avatar)
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -148,6 +140,49 @@ fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String, modifi
             }
         }
     }
+}
+
+@Composable
+fun Avatar(@DrawableRes avatar: Int) {
+    GlideImage(
+        imageModel = avatar,
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .size(64.dp)
+            .clip(CircleShape)
+            .border(2.dp, Color.Gray, CircleShape),
+        requestListener =
+        object : RequestListener<Drawable> {
+            init {
+                Log.d("JETTE", "init ${this.hashCode()}")
+                registerIdlingRegistry()
+            }
+
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+                Log.d("JETTE", "onLoadFailed ${this.hashCode()}")
+                releaseIdlingRegistry()
+                return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean
+            ): Boolean {
+                Log.d("JETTE", "onResourceReady ${this.hashCode()}")
+                releaseIdlingRegistry()
+                return false
+            }
+        }
+    )
 }
 
 @Composable
