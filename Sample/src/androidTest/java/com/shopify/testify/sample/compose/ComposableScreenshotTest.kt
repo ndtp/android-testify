@@ -36,9 +36,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shopify.testify.ComposableScreenshotRule
+import com.shopify.testify.ComposableTestActivity
 import com.shopify.testify.annotation.ScreenshotInstrumentation
 import com.shopify.testify.sample.ClientListItem
 import com.shopify.testify.sample.ImageDemo
@@ -54,7 +57,23 @@ import org.junit.Test
 class ComposableScreenshotTest {
 
     @get:Rule
-    val rule = ComposableScreenshotRule()
+    val composeTestRule = createAndroidComposeRule(ComposableTestActivity::class.java)
+
+    @get:Rule
+    val rule = object : ComposableScreenshotRule() {
+        override fun afterActivityLaunched() {
+            activity.runOnUiThread {
+                activity.runOnUiThread {
+                    val composeView =
+                        activity.findViewById<ComposeView>(com.shopify.testify.compose.R.id.compose_container)
+                    composeView.setContent {
+                        super.composeFunction()
+                    }
+                }
+            }
+            composeTestRule.waitForIdle()
+        }
+    }
 
     @Composable
     private fun PaddedBox(color: Color, content: @Composable BoxScope.() -> Unit) {
