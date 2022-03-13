@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.shopify.testify.sample.clients.details.ClientDetailsView xmlns:android="http://schemas.android.com/apk/res/android"
+<dev.testify.sample.clients.details.ClientDetailsView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/view_root"
@@ -121,4 +121,4 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-</com.shopify.testify.sample.clients.details.ClientDetailsView>
+</dev.testify.sample.clients.details.ClientDetailsView>
