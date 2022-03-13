@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.shopify.testify.sample"
+        applicationId "dev.testify.sample"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1
