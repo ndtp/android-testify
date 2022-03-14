@@ -27,15 +27,14 @@ package dev.testify.sample
 import android.app.Activity
 import android.os.Build
 import androidx.test.filters.SdkSuppress
-import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.annotation.ScreenshotInstrumentation
-import com.shopify.testify.annotation.TestifyLayout
+import dev.testify.ScreenshotRule
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.test.TestLocaleHarnessActivity
 import dev.testify.sample.test.clientDetailsView
 import dev.testify.sample.test.getViewState
 import org.junit.Rule
 import org.junit.Test
-import java.util.Locale
+import java.util.*
 
 /**
  * These tests demonstrate how to test the same Activity with different resource configurations

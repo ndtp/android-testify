@@ -28,8 +28,7 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.test.espresso.Espresso
-import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.TestifyFeatures
+import dev.testify.TestifyFeatures
 import dev.testify.compose.R
 import dev.testify.internal.disposeComposition
 import org.junit.Assert.assertTrue

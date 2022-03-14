@@ -26,9 +26,9 @@ package dev.testify.sample.test
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
-import com.shopify.testify.resources.TestifyResourcesOverride
+import dev.testify.resources.TestifyResourcesOverride
 import dev.testify.sample.TestingResourceConfigurationsExampleTest
-import java.util.Locale
+import java.util.*
 
 /**
  * This Activity is used to demonstrate the use of [TestifyResourcesOverride].
