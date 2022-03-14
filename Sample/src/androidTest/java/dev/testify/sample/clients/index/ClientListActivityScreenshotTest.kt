@@ -24,8 +24,8 @@
 package dev.testify.sample.clients.index
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.annotation.ScreenshotInstrumentation
+import dev.testify.ScreenshotRule
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.R
 import org.junit.Rule
 import org.junit.Test
