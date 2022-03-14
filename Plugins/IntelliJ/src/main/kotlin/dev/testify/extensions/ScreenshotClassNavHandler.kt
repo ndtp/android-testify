@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.extensions
+package dev.testify.extensions
 
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
 import com.intellij.ide.DataManager
@@ -36,17 +36,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.ui.awt.RelativePoint
-import com.shopify.testify.actions.screenshot.ScreenshotClearAction
-import com.shopify.testify.actions.screenshot.ScreenshotPullAction
-import com.shopify.testify.actions.screenshot.ScreenshotRecordAction
-import com.shopify.testify.actions.screenshot.ScreenshotTestAction
-import com.shopify.testify.actions.utility.DeleteBaselineAction
-import com.shopify.testify.actions.utility.RevealBaselineAction
+import dev.testify.actions.screenshot.ScreenshotClearAction
+import dev.testify.actions.screenshot.ScreenshotPullAction
+import dev.testify.actions.screenshot.ScreenshotRecordAction
+import dev.testify.actions.screenshot.ScreenshotTestAction
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
 
-class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: PsiElement) :
-    GutterIconNavigationHandler<PsiElement> {
+class ScreenshotClassNavHandler(private val anchorElement: PsiElement) : GutterIconNavigationHandler<PsiElement> {
 
     override fun navigate(e: MouseEvent?, nameIdentifier: PsiElement) {
         if (e == null) return
@@ -74,9 +71,7 @@ class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: P
             ScreenshotTestAction(anchorElement),
             ScreenshotRecordAction(anchorElement),
             ScreenshotPullAction(anchorElement),
-            ScreenshotClearAction(anchorElement),
-            RevealBaselineAction(anchorElement),
-            DeleteBaselineAction(anchorElement)
+            ScreenshotClearAction(anchorElement)
         )
         val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(

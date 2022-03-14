@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.actions.screenshot
+package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
 
-class ScreenshotRecordAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotTestAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
     override val classGradleCommand: String
-        get() = "screenshotRecord"
+        get() = "screenshotTest"
 
     override val classMenuText: String
-        get() = "Record baseline for all '$className' tests"
+        get() = "Run all '$className' screenshot tests"
 
     override val methodGradleCommand: String
-        get() = "screenshotRecord"
+        get() = "screenshotTest"
 
     override val methodMenuText: String
-        get() = "Record baseline for '$methodName()'"
+        get() = "Test '$methodName()'"
 
-    override val icon = "record"
+    override val icon = "play"
 }

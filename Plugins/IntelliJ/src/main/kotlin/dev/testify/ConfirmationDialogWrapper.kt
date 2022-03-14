@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.actions.screenshot
+package dev.testify
 
-import com.intellij.psi.PsiElement
+import com.intellij.openapi.ui.DialogWrapper
+import java.awt.BorderLayout
+import java.awt.Dimension
+import javax.swing.Action
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JPanel
 
-class ScreenshotTestAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ConfirmationDialogWrapper(dialogTitle: String, private val prompt: String) : DialogWrapper(true) {
 
-    override val classGradleCommand: String
-        get() = "screenshotTest"
+    init {
+        this.init()
+        title = dialogTitle
+    }
 
-    override val classMenuText: String
-        get() = "Run all '$className' screenshot tests"
+    override fun createActions(): Array<Action> {
+        val actions = super.createActions()
+        actions[0].putValue("Name", "Yes")
+        actions[1].putValue("Name", "No")
+        return actions
+    }
 
-    override val methodGradleCommand: String
-        get() = "screenshotTest"
-
-    override val methodMenuText: String
-        get() = "Test '$methodName()'"
-
-    override val icon = "play"
+    override fun createCenterPanel(): JComponent? {
+        val dialogPanel = JPanel(BorderLayout())
+        val label = JLabel(prompt).apply {
+            preferredSize = Dimension(200, 50)
+        }
+        dialogPanel.add(label, BorderLayout.CENTER)
+        return dialogPanel
+    }
 }

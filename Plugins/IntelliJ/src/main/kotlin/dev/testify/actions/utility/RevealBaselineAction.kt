@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,38 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.actions.utility
+package dev.testify.actions.utility
 
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.shopify.testify.ConfirmationDialogWrapper
 import java.awt.event.ActionEvent
 
-class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+
+    override val icon = "reveal"
 
     override val menuText: String
-        get() = "Delete ${shortDisplayName()}"
-
-    override val icon = "delete"
+        get() = "Reveal ${shortDisplayName()}"
 
     override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
-        val immediate: Boolean = (modifiers and ActionEvent.SHIFT_MASK) == ActionEvent.SHIFT_MASK
-        if (immediate) {
-            virtualFile.deleteSafely(this)
-            return
-        }
-
-        val shortName = virtualFile.presentableName
-        if (ConfirmationDialogWrapper(dialogTitle = "Delete", prompt = "Delete file $shortName?").showAndGet()) {
-            virtualFile.deleteSafely(this)
-        }
-    }
-
-    private fun VirtualFile.deleteSafely(requestor: Any) {
-        ApplicationManager.getApplication().runWriteAction {
-            this.delete(requestor)
-        }
+        val focusEditor: Boolean = (modifiers and ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK
+        FileEditorManager.getInstance(project).openFile(virtualFile, focusEditor)
     }
 }

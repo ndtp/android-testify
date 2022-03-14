@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,51 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.extensions
+package dev.testify.extensions
 
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.resolve.source.getPsi
 
 // Reference https://github.com/square/dagger-intellij-plugin/blob/master/src/com/squareup/ideaplugin/dagger/InjectionLineMarkerProvider.java
 
 /**
  * Get testify 📷 line markers for qualifying PsiElements.
  */
-class ScreenshotClassMarkerProvider : LineMarkerProvider {
+class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
-        if (element !is KtClass) return null
+        if (element !is KtNamedFunction) return null
         if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
         return element.getLineMarkerInfo()
     }
 
-    private fun KtClass.getLineMarkerInfo(): LineMarkerInfo<PsiElement>? {
+    private fun KtNamedFunction.getLineMarkerInfo(): LineMarkerInfo<PsiElement>? {
 
-        val functions = PsiTreeUtil.findChildrenOfType(this, KtNamedFunction::class.java)
-        if (functions.isEmpty()) return null
+        if (descriptor == null) return null
+        if (descriptor?.annotations == null) return null
+        val annotation = descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) ?: return null
 
-        if (
-            functions.none {
-                it.descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) != null
-            }
-        ) return null
-
-        val anchorElement = this.nameIdentifier ?: return null
+        val anchorElement = annotation.source.getPsi() ?: return null
 
         return LineMarkerInfo(
-            anchorElement,
+            anchorElement.firstChild,
             anchorElement.textRange,
             ICON,
             { "Android Testify Commands" },
-            ScreenshotClassNavHandler(this),
+            ScreenshotInstrumentationAnnotationNavHandler(this),
             GutterIconRenderer.Alignment.RIGHT
         )
     }
