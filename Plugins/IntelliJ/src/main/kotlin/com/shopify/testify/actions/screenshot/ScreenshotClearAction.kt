@@ -23,21 +23,101 @@
  */
 package com.shopify.testify.actions.screenshot
 
+import com.intellij.ide.actions.runAnything.RunAnythingAction
+import com.intellij.ide.actions.runAnything.RunAnythingContext
+import com.intellij.ide.actions.runAnything.activity.RunAnythingProvider
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
+import com.shopify.testify.methodName
+import com.shopify.testify.moduleName
+import com.shopify.testify.testifyClassInvocationPath
+import com.shopify.testify.testifyMethodInvocationPath
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.plugins.gradle.action.GradleExecuteTaskAction
+import org.jetbrains.plugins.gradle.settings.GradleSettings
+import org.jetbrains.plugins.gradle.util.GradleConstants
 
-class ScreenshotClearAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotClearAction(private val anchorElement: PsiElement) : AnAction() {
 
-    override val classGradleCommand: String
-        get() = "screenshotClear"
+    private val classGradleCommand = "screenshotClear"
 
-    override val classMenuText: String
-        get() = "Clear screenshots from device"
+    private val classMenuText= "Clear screenshots from device"
 
-    override val methodGradleCommand: String
-        get() = "screenshotClear"
+    private val methodGradleCommand= "screenshotClear"
 
-    override val methodMenuText: String
-        get() = "Clear screenshots from device"
+    private val methodMenuText= "Clear screenshots from device (Ex)"
 
-    override val icon = "clear"
+    private val icon = "clear"
+
+    private val methodName: String
+        get() {
+            var name = anchorElement.methodName
+            if (name.length > 18) {
+                name = "${name.take(18)}..."
+            }
+            return name
+        }
+
+    private val className: String?
+        get() {
+            return if (isClass()) (anchorElement as? KtClass)?.name else null
+        }
+
+    private fun String.toFullGradleCommand(event: AnActionEvent): String {
+        val arguments = when (anchorElement) {
+            is KtNamedFunction -> anchorElement.testifyMethodInvocationPath
+            is KtClass -> anchorElement.testifyClassInvocationPath
+            else -> null
+        }
+        val command = ":${event.moduleName}:$this"
+        return if (arguments != null) "$command -PtestClass=$arguments" else command
+    }
+
+    private fun isClass(): Boolean {
+        return anchorElement is KtClass
+    }
+
+    override fun actionPerformed(event: AnActionEvent) {
+        val project = event.project as Project
+        val dataContext = SimpleDataContext.getProjectContext(project)
+        val executionContext =
+            dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT) ?: RunAnythingContext.ProjectContext(project)
+        val workingDirectory: String = executionContext.getProjectPath() ?: ""
+        val executor = RunAnythingAction.EXECUTOR_KEY.getData(dataContext)
+
+        val gradleCommand = if (isClass()) classGradleCommand else methodGradleCommand
+        val fullCommandLine = gradleCommand.toFullGradleCommand(event)
+        GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)
+    }
+
+    override fun update(anActionEvent: AnActionEvent) {
+        anActionEvent.presentation.apply {
+            text = if (isClass()) classMenuText else methodMenuText
+            isEnabledAndVisible = (anActionEvent.project != null)
+            icon = IconLoader.getIcon("/icons/${this.icon}.svg")
+        }
+    }
+
+    @Suppress("UnstableApiUsage")
+    private fun RunAnythingContext.getProjectPath() = when (this) {
+        is RunAnythingContext.ProjectContext ->
+            GradleSettings.getInstance(project).linkedProjectsSettings.firstOrNull()
+                ?.let {
+                    ExternalSystemApiUtil.findProjectData(
+                        project,
+                        GradleConstants.SYSTEM_ID,
+                        it.externalProjectPath
+                    )
+                }
+                ?.data?.linkedExternalProjectPath
+        is RunAnythingContext.ModuleContext -> ExternalSystemApiUtil.getExternalProjectPath(module)
+        is RunAnythingContext.RecentDirectoryContext -> path
+        is RunAnythingContext.BrowseRecentDirectoryContext -> null
+    }
 }
