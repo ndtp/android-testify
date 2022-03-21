@@ -71,3 +71,23 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+//
+//def gradlePluginProjects = [':Plugin', ':PluginCommon']
+//
+////task uberJar() {
+////    gradlePluginProjects.each {
+////        println(project(it).name)
+////    }
+////}
+//
+//task uberJar(type: Jar, dependsOn: gradlePluginProjects.collect { it+":assemble" } ) {
+//    gradlePluginProjects.each {
+////        println(project(it).name)
+//        def p = project(it)
+//        from p.configurations.archives.allArtifacts.files.collect { zipTree(it) }
+//    }
+//
+//    manifest {
+//        attributes 'Main-Class': '<your-main-class>'
+//    }
+//}

@@ -43,6 +43,7 @@ test {
 }
 
 dependencies {
+    implementation project(":PluginCommon")
     implementation "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
     implementation gradleApi()
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"

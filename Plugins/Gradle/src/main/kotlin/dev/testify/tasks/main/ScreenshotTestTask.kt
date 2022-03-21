@@ -23,6 +23,7 @@
  */
 package dev.testify.tasks.main
 
+import dev.testify.Main
 import dev.testify.TestifySettings
 import dev.testify.internal.Adb
 import dev.testify.internal.AdbParam
@@ -103,6 +104,8 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
     private val annotation = AdbParam("annotation", "com.shopify.testify.annotation.ScreenshotInstrumentation")
 
     override fun taskAction() {
+
+        Main.hello()
 
         if (isRecordMode) {
             val clearTask = project.tasks.getByName(ScreenshotClearTask.taskName()) as ScreenshotClearTask

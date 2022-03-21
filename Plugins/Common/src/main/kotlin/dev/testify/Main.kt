@@ -23,3 +23,8 @@
  */
 package dev.testify
 
+object Main {
+    fun hello() {
+        println("Hello")
+    }
+}

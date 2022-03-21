@@ -48,6 +48,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
+    implementation(project(":PluginCommon"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("script-runtime"))
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
