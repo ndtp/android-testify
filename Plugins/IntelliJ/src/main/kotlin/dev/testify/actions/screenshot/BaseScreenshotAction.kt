@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.actions.screenshot
+package dev.testify.actions.screenshot
 
 import com.intellij.ide.actions.runAnything.RunAnythingAction
 import com.intellij.ide.actions.runAnything.RunAnythingContext
@@ -33,10 +33,10 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
-import com.shopify.testify.methodName
-import com.shopify.testify.moduleName
-import com.shopify.testify.testifyClassInvocationPath
-import com.shopify.testify.testifyMethodInvocationPath
+import dev.testify.methodName
+import dev.testify.moduleName
+import dev.testify.testifyClassInvocationPath
+import dev.testify.testifyMethodInvocationPath
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.plugins.gradle.action.GradleExecuteTaskAction

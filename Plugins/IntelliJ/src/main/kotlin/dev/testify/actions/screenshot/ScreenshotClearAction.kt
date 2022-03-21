@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,36 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify
+package dev.testify.actions.screenshot
 
-import com.intellij.openapi.ui.DialogWrapper
-import java.awt.BorderLayout
-import java.awt.Dimension
-import javax.swing.Action
-import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.JPanel
+import com.intellij.psi.PsiElement
 
-class ConfirmationDialogWrapper(dialogTitle: String, private val prompt: String) : DialogWrapper(true) {
+class ScreenshotClearAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
-    init {
-        this.init()
-        title = dialogTitle
-    }
+    override val classGradleCommand: String
+        get() = "screenshotClear"
 
-    override fun createActions(): Array<Action> {
-        val actions = super.createActions()
-        actions[0].putValue("Name", "Yes")
-        actions[1].putValue("Name", "No")
-        return actions
-    }
+    override val classMenuText: String
+        get() = "Clear screenshots from device"
 
-    override fun createCenterPanel(): JComponent? {
-        val dialogPanel = JPanel(BorderLayout())
-        val label = JLabel(prompt).apply {
-            preferredSize = Dimension(200, 50)
-        }
-        dialogPanel.add(label, BorderLayout.CENTER)
-        return dialogPanel
-    }
+    override val methodGradleCommand: String
+        get() = "screenshotClear"
+
+    override val methodMenuText: String
+        get() = "Clear screenshots from device"
+
+    override val icon = "clear"
 }

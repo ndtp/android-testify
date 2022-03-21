@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,23 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.actions.utility
+package dev.testify.actions.screenshot
 
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import java.awt.event.ActionEvent
 
-class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+class ScreenshotPullAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
-    override val icon = "reveal"
+    override val classGradleCommand: String
+        get() = "screenshotPull"
 
-    override val menuText: String
-        get() = "Reveal ${shortDisplayName()}"
+    override val classMenuText: String
+        get() = "Pull all screenshots for '$className'"
 
-    override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
-        val focusEditor: Boolean = (modifiers and ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK
-        FileEditorManager.getInstance(project).openFile(virtualFile, focusEditor)
-    }
+    override val methodGradleCommand: String
+        get() = "screenshotPull"
+
+    override val methodMenuText: String
+        get() = "Pull screenshots for '$methodName()'"
+
+    override val icon = "pull"
 }
