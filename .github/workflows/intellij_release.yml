@@ -31,7 +31,7 @@ jobs:
       - name: Publish Plugin
         env:
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-        run: ./Plugins/IntelliJ/gradlew -p ./Plugins/IntelliJ/ publishPlugin
+        run: ./gradlew IntelliJ:publishPlugin
 
   # Patch changelog, commit and push to the current repository
   changelog:
@@ -53,7 +53,7 @@ jobs:
 
       # Publish the plugin to the Marketplace
       - name: Patch Changelog
-        run: ./Plugins/IntelliJ/gradlew -p ./Plugins/IntelliJ/ patchChangelog
+        run: ./gradlew IntelliJ:patchChangelog
 
       # Commit patched Changelog
       - name: Commit files
