@@ -15,15 +15,15 @@ plugins {
 
 ext {
     pom = [
-        publishedGroupId  : 'com.shopify.testify',
+        publishedGroupId  : 'dev.testify',
         artifact          : 'plugin',
         libraryName       : 'testify-plugin',
         libraryDescription: 'Android screenshot instrumentation tests plugin.',
-        siteUrl           : 'https://github.com/Shopify/android-testify',
-        gitUrl            : 'https://github.com/Shopify/android-testify.git',
+        siteUrl           : 'https://github.com/ndtp/android-testify',
+        gitUrl            : 'https://github.com/ndtp/android-testify.git',
         licenseName       : 'The MIT License',
         licenseUrl        : 'https://opensource.org/licenses/MIT',
-        author            : 'Shopify Inc.'
+        author            : 'ndtp'
     ]
 }
 
@@ -67,7 +67,7 @@ compileTestKotlin {
 jar {
     manifest {
         attributes "Implementation-Title": "Testify"
-        attributes "Implementation-Vendor": "Shopify"
+        attributes "Implementation-Vendor": "ndtp"
         attributes "Implementation-Version": archiveVersion
     }
 }
