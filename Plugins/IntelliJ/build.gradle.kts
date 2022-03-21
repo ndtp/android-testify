@@ -86,11 +86,13 @@ tasks {
             }.joinToString("\n").run { markdownToHTML(this) }
         )
 
-        changeNotes.set(provider {
-            changelog.run {
-                getOrNull(testifyVersion) ?: getLatest()
-            }.toHTML()
-        })
+        changeNotes.set(
+            provider {
+                changelog.run {
+                    getOrNull(testifyVersion) ?: getLatest()
+                }.toHTML()
+            }
+        )
     }
 
     publishPlugin {
