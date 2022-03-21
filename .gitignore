@@ -8,3 +8,4 @@ projectFilesBackup/
 .DS_Store
 report.yml
 Plugins/Intellij/out
+Plugins/.idea/

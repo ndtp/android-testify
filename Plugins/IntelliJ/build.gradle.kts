@@ -1,95 +1,101 @@
-import org.jetbrains.changelog.closure
+/**
+ * See https://github.com/JetBrains/intellij-platform-plugin-template/blob/main/build.gradle.kts
+ */
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+fun properties(key: String) = project.findProperty(key).toString()
+
+val versions = rootProject.extra["versions"] as Map<String, String>
+val testifyVersion = versions["testify"] as String
+
 plugins {
-    // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.4.10"
-    // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-    id("org.jetbrains.intellij") version "0.4.21"
-    // gradle-changelog-plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
-    id("org.jetbrains.changelog") version "0.6.2"
-    // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.intellij")
+    id("org.jetbrains.changelog")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
-// Import variables from gradle.properties file
-val pluginGroup: String by project
-val pluginName: String by project
-val pluginVersion: String by project
-val pluginSinceBuild: String by project
-val pluginUntilBuild: String by project
+group = properties("pluginGroup")
+version = testifyVersion
 
-val platformType: String by project
-val platformVersion: String by project
-val platformDownloadSources: String by project
+/**
+ * Configure gradle-intellij-plugin plugin.
+ * Read more: https://github.com/JetBrains/gradle-intellij-plugin
+ */
+intellij {
+    pluginName.set(properties("pluginName"))
+    version.set(properties("platformVersion"))
+    type.set(properties("platformType"))
 
-group = pluginGroup
-version = pluginVersion
+    // https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
+    plugins.set(
+        listOf(
+            "Kotlin",
+            "android"
+        )
+    )
 
-// Configure project's dependencies
+    /*
+    // Unresolved reference: alternativeIdePath
+    alternativeIdePath.set("/Applications/Android Studio.app")
+    // https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#setup-dsl
+    localPath.set("/Applications/Android Studio Preview.app")
+     */
+}
+
 repositories {
     mavenCentral()
 }
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("script-runtime"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.4.21")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
 }
 
-// Configure gradle-intellij-plugin plugin.
-// Read more: https://github.com/JetBrains/gradle-intellij-plugin
-intellij {
-    pluginName = pluginName
-    version = platformVersion
-    type = platformType
-    downloadSources = platformDownloadSources.toBoolean()
-    updateSinceUntilBuild = true
-
-    alternativeIdePath = "/Applications/Android Studio Preview.app"
-
-//  Plugin Dependencies:
-//  https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
-    setPlugins("Kotlin", "android")
+changelog {
+    version.set(testifyVersion)
+    groups.set(emptyList())
 }
 
 tasks {
-    // Set the compatibility versions to 1.8
-    withType<JavaCompile> {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
-    }
-    listOf("compileKotlin", "compileTestKotlin").forEach {
-        getByName<KotlinCompile>(it) {
-            kotlinOptions.jvmTarget = "1.8"
+    properties("javaVersion").let {
+        withType<JavaCompile> {
+            sourceCompatibility = it
+            targetCompatibility = it
+        }
+        withType<KotlinCompile> {
+            kotlinOptions.jvmTarget = it
         }
     }
 
     patchPluginXml {
-        version(pluginVersion)
-        sinceBuild(pluginSinceBuild)
-        untilBuild(pluginUntilBuild)
+        version.set(testifyVersion)
+        sinceBuild.set(properties("pluginSinceBuild"))
+        untilBuild.set(properties("pluginUntilBuild"))
 
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
-        pluginDescription(
-            closure {
-                File("${project.rootDir.path}/README.md").readText().lines().run {
-                    subList(indexOf("<!-- Plugin description -->") + 1, indexOf("<!-- Plugin description end -->"))
-                }.joinToString("\n").run { markdownToHTML(this) }
-            }
+        pluginDescription.set(
+            projectDir.resolve("README.md").readText().lines().run {
+                val start = "<!-- Plugin description -->"
+                val end = "<!-- Plugin description end -->"
+
+                if (!containsAll(listOf(start, end))) {
+                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
+                }
+                subList(indexOf(start) + 1, indexOf(end))
+            }.joinToString("\n").run { markdownToHTML(this) }
         )
 
-        // Get the latest available change notes from the changelog file
-        changeNotes(
-            closure {
-                changelog.getLatest().toHTML()
-            }
-        )
+        changeNotes.set(provider {
+            changelog.run {
+                getOrNull(testifyVersion) ?: getLatest()
+            }.toHTML()
+        })
     }
 
     publishPlugin {
         dependsOn("patchChangelog")
-        token(System.getenv("PUBLISH_TOKEN"))
-        channels(pluginVersion.split('-').getOrElse(1) { "default" }.split('.').first())
+        token.set(System.getenv("PUBLISH_TOKEN"))
+        channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
     }
 }
