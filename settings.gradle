@@ -3,7 +3,9 @@ include ':Plugin'
 include ':Library'
 include ':ComposeExtensions'
 include ':IntelliJ'
+include ':PluginCommon'
 
+project(':PluginCommon').projectDir = new File("./Plugins/Common")
 project(':Plugin').projectDir = new File("./Plugins/Gradle")
 project(':IntelliJ').projectDir = new File("./Plugins/IntelliJ")
 project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
