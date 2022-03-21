@@ -99,9 +99,9 @@ Print the test result report to the console
     - test:
         name: withFocusOnBackground
         class: ClientListActivityScreenshotTest
-        package: com.shopify.testify.sample.clients.index
+        package: dev.testify.sample.clients.index
         baseline_image: assets/screenshots/29-1080x2220@440dp-en_US/withFocusOnBackground.png
-        test_image: /data/user/0/com.shopify.testify.sample/app_images/screenshots/29-1080x2220@440dp-en_US/ClientListActivityScreenshotTest_withFocusOnBackground.png
+        test_image: /data/user/0/dev.testify.sample/app_images/screenshots/29-1080x2220@440dp-en_US/ClientListActivityScreenshotTest_withFocusOnBackground.png
         status: PASS
 ```
 
@@ -146,15 +146,15 @@ Testify infers several project properties. You can view these properties with th
 ------------------------------------------------------------
 Displays the Testify gradle extension settings
 ------------------------------------------------------------
-  applicationPackageId = com.shopify.testify.sample
-  baselineSourceDir    = /Users/shopify/Sample/src/androidTest/assets/screenshots
+  applicationPackageId = dev.testify.sample
+  baselineSourceDir    = /Users/ndtp/android-testify/Sample/src/androidTest/assets/screenshots
   moduleName           = Sample
   outputFileNameFormat = null
   pullWaitTime         = 0
   testRunner           = androidx.test.runner.AndroidJUnitRunner
   useSdCard            = false
-  testContextId        = com.shopify.testify.sample
-  testPackageId        = com.shopify.testify.sample.test
+  testContextId        = dev.testify.sample
+  testPackageId        = dev.testify.sample.test
 ```
 
 ### testifyVersion
@@ -167,7 +167,7 @@ Displays the Testify plugin version
 ------------------------------------------------------------
 Displays the Testify plugin version
 ------------------------------------------------------------
-  Vendor               = Shopify
+  Vendor               = ndtp
   Title                = Testify
   Version              = 1.0.0-beta3
 ```

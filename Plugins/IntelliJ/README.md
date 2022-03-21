@@ -26,4 +26,4 @@ However, the current Android Studio support relies fully on the fact that Testif
 
 ### License
 
-[MIT License Copyright (c) 2020 Shopify](LICENSE)
+[MIT License Copyright (c) 2022 ndtp](LICENSE)

@@ -23,11 +23,11 @@
  */
 package dev.testify.sample;
 
-import com.shopify.testify.ScreenshotRule;
-import com.shopify.testify.annotation.ScreenshotInstrumentation;
-
 import org.junit.Rule;
 import org.junit.Test;
+
+import dev.testify.ScreenshotRule;
+import dev.testify.annotation.ScreenshotInstrumentation;
 
 public class JavaExampleTest {
 

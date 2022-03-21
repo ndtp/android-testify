@@ -39,7 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.testify.ComposableScreenshotRule
-import com.shopify.testify.annotation.ScreenshotInstrumentation
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.ClientListItem
 import dev.testify.sample.R
 import dev.testify.sample.TopAppBar

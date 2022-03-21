@@ -26,7 +26,7 @@ package dev.testify.sample.test
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
-import com.shopify.testify.resources.TestifyResourcesOverride
+import dev.testify.resources.TestifyResourcesOverride
 
 /**
  * DO NOT DO THIS
