@@ -1,7 +1,7 @@
-package com.shopify.testify.sample.test
+package dev.testify.sample.test
 
 import android.app.Activity
-import com.shopify.testify.ScreenshotRule
+import dev.testify.ScreenshotRule
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback

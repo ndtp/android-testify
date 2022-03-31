@@ -1,7 +1,7 @@
-package com.shopify.testify.sample
+package dev.testify.sample
 
-import com.shopify.testify.annotation.ScreenshotInstrumentation
-import com.shopify.testify.sample.test.ScreenshotExtension
+import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.sample.test.ScreenshotExtension
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
