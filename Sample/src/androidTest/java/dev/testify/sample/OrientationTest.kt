@@ -2,8 +2,8 @@ package dev.testify.sample
 
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.annotation.ScreenshotInstrumentation
+import dev.testify.ScreenshotRule
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.clients.details.ClientDetailsView
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.getViewState

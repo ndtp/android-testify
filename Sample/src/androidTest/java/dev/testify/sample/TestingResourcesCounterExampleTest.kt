@@ -29,20 +29,20 @@ import androidx.test.filters.SdkSuppress
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import com.shopify.testify.ScreenshotRule
-import com.shopify.testify.internal.exception.ActivityMustImplementResourceOverrideException
-import com.shopify.testify.internal.exception.TestMustLaunchActivityException
-import com.shopify.testify.internal.exception.TestMustWrapContextException
-import com.shopify.testify.internal.helpers.ResourceWrapper
-import com.shopify.testify.internal.helpers.WrappedLocale
-import com.shopify.testify.resources.TestifyResourcesOverride
+import dev.testify.ScreenshotRule
+import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
+import dev.testify.internal.exception.TestMustLaunchActivityException
+import dev.testify.internal.exception.TestMustWrapContextException
+import dev.testify.internal.helpers.ResourceWrapper
+import dev.testify.internal.helpers.WrappedLocale
+import dev.testify.resources.TestifyResourcesOverride
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestLocaleHarnessActivity
 import dev.testify.sample.test.TestLocaleHarnessNoWrapActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.util.Locale
+import java.util.*
 
 /**
  * These tests demonstrate counter-examples or incorrect usages of the Testify locale support

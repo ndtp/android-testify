@@ -31,7 +31,7 @@ import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.test.rule.ActivityTestRule
-import com.shopify.testify.ScreenshotRule
+import dev.testify.ScreenshotRule
 import dev.testify.sample.R
 
 /**
