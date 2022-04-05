@@ -30,6 +30,8 @@ import dev.testify.tasks.main.ScreenshotClearTask
 import dev.testify.tasks.main.ScreenshotPullTask
 import dev.testify.tasks.main.ScreenshotRecordTask
 import dev.testify.tasks.main.ScreenshotTestTask
+import dev.testify.tasks.report.ReportPullTask
+import dev.testify.tasks.report.ReportShowTask
 import dev.testify.tasks.utility.DeviceKeyTask
 import dev.testify.tasks.utility.DevicesTask
 import dev.testify.tasks.utility.DisableSoftKeyboardTask
@@ -38,8 +40,6 @@ import dev.testify.tasks.utility.HidePasswordsTasks
 import dev.testify.tasks.utility.ImageMagickTask
 import dev.testify.tasks.utility.LocaleTask
 import dev.testify.tasks.utility.RemoveDiffImagesTask
-import dev.testify.tasks.report.ReportPullTask
-import dev.testify.tasks.report.ReportShowTask
 import dev.testify.tasks.utility.SettingsTask
 import dev.testify.tasks.utility.TimeZoneTask
 import dev.testify.tasks.utility.VersionTask
@@ -69,7 +69,7 @@ class TestifyPlugin : Plugin<Project> {
 
             if (settings.autoImplementLibrary) {
                 val version = javaClass.getPackage().implementationVersion
-                project.dependencies.add("androidTestImplementation", "com.shopify.testify:testify:$version")
+                project.dependencies.add("androidTestImplementation", "dev.testify:testify:$version")
             }
 
             Adb.init(project)
