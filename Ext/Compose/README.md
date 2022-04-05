@@ -2,7 +2,7 @@
 
 Easily create screenshot tests for `@Composable` functions.
 
-<a href="https://search.maven.org/artifact/com.shopify.testify/testify-compose"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/testify-compose?color=%236e40ed&label=com.shopify.testify%3Atestify-compose"/></a>
+<a href="https://search.maven.org/artifact/dev.testify/testify-compose"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify-compose?color=%236e40ed&label=dev.testify%3Atestify-compose"/></a>
 
 ---
 
@@ -15,7 +15,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.2.0-alpha01"
+        classpath "dev.testify:plugin:1.2.0-alpha01"
     }
 }
 ```
@@ -23,7 +23,7 @@ buildscript {
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "com.shopify.testify:testify-compose:1.2.0-alpha01"
+    androidTestImplementation "dev.testify:testify-compose:1.2.0-alpha01"
 }
 ```
 
