@@ -29,7 +29,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.DeviceIdentifier
 import java.io.File
 
-internal open class OutputFileUtility {
+open class OutputFileUtility {
 
     companion object {
         private const val SDCARD_DESTINATION_DIR = "testify_images"
