@@ -27,12 +27,10 @@ package dev.testify.internal.processor.compare
 
 import android.graphics.Bitmap
 
-class SameAsCompare : BitmapCompare {
-
-    /**
-     * Compare two bitmaps using android.graphics.Bitmap.sameAs()
-     */
-    override fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
-        return baselineBitmap.sameAs(currentBitmap)
-    }
+/**
+ * Compare two bitmaps using android.graphics.Bitmap.sameAs()
+ */
+fun sameAsCompare(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
+    return baselineBitmap.sameAs(currentBitmap)
 }
+

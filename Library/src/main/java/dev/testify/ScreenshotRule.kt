@@ -76,7 +76,7 @@ import dev.testify.internal.modification.HideTextSuggestionsViewModification
 import dev.testify.internal.modification.SoftwareRenderViewModification
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.compare.FuzzyCompare
-import dev.testify.internal.processor.compare.SameAsCompare
+import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.internal.processor.diff.HighContrastDiff
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
@@ -506,7 +506,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         exclusionRects.isNotEmpty() || exactness != null -> {
             FuzzyCompare(exactness, exclusionRects)::compareBitmaps
         }
-        else -> SameAsCompare()::compareBitmaps
+        else -> ::sameAsCompare
     }
 
     /**

@@ -32,7 +32,7 @@ import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dev.testify.internal.processor.compare.FuzzyCompare
-import dev.testify.internal.processor.compare.SameAsCompare
+import dev.testify.internal.processor.compare.sameAsCompare
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -58,7 +58,7 @@ class BitmapCompareTest {
 
     @Test
     fun sameAsIdentical() {
-        assertTrue(SameAsCompare().compareBitmaps(baselineBitmap, baselineBitmap))
+        assertTrue(sameAsCompare(baselineBitmap, baselineBitmap))
     }
 
     @Test
@@ -66,7 +66,7 @@ class BitmapCompareTest {
         val rootView = activity.findViewById<View>(R.id.test_root_view)
         val capturedBitmap = screenshotUtility.createBitmapFromActivity(activity, "testing", rootView)!!
 
-        assertFalse(SameAsCompare().compareBitmaps(capturedBitmap, baselineBitmap))
+        assertFalse(sameAsCompare(capturedBitmap, baselineBitmap))
     }
 
     @Test

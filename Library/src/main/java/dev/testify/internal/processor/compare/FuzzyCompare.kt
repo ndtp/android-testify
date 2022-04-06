@@ -30,9 +30,9 @@ import com.github.ajalt.colormath.RGB
 import dev.testify.internal.processor.ParallelPixelProcessor
 import dev.testify.internal.processor.compare.colorspace.calculateDeltaE
 
-internal class FuzzyCompare(private val exactness: Float?, private val exclusionRects: Set<Rect>) : BitmapCompare {
+internal class FuzzyCompare(private val exactness: Float?, private val exclusionRects: Set<Rect>) {
 
-    override fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
+    fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
         if (baselineBitmap.height != currentBitmap.height) {
             return false
         }
