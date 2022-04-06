@@ -92,7 +92,6 @@ import java.util.concurrent.TimeUnit
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
-typealias BitmapCompare = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean
 typealias ExtrasProvider = (bundle: Bundle) -> Unit
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
@@ -502,7 +501,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             .generate(context = activity)
     }
 
-    fun getBitmapCompare(): BitmapCompare = when {
+    fun getBitmapCompare(): CompareMethod = when {
         exclusionRects.isNotEmpty() || exactness != null -> {
             FuzzyCompare(exactness, exclusionRects)::compareBitmaps
         }
@@ -520,7 +519,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     open fun compareBitmaps(
         baselineBitmap: Bitmap,
         currentBitmap: Bitmap,
-        bitmapCompare: BitmapCompare = getBitmapCompare()
+        bitmapCompare: CompareMethod = getBitmapCompare()
     ): Boolean {
         return bitmapCompare(baselineBitmap, currentBitmap)
     }
