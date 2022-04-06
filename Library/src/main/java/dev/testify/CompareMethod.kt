@@ -29,4 +29,4 @@ import android.graphics.Bitmap
 /**
  * Defines the algorithm used for comparing two bitmaps
  */
-typealias DiffMethod = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean
+typealias CompareMethod = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean

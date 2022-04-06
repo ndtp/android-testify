@@ -135,7 +135,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
     private var captureMethod: CaptureMethod? = null
-    private var diffMethod: DiffMethod? = null
+    private var compareMethod: CompareMethod? = null
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
@@ -321,10 +321,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
-     * Allow the test to define a custom bitmap difference method.
+     * Allow the test to define a custom bitmap comparison method.
      */
-    fun setDiffMethod(diffMethod: DiffMethod?): ScreenshotRule<T> {
-        this.diffMethod = diffMethod
+    fun setCompareMethod(compareMethod: CompareMethod?): ScreenshotRule<T> {
+        this.compareMethod = compareMethod
         return this
     }
 
