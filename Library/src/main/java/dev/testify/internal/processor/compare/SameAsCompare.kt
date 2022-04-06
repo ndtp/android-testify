@@ -33,3 +33,4 @@ import android.graphics.Bitmap
 fun sameAsCompare(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
     return baselineBitmap.sameAs(currentBitmap)
 }
+
