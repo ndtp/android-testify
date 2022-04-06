@@ -27,6 +27,7 @@ package dev.testify.report
 import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
+import dev.testify.internal.exception.FailedToCaptureBitmapException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
@@ -59,6 +60,7 @@ enum class ErrorCause(val klass: KClass<*>) {
     UNEXPECTED_ORIENTATION(UnexpectedOrientationException::class),
     VIEW_MODIFICATION(ViewModificationException::class),
     WRAP_CONTEXT(TestMustWrapContextException::class),
+    FAILED_BITMAP_CAPTURE(FailedToCaptureBitmapException::class),
     UNKNOWN(Throwable::class);
 
     lateinit var description: String

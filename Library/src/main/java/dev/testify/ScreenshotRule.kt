@@ -55,6 +55,7 @@ import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import dev.testify.internal.TestName
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
+import dev.testify.internal.exception.FailedToCaptureBitmapException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
@@ -80,7 +81,6 @@ import dev.testify.internal.processor.diff.HighContrastDiff
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
@@ -566,9 +566,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 initializeView(activity)
                 afterInitializeView(activity)
 
-                if (espressoActions != null) {
-                    espressoActions!!.invoke()
-                }
+                espressoActions?.invoke()
 
                 Espresso.onIdle()
 
@@ -578,10 +576,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 orientationHelper.assertOrientation()
 
-                var screenshotView: View? = null
-                if (screenshotViewProvider != null) {
-                    screenshotView = screenshotViewProvider!!.invoke(getRootView(activity))
-                }
+                val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 
                 exclusionRectProvider?.let { provider ->
                     provider(getRootView(activity), exclusionRects)
@@ -593,8 +588,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     activity,
                     outputFileName,
                     screenshotView
-                )
-                assertNotNull("Failed to capture bitmap from activity", currentBitmap)
+                ) ?: throw FailedToCaptureBitmapException()
 
                 afterScreenshot(activity, currentBitmap)
 
@@ -623,7 +617,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         )
                     }
 
-                if (compareBitmaps(baselineBitmap, currentBitmap!!)) {
+                if (compareBitmaps(baselineBitmap, currentBitmap)) {
                     assertTrue(
                         "Could not delete cached bitmap $testName",
                         screenshotUtility.deleteBitmap(activity, outputFileName)
