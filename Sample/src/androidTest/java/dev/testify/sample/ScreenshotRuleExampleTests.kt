@@ -27,6 +27,7 @@ package dev.testify.sample
 
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -395,6 +396,32 @@ class ScreenshotRuleExampleTests {
                     }
                 }
             }
+            .assertSame()
+    }
+
+    /**
+     * Demonstrates how to define a custom comparison method.
+     */
+    @TestifyLayout(R.layout.view_client_details)
+    @ScreenshotInstrumentation
+    @Test
+    fun compareMethodExample() {
+
+        /**
+         * Define a simple comparison method that ignores all differences between the bitmaps by always returning true
+         */
+        fun ignoreDifferences(baselineBitmap: Bitmap, currentBitmap: Bitmap) = true
+
+        rule
+            .setScreenshotViewProvider {
+                it.findViewById(R.id.info_card)
+            }
+            .setViewModifications {
+                // Draw a random background color
+                val c = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
+                it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#$c$c$c"))
+            }
+            .setCompareMethod(::ignoreDifferences)
             .assertSame()
     }
 }
