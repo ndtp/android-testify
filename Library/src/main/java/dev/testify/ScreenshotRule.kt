@@ -501,11 +501,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             .generate(context = activity)
     }
 
-    fun getBitmapCompare(): CompareMethod = when {
-        exclusionRects.isNotEmpty() || exactness != null -> {
-            FuzzyCompare(exactness, exclusionRects)::compareBitmaps
+    fun getBitmapCompare(): CompareMethod {
+        @Suppress("UNCHECKED_CAST")
+        return when {
+            compareMethod != null -> ::compareMethod as CompareMethod
+            exclusionRects.isNotEmpty() || exactness != null -> FuzzyCompare(exactness, exclusionRects)::compareBitmaps
+            else -> ::sameAsCompare
         }
-        else -> ::sameAsCompare
     }
 
     /**
