@@ -486,6 +486,22 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     open fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {}
 
+    /**
+     * Given [baselineBitmap] and [currentBitmap], use [HighContrastDiff] to write a companion .diff image for the
+     * current test.
+     *
+     * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
+     * against a black background.
+     */
+    open fun generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap) {
+        HighContrastDiff(exclusionRects)
+            .name(outputFileName)
+            .baseline(baselineBitmap)
+            .current(currentBitmap)
+            .exactness(exactness)
+            .generate(context = activity)
+    }
+
     fun assertSame() {
         assertSameInvoked = true
 
@@ -598,12 +614,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     )
                 } else {
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                        HighContrastDiff(exclusionRects)
-                            .name(outputFileName)
-                            .baseline(baselineBitmap)
-                            .current(currentBitmap)
-                            .exactness(exactness)
-                            .generate(context = activity)
+                        generateHighContrastDiff(baselineBitmap, currentBitmap)
                     }
                     if (isRecordMode()) {
                         instrumentationPrintln(
