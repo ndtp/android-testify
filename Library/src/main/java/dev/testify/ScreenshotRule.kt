@@ -85,8 +85,7 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.HashSet
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -106,7 +105,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
-    @IdRes protected var rootViewId = rootViewId
+    @IdRes
+    protected var rootViewId = rootViewId
         @JvmName("rootViewIdResource") set
 
     @LayoutRes
@@ -135,6 +135,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
     private var captureMethod: CaptureMethod? = null
+    private var diffMethod: DiffMethod? = null
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
@@ -316,6 +317,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setCaptureMethod(captureMethod: CaptureMethod?): ScreenshotRule<T> {
         this.captureMethod = captureMethod
+        return this
+    }
+
+    /**
+     * Allow the test to define a custom bitmap difference method.
+     */
+    fun setDiffMethod(diffMethod: DiffMethod?): ScreenshotRule<T> {
+        this.diffMethod = diffMethod
         return this
     }
 
