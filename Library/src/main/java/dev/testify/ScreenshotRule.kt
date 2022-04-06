@@ -502,6 +502,29 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             .generate(context = activity)
     }
 
+    fun getBitmapCompare(): BitmapCompare = when {
+        exclusionRects.isNotEmpty() || exactness != null -> {
+            FuzzyCompare(exactness, exclusionRects)::compareBitmaps
+        }
+        else -> SameAsCompare()::compareBitmaps
+    }
+
+    /**
+     * Compare [baselineBitmap] to [currentBitmap] using the provided [bitmapCompare] bitmap comparison method.
+     *
+     * The definition of "same" depends on the comparison method. The default implementation requires the bitmaps
+     * to be identical at a binary level to be considered "the same".
+     *
+     * @return true if the bitmaps are considered the same.
+     */
+    open fun compareBitmaps(
+        baselineBitmap: Bitmap,
+        currentBitmap: Bitmap,
+        bitmapCompare: BitmapCompare = getBitmapCompare()
+    ): Boolean {
+        return bitmapCompare(baselineBitmap, currentBitmap)
+    }
+
     fun assertSame() {
         assertSameInvoked = true
 
@@ -600,14 +623,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         )
                     }
 
-                val bitmapCompare: BitmapCompare = when {
-                    exclusionRects.isNotEmpty() || exactness != null -> {
-                        FuzzyCompare(exactness, exclusionRects)::compareBitmaps
-                    }
-                    else -> SameAsCompare()::compareBitmaps
-                }
-
-                if (bitmapCompare(baselineBitmap, currentBitmap!!)) {
+                if (compareBitmaps(baselineBitmap, currentBitmap!!)) {
                     assertTrue(
                         "Could not delete cached bitmap $testName",
                         screenshotUtility.deleteBitmap(activity, outputFileName)
