@@ -47,6 +47,8 @@ import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
+import dev.testify.TestifyFeatures.CanvasCapture
+import dev.testify.TestifyFeatures.PixelCopyCapture
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
@@ -75,6 +77,8 @@ import dev.testify.internal.modification.HideScrollbarsViewModification
 import dev.testify.internal.modification.HideTextSuggestionsViewModification
 import dev.testify.internal.modification.SoftwareRenderViewModification
 import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
+import dev.testify.internal.processor.capture.createBitmapUsingPixelCopy
 import dev.testify.internal.processor.compare.FuzzyCompare
 import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.internal.processor.diff.HighContrastDiff
@@ -454,6 +458,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     open fun beforeScreenshot(activity: Activity) {}
 
+    fun getCaptureMethod(): CaptureMethod {
+        return when {
+            captureMethod != null -> captureMethod!!
+            PixelCopyCapture.isEnabled(activity) -> ::createBitmapUsingPixelCopy
+            CanvasCapture.isEnabled(activity) -> ::createBitmapUsingPixelCopy
+            else -> ::createBitmapFromDrawingCache
+        }
+    }
+
     /**
      * Capture a bitmap from the given Activity and save it to the screenshot directory.
      *
@@ -474,8 +487,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return screenshotUtility.createBitmapFromActivity(
             activity,
             fileName,
-            screenshotView,
-            captureMethod
+            getCaptureMethod(),
+            screenshotView
         )
     }
 
