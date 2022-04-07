@@ -44,6 +44,7 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.extensions.boundingBox
 import dev.testify.internal.exception.ScreenshotIsDifferentException
+import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
@@ -336,7 +337,7 @@ class ScreenshotRuleExampleTests {
                 }
             }
             .setCaptureMethod { activity, targetView ->
-                val bitmap = ScreenshotUtility().createBitmapFromView(
+                val bitmap = createBitmapFromDrawingCache(
                     activity,
                     targetView
                 )
@@ -383,7 +384,7 @@ class ScreenshotRuleExampleTests {
         rule
             .setCaptureMethod { activity, targetView ->
                 /* Return a Bitmap */
-                ScreenshotUtility().createBitmapFromView(activity, targetView).apply {
+                createBitmapFromDrawingCache(activity, targetView).apply {
                     /* Wrap the Bitmap in a Canvas so we can draw on it */
                     Canvas(this).apply {
                         /* Add a wordmark to the captured image */

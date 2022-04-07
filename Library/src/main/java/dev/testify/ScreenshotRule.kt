@@ -77,6 +77,7 @@ import dev.testify.internal.modification.HideScrollbarsViewModification
 import dev.testify.internal.modification.HideTextSuggestionsViewModification
 import dev.testify.internal.modification.SoftwareRenderViewModification
 import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.capture.createBitmapUsingPixelCopy
 import dev.testify.internal.processor.compare.FuzzyCompare
@@ -462,7 +463,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return when {
             captureMethod != null -> captureMethod!!
             PixelCopyCapture.isEnabled(activity) -> ::createBitmapUsingPixelCopy
-            CanvasCapture.isEnabled(activity) -> ::createBitmapUsingPixelCopy
+            CanvasCapture.isEnabled(activity) -> ::createBitmapFromCanvas
             else -> ::createBitmapFromDrawingCache
         }
     }
