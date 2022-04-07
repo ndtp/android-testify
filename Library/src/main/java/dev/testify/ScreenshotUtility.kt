@@ -139,7 +139,7 @@ open class ScreenshotUtility {
         activity: Activity,
         fileName: String,
         captureMethod: CaptureMethod,
-        screenshotView: View? = activity.window.decorView,
+        screenshotView: View? = activity.window.decorView
     ): Bitmap? {
         val currentActivityBitmap = arrayOfNulls<Bitmap>(1)
         val latch = CountDownLatch(1)
