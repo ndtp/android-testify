@@ -2,8 +2,10 @@ include ':Sample'
 include ':Plugin'
 include ':Library'
 include ':ComposeExtensions'
+include ':FullscreenCaptureMethod'
 include ':IntelliJ'
 
 project(':Plugin').projectDir = new File("./Plugins/Gradle")
 project(':IntelliJ').projectDir = new File("./Plugins/IntelliJ")
 project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
+project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
