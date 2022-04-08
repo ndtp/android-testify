@@ -23,6 +23,11 @@
  */
 package dev.testify
 
-fun hello() {
+import android.app.Activity
+import android.graphics.Bitmap
+import android.view.View
 
+@Suppress("UNUSED_PARAMETER")
+fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap? {
+    return null
 }
