@@ -21,13 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.capture.fullscreen.provider
 
-import android.app.Activity
-import android.graphics.Bitmap
-import android.view.View
+import android.graphics.Rect
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import dev.testify.ExclusionRectProvider
+import dev.testify.ScreenshotRule
 
-@Suppress("UNUSED_PARAMETER")
-fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap? {
-    return null
+fun MutableSet<Rect>.addNavigationBarRect(rootView: ViewGroup, size: Size) {
+    ViewCompat.getRootWindowInsets(rootView)?.getInsets(WindowInsetsCompat.Type.navigationBars())?.let { insets ->
+        this.add(Rect(0, size.height - insets.bottom, size.width, size.height))
+    }
+}
+
+val navigationBarExclusionRectProvider: ExclusionRectProvider = { rootView, exclusionRects ->
+    exclusionRects.addNavigationBarRect(rootView, rootView.context.realDisplaySize)
+}
+
+fun ScreenshotRule<*>.excludeNavigationBar(): ScreenshotRule<*> {
+    defineExclusionRects(navigationBarExclusionRectProvider)
+    return this
 }

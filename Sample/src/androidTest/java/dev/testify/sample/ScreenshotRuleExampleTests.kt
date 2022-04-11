@@ -39,6 +39,7 @@ import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import dev.testify.ScreenshotRule
 import dev.testify.ScreenshotUtility
+import dev.testify.TestDescription
 import dev.testify.TestifyFeatures
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
@@ -393,7 +394,7 @@ class ScreenshotRuleExampleTests {
                             textSize = 50f
                             isAntiAlias = true
                         }
-                        this.drawText("<<Testify ${rule.testMethodName}>>", 50f, 2000f, textPaint)
+                        this.drawText("<<Testify ${TestDescription.current.methodName}>>", 50f, 2000f, textPaint)
                     }
                 }
             }
