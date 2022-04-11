@@ -2,7 +2,7 @@
 
 Add screenshots to your Android tests
 
-<a href="https://github.com/Shopify/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/Shopify/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=main"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/testify"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/testify?color=%236e40ed&label=com.shopify.testify%3Atestify"/></a> <a href="https://search.maven.org/artifact/com.shopify.testify/plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.shopify.testify/plugin?color=%234da1ea&label=com.shopify.testify%3Aplugin"/></a>
+<a href="https://github.com/ndtp/android-testify/actions?query=workflow%3A%22Build+Gradle+Plugin%22"><img alt="GitHub Actions" src="https://github.com/ndtp/android-testify/workflows/Build%20Gradle%20Plugin/badge.svg?branch=main"/></a> <a href="https://search.maven.org/artifact/dev.testify/testify"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify?color=%236e40ed&label=dev.testify%3Atestify"/></a> <a href="https://search.maven.org/artifact/dev.testify/plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/plugin?color=%234da1ea&label=dev.testify%3Aplugin"/></a>
 ---
 
 Expand your test coverage by including the View-layer. Testify allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.
@@ -22,7 +22,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.2.0-alpha01"
+        classpath "dev.testify:plugin:1.2.0-alpha01"
     }
 }
 ```
@@ -30,7 +30,7 @@ buildscript {
 **Application build.gradle**
 ```groovy
 plugins {
-    id("com.shopify.testify")
+    id("dev.testify")
 }
 
 dependencies {
@@ -46,7 +46,7 @@ It is required for you to turn off animations on your test device — leaving sy
 - **Transition animation scale**
 - **Animator duration scale**
 
-You can find a recommended emulator configuration [here](https://github.com/Shopify/android-testify/wiki/Recipes#setting-up-an-emulator-to-run-the-sample).
+You can find a recommended emulator configuration [here](https://github.com/ndtp/android-testify/wiki/Recipes#setting-up-an-emulator-to-run-the-sample).
 
 ## Android Studio Plugin
 

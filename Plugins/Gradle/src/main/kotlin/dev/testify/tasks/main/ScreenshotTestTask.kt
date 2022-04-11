@@ -101,7 +101,7 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             return params
         }
 
-    private val annotation = AdbParam("annotation", "com.shopify.testify.annotation.ScreenshotInstrumentation")
+    private val annotation = AdbParam("annotation", "dev.testify.annotation.ScreenshotInstrumentation")
 
     override fun taskAction() {
 
