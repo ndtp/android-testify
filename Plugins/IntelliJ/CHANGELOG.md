@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.2.0-alpha01]
+
+- Unified version scheme with the core Testify library.
+
 ## [0.1.2]
 
 ### Updated

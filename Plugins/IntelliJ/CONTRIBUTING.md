@@ -3,13 +3,16 @@
 ## Building
 
 - Download and install [IntelliJ CE](https://www.jetbrains.com/idea/download), at least version 2020.1.2.
-- Open the project in IntelliJ by opening the `./Plugins/IntelliJ` directory.
+- Open the project in IntelliJ by opening the `./android-testify` directory.
 - Open edit configurations to create a new run/debug configuration
     - Choose a new `Gradle` configuration
     - Name it `Build & Run`
-    - Ensure that `IntelliJ` is selected as the `Gradle project`
+    - Ensure that `android-testify/Plugins/IntelliJ` is selected as the `Gradle project`
     - Under `Tasks`, enter `buildPlugin runIde`
 - You can now use the Run or Debug options
+
+
+The built plugin can be found at `/.android-testify/Plugins/IntelliJ/build/libs/IntelliJ-<version>.jar`
 
 ## Running the IDE
 
