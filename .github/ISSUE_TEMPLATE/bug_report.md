@@ -31,7 +31,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. MacOS, Linux, Windows]
+ - OS: [e.g. macOS, Linux, Windows]
  - Version [e.g. 10.15.5, 10]
 
 **Target Android Device (please complete the following information):**

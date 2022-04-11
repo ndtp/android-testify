@@ -21,17 +21,17 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
-      # Setup Java 1.8 environment for the next steps
+      # Setup Java 11 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
 
       # Publish the plugin to the Marketplace
       - name: Publish Plugin
         env:
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
-        run: ./Plugins/IntelliJ/gradlew -p ./Plugins/IntelliJ/ publishPlugin
+        run: ./gradlew IntelliJ:publishPlugin
 
   # Patch changelog, commit and push to the current repository
   changelog:
@@ -45,15 +45,15 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
 
-      # Setup Java 1.8 environment for the next steps
+      # Setup Java 11 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
 
       # Publish the plugin to the Marketplace
       - name: Patch Changelog
-        run: ./Plugins/IntelliJ/gradlew -p ./Plugins/IntelliJ/ patchChangelog
+        run: ./gradlew IntelliJ:patchChangelog
 
       # Commit patched Changelog
       - name: Commit files
