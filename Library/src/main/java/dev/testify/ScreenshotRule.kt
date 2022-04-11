@@ -54,7 +54,6 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
-import dev.testify.internal.TestName
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.FailedToCaptureBitmapException
@@ -116,10 +115,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @LayoutRes
     private var targetLayoutId: Int = NO_ID
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    open lateinit var testMethodName: String
-    private lateinit var testClass: String
-    private lateinit var testSimpleClassName: String
     private val hideCursorViewModification = HideCursorViewModification()
     private val hidePasswordViewModification = HidePasswordViewModification()
     private val hideScrollbarsViewModification = HideScrollbarsViewModification()
@@ -157,10 +152,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    val testName: String
-        get() = "${testSimpleClassName}_$testMethodName"
-
     val deviceOrientation: Int
         get() = orientationHelper.deviceOrientation
 
@@ -170,12 +161,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
     }
-
-    val testNameComponents: TestName
-        get() = TestName(testSimpleClassName, testMethodName)
-
-    val fullyQualifiedTestPath: String
-        get() = testClass
 
     fun getExactness(): Float? {
         return exactness
@@ -355,11 +340,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         checkForScreenshotInstrumentationAnnotation(description)
         applyExactness(description)
         espressoActions = null
-        testSimpleClassName = description.testClass.simpleName
-        testMethodName = description.methodName
-        testClass = "${description.testClass?.canonicalName}#${description.methodName}"
 
-        reporter?.startTest(this, description)
+        TestDescription.current = TestDescription(
+            methodName = description.methodName,
+            testClass = description.testClass
+        )
+        reporter?.startTest(description)
 
         val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
@@ -550,11 +536,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         try {
             try {
+                val description = TestDescription.current
                 reporter?.captureOutput(this)
                 outputFileName = DeviceIdentifier.formatDeviceString(
                     DeviceIdentifier.DeviceStringFormatter(
                         testContext,
-                        testNameComponents
+                        description.nameComponents
                     ), DEFAULT_NAME_FORMAT
                 )
 
@@ -566,7 +553,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     val orientationName =
                         if (orientationToIgnore == SCREEN_ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
                     instrumentationPrintln(
-                        "\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + testName +
+                        "\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + description.name +
                             " due to $orientationName orientation" + 27.toChar() + "[0m"
                     )
                     assertFalse(
@@ -610,18 +597,18 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
                 }
 
-                val baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(testContext, testName)
+                val baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(testContext, description.name)
                     ?: if (isRecordMode()) {
                         instrumentationPrintln(
-                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
+                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + description.name +
                                 27.toChar() + "[0m"
                         )
                         return
                     } else {
                         throw ScreenshotBaselineNotDefinedException(
                             moduleName = getModuleName(),
-                            testName = testName,
-                            testClass = fullyQualifiedTestPath,
+                            testName = description.name,
+                            testClass = description.fullyQualifiedTestName,
                             deviceKey = DeviceIdentifier.formatDeviceString(
                                 DeviceIdentifier.DeviceStringFormatter(
                                     testContext,
@@ -633,7 +620,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 if (compareBitmaps(baselineBitmap, currentBitmap)) {
                     assertTrue(
-                        "Could not delete cached bitmap $testName",
+                        "Could not delete cached bitmap ${description.name}",
                         screenshotUtility.deleteBitmap(activity, outputFileName)
                     )
                 } else {
@@ -642,11 +629,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     }
                     if (isRecordMode()) {
                         instrumentationPrintln(
-                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
+                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + description.name +
                                 27.toChar() + "[0m"
                         )
                     } else {
-                        throw ScreenshotIsDifferentException(getModuleName(), fullyQualifiedTestPath)
+                        throw ScreenshotIsDifferentException(getModuleName(), description.fullyQualifiedTestName)
                     }
                 }
             } finally {

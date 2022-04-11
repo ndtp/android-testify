@@ -30,6 +30,7 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.ScreenshotRule
+import dev.testify.TestDescription
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
@@ -64,11 +65,11 @@ internal open class Reporter(
      * Called by [ScreenshotRule.apply] when a new test case starts
      * Records the test entry
      */
-    fun startTest(rule: ScreenshotRule<*>, description: Description) {
+    fun startTest(description: Description) {
         session.addTest()
 
         builder.appendLine("- test:", indent = 4)
-        builder.appendLine("name: ${rule.testMethodName}", indent = 8)
+        builder.appendLine("name: ${description.methodName}", indent = 8)
         builder.appendLine("class: ${description.testClass.simpleName}", indent = 8)
         builder.appendLine("package: ${description.testClass.`package`?.name}", indent = 8)
     }
@@ -124,7 +125,7 @@ internal open class Reporter(
     internal open fun getBaselinePath(rule: ScreenshotRule<*>): String {
         return outputFileUtility.getFileRelativeToRoot(
             subpath = DeviceIdentifier.getDescription(context),
-            fileName = rule.testMethodName,
+            fileName = TestDescription.current.methodName,
             extension = PNG_EXTENSION
         )
     }
@@ -134,7 +135,7 @@ internal open class Reporter(
             return DeviceIdentifier.formatDeviceString(
                 DeviceIdentifier.DeviceStringFormatter(
                     this.testContext,
-                    this.testNameComponents
+                    TestDescription.current.nameComponents
                 ), DeviceIdentifier.DEFAULT_NAME_FORMAT
             )
         }
