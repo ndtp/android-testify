@@ -105,8 +105,8 @@ jobs:
       - name: Export Properties
         id: properties
         run: |
-          echo "::set-output name=version::$(./gradlew properties --console=plain -q | grep "^version:" | cut -f2- -d ' ')"
-          echo "::set-output name=name::$(./gradlew properties --console=plain -q | grep "^name:" | cut -f2- -d ' ')"
+          echo "::set-output name=version::$(./gradlew IntelliJ:properties --console=plain -q | grep "^version:" | cut -f2- -d ' ')"
+          echo "::set-output name=name::$(./gradlew IntelliJ:properties --console=plain -q | grep "^name:" | cut -f2- -d ' ')"
 
           CHANGELOG=$(./gradlew IntelliJ:getChangelog --unreleased --no-header --console=plain -q)
           CHANGELOG="${CHANGELOG//'%'/'%25'}"
