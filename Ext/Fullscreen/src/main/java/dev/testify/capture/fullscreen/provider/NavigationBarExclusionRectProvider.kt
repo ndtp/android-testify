@@ -30,16 +30,36 @@ import androidx.core.view.WindowInsetsCompat
 import dev.testify.ExclusionRectProvider
 import dev.testify.ScreenshotRule
 
+/**
+ * This file provides extension methods that will add the rectangle covering the system navigation bar to the
+ * exclusion area.
+ *
+ * Rectangles in the exclusion area are ignored by the comparison methods. This allows you to capture a full
+ * screen bitmap, but ignore the differences caused by changes to the system UI.
+ */
+
+/**
+ * Add the rectangle defined by the [WindowInsetsCompat] for [WindowInsetsCompat.Type.navigationBars()] to the
+ * receiver MutableSet<Rect>.
+ */
 fun MutableSet<Rect>.addNavigationBarRect(rootView: ViewGroup, size: Size) {
     ViewCompat.getRootWindowInsets(rootView)?.getInsets(WindowInsetsCompat.Type.navigationBars())?.let { insets ->
         this.add(Rect(0, size.height - insets.bottom, size.width, size.height))
     }
 }
 
+/**
+ * Defines an [ExclusionRectProvider] method which will add the rectangle covering the system navigation bar to the
+ * exclusion area.
+ */
 val navigationBarExclusionRectProvider: ExclusionRectProvider = { rootView, exclusionRects ->
     exclusionRects.addNavigationBarRect(rootView, rootView.context.realDisplaySize)
 }
 
+/**
+ * Extension method for [ScreenshotRule] that will add the rectangle covering the system navigation bar to the
+ * exclusion area.
+ */
 fun ScreenshotRule<*>.excludeNavigationBar(): ScreenshotRule<*> {
     defineExclusionRects(navigationBarExclusionRectProvider)
     return this

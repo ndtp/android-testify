@@ -29,8 +29,16 @@ import android.graphics.Point
 import android.os.Build
 import android.view.WindowManager
 
+/**
+ * Simple immutable class for describing width and height dimensions in pixels.
+ * Provided as an alternative to [android.util.Size] which was only added in API 21.
+ */
 data class Size(val width: Int, val height: Int)
 
+/**
+ * Get the real, physical display resolution in pixels.
+ * Reports the full [Size] of the device including all system UI.
+ */
 val Context.realDisplaySize: Size
     get() {
         val screenSize = Point()

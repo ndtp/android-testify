@@ -26,6 +26,18 @@ package dev.testify.capture.fullscreen.provider
 import dev.testify.ExclusionRectProvider
 import dev.testify.ScreenshotRule
 
+/**
+ * This file provides extension methods that will add rectangles covering both the status bar and the navigation
+ * bar to the exclusion area.
+ *
+ * Rectangles in the exclusion area are ignored by the comparison methods. This allows you to capture a full
+ * screen bitmap, but ignore the differences caused by changes to the system UI.
+ */
+
+/**
+ * Defines an [ExclusionRectProvider] method which will add the rectangles covering the system status bar and navigation
+ * bar to the exclusion area.
+ */
 val systemUiExclusionRectProvider: ExclusionRectProvider = { rootView, exclusionRects ->
     val size = rootView.context.realDisplaySize
     exclusionRects.run {
@@ -34,6 +46,10 @@ val systemUiExclusionRectProvider: ExclusionRectProvider = { rootView, exclusion
     }
 }
 
+/**
+ * Extension method for [ScreenshotRule] that will add the rectangles covering the system status bar and navigation
+ * bar to the exclusion area.
+ */
 fun ScreenshotRule<*>.excludeSystemUi(): ScreenshotRule<*> {
     defineExclusionRects(systemUiExclusionRectProvider)
     return this

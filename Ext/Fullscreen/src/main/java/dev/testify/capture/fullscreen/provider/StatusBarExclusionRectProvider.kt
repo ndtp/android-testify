@@ -26,20 +26,41 @@ package dev.testify.capture.fullscreen.provider
 import android.graphics.Rect
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.statusBars
 import dev.testify.ExclusionRectProvider
 import dev.testify.ScreenshotRule
 
+/**
+ * This file provides extension methods that will add the rectangle covering the system status bar to the
+ * exclusion area.
+ *
+ * Rectangles in the exclusion area are ignored by the comparison methods. This allows you to capture a full
+ * screen bitmap, but ignore the differences caused by changes to the system UI, such as the current time.
+ */
+
+/**
+ * Add the rectangle defined by the [WindowInsetsCompat] for [WindowInsetsCompat.Type.statusBars()] to the
+ * receiver MutableSet<Rect>.
+ */
 fun MutableSet<Rect>.addStatusBarRect(rootView: ViewGroup, size: Size) {
     ViewCompat.getRootWindowInsets(rootView)?.getInsets(statusBars())?.let { insets ->
         this.add(Rect(0, 0, size.width, insets.top))
     }
 }
 
+/**
+ * Defines an [ExclusionRectProvider] method which will add the rectangle covering the system status bar to the
+ * exclusion area.
+ */
 val statusBarExclusionRectProvider: ExclusionRectProvider = { rootView, exclusionRects ->
     exclusionRects.addStatusBarRect(rootView, rootView.context.realDisplaySize)
 }
 
+/**
+ * Extension method for [ScreenshotRule] that will add the rectangle covering the system status bar to the
+ * exclusion area.
+ */
 fun ScreenshotRule<*>.excludeStatusBar(): ScreenshotRule<*> {
     defineExclusionRects(statusBarExclusionRectProvider)
     return this
