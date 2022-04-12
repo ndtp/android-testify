@@ -23,4 +23,7 @@
  */
 package dev.testify.exception
 
+/**
+ * Exception thrown when an error is returned by [androidx.test.uiautomator.UiDevice.takeScreenshot]
+ */
 class FailedToCaptureFullscreenBitmapException : RuntimeException("Failed to capture fullscreen bitmap")

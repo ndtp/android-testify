@@ -36,28 +36,58 @@ import dev.testify.exception.FailedToCaptureFullscreenBitmapException
 import dev.testify.exception.FailedToLoadCapturedBitmapException
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
-import dev.testify.internal.TestName
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.output.OutputFileUtility
 import java.io.File
 
+/**
+ * Use the UiAutomator's built-in screenshotting capability to capture a [Bitmap] of the entire device.
+ * The bitmap will be generated from a PNG at 1:1 scale and 100% quality. The bitmap's size will match the full
+ * device resolution and include all system UI such as the status bar and navigation bar.
+ *
+ * As the system UI content is highly variable, you can use [ScreenshotRule.excludeStatusBar] and/or
+ * [ScreenshotRule.excludeNavigationBar] to ignore the status bar and navigation bar, respectively.
+ *
+ * Though the PNG is intended to be lossless, some compression artifacts or GPU-related variance can occur. As such,
+ * it is recommended to use a small tolerance when capturing fullscreen images.
+ * You can set a comparison tolerance using [ScreenshotRule.setExactness].
+ *
+ * @see <a href="https://developer.android.com/training/testing/other-components/ui-automator">UiAutomator</a>
+ * @see <a href="https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#takescreenshot">takeScreenshot</a>
+ *
+ * @throws FailedToCaptureFullscreenBitmapException
+ * @throws FailedToLoadCapturedBitmapException
+ *
+ * @param activity The current Activity under test
+ * @param targetView Optional [View] instance that was set with [ScreenshotRule.setScreenshotViewProvider]
+ */
 @Suppress("UNUSED_PARAMETER")
 fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap {
     val screenshotUtility = ScreenshotUtility()
     activity.assureScreenshotDirectory(screenshotUtility)
 
     val instrumentation = InstrumentationRegistry.getInstrumentation()
-    val fileName = getFileName(instrumentation.context, TestDescription.current.nameComponents)
+    val fileName = getFileName(instrumentation.context)
     val outputPath = OutputFileUtility().getOutputFilePath(activity, fileName)
     val file = File(outputPath)
 
+    // Use UiAutomator to take a screenshot
     val device = UiDevice.getInstance(instrumentation)
     if (!device.takeScreenshot(file, 1f, 100)) throw FailedToCaptureFullscreenBitmapException()
 
+    /**
+     * The screenshot is written as a PNG to [file] on the emulator. We can use [ScreenshotUtility.loadBitmapFromFile]
+     * to load it from a file into memory as a [Bitmap].
+     */
     return screenshotUtility.loadBitmapFromFile(outputPath, screenshotUtility.preferredBitmapOptions)
         ?: throw FailedToLoadCapturedBitmapException()
 }
 
+/**
+ * Make sure the directory used to save Bitmaps on the device is valid and available.
+ *
+ * @throws ScreenshotDirectoryNotFoundException
+ */
 private fun Context.assureScreenshotDirectory(screenshotUtility: ScreenshotUtility) {
     if (screenshotUtility.assureScreenshotDirectory(this)) return
 
@@ -68,15 +98,21 @@ private fun Context.assureScreenshotDirectory(screenshotUtility: ScreenshotUtili
     )
 }
 
-private fun getFileName(testContext: Context, testNameComponents: TestName): String {
+/**
+ * Get the name of the currently executing test.
+ */
+private fun getFileName(testContext: Context): String {
     return DeviceIdentifier.formatDeviceString(
         DeviceIdentifier.DeviceStringFormatter(
             testContext,
-            testNameComponents
+            TestDescription.current.nameComponents
         ), DEFAULT_NAME_FORMAT
     )
 }
 
+/**
+ * Helper method to invoke [ScreenshotRule.setCaptureMethod] with the fullscreen capture method.
+ */
 fun ScreenshotRule<*>.captureFullscreen(): ScreenshotRule<*> {
     setCaptureMethod(::fullscreenCapture)
     return this
