@@ -73,6 +73,7 @@ fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap {
 
     // Use UiAutomator to take a screenshot
     val device = UiDevice.getInstance(instrumentation)
+    device.waitForIdle(1000)
     if (!device.takeScreenshot(file, 1f, 100)) throw FailedToCaptureFullscreenBitmapException()
 
     /**

@@ -36,10 +36,7 @@ import org.junit.Test
 class FullscreenCaptureExampleTest {
 
     @get:Rule
-    var rule = ScreenshotRule(
-        activityClass = MainActivity::class.java,
-        launchActivity = false
-    )
+    var rule = ScreenshotRule(MainActivity::class.java)
 
     @ScreenshotInstrumentation
     @Test
@@ -48,9 +45,6 @@ class FullscreenCaptureExampleTest {
             .captureFullscreen()
             .excludeSystemUi()
             .setExactness(0.95f)
-            .setEspressoActions {
-                Thread.sleep(500)
-            }
             .assertSame()
     }
 
@@ -63,7 +57,6 @@ class FullscreenCaptureExampleTest {
             .setExactness(0.95f)
             .setEspressoActions {
                 openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-                Thread.sleep(500)
             }
             .assertSame()
     }
@@ -79,9 +72,6 @@ class FullscreenCaptureExampleTest {
                 MaterialAlertDialogBuilder(it.context)
                     .setMessage("Hello, world!")
                     .show()
-            }
-            .setEspressoActions {
-                Thread.sleep(500)
             }
             .assertSame()
     }
