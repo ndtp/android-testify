@@ -89,7 +89,8 @@ internal open class ReporterTest {
 
         doReturn(false).whenever(mockOutputFileUtility).useSdCard(any())
         doReturn(mockContext).whenever(mockInstrumentation).context
-        doReturn("startTest").whenever(mockRule).testMethodName
+        doReturn("startTest").whenever(mockDescription).methodName
+
         doReturn(ReporterTest::class.java).whenever(mockDescription).testClass
         doReturn(true).whenever(mockFile).exists()
     }
@@ -102,7 +103,7 @@ internal open class ReporterTest {
 
     @Test
     fun `startTest() produces the expected yaml`() {
-        reporter.startTest(mockRule, mockDescription)
+        reporter.startTest(mockDescription)
 
         assertEquals(
             "    - test:\n" +
@@ -197,7 +198,7 @@ internal open class ReporterTest {
     fun `reporter output for a single test in a new session`() {
         doReturn(false).whenever(mockFile).exists()
 
-        reporter.startTest(mockRule, mockDescription)
+        reporter.startTest(mockDescription)
         reporter.identifySession(mockInstrumentation)
         reporter.captureOutput(mockRule)
         reporter.pass()
@@ -227,7 +228,7 @@ internal open class ReporterTest {
     fun `reporter output for a multiples tests in a new session`() {
 
         with(setUpForFirstTest(spy(ReportSession()))) {
-            this.startTest(mockRule, mockDescription)
+            this.startTest(mockDescription)
             this.identifySession(mockInstrumentation)
             this.captureOutput(mockRule)
             this.pass()
@@ -236,7 +237,7 @@ internal open class ReporterTest {
 
         val reporter = setUpForSecondTest()
         with(reporter) {
-            this.startTest(mockRule, mockDescription)
+            this.startTest(mockDescription)
             this.identifySession(mockInstrumentation)
             this.captureOutput(mockRule)
             this.fail(Exception("This is a failure"))
@@ -305,7 +306,7 @@ internal open class ReporterTest {
         doReturn(true).whenever(mockFile).exists()
         doReturn(true).whenever(session).isEqual(any())
         doReturn(bodyLines).whenever(reporter).readBodyLines(mockFile)
-        doReturn("failingTest").whenever(mockRule).testMethodName
+        doReturn("failingTest").whenever(mockDescription).methodName
 
         with(session) {
             doReturn(true).whenever(this).isEqual(eq(mockFile))
