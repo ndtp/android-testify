@@ -24,7 +24,7 @@ version = testifyVersion
  * Read more: https://github.com/JetBrains/gradle-intellij-plugin
  */
 intellij {
-    pluginName.set(properties("pluginName"))
+    pluginName.set(project.name)
     version.set(properties("platformVersion"))
     type.set(properties("platformType"))
 
