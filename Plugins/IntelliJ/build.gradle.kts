@@ -10,7 +10,6 @@ fun properties(key: String) = project.findProperty(key).toString()
 val versions = rootProject.extra["versions"] as Map<String, String>
 val testifyVersion = versions["testify"] as String
 
-if (!hasProperty("StudioCompilePath")) throw GradleException("No StudioCompilePath value was set. Please define StudioCompilePath in gradle.properties.")
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("org.jetbrains.intellij") version "1.4.0"
@@ -19,11 +18,7 @@ plugins {
 }
 
 group = project.property("pluginGroup") as String
-version = testifyVersion
-
-val studioRunPath = project.property("StudioRunPath") as String
-val studioCompilePath = project.property("StudioCompilePath") as String
-val instrumentCodeVersion = project.property("InstrumentCodeVersion") as String
+version = testifyVersion // The version of the built plugin
 
 /**
  * Configure gradle-intellij-plugin plugin.
@@ -38,8 +33,12 @@ intellij {
             "android"
         )
     )
-    // Set runIde path
-    localPath.set( if (project.hasProperty("StudioRunPath")) studioRunPath else studioCompilePath)
+
+    if (project.hasProperty("StudioRunPath")) {
+        localPath.set(properties("StudioRunPath"))
+    } else {
+        version.set(properties("platformVersion"))
+    }
 }
 
 repositories {
@@ -47,9 +46,6 @@ repositories {
 }
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${versions["kotlin"]}")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
-    compileOnly(fileTree("dir" to "$studioCompilePath/plugins/android/lib", "include" to "*.jar"))
-    compileOnly(fileTree("dir" to "$studioCompilePath/lib", "include" to "*.jar"))
 }
 
 java {
@@ -64,7 +60,7 @@ changelog {
 
 tasks {
     instrumentCode {
-        compilerVersion.set(instrumentCodeVersion)
+        compilerVersion.set(properties("InstrumentCodeVersion"))
     }
     properties("javaVersion").let {
         withType<JavaCompile> {
@@ -107,17 +103,6 @@ tasks {
         token.set(System.getenv("PUBLISH_TOKEN"))
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
     }
-
-    register("verifySetup") {
-        doLast {
-            val ideaJar = "$studioCompilePath/lib/idea.jar"
-            if (file(ideaJar).exists().not()) {
-                throw GradleException("$ideaJar not found, set 'StudioCompilePath' in gradle.properties")
-            }
-        }
-    }
-
-    findByName("compileJava")?.dependsOn(findByName("verifySetup"))
 
     buildSearchableOptions {
         enabled = false
