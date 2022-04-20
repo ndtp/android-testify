@@ -10,7 +10,9 @@ fun properties(key: String) = project.findProperty(key).toString()
 val versions = rootProject.extra["versions"] as Map<String, String>
 val testifyVersion = versions["testify"] as String
 
-if (!hasProperty("StudioCompilePath")) throw GradleException("No StudioCompilePath value was set. Please define StudioCompilePath in gradle.properties.")
+if (!hasProperty("StudioCompilePath"))
+    throw GradleException("No StudioCompilePath value was set. Please define StudioCompilePath in gradle.properties.")
+
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("org.jetbrains.intellij") version "1.4.0"
@@ -39,7 +41,7 @@ intellij {
         )
     )
     // Set runIde path
-    localPath.set( if (project.hasProperty("StudioRunPath")) studioRunPath else studioCompilePath)
+    localPath.set(if (project.hasProperty("StudioRunPath")) studioRunPath else studioCompilePath)
 }
 
 repositories {
