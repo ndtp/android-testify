@@ -53,7 +53,7 @@ internal open class ReporterTest {
     private val mockOutputFileUtility: OutputFileUtility = mock()
     private val mockInstrumentation: Instrumentation = mock()
     private val mockRule: ScreenshotRule<*> = mock()
-    private val mockDescription: Description = mock()
+    private val mockTestClass: Class<*> = ReporterTest::class.java
     private val mockFile: File = mock()
     private val reporter = spy(Reporter(mockContext, mockSession, mockOutputFileUtility))
 
@@ -90,7 +90,6 @@ internal open class ReporterTest {
         doReturn(false).whenever(mockOutputFileUtility).useSdCard(any())
         doReturn(mockContext).whenever(mockInstrumentation).context
         doReturn("startTest").whenever(mockRule).testMethodName
-        doReturn(ReporterTest::class.java).whenever(mockDescription).testClass
         doReturn(true).whenever(mockFile).exists()
     }
 
@@ -102,7 +101,7 @@ internal open class ReporterTest {
 
     @Test
     fun `startTest() produces the expected yaml`() {
-        reporter.startTest(mockRule, mockDescription)
+        reporter.startTest(mockRule, mockTestClass)
 
         assertEquals(
             "    - test:\n" +
@@ -197,7 +196,7 @@ internal open class ReporterTest {
     fun `reporter output for a single test in a new session`() {
         doReturn(false).whenever(mockFile).exists()
 
-        reporter.startTest(mockRule, mockDescription)
+        reporter.startTest(mockRule, mockTestClass)
         reporter.identifySession(mockInstrumentation)
         reporter.captureOutput(mockRule)
         reporter.pass()
@@ -227,7 +226,7 @@ internal open class ReporterTest {
     fun `reporter output for a multiples tests in a new session`() {
 
         with(setUpForFirstTest(spy(ReportSession()))) {
-            this.startTest(mockRule, mockDescription)
+            this.startTest(mockRule, mockTestClass)
             this.identifySession(mockInstrumentation)
             this.captureOutput(mockRule)
             this.pass()
@@ -236,7 +235,7 @@ internal open class ReporterTest {
 
         val reporter = setUpForSecondTest()
         with(reporter) {
-            this.startTest(mockRule, mockDescription)
+            this.startTest(mockRule, mockTestClass)
             this.identifySession(mockInstrumentation)
             this.captureOutput(mockRule)
             this.fail(Exception("This is a failure"))

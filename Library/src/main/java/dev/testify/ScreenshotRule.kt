@@ -85,8 +85,7 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.HashSet
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -106,7 +105,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
-    @IdRes protected var rootViewId = rootViewId
+    @IdRes
+    protected var rootViewId = rootViewId
         @JvmName("rootViewIdResource") set
 
     @LayoutRes
@@ -328,18 +328,42 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         ResourceWrapper.beforeActivityLaunched()
     }
 
-    override fun apply(base: Statement, description: Description): Statement {
-        checkForScreenshotInstrumentationAnnotation(description)
-        applyExactness(description)
+    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
+        return this.find { it is T } as? T
+    }
+
+    open fun apply(
+        methodName: String,
+        testClass: Class<*>,
+        methodAnnotations: Collection<Annotation>?
+    ) {
+        val classAnnotations = testClass.annotations.asList()
+        val classScreenshotInstrumentation = classAnnotations.getAnnotation<ScreenshotInstrumentation>()
+        val methodScreenshotInstrumentation = methodAnnotations?.getAnnotation<ScreenshotInstrumentation>()
+
+        checkForScreenshotInstrumentationAnnotation(
+            methodName,
+            classScreenshotInstrumentation,
+            methodScreenshotInstrumentation
+        )
+
+        val bitmapComparison = classAnnotations.getAnnotation<BitmapComparisonExactness>()
+        applyExactness(bitmapComparison)
+
         espressoActions = null
-        testSimpleClassName = description.testClass.simpleName
-        testMethodName = description.methodName
-        testClass = "${description.testClass?.canonicalName}#${description.methodName}"
+        testSimpleClassName = testClass.simpleName
+        testMethodName = methodName
+        this.testClass = "${testClass.canonicalName}#$methodName"
 
-        reporter?.startTest(this, description)
+        reporter?.startTest(this, testClass)
 
-        val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
+        val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
+    }
+
+    override fun apply(base: Statement, description: Description): Statement {
+        val methodAnnotations = description.annotations
+        apply(description.methodName, description.testClass, methodAnnotations)
         return super.apply(ScreenshotStatement(base), description)
     }
 
@@ -353,12 +377,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             return layoutId
         }
 
-    private fun checkForScreenshotInstrumentationAnnotation(description: Description) {
-        val classAnnotation = description.testClass.getAnnotation(ScreenshotInstrumentation::class.java)
+    private fun checkForScreenshotInstrumentationAnnotation(
+        methodName: String,
+        classAnnotation: ScreenshotInstrumentation?,
+        methodAnnotation: ScreenshotInstrumentation?
+    ) {
         if (classAnnotation == null) {
-            val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
             if (methodAnnotation == null) {
-                this.throwable = MissingScreenshotInstrumentationAnnotationException(description.methodName)
+                this.throwable = MissingScreenshotInstrumentationAnnotationException(methodName)
             } else {
                 orientationToIgnore = methodAnnotation.orientationToIgnore
             }
@@ -394,9 +420,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return intent
     }
 
-    private fun applyExactness(description: Description) {
+    private fun applyExactness(bitmapComparison: BitmapComparisonExactness?) {
         if (exactness == null) {
-            val bitmapComparison = description.getAnnotation(BitmapComparisonExactness::class.java)
             exactness = bitmapComparison?.exactness
         }
     }
@@ -648,26 +673,41 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
     }
 
+    protected fun evaluateBeforeEach() {
+        getInstrumentation()?.run {
+            reporter?.identifySession(this)
+        }
+        assertSameInvoked = false
+    }
+
+    protected fun evaluateAfterEach() {
+        // Safeguard against accidentally omitting the call to `assertSame`
+        if (!assertSameInvoked) {
+            throw MissingAssertSameException()
+        }
+        reporter?.pass()
+    }
+
+    protected fun evaluateAfterTestExecution() {
+        reporter?.endTest()
+    }
+
+    protected fun handleTestException(throwable: Throwable) {
+        reporter?.fail(throwable)
+        throw throwable
+    }
+
     private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
 
         override fun evaluate() {
             try {
-                getInstrumentation()?.run {
-                    reporter?.identifySession(this)
-                }
-
-                assertSameInvoked = false
+                evaluateBeforeEach()
                 base.evaluate()
-                // Safeguard against accidentally omitting the call to `assertSame`
-                if (!assertSameInvoked) {
-                    throw MissingAssertSameException()
-                }
-                reporter?.pass()
+                evaluateAfterEach()
             } catch (throwable: Throwable) {
-                reporter?.fail(throwable)
-                throw throwable
+                handleTestException(throwable)
             } finally {
-                reporter?.endTest()
+                evaluateAfterTestExecution()
             }
         }
     }

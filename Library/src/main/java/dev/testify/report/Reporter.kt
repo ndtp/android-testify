@@ -64,13 +64,13 @@ internal open class Reporter(
      * Called by [ScreenshotRule.apply] when a new test case starts
      * Records the test entry
      */
-    fun startTest(rule: ScreenshotRule<*>, description: Description) {
+    fun startTest(rule: ScreenshotRule<*>, testClass: Class<*>) {
         session.addTest()
 
         builder.appendLine("- test:", indent = 4)
         builder.appendLine("name: ${rule.testMethodName}", indent = 8)
-        builder.appendLine("class: ${description.testClass.simpleName}", indent = 8)
-        builder.appendLine("package: ${description.testClass.`package`?.name}", indent = 8)
+        builder.appendLine("class: ${testClass.simpleName}", indent = 8)
+        builder.appendLine("package: ${testClass.`package`?.name}", indent = 8)
     }
 
     /**
