@@ -85,7 +85,7 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -105,12 +105,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
-    @IdRes
-    protected var rootViewId = rootViewId
+    @IdRes protected var rootViewId = rootViewId
         @JvmName("rootViewIdResource") set
 
-    @LayoutRes
-    private var targetLayoutId: Int = NO_ID
+    @LayoutRes private var targetLayoutId: Int = NO_ID
 
     @Suppress("MemberVisibilityCanBePrivate")
     open lateinit var testMethodName: String
@@ -214,7 +212,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     /**
      * Allows Testify to deliberately set the keyboard focus to the specified view
      *
-     * @param clearFocus when true, removes focus from all views in the activity
+     * @param enabled when true, removes focus from all views in the activity
+     * @param focusTargetId the View ID to set focus on
      */
     fun setFocusTarget(enabled: Boolean = true, @IdRes focusTargetId: Int = android.R.id.content): ScreenshotRule<T> {
         this.focusModification.isEnabled = enabled
@@ -328,10 +327,28 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         ResourceWrapper.beforeActivityLaunched()
     }
 
-    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
-        return this.find { it is T } as? T
+    /**
+     * Modifies the method-running [Statement] to implement this test-running rule.
+     * @param base – The [Statement] to be modified
+     * @param description – A [Description] of the test implemented in base
+     *
+     * @return a new statement, which may be the same as base, a wrapper around base, or a completely new [Statement].
+     */
+    override fun apply(base: Statement, description: Description): Statement {
+        val methodAnnotations = description.annotations
+        apply(description.methodName, description.testClass, methodAnnotations)
+        return super.apply(ScreenshotStatement(base), description)
     }
 
+    /**
+     * Configures the [ScreenshotRule] based on the currently running test.
+     * This is a generalization of the modifications expected by the JUnit4's [apply] method which exposes these
+     * modification to non-JUnit4 implementations.
+     *
+     * @param methodName - The name of the currently running test
+     * @param testClass - The [Class] of the currently running test
+     * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+     */
     open fun apply(
         methodName: String,
         testClass: Class<*>,
@@ -361,10 +378,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
     }
 
-    override fun apply(base: Statement, description: Description): Statement {
-        val methodAnnotations = description.annotations
-        apply(description.methodName, description.testClass, methodAnnotations)
-        return super.apply(ScreenshotStatement(base), description)
+    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
+        return this.find { it is T } as? T
     }
 
     @get:LayoutRes
@@ -673,6 +688,21 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
     }
 
+    private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
+
+        override fun evaluate() {
+            try {
+                evaluateBeforeEach()
+                base.evaluate()
+                evaluateAfterEach()
+            } catch (throwable: Throwable) {
+                handleTestException(throwable)
+            } finally {
+                evaluateAfterTestExecution()
+            }
+        }
+    }
+
     protected fun evaluateBeforeEach() {
         getInstrumentation()?.run {
             reporter?.identifySession(this)
@@ -697,20 +727,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         throw throwable
     }
 
-    private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
-
-        override fun evaluate() {
-            try {
-                evaluateBeforeEach()
-                base.evaluate()
-                evaluateAfterEach()
-            } catch (throwable: Throwable) {
-                handleTestException(throwable)
-            } finally {
-                evaluateAfterTestExecution()
-            }
-        }
-    }
 
     @VisibleForTesting
     var isDebugMode: Boolean = false
