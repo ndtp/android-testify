@@ -30,13 +30,31 @@ import org.junit.jupiter.api.extension.AfterTestExecutionCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler
+import kotlin.reflect.KClass
 
-class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
+/**
+ * A JUnit Jupiter extension implementation for screenshot testing.
+ *
+ *     @RegisterExtension
+ *     @JvmField var extension = ScreenshotExtension(MainActivity::class)
+ *
+ * @param activityClass - The activity under test. This must be a class in the instrumentation targetPackage specified
+ *      in the AndroidManifest.xml
+ */
+open class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
     ScreenshotRule<T>(activityClass = activityClass, launchActivity = false),
     AfterEachCallback,
     BeforeEachCallback,
     AfterTestExecutionCallback,
     TestExecutionExceptionHandler {
+
+    /**
+     * Alternate convenience constructor that accepts a Kotlin KClass
+     *
+     * @param activityClass - The activity under test. This must be a class in the instrumentation targetPackage
+     *      specified in the AndroidManifest.xml
+     */
+    constructor(activityClass: KClass<T>) : this(activityClass.java)
 
     private val ExtensionContext.testMethodName: String
         get() {
@@ -59,23 +77,40 @@ class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
         apply(name, context.testClass?.get()!!, methodAnnotations)
     }
 
-    override fun beforeEach(context: ExtensionContext?) {
-        if (context == null) return
+    /**
+     * Callback that is invoked before an individual test and any user-defined setup methods for that test have been
+     * executed.
+     * @param context – the current extension context
+     */
+    override fun beforeEach(context: ExtensionContext) {
         initialize(context)
         super.evaluateBeforeEach()
     }
 
-    override fun handleTestExecutionException(context: ExtensionContext?, throwable: Throwable?) {
-        throwable?.let {
-            super.handleTestException(it)
-        }
+    /**
+     * Handle the supplied throwable.
+     */
+    override fun handleTestExecutionException(context: ExtensionContext, throwable: Throwable) {
+        super.handleTestException(throwable)
     }
 
-    override fun afterEach(context: ExtensionContext?) {
+    /**
+     * Callback that is invoked after an individual test and any user-defined teardown methods for that test have been
+     * executed.
+     *
+     * @param context – the current extension context
+     */
+    override fun afterEach(context: ExtensionContext) {
         super.evaluateAfterEach()
     }
 
-    override fun afterTestExecution(context: ExtensionContext?) {
+    /**
+     * Callback that is invoked immediately after an individual test has been executed but before any user-defined
+     * teardown methods have been executed for that test.
+     *
+     * @param context – the current extension context
+     */
+    override fun afterTestExecution(context: ExtensionContext) {
         super.evaluateAfterTestExecution()
     }
 }

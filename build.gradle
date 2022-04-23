@@ -28,6 +28,7 @@ buildscript {
                 'colormath'          : '1.4.1',             // https://github.com/ajalt/colormath/releases
                 'compose'            : '1.0.5',             // https://developer.android.com/jetpack/androidx/releases/compose
                 'dokka'              : '1.4.32',            // https://github.com/Kotlin/dokka/releases
+                'junit5'             : '5.8.2',             // https://junit.org/junit5/docs/current/release-notes/index.html
                 'kotlin'             : '1.5.31',            // https://kotlinlang.org/
                 'kotlinx'            : '1.5.1',             // https://github.com/Kotlin/kotlinx.coroutines/releases
                 'ktlint'             : '0.36.0',            // https://github.com/pinterest/ktlint
