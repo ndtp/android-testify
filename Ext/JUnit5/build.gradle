@@ -1,0 +1,89 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.dokka'
+}
+
+ext {
+    pom = [
+            publishedGroupId  : 'dev.testify',
+            artifact          : 'testify-junit5',
+            libraryName       : 'testify-junit5',
+            libraryDescription: 'JUnit5 extensions for Android Testify',
+            siteUrl           : 'https://github.com/ndtp/android-testify',
+            gitUrl            : 'https://github.com/ndtp/android-testify.git',
+            licenseName       : 'The MIT License',
+            licenseUrl        : 'https://opensource.org/licenses/MIT',
+            author            : 'ndtp'
+    ]
+}
+
+version = "$project.versions.testify"
+group = pom.publishedGroupId
+archivesBaseName = pom.artifact
+
+android {
+    compileSdkVersion coreVersions.compileSdk
+
+    lintOptions {
+        abortOnError true
+        warningsAsErrors true
+        textOutput 'stdout'
+        textReport true
+        xmlReport false
+    }
+
+    defaultConfig {
+        minSdkVersion coreVersions.minSdk
+        targetSdkVersion coreVersions.targetSdk
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled = true
+        kotlinOptions {
+            allWarningsAsErrors = true
+        }
+    }
+
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "${archivesBaseName}-${version}.aar"
+        }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
+            }
+        }
+    }
+
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+        useIR = true
+    }
+
+    dependencies {
+        implementation project(":Library")
+
+        implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidx.lifecycleKtx}"
+        implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
+        implementation "androidx.test:rules:${versions.androidx.test.rules}"
+        implementation "androidx.test:runner:${versions.androidx.test.runner}"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+afterEvaluate {
+    apply from: "../../publish.build.gradle"
+}
+
+apply from: '../../ktlint.gradle'
