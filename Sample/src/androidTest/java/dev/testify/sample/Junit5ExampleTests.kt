@@ -26,11 +26,14 @@ package dev.testify.sample
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.junit5.ScreenshotExtension
+import dev.testify.junit5.ScreenshotTestContext
+import dev.testify.junit5.ScreenshotTestContextExtension
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.assertTimeout
+import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.RegisterExtension
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -95,5 +98,17 @@ class Junit5ExampleTests {
                     .assertSame()
             }
         }
+    }
+}
+
+@ExtendWith(ScreenshotTestContextExtension::class)
+class InjectionExampleTest {
+
+    private val screenshotTest = ScreenshotTestContext()
+
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+
     }
 }

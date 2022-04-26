@@ -36,17 +36,13 @@ import dev.testify.internal.exception.UnexpectedOrientationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-internal class OrientationHelper<T : Activity>(
-    private val activityClass: Class<T>
-) {
+// TODO: Rebuild this entirely to not be generic
+internal class OrientationHelper {
     var deviceOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     var requestedOrientation: Int? = null
-    private lateinit var rule: ActivityTestRule<T>
     private lateinit var lifecycleLatch: CountDownLatch
 
-    fun afterActivityLaunched(rule: ActivityTestRule<T>) {
-        this.rule = rule
-
+    fun afterActivityLaunched(activity: Activity) {
         // Set the orientation based on how the activity was launched
         deviceOrientation = if (activity.isLandscape)
             ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -66,7 +62,7 @@ internal class OrientationHelper<T : Activity>(
     /**
      * Validate that the activity's orientation matches what was requested
      */
-    fun assertOrientation() {
+    fun assertOrientation(activity: Activity) {
         requestedOrientation?.let {
             if (!activity.isRequestedOrientation(it)) {
                 throw UnexpectedOrientationException("Device did not rotate.")
@@ -78,7 +74,7 @@ internal class OrientationHelper<T : Activity>(
         requestedOrientation = null
     }
 
-    fun shouldIgnoreOrientation(orientationToIgnore: Int): Boolean {
+    fun shouldIgnoreOrientation(activity: Activity, orientationToIgnore: Int): Boolean {
         require(
             orientationToIgnore in ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED..ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         )
@@ -87,11 +83,6 @@ internal class OrientationHelper<T : Activity>(
             else -> activity.isRequestedOrientation(orientationToIgnore)
         }
     }
-
-    private val activity: T
-        get() {
-            return rule.activity
-        }
 
     private val Activity.isLandscape: Boolean
         get() {
@@ -111,16 +102,18 @@ internal class OrientationHelper<T : Activity>(
     /**
      * Lifecycle callback. Wait for the activity under test to completely resume after configuration change.
      */
-    private fun lifecycleCallback(activity: Activity, stage: Stage) {
-        if (activity::class.java == activityClass) {
-            if (stage == Stage.RESUMED) {
-                lifecycleLatch.countDown()
-            }
-        }
-    }
+//    private fun lifecycleCallback(activity: Activity, stage: Stage) {
+        // TODO: Not sure about this
+//        if (activity::class.java == activityClass) {
+//            if (stage == Stage.RESUMED) {
+//                lifecycleLatch.countDown()
+//            }
+//        }
+//    }
 
     private fun Activity.changeOrientation(requestedOrientation: Int) {
-        ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(::lifecycleCallback)
+        // TODO: Fix this
+//        ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(::lifecycleCallback)
 
         Espresso.onIdle()
 
@@ -143,7 +136,8 @@ internal class OrientationHelper<T : Activity>(
                 throw UnexpectedOrientationException("Activity did not resume.")
             }
         } finally {
-            ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(::lifecycleCallback)
+            // TODO: Fix this
+//            ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(::lifecycleCallback)
         }
     }
 }

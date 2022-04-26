@@ -29,7 +29,9 @@ import android.content.Context
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.testify.ScreenshotCore
 import dev.testify.ScreenshotRule
+import dev.testify.ScreenshotTestInterface
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
@@ -63,7 +65,7 @@ internal open class Reporter(
      * Called by [ScreenshotRule.apply] when a new test case starts
      * Records the test entry
      */
-    fun startTest(rule: ScreenshotRule<*>, testClass: Class<*>) {
+    fun startTest(rule: ScreenshotCore<*>, testClass: Class<*>) {
         session.addTest()
 
         builder.appendLine("- test:", indent = 4)
@@ -77,7 +79,7 @@ internal open class Reporter(
      * At this point in the execution, Testify can correctly identify the baseline path as all
      * modifications have been applied
      */
-    fun captureOutput(rule: ScreenshotRule<*>) {
+    fun captureOutput(rule: ScreenshotCore<*>) {
         builder.appendLine("baseline_image: assets/${getBaselinePath(rule)}", indent = 8)
         builder.appendLine("test_image: ${getOutputPath(rule)}", indent = 8)
     }
@@ -120,7 +122,7 @@ internal open class Reporter(
     }
 
     @VisibleForTesting
-    internal open fun getBaselinePath(rule: ScreenshotRule<*>): String {
+    internal open fun getBaselinePath(rule: ScreenshotCore<*>): String {
         return outputFileUtility.getFileRelativeToRoot(
             subpath = DeviceIdentifier.getDescription(context),
             fileName = rule.testMethodName,
@@ -128,7 +130,7 @@ internal open class Reporter(
         )
     }
 
-    private val ScreenshotRule<*>.fileName: String
+    private val ScreenshotCore<*>.fileName: String
         get() {
             return DeviceIdentifier.formatDeviceString(
                 DeviceIdentifier.DeviceStringFormatter(
@@ -139,7 +141,7 @@ internal open class Reporter(
         }
 
     @VisibleForTesting
-    internal open fun getOutputPath(rule: ScreenshotRule<*>): String {
+    internal open fun getOutputPath(rule: ScreenshotCore<*>): String {
         return outputFileUtility.getOutputFilePath(context, rule.fileName)
     }
 

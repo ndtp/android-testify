@@ -23,14 +23,13 @@
  */
 package dev.testify.junit5
 
-import android.app.Activity
-import dev.testify.ScreenshotRule
+import dev.testify.ScreenshotCore
+import dev.testify.ScreenshotTestInterface
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler
-import kotlin.reflect.KClass
 
 /**
  * A JUnit Jupiter extension implementation for screenshot testing.
@@ -38,23 +37,15 @@ import kotlin.reflect.KClass
  *     @RegisterExtension
  *     @JvmField var extension = ScreenshotExtension(MainActivity::class)
  *
- * @param activityClass - The activity under test. This must be a class in the instrumentation targetPackage specified
- *      in the AndroidManifest.xml
  */
-open class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
-    ScreenshotRule<T>(activityClass = activityClass, launchActivity = false),
+open class ScreenshotExtension :
     AfterEachCallback,
     BeforeEachCallback,
     AfterTestExecutionCallback,
-    TestExecutionExceptionHandler {
+    TestExecutionExceptionHandler,
+    ScreenshotTestInterface {
 
-    /**
-     * Alternate convenience constructor that accepts a Kotlin KClass
-     *
-     * @param activityClass - The activity under test. This must be a class in the instrumentation targetPackage
-     *      specified in the AndroidManifest.xml
-     */
-    constructor(activityClass: KClass<T>) : this(activityClass.java)
+    private val core = ScreenshotCore()
 
     private val ExtensionContext.testMethodName: String
         get() {
@@ -74,7 +65,7 @@ open class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
         val methodAnnotations = testMethod.annotations.asList()
         val name = context.testMethodName
 
-        apply(name, context.testClass?.get()!!, methodAnnotations)
+        core.apply(name, context.testClass?.get()!!, methodAnnotations)
     }
 
     /**
@@ -84,14 +75,14 @@ open class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
      */
     override fun beforeEach(context: ExtensionContext) {
         initialize(context)
-        super.evaluateBeforeEach()
+        core.evaluateBeforeEach()
     }
 
     /**
      * Handle the supplied throwable.
      */
     override fun handleTestExecutionException(context: ExtensionContext, throwable: Throwable) {
-        super.handleTestException(throwable)
+        core.handleTestException(throwable)
     }
 
     /**
@@ -101,7 +92,7 @@ open class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
      * @param context – the current extension context
      */
     override fun afterEach(context: ExtensionContext) {
-        super.evaluateAfterEach()
+        core.evaluateAfterEach()
     }
 
     /**
@@ -111,6 +102,10 @@ open class ScreenshotExtension<T : Activity>(activityClass: Class<T>) :
      * @param context – the current extension context
      */
     override fun afterTestExecution(context: ExtensionContext) {
-        super.evaluateAfterTestExecution()
+        core.evaluateAfterTestExecution()
+    }
+
+    override fun assertSame() {
+        core.assertSame()
     }
 }
