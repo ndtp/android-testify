@@ -56,6 +56,8 @@ internal open class ReporterTest {
     private val mockFile: File = mock()
     private val reporter = spy(Reporter(mockContext, mockSession, mockOutputFileUtility))
 
+    private val mockCore: ScreenshotCore<*> = mock()
+
     @Before
     fun prepareMocks() {
         with(mockSession) {
@@ -88,7 +90,7 @@ internal open class ReporterTest {
 
         doReturn(false).whenever(mockOutputFileUtility).useSdCard(any())
         doReturn(mockContext).whenever(mockInstrumentation).context
-        doReturn("startTest").whenever(mockRule).testMethodName
+        doReturn("startTest").whenever(mockCore).testMethodName
         doReturn(true).whenever(mockFile).exists()
     }
 
@@ -100,7 +102,7 @@ internal open class ReporterTest {
 
     @Test
     fun `startTest() produces the expected yaml`() {
-        reporter.startTest(mockRule, mockTestClass)
+        reporter.startTest(mockCore, mockTestClass)
 
         assertEquals(
             "    - test:\n" +
@@ -113,7 +115,7 @@ internal open class ReporterTest {
 
     @Test
     fun `captureOutput() produces the expected yaml`() {
-        reporter.captureOutput(mockRule)
+        reporter.captureOutput(mockCore)
         assertEquals(
             "        baseline_image: assets/foo\n" +
                 "        test_image: bar\n",
@@ -195,9 +197,9 @@ internal open class ReporterTest {
     fun `reporter output for a single test in a new session`() {
         doReturn(false).whenever(mockFile).exists()
 
-        reporter.startTest(mockRule, mockTestClass)
+        reporter.startTest(mockCore, mockTestClass)
         reporter.identifySession(mockInstrumentation)
-        reporter.captureOutput(mockRule)
+        reporter.captureOutput(mockCore)
         reporter.pass()
         reporter.endTest()
 
@@ -225,18 +227,18 @@ internal open class ReporterTest {
     fun `reporter output for a multiples tests in a new session`() {
 
         with(setUpForFirstTest(spy(ReportSession()))) {
-            this.startTest(mockRule, mockTestClass)
+            this.startTest(mockCore, mockTestClass)
             this.identifySession(mockInstrumentation)
-            this.captureOutput(mockRule)
+            this.captureOutput(mockCore)
             this.pass()
             this.endTest()
         }
 
         val reporter = setUpForSecondTest()
         with(reporter) {
-            this.startTest(mockRule, mockTestClass)
+            this.startTest(mockCore, mockTestClass)
             this.identifySession(mockInstrumentation)
-            this.captureOutput(mockRule)
+            this.captureOutput(mockCore)
             this.fail(Exception("This is a failure"))
             this.endTest()
         }
@@ -303,7 +305,7 @@ internal open class ReporterTest {
         doReturn(true).whenever(mockFile).exists()
         doReturn(true).whenever(session).isEqual(any())
         doReturn(bodyLines).whenever(reporter).readBodyLines(mockFile)
-        doReturn("failingTest").whenever(mockRule).testMethodName
+        doReturn("failingTest").whenever(mockCore).testMethodName
 
         with(session) {
             doReturn(true).whenever(this).isEqual(eq(mockFile))

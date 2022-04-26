@@ -35,7 +35,6 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.exception.TestMustLaunchActivityException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.report.ErrorCause
