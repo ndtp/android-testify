@@ -123,7 +123,7 @@ class ScreenshotRuleExampleTests {
     @Test
     fun setTargetLayoutId() {
         rule
-            .setTargetLayoutId(R.layout.view_client_details)
+//            .setTargetLayoutId(R.layout.view_client_details)
             .setViewModifications { harnessRoot ->
                 rule.activity.getViewState(name = "setTargetLayoutId").let {
                     harnessRoot.clientDetailsView.render(it)
