@@ -34,13 +34,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
+import dev.testify.internal.TestifyConfiguration
+import dev.testify.internal.ViewConfiguration
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import kotlin.reflect.KClass
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
@@ -55,23 +55,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     private val core: ScreenshotCore<T> = ScreenshotCore(
-        launchActivity = {
-            // TODO: I want to invoke this.launchActivity() but it's not letting me
-            @Suppress("UNCHECKED_CAST")
-            Activity() as T // HACK: suppress error
-        },
-        activityProvider = {
-            // TODO: I want this to be this.activity but it's not letting me
-            @Suppress("UNCHECKED_CAST")
-            Activity() as T // HACK: suppress error
-        },
-        activityIntentProvider = {
-            // TODO: I want to invoke this.getActivityIntent() but it's not letting me
-            null
-        },
+        activityBridge = null,
         rootViewId = rootViewId,
         enableReporter = enableReporter
-    ),
+        // TODO: Allow passthrough of configuration
+    )
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
     TestRule,
     ScreenshotTestInterface by core {
@@ -79,6 +67,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     // TODO: Add a kotlin kclass constructor
 
     private var extrasProvider: ExtrasProvider? = null
+
+    private fun foofoo(): Activity {
+        return super.launchActivity(null)
+    }
 
     fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ScreenshotRule<T> {
         feature.setEnabled(true)

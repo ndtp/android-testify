@@ -36,15 +36,21 @@ import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import org.junit.Assert
 
-typealias LaunchActivity<T> = (Intent?) -> T
+
+interface ActivityBridge<T : Activity> {
+    val launchActivity: (Intent?) -> T
+    val activityProvider: () -> T
+    val activityIntentProvider: () -> Intent?
+}
 
 open class ScreenshotCore<T : Activity>(
+    private val activityBridge: ActivityBridge<T>?,
     // TODO: I'm not sure if I like binding the Core to an Activity
-    val launchActivity: LaunchActivity<T>,
+//    val launchActivity: (Intent?) -> T,
     @IdRes rootViewId: Int,
-    val activityProvider: () -> T,
-    val activityIntentProvider: () -> Intent?,
-    private val configuration: TestifyConfiguration = TestifyConfiguration(),
+//    val activityProvider: () -> T,
+//    val activityIntentProvider: () -> Intent?,
+    private val configuration: TestifyConfiguration = TestifyConfiguration(), // TODO: Require this to be provided, it's better that way
     private val viewConfiguration: ViewConfiguration = ViewConfiguration(configuration, rootViewId),
     enableReporter: Boolean = false,
 ) : ScreenshotTestLifecycle,
@@ -81,7 +87,7 @@ open class ScreenshotCore<T : Activity>(
 
     private val activity: T
         get() {
-            return activityProvider()
+            return activityBridge?.activityProvider?.invoke() ?: throw RuntimeException("shrug")
         }
 
     init {
@@ -146,7 +152,7 @@ open class ScreenshotCore<T : Activity>(
     }
 
     private fun getActivityIntent(): Intent? {
-        return activityIntentProvider()
+        return activityBridge?.activityIntentProvider?.invoke()
     }
 
     override fun setEspressoActions(espressoActions: EspressoActions): ScreenshotCore<T> {
@@ -217,7 +223,7 @@ open class ScreenshotCore<T : Activity>(
 
         beforeAssertSame()
 
-        launchActivity(getActivityIntent())
+        activityBridge?.launchActivity?.invoke(getActivityIntent())
 
         try {
             try {
