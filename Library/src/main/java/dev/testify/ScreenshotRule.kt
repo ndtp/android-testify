@@ -165,15 +165,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         const val NO_ID = -1
     }
 
-    override val launchActivity: (Intent?) -> T = {
-        launchActivity(it)
-    }
-
-    override val activityProvider: () -> T = {
-        this.activity
-    }
-
-    override val activityIntentProvider: () -> Intent? = {
-        this.activityIntent
-    }
+    override val launchActivity: (Intent?) -> T = ::launchActivity
+    override val activityProvider = ::getActivity
+    override val activityIntentProvider = ::getActivityIntent
 }

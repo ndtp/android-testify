@@ -206,7 +206,12 @@ open class ScreenshotCore<T : Activity>(
     }
 
     override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {
-        TODO("Not yet implemented")
+        // TODO: This seems wrong
+        // afterScreenshot is meant to be provided for subclasses
+        // here, it's not doing anything
+
+        // Maybe I need to follow the Extension pattern even more closely
+        // AfterScreenshotExtension, etc.
     }
 
     override fun handleTestException(throwable: Throwable) {
@@ -223,6 +228,8 @@ open class ScreenshotCore<T : Activity>(
 
         beforeAssertSame()
 
+        // TODO: This is throwing an error for IllegalStateException: Method cannot be called on the main application thread
+        // Not sure what's up
         activityBridge.launchActivity(getActivityIntent())
 
         try {
