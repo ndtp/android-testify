@@ -36,39 +36,59 @@ import java.util.ArrayList
 
 class ScreenshotRuleLifecycleTest {
 
-    inner class TestScreenshotRule : ScreenshotRule<TestActivity>(TestActivity::class.java, launchActivity = false) {
-        override fun applyViewModifications(parentView: ViewGroup) {
-            methodOrder.add("applyViewModifications")
-        }
+    // TODO
+    // TODO
+    // TODO
+    // TODO: Need to provide these methods for override/mocking
+    // These are currently provided by ScreenshotTestLifecycle
+    // and implemented in ScreenshotCore
+    // Maybe I need to make the Core take a slot for the lifecycle?
+    // Maybe I should follow the JUnit5 extension model
 
-        override fun beforeActivityLaunched() {
-            methodOrder.add("beforeActivityLaunched")
-        }
+    /*
 
-        override fun afterActivityLaunched() {
-            methodOrder.add("afterActivityLaunched")
-        }
+    I could define interfaces:
 
-        override fun beforeAssertSame() {
-            methodOrder.add("beforeAssertSame")
-        }
+    TestLifecycleObserver
+    ScreenshotLifecycleObserver
 
-        override fun beforeInitializeView(activity: Activity) {
-            methodOrder.add("beforeInitializeView")
-        }
+    and ScreenshotCore could implement these, maybe
 
-        override fun afterInitializeView(activity: Activity) {
-            methodOrder.add("afterInitializeView")
-        }
 
-        override fun beforeScreenshot(activity: Activity) {
-            methodOrder.add("beforeScreenshot")
-        }
-
-        override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {
-            assertNotNull(currentBitmap)
-            methodOrder.add("afterScreenshot")
-        }
+     */
+    inner class TestScreenshotRule : ScreenshotRule<TestActivity>(TestActivity::class.java) {
+//        override fun applyViewModifications(parentView: ViewGroup) {
+//            methodOrder.add("applyViewModifications")
+//        }
+//
+//        override fun beforeActivityLaunched() {
+//            methodOrder.add("beforeActivityLaunched")
+//        }
+//
+//        override fun afterActivityLaunched() {
+//            methodOrder.add("afterActivityLaunched")
+//        }
+//
+//        override fun beforeAssertSame() {
+//            methodOrder.add("beforeAssertSame")
+//        }
+//
+//        override fun beforeInitializeView(activity: Activity) {
+//            methodOrder.add("beforeInitializeView")
+//        }
+//
+//        override fun afterInitializeView(activity: Activity) {
+//            methodOrder.add("afterInitializeView")
+//        }
+//
+//        override fun beforeScreenshot(activity: Activity) {
+//            methodOrder.add("beforeScreenshot")
+//        }
+//
+//        override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {
+//            assertNotNull(currentBitmap)
+//            methodOrder.add("afterScreenshot")
+//        }
     }
 
     @get:Rule

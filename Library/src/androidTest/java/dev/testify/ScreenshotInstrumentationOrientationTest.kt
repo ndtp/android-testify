@@ -29,6 +29,7 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import org.junit.Rule
 import org.junit.Test
 import org.junit.Assert.assertFalse
+import org.junit.Assert.fail
 
 class ScreenshotInstrumentationOrientationTest {
 
@@ -39,17 +40,21 @@ class ScreenshotInstrumentationOrientationTest {
     @Test
     fun testLandscapeOnly() {
         rule.assertSame()
-        if (rule.deviceOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            assertFalse(rule.outputFileExists)
-        }
+        // TODO
+//        if (rule.deviceOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+//            assertFalse(rule.outputFileExists)
+//        }
+        fail("not implemented")
     }
 
     @ScreenshotInstrumentation(orientationToIgnore = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
     @Test
     fun testPortraitOnly() {
         rule.assertSame()
-        if (rule.deviceOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            assertFalse(rule.outputFileExists)
-        }
+        // TODO
+//        if (rule.deviceOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+//            assertFalse(rule.outputFileExists)
+//        }
+        fail("not implemented")
     }
 }

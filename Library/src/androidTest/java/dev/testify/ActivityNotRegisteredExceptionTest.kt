@@ -37,8 +37,7 @@ class ActivityNotRegisteredExceptionTest {
 
     @get:Rule
     val rule = ScreenshotRule(
-        activityClass = InvalidActivity::class.java,
-        launchActivity = false
+        activityClass = InvalidActivity::class.java
     )
 
     @get:Rule

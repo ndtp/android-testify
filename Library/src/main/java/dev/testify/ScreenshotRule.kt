@@ -40,6 +40,7 @@ import dev.testify.internal.exception.ActivityNotRegisteredException
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import kotlin.reflect.KClass
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
@@ -74,6 +75,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
     TestRule,
     ScreenshotTestInterface by core {
+
+    // TODO: Add a kotlin kclass constructor
 
     private var extrasProvider: ExtrasProvider? = null
 

@@ -53,7 +53,9 @@ class ExperimentalPixelCopyTest {
     fun withPixelCopy() {
         rule
             .withExperimentalFeatureEnabled(PixelCopyCapture)
-            .setExactness(0.99f) // Required due to difference with CI GPU architecture
+            .configure {
+                exactness = 0.99f
+            }
             .assertSame()
     }
 }
