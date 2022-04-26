@@ -30,6 +30,7 @@ import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -167,13 +168,13 @@ class ScreenshotRuleExampleTests {
     @Test
     fun withExperimentalFeatureEnabled() {
         rule
+            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
             .setViewModifications { harnessRoot ->
                 rule.activity.getViewState(name = "withExperimentalFeatureEnabled").let {
                     harnessRoot.clientDetailsView.render(it)
                     rule.activity.title = it.name
                 }
             }
-            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
             .assertSame()
     }
 
@@ -191,14 +192,16 @@ class ScreenshotRuleExampleTests {
     @Test
     fun setUseSoftwareRenderer() {
         rule
+            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
             .setViewModifications { harnessRoot ->
                 rule.activity.getViewState(name = "withExperimentalFeatureEnabled").let {
                     harnessRoot.clientDetailsView.render(it)
                     rule.activity.title = it.name
                 }
             }
-            .setUseSoftwareRenderer(true)
-            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
+            .configure {
+                setUseSoftwareRenderer(true)
+            }
             .assertSame()
     }
 
@@ -217,11 +220,15 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun setExactness() {
+
+        rule.screenshotViewProvider = {
+            it.findViewById(R.id.info_card)
+        }
+
         rule
-            .setScreenshotViewProvider {
-                it.findViewById(R.id.info_card)
+            .configure {
+                exactness = 0.95f
             }
-            .setExactness(0.95f)
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 25) + 230).padStart(2, '0')
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#${r}0000"))
@@ -259,11 +266,11 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun setScreenshotViewProvider() {
-        rule
-            .setScreenshotViewProvider {
-                it.findViewById(R.id.info_card)
-            }
-            .assertSame()
+        fun foo(rootView: ViewGroup) : View {
+            return rootView.findViewById(R.id.info_card)
+        }
+        rule.screenshotViewProvider = ::foo
+        rule.assertSame()
     }
 
     /**
@@ -277,7 +284,7 @@ class ScreenshotRuleExampleTests {
     @Test
     fun setOrientation() {
         rule
-            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
+// TODO           .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
             .assertSame()
     }
 
@@ -293,16 +300,18 @@ class ScreenshotRuleExampleTests {
         TestifyFeatures.PixelCopyCapture.setEnabled(true)
         TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule
-            .setExactness(0.9f)
+            .configure {
+                exactness = 0.9f
+                defineExclusionRects { rootView, exclusionRects ->
+                    val card = rootView.findViewById<View>(R.id.info_card)
+                    exclusionRects.add(card.boundingBox)
+                }
+            }
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 val g = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 val b = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#$r$g$b"))
-            }
-            .defineExclusionRects { rootView, exclusionRects ->
-                val card = rootView.findViewById<View>(R.id.info_card)
-                exclusionRects.add(card.boundingBox)
             }
             .assertSame()
     }

@@ -37,12 +37,11 @@ import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.WrappedLocale
 import dev.testify.resources.TestifyResourcesOverride
 import dev.testify.sample.test.TestHarnessActivity
-import dev.testify.sample.test.TestLocaleHarnessActivity
 import dev.testify.sample.test.TestLocaleHarnessNoWrapActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.util.*
+import java.util.Locale
 
 /**
  * These tests demonstrate counter-examples or incorrect usages of the Testify locale support
@@ -82,10 +81,12 @@ class TestingResourcesCounterExampleTest {
             activityClass = TestLocaleHarnessNoWrapActivity::class.java,
             rootViewId = R.id.harness_root
         ).apply {
-            isDebugMode = true
+//            core.isDebugMode = true // TODO
         }
 
-        rule.setLocale(Locale.FRANCE)
+        rule.configure {
+            locale = Locale.FRANCE
+        }
             .assertSame()
     }
 }

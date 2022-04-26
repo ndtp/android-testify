@@ -4,7 +4,7 @@ import dev.testify.internal.TestifyConfigurationInterface
 
 interface ScreenshotTestInterface {
 
-    var screenshotViewProvider: ViewProvider?
+    var screenshotViewProvider: ViewProvider? // TODO: This is not good since it's not a builder
 
     fun configure(configure: TestifyConfigurationInterface.() -> Unit): ScreenshotTestInterface
 
