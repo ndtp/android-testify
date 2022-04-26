@@ -55,16 +55,20 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     private val core: ScreenshotCore<T> = ScreenshotCore(
-        activityBridge = null,
         rootViewId = rootViewId,
         enableReporter = enableReporter
         // TODO: Allow passthrough of configuration
     )
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
     TestRule,
+    ActivityBridge<T>,
     ScreenshotTestInterface by core {
 
     // TODO: Add a kotlin kclass constructor
+
+    init {
+        core.activityBridge = this
+    }
 
     private var extrasProvider: ExtrasProvider? = null
 
@@ -164,4 +168,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     companion object {
         const val NO_ID = -1
     }
+
+    override val launchActivity: (Intent?) -> T
+        get() = TODO("Not yet implemented")
+    override val activityProvider: () -> T
+        get() = TODO("Not yet implemented")
+    override val activityIntentProvider: () -> Intent?
+        get() = TODO("Not yet implemented")
 }

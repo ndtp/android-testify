@@ -36,7 +36,6 @@ import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import org.junit.Assert
 
-
 interface ActivityBridge<T : Activity> {
     val launchActivity: (Intent?) -> T
     val activityProvider: () -> T
@@ -44,7 +43,6 @@ interface ActivityBridge<T : Activity> {
 }
 
 open class ScreenshotCore<T : Activity>(
-    private val activityBridge: ActivityBridge<T>?,
     // TODO: I'm not sure if I like binding the Core to an Activity
 //    val launchActivity: (Intent?) -> T,
     @IdRes rootViewId: Int,
@@ -56,6 +54,8 @@ open class ScreenshotCore<T : Activity>(
 ) : ScreenshotTestLifecycle,
     ScreenshotTestInterface,
     ViewConfigurationInterface by viewConfiguration {
+
+    internal lateinit var activityBridge: ActivityBridge<T> // TODO: This is so gross
 
     internal val testContext = InstrumentationRegistry.getInstrumentation().context
     private val screenshotUtility = ScreenshotUtility()
@@ -87,7 +87,7 @@ open class ScreenshotCore<T : Activity>(
 
     private val activity: T
         get() {
-            return activityBridge?.activityProvider?.invoke() ?: throw RuntimeException("shrug")
+            return activityBridge.activityProvider()
         }
 
     init {
@@ -152,7 +152,7 @@ open class ScreenshotCore<T : Activity>(
     }
 
     private fun getActivityIntent(): Intent? {
-        return activityBridge?.activityIntentProvider?.invoke()
+        return activityBridge.activityIntentProvider()
     }
 
     override fun setEspressoActions(espressoActions: EspressoActions): ScreenshotCore<T> {
@@ -223,7 +223,7 @@ open class ScreenshotCore<T : Activity>(
 
         beforeAssertSame()
 
-        activityBridge?.launchActivity?.invoke(getActivityIntent())
+        activityBridge.launchActivity(getActivityIntent())
 
         try {
             try {
