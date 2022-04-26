@@ -46,7 +46,6 @@ class TestingResourceConfigurationsLegacyExampleTest {
 
     @get:Rule var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
-        launchActivity = false,
         rootViewId = R.id.harness_root
     )
 

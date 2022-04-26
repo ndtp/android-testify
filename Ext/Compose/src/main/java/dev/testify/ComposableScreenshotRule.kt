@@ -43,7 +43,6 @@ open class ComposableScreenshotRule(
     var exactness: Float = 0.9f
 ) : ScreenshotRule<ComposableTestActivity>(
     ComposableTestActivity::class.java,
-    launchActivity = false,
 ) {
     lateinit var composeFunction: @Composable () -> Unit
 
@@ -54,14 +53,15 @@ open class ComposableScreenshotRule(
     /**
      * Set a screenshot view provider to capture only the @Composable bounds
      */
-    override fun beforeAssertSame() {
-        super.beforeAssertSame()
-        TestifyFeatures.PixelCopyCapture.setEnabled(true)
-        setExactness(exactness)
-        setScreenshotViewProvider {
-            it.getChildAt(0)
-        }
-    }
+    // TODO: Fix this
+//    override fun beforeAssertSame() {
+//        super.beforeAssertSame()
+//        TestifyFeatures.PixelCopyCapture.setEnabled(true)
+//        setExactness(exactness)
+//        setScreenshotViewProvider {
+//            it.getChildAt(0)
+//        }
+//    }
 
     /**
      * Render the composable function after the activity has loaded.
@@ -84,10 +84,11 @@ open class ComposableScreenshotRule(
     /**
      * Proactively dispose of any compositions after the screenshot has been taken.
      */
-    override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {
-        super.afterScreenshot(activity, currentBitmap)
-        onCleanUp(activity)
-    }
+    // TODO: Fix this
+//    override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {
+//        super.afterScreenshot(activity, currentBitmap)
+//        onCleanUp(activity)
+//    }
 
     /**
      * Used to provide a @Composable function to be rendered in the screenshot.

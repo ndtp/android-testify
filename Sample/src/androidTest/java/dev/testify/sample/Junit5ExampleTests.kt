@@ -44,7 +44,7 @@ import java.time.Duration
 class Junit5ExampleTests {
 
     @RegisterExtension
-    @JvmField var screenshotExtension = ScreenshotExtension(MainActivity::class)
+    @JvmField var screenshotExtension = ScreenshotExtension()
 
     @ScreenshotInstrumentation
     @Test
@@ -60,7 +60,7 @@ class Junit5ExampleTests {
     fun parameterized(values: String) {
         screenshotExtension
             .setViewModifications {
-                screenshotExtension.activity.title = values
+//                screenshotExtension.activity.title = values
             }
             .assertSame()
     }

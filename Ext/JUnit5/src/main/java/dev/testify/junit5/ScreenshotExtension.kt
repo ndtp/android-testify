@@ -23,8 +23,13 @@
  */
 package dev.testify.junit5
 
+import android.app.Activity
+import dev.testify.EspressoActions
 import dev.testify.ScreenshotCore
 import dev.testify.ScreenshotTestInterface
+import dev.testify.ViewModification
+import dev.testify.ViewProvider
+import dev.testify.internal.TestifyConfigurationInterface
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -45,7 +50,9 @@ open class ScreenshotExtension :
     TestExecutionExceptionHandler,
     ScreenshotTestInterface {
 
-    private val core = ScreenshotCore()
+    private val core = ScreenshotCore<Activity>(
+        rootViewId = 0,
+    )
 
     private val ExtensionContext.testMethodName: String
         get() {
@@ -105,7 +112,25 @@ open class ScreenshotExtension :
         core.evaluateAfterTestExecution()
     }
 
+    override var screenshotViewProvider: ViewProvider? = null // TODO: Not yet implemented
+
+    override fun configure(configure: TestifyConfigurationInterface.() -> Unit): ScreenshotTestInterface {
+        TODO("Not yet implemented")
+    }
+
+    override fun setEspressoActions(espressoActions: EspressoActions): ScreenshotTestInterface {
+        TODO("Not yet implemented")
+    }
+
+    override fun setViewModifications(viewModification: ViewModification): ScreenshotTestInterface {
+        TODO("Not yet implemented")
+    }
+
     override fun assertSame() {
         core.assertSame()
+    }
+
+    override fun isRecordMode(): Boolean {
+        TODO("Not yet implemented")
     }
 }

@@ -8,6 +8,7 @@ import dev.testify.sample.clients.details.ClientDetailsView
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.getViewState
 import org.junit.Assert.assertFalse
+import org.junit.Assert.fail
 import org.junit.Rule
 import org.junit.Test
 
@@ -22,7 +23,6 @@ class OrientationTest {
     @get:Rule
     var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
-        launchActivity = false,
         rootViewId = R.id.harness_root
     )
 
@@ -54,13 +54,14 @@ class OrientationTest {
     @ScreenshotInstrumentation(orientationToIgnore = SCREEN_ORIENTATION_PORTRAIT)
     fun e() {
         testOrientation("Five", SCREEN_ORIENTATION_PORTRAIT)
-        assertFalse(rule.outputFileExists)
+//        assertFalse(rule.outputFileExists)
+        fail()
     }
 
     private fun testOrientation(title: String, orientation: Int) {
         rule
-            .setTargetLayoutId(R.layout.view_client_details)
-            .setOrientation(orientation)
+//            .setTargetLayoutId(R.layout.view_client_details)
+//            .setOrientation(orientation)
             .setViewModifications { harnessRoot ->
                 val viewState = harnessRoot.context.getViewState(title + if (orientation == SCREEN_ORIENTATION_PORTRAIT) " Portrait" else " Landscape")
                 val view = harnessRoot.getChildAt(0) as ClientDetailsView
