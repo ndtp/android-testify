@@ -72,10 +72,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     private var extrasProvider: ExtrasProvider? = null
 
-    private fun foofoo(): Activity {
-        return super.launchActivity(null)
-    }
-
     fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ScreenshotRule<T> {
         feature.setEnabled(true)
         return this
@@ -169,10 +165,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         const val NO_ID = -1
     }
 
-    override val launchActivity: (Intent?) -> T
-        get() = TODO("Not yet implemented")
-    override val activityProvider: () -> T
-        get() = TODO("Not yet implemented")
-    override val activityIntentProvider: () -> Intent?
-        get() = TODO("Not yet implemented")
+    override val launchActivity: (Intent?) -> T = {
+        launchActivity(it)
+    }
+
+    override val activityProvider: () -> T = {
+        this.activity
+    }
+
+    override val activityIntentProvider: () -> Intent? = {
+        this.activityIntent
+    }
 }
