@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +22,11 @@
  * THE SOFTWARE.
  */
 
-package dev.testify.internal.processor.compare
+package dev.testify
 
 import android.graphics.Bitmap
 
 /**
- * Compare two bitmaps using android.graphics.Bitmap.sameAs()
+ * Defines the algorithm used for comparing two bitmaps
  */
-fun sameAsCompare(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
-    return baselineBitmap.sameAs(currentBitmap)
-}
+typealias CompareMethod = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean

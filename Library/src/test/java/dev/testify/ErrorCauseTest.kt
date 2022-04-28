@@ -28,6 +28,7 @@ import android.app.Activity
 import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
+import dev.testify.internal.exception.FailedToCaptureBitmapException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
@@ -66,6 +67,7 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.UI_THREAD, ErrorCause.match(NoScreenshotsOnUiThreadException()))
         assertEquals(ErrorCause.VIEW_MODIFICATION, ErrorCause.match(ViewModificationException(Throwable())))
         assertEquals(ErrorCause.WRAP_CONTEXT, ErrorCause.match(TestMustWrapContextException("")))
+        assertEquals(ErrorCause.FAILED_BITMAP_CAPTURE, ErrorCause.match(FailedToCaptureBitmapException()))
         assertEquals(ErrorCause.UNKNOWN, ErrorCause.match(Throwable()))
     }
 }

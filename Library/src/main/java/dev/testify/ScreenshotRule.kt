@@ -55,6 +55,7 @@ import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import dev.testify.internal.TestName
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
+import dev.testify.internal.exception.FailedToCaptureBitmapException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
@@ -75,17 +76,15 @@ import dev.testify.internal.modification.HideTextSuggestionsViewModification
 import dev.testify.internal.modification.SoftwareRenderViewModification
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.compare.FuzzyCompare
-import dev.testify.internal.processor.compare.SameAsCompare
+import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.internal.processor.diff.HighContrastDiff
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.HashSet
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -93,7 +92,6 @@ import java.util.concurrent.TimeUnit
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
-typealias BitmapCompare = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boolean
 typealias ExtrasProvider = (bundle: Bundle) -> Unit
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
@@ -106,7 +104,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     enableReporter: Boolean = false
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
 
-    @IdRes protected var rootViewId = rootViewId
+    @IdRes
+    protected var rootViewId = rootViewId
         @JvmName("rootViewIdResource") set
 
     @LayoutRes
@@ -135,6 +134,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
     private var captureMethod: CaptureMethod? = null
+    private var compareMethod: CompareMethod? = null
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
@@ -319,6 +319,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
+    /**
+     * Allow the test to define a custom bitmap comparison method.
+     */
+    fun setCompareMethod(compareMethod: CompareMethod?): ScreenshotRule<T> {
+        this.compareMethod = compareMethod
+        return this
+    }
+
     @CallSuper
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
@@ -477,6 +485,46 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     open fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {}
 
+    /**
+     * Given [baselineBitmap] and [currentBitmap], use [HighContrastDiff] to write a companion .diff image for the
+     * current test.
+     *
+     * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
+     * against a black background.
+     */
+    open fun generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap) {
+        HighContrastDiff(exclusionRects)
+            .name(outputFileName)
+            .baseline(baselineBitmap)
+            .current(currentBitmap)
+            .exactness(exactness)
+            .generate(context = activity)
+    }
+
+    fun getBitmapCompare(): CompareMethod {
+        return when {
+            compareMethod != null -> compareMethod!!
+            exclusionRects.isNotEmpty() || exactness != null -> FuzzyCompare(exactness, exclusionRects)::compareBitmaps
+            else -> ::sameAsCompare
+        }
+    }
+
+    /**
+     * Compare [baselineBitmap] to [currentBitmap] using the provided [bitmapCompare] bitmap comparison method.
+     *
+     * The definition of "same" depends on the comparison method. The default implementation requires the bitmaps
+     * to be identical at a binary level to be considered "the same".
+     *
+     * @return true if the bitmaps are considered the same.
+     */
+    open fun compareBitmaps(
+        baselineBitmap: Bitmap,
+        currentBitmap: Bitmap,
+        bitmapCompare: CompareMethod = getBitmapCompare()
+    ): Boolean {
+        return bitmapCompare(baselineBitmap, currentBitmap)
+    }
+
     fun assertSame() {
         assertSameInvoked = true
 
@@ -518,9 +566,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 initializeView(activity)
                 afterInitializeView(activity)
 
-                if (espressoActions != null) {
-                    espressoActions!!.invoke()
-                }
+                espressoActions?.invoke()
 
                 Espresso.onIdle()
 
@@ -530,10 +576,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 orientationHelper.assertOrientation()
 
-                var screenshotView: View? = null
-                if (screenshotViewProvider != null) {
-                    screenshotView = screenshotViewProvider!!.invoke(getRootView(activity))
-                }
+                val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 
                 exclusionRectProvider?.let { provider ->
                     provider(getRootView(activity), exclusionRects)
@@ -545,8 +588,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     activity,
                     outputFileName,
                     screenshotView
-                )
-                assertNotNull("Failed to capture bitmap from activity", currentBitmap)
+                ) ?: throw FailedToCaptureBitmapException()
 
                 afterScreenshot(activity, currentBitmap)
 
@@ -575,26 +617,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         )
                     }
 
-                val bitmapCompare: BitmapCompare = when {
-                    exclusionRects.isNotEmpty() || exactness != null -> {
-                        FuzzyCompare(exactness, exclusionRects)::compareBitmaps
-                    }
-                    else -> SameAsCompare()::compareBitmaps
-                }
-
-                if (bitmapCompare(baselineBitmap, currentBitmap!!)) {
+                if (compareBitmaps(baselineBitmap, currentBitmap)) {
                     assertTrue(
                         "Could not delete cached bitmap $testName",
                         screenshotUtility.deleteBitmap(activity, outputFileName)
                     )
                 } else {
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                        HighContrastDiff(exclusionRects)
-                            .name(outputFileName)
-                            .baseline(baselineBitmap)
-                            .current(currentBitmap)
-                            .exactness(exactness)
-                            .generate(context = activity)
+                        generateHighContrastDiff(baselineBitmap, currentBitmap)
                     }
                     if (isRecordMode()) {
                         instrumentationPrintln(
