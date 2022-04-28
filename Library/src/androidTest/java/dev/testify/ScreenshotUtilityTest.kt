@@ -30,6 +30,7 @@ import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -61,7 +62,12 @@ class ScreenshotUtilityTest {
         val outputFilePath = OutputFileUtility().getOutputFilePath(activity, "testing")
         val bitmapFile = File(outputFilePath)
 
-        val capturedBitmap = screenshotUtility.createBitmapFromActivity(activity, "testing", rootView)
+        val capturedBitmap = screenshotUtility.createBitmapFromActivity(
+            activity = activity,
+            fileName = "testing",
+            captureMethod = ::createBitmapFromDrawingCache,
+            screenshotView = rootView
+        )
         assertNotNull(capturedBitmap)
         assertTrue(bitmapFile.exists())
     }

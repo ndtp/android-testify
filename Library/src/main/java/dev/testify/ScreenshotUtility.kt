@@ -32,17 +32,11 @@ import android.graphics.BitmapFactory
 import android.os.Debug
 import android.util.Log
 import android.view.View
-import androidx.annotation.UiThread
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.TestifyFeatures.CanvasCapture
-import dev.testify.TestifyFeatures.PixelCopyCapture
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
-import dev.testify.internal.processor.capture.createBitmapFromCanvas
-import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
-import dev.testify.internal.processor.capture.createBitmapUsingPixelCopy
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -127,15 +121,6 @@ open class ScreenshotUtility {
         return loadBitmapFromAsset(context, filePath)
     }
 
-    @UiThread
-    fun createBitmapFromView(activity: Activity, targetView: View?): Bitmap {
-        return when {
-            PixelCopyCapture.isEnabled(activity) -> createBitmapUsingPixelCopy(activity, targetView)
-            CanvasCapture.isEnabled(activity) -> createBitmapFromCanvas(activity, targetView)
-            else -> createBitmapFromDrawingCache(activity, targetView)
-        }
-    }
-
     /**
      * Capture a bitmap from the given Activity and save it to the screenshots directory.
      *
@@ -143,10 +128,9 @@ open class ScreenshotUtility {
      *
      * @param activity The [Activity] instance to capture.
      * @param fileName The name to use when writing the captured image to disk.
+     * @param captureMethod a [CaptureMethod] that will return a [Bitmap] from the provided [Activity] and [View]
      * @param screenshotView A [View] found in the [activity]'s view hierarchy.
      *          If screenshotView is null, defaults to activity.window.decorView.
-     * @param captureMethod a [CaptureMethod] that will return a [Bitmap] from the provided [Activity] and [View]
-     *          If null, will default to [createBitmapFromView()]
      *
      * @return A [Bitmap] representing the captured [screenshotView] in [activity]
      *          Will return [null] if there is an error capturing the bitmap.
@@ -154,19 +138,13 @@ open class ScreenshotUtility {
     open fun createBitmapFromActivity(
         activity: Activity,
         fileName: String,
-        screenshotView: View? = activity.window.decorView,
-        captureMethod: CaptureMethod? = null
+        captureMethod: CaptureMethod,
+        screenshotView: View? = activity.window.decorView
     ): Bitmap? {
         val currentActivityBitmap = arrayOfNulls<Bitmap>(1)
         val latch = CountDownLatch(1)
         activity.runOnUiThread {
-            currentActivityBitmap[0] = captureMethod?.invoke(
-                activity,
-                screenshotView
-            ) ?: createBitmapFromView(
-                activity,
-                screenshotView
-            )
+            currentActivityBitmap[0] = captureMethod(activity, screenshotView)
             latch.countDown()
         }
 
