@@ -34,7 +34,6 @@ import dev.testify.TestDescription
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
-import org.junit.runner.Description
 import java.io.File
 
 /**
@@ -70,8 +69,8 @@ internal open class Reporter(
 
         builder.appendLine("- test:", indent = 4)
         builder.appendLine("name: ${description.methodName}", indent = 8)
-        builder.appendLine("class: ${description.testClass.simpleName}", indent = 8)
-        builder.appendLine("package: ${description.testClass.`package`?.name}", indent = 8)
+        builder.appendLine("class: ${testClass.simpleName}", indent = 8)
+        builder.appendLine("package: ${testClass.`package`?.name}", indent = 8)
     }
 
     /**

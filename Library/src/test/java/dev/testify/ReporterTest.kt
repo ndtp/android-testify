@@ -34,7 +34,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.Description
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
@@ -53,7 +52,7 @@ internal open class ReporterTest {
     private val mockOutputFileUtility: OutputFileUtility = mock()
     private val mockInstrumentation: Instrumentation = mock()
     private val mockRule: ScreenshotRule<*> = mock()
-    private val mockDescription: Description = mock()
+    private val mockTestClass: Class<*> = ReporterTest::class.java
     private val mockFile: File = mock()
     private val reporter = spy(Reporter(mockContext, mockSession, mockOutputFileUtility))
 
