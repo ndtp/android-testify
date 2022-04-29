@@ -32,11 +32,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
-import java.util.ArrayList
 
 class ScreenshotRuleLifecycleTest {
 
-    inner class TestScreenshotRule : ScreenshotRule<TestActivity>(TestActivity::class.java, launchActivity = false) {
+    inner class TestScreenshotRule : ScreenshotRule<TestActivity>(TestActivity::class.java) {
         override fun applyViewModifications(parentView: ViewGroup) {
             methodOrder.add("applyViewModifications")
         }

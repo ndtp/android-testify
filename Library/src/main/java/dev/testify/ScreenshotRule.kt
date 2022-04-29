@@ -557,8 +557,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun assertSame() {
         assertSameInvoked = true
-
         beforeAssertSame()
+
+        if (isRunningOnUiThread()) {
+            throw NoScreenshotsOnUiThreadException()
+        }
+
         launchActivity(activityIntent)
 
         try {
@@ -571,10 +575,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         description.nameComponents
                     ), DEFAULT_NAME_FORMAT
                 )
-
-                if (isRunningOnUiThread()) {
-                    throw NoScreenshotsOnUiThreadException()
-                }
 
                 if (orientationHelper.shouldIgnoreOrientation(orientationToIgnore)) {
                     val orientationName =
