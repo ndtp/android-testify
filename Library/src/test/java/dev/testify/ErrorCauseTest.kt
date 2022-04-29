@@ -36,7 +36,6 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.exception.TestMustLaunchActivityException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.report.ErrorCause
@@ -52,7 +51,6 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.ACTIVITY_OVERRIDE, ErrorCause.match(ActivityMustImplementResourceOverrideException("")))
         assertEquals(ErrorCause.ASSERT_LAST, ErrorCause.match(AssertSameMustBeLastException()))
         assertEquals(ErrorCause.DIFFERENT, ErrorCause.match(ScreenshotIsDifferentException("", "")))
-        assertEquals(ErrorCause.LAUNCH_ACTIVITY, ErrorCause.match(TestMustLaunchActivityException("")))
         assertEquals(ErrorCause.NO_ACTIVITY, ErrorCause.match(ActivityNotRegisteredException(Activity::class.java)))
         assertEquals(
             ErrorCause.NO_ANNOTATION,
