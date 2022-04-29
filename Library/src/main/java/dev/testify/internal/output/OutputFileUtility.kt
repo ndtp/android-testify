@@ -39,7 +39,7 @@ open class OutputFileUtility {
         internal const val PNG_EXTENSION = ".png"
     }
 
-    internal open fun useSdCard(arguments: Bundle): Boolean {
+    open fun useSdCard(arguments: Bundle): Boolean {
         return arguments.containsKey("useSdCard") && arguments.get("useSdCard") == "true"
     }
 
@@ -51,7 +51,7 @@ open class OutputFileUtility {
         return "$ROOT_DIR/$subpath/"
     }
 
-    internal fun getOutputDirectoryPath(context: Context): File {
+    fun getOutputDirectoryPath(context: Context): File {
         val path: File = if (useSdCard(InstrumentationRegistry.getArguments())) {
             val sdCard = context.getExternalFilesDir(null)
             File("${sdCard?.absolutePath}/$SDCARD_DESTINATION_DIR")
@@ -66,7 +66,7 @@ open class OutputFileUtility {
         return File(path, "$ROOT_DIR/$deviceFormattedDirectory")
     }
 
-    internal fun getOutputFilePath(context: Context, fileName: String, extension: String = PNG_EXTENSION): String {
+    fun getOutputFilePath(context: Context, fileName: String, extension: String = PNG_EXTENSION): String {
         return "${getOutputDirectoryPath(context).path}/$fileName$extension"
     }
 
