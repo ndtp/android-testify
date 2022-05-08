@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package dev.testify.sample
+package dev.testify.sample.library
 
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -52,6 +52,7 @@ import dev.testify.sample.library.test.getViewState
 import org.junit.Rule
 import org.junit.Test
 import kotlin.random.Random
+import dev.testify.sample.library.R
 
 class ScreenshotRuleExampleTests {
 

@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package dev.testify.sample
+package dev.testify.sample.library
 
 import android.app.Activity
 import android.os.Build

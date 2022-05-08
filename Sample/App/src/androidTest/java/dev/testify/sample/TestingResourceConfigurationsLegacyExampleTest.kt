@@ -30,9 +30,9 @@ import android.os.Build
 import androidx.test.filters.SdkSuppress
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.sample.test.TestHarnessActivity
-import dev.testify.sample.test.clientDetailsView
-import dev.testify.sample.test.getViewState
+import dev.testify.sample.library.test.TestHarnessActivity
+import dev.testify.sample.library.test.clientDetailsView
+import dev.testify.sample.library.test.getViewState
 import org.junit.Rule
 import org.junit.Test
 import java.util.*

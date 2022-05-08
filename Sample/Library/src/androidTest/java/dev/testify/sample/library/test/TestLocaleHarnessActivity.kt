@@ -22,14 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.test
+package dev.testify.sample.library.test
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import dev.testify.resources.TestifyResourcesOverride
 import dev.testify.sample.library.TestingResourceConfigurationsExampleTest
-import dev.testify.sample.library.test.TestHarnessActivity
 import java.util.*
 
 /**

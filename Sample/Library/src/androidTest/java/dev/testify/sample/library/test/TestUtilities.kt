@@ -22,34 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.test
+
+package dev.testify.sample.library.test
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
-import androidx.appcompat.app.AppCompatActivity
-import dev.testify.resources.TestifyResourcesOverride
-import dev.testify.sample.library.TestingResourceConfigurationsExampleTest
-import dev.testify.sample.library.test.TestHarnessActivity
-import java.util.*
+import android.view.ViewGroup
+import dev.testify.sample.library.R
+import dev.testify.sample.library.clients.details.ClientDetailsView
+import dev.testify.sample.library.clients.details.ClientDetailsViewState
 
-/**
- * This Activity is used to demonstrate the use of [TestifyResourcesOverride].
- *
- * Starting in Android API Version 24 (Nougat), the proper way to dynamically alter an Activity's
- * resources and locale is to wrap the base [Context] in [AppCompatActivity.attachBaseContext]
- * with a Context that has been updated with a new [Locale]. Testify provides a helper interface,
- * [TestifyResourcesOverride] which provides a Context extension method, [TestifyResourcesOverride.wrap].
- *
- */
-@VisibleForTesting
-class TestLocaleHarnessActivity : TestHarnessActivity(), TestifyResourcesOverride {
-
-    /**
-     * This is required to correctly support dynamic Locale changes
-     *
-     * See [TestingResourceConfigurationsExampleTest]
-     */
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(newBase?.wrap())
+val ViewGroup.clientDetailsView: ClientDetailsView
+    get() {
+        return this.getChildAt(0) as ClientDetailsView
     }
+
+fun Context.getViewState(name: String): ClientDetailsViewState {
+    return ClientDetailsViewState(
+        name = name,
+        avatar = R.drawable.avatar1,
+        heading = this.getString(R.string.client_since, "2020"),
+        address = "1 Address Street\nCity, State, Country\nZ1PC0D3",
+        phoneNumber = "1-234-567-8910"
+    )
 }

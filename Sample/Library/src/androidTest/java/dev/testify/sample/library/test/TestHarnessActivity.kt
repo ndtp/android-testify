@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
+ * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.test
+package dev.testify.sample.library.test
 
-import android.content.Context
+import android.graphics.Color
+import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.widget.FrameLayout
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
-import dev.testify.resources.TestifyResourcesOverride
-import dev.testify.sample.library.TestingResourceConfigurationsExampleTest
-import dev.testify.sample.library.test.TestHarnessActivity
-import java.util.*
+import androidx.test.rule.ActivityTestRule
+import dev.testify.ScreenshotRule
 
 /**
- * This Activity is used to demonstrate the use of [TestifyResourcesOverride].
- *
- * Starting in Android API Version 24 (Nougat), the proper way to dynamically alter an Activity's
- * resources and locale is to wrap the base [Context] in [AppCompatActivity.attachBaseContext]
- * with a Context that has been updated with a new [Locale]. Testify provides a helper interface,
- * [TestifyResourcesOverride] which provides a Context extension method, [TestifyResourcesOverride.wrap].
- *
+ * The TestHarnessActivity is used as scaffolding for testing arbitrary views.
+ * Testify's [ScreenshotRule] is a subclass of [ActivityTestRule] which means that an Activity
+ * is required to "host" a UI that you wish to capture in your screenshot.
+ * This empty activity can be used as a generic container for testing your custom [View] classes.
  */
 @VisibleForTesting
-class TestLocaleHarnessActivity : TestHarnessActivity(), TestifyResourcesOverride {
+open class TestHarnessActivity : AppCompatActivity() {
 
-    /**
-     * This is required to correctly support dynamic Locale changes
-     *
-     * See [TestingResourceConfigurationsExampleTest]
-     */
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(newBase?.wrap())
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContentView(FrameLayout(this).apply {
+            layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            setBackgroundColor(Color.WHITE)
+            id = R.id.harness_root
+        })
+
+        if (intent?.hasExtra(EXTRA_TITLE) == true) {
+            title = intent.getStringExtra(EXTRA_TITLE)
+        }
+    }
+
+    companion object {
+        const val EXTRA_TITLE = "TOOLBAR_TITLE"
     }
 }

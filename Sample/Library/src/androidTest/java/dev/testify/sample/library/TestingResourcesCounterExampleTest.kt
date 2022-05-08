@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  */
 
-package dev.testify.sample
+package dev.testify.sample.library
 
 import android.os.Build
 import androidx.test.filters.SdkSuppress

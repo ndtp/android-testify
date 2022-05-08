@@ -1,4 +1,4 @@
-package dev.testify.sample
+package dev.testify.sample.library
 
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

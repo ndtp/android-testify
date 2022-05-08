@@ -22,15 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.details
+package dev.testify.sample.library.clients.details
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
-import dev.testify.sample.R
-import dev.testify.sample.library.clients.details.ClientDetailsView
-import dev.testify.sample.library.clients.details.ClientDetailsViewState
+import dev.testify.sample.library.R
 import dev.testify.sample.library.test.TestHarnessActivity
 import org.junit.Rule
 import org.junit.Test

@@ -23,14 +23,14 @@
  * THE SOFTWARE.
  */
 
-package dev.testify.sample
+package dev.testify.sample.library
 
 import android.app.Activity
 import android.os.Build
 import androidx.test.filters.SdkSuppress
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.sample.library.test.TestLocaleHarnessActivity
+import dev.testify.sample.library.test.TestHarnessActivity
 import dev.testify.sample.library.test.clientDetailsView
 import dev.testify.sample.library.test.getViewState
 import org.junit.Rule
@@ -39,13 +39,13 @@ import java.util.*
 
 /**
  * These tests demonstrate how to test the same Activity with different resource configurations
- * API 24+
+ * API less than 24
  */
-@SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
-class TestingResourceConfigurationsExampleTest {
+@SdkSuppress(maxSdkVersion = Build.VERSION_CODES.M)
+class TestingResourceConfigurationsLegacyExampleTest {
 
     @get:Rule var rule = ScreenshotRule(
-        activityClass = TestLocaleHarnessActivity::class.java,
+        activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
         rootViewId = R.id.harness_root
     )
