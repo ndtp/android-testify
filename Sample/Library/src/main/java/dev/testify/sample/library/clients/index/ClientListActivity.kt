@@ -30,6 +30,7 @@ import com.google.android.material.snackbar.Snackbar
 import dev.testify.sample.library.R
 import dev.testify.sample.library.clients.MockClientData
 import dev.testify.sample.library.clients.details.ClientDetailsActivity.Companion.startClientDetailsActivity
+import dev.testify.sample.library.databinding.ActivityClientListBinding
 
 class ClientListActivity : AppCompatActivity(), ClientListFragment.OnListFragmentInteractionListener {
 

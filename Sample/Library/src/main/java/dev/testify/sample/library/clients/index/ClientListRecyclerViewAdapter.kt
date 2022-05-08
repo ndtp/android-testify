@@ -34,6 +34,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.testify.sample.library.R
 import dev.testify.sample.library.clients.MockClientData
 import dev.testify.sample.library.clients.index.ClientListFragment.OnListFragmentInteractionListener
+import dev.testify.sample.library.databinding.ClientListItemBinding
 
 class ClientListRecyclerViewAdapter(
     private val values: List<MockClientData.Client>,
