@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import dev.testify.ScreenshotRule;
 import dev.testify.annotation.ScreenshotInstrumentation;
+import dev.testify.sample.library.MainActivity;
 
 public class JavaExampleTest {
 

@@ -12,9 +12,9 @@ import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.sample.clients.MockClientData
-import dev.testify.sample.clients.details.ClientDetailsActivity
-import dev.testify.sample.clients.index.ClientListActivity
+import dev.testify.sample.library.clients.MockClientData
+import dev.testify.sample.library.clients.details.ClientDetailsActivity
+import dev.testify.sample.library.clients.index.ClientListActivity
 import org.hamcrest.CoreMatchers.endsWith
 import org.junit.Test
 

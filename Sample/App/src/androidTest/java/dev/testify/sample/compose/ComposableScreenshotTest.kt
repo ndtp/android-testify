@@ -41,9 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.sample.ClientListItem
+import dev.testify.sample.library.ClientListItem
 import dev.testify.sample.R
-import dev.testify.sample.TopAppBar
+import dev.testify.sample.library.TopAppBar
 import org.junit.Rule
 import org.junit.Test
 

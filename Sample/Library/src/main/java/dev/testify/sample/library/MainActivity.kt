@@ -22,14 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample
+package dev.testify.sample.library
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import dev.testify.sample.clients.index.ClientListActivity
+import dev.testify.sample.library.clients.index.ClientListActivity
 
 class MainActivity : AppCompatActivity() {
 

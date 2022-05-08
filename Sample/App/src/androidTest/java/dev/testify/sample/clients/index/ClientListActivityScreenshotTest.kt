@@ -28,6 +28,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.R
+import dev.testify.sample.library.clients.index.ClientListActivity
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

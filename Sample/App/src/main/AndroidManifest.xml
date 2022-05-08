@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".ComposeActivity"
+            android:name=".library.ComposeActivity"
             android:exported="false"
             android:label="@string/title_activity_compose"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -30,16 +30,16 @@
             android:name="dev.testify.ComposableTestActivity"
             android:exported="false" />
         <activity
-            android:name=".clients.details.ClientDetailsActivity"
+            android:name=".library.clients.details.ClientDetailsActivity"
             android:exported="false"
-            android:parentActivityName=".clients.index.ClientListActivity" />
+            android:parentActivityName=".library.clients.index.ClientListActivity" />
         <activity
-            android:name=".clients.index.ClientListActivity"
+            android:name=".library.clients.index.ClientListActivity"
             android:exported="false"
             android:label="@string/title_activity_client"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".library.MainActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".library.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

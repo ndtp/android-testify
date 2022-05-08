@@ -27,7 +27,7 @@ package dev.testify.sample.compose
 import dev.testify.ScreenshotRule
 import dev.testify.TestifyFeatures
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.sample.ComposeActivity
+import dev.testify.sample.library.ComposeActivity
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

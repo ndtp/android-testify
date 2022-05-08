@@ -22,32 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.index
+package dev.testify.sample.library.clients.details
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
-import dev.testify.sample.R
-import dev.testify.sample.clients.MockClientData
-import dev.testify.sample.clients.details.ClientDetailsActivity.Companion.startClientDetailsActivity
-import dev.testify.sample.databinding.ActivityClientListBinding
+import androidx.annotation.DrawableRes
 
-class ClientListActivity : AppCompatActivity(), ClientListFragment.OnListFragmentInteractionListener {
-
-    override fun onListFragmentInteraction(item: MockClientData.Client) {
-        this.startClientDetailsActivity(item)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val binding = ActivityClientListBinding.inflate(layoutInflater)
-        setContentView(binding.rootView)
-
-        supportActionBar?.title = getString(R.string.client_list_title)
-
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "TODO: Add a client", Snackbar.LENGTH_LONG).show()
-        }
-    }
-}
+data class ClientDetailsViewState(
+    val name: String,
+    @DrawableRes val avatar: Int,
+    val heading: String,
+    val address: String?,
+    val phoneNumber: String?)

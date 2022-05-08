@@ -29,6 +29,8 @@ import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.sample.R
+import dev.testify.sample.library.clients.details.ClientDetailsView
+import dev.testify.sample.library.clients.details.ClientDetailsViewState
 import dev.testify.sample.test.TestHarnessActivity
 import org.junit.Rule
 import org.junit.Test

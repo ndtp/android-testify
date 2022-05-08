@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.index
+package dev.testify.sample.library.clients.index
 
 import android.content.Context
 import android.os.Bundle
@@ -33,7 +33,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.testify.sample.R
-import dev.testify.sample.clients.MockClientData
+import dev.testify.sample.library.clients.MockClientData
 
 class ClientListFragment : Fragment() {
 

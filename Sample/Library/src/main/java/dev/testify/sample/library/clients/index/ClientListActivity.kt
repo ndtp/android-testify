@@ -22,32 +22,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.details
+package dev.testify.sample.library.clients.index
 
-import android.content.Context
-import android.util.AttributeSet
-import android.widget.LinearLayout
-import androidx.core.view.isVisible
-import dev.testify.sample.databinding.ViewClientDetailsBinding
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
+import dev.testify.sample.R
+import dev.testify.sample.library.clients.MockClientData
+import dev.testify.sample.library.clients.details.ClientDetailsActivity.Companion.startClientDetailsActivity
+import dev.testify.sample.databinding.ActivityClientListBinding
 
-class ClientDetailsView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
-    LinearLayout(context, attrs) {
+class ClientListActivity : AppCompatActivity(), ClientListFragment.OnListFragmentInteractionListener {
 
-    lateinit var binding: ViewClientDetailsBinding
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-        binding = ViewClientDetailsBinding.bind(this)
+    override fun onListFragmentInteraction(item: MockClientData.Client) {
+        this.startClientDetailsActivity(item)
     }
 
-    fun render(state: ClientDetailsViewState) {
-        binding.profileImage.setImageResource(state.avatar)
-        binding.heading.text = state.heading
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-        binding.addressRow.isVisible = state.address != null
-        binding.address.text = state.address
+        val binding = ActivityClientListBinding.inflate(layoutInflater)
+        setContentView(binding.rootView)
 
-        binding.phoneRow.isVisible = state.phoneNumber != null
-        binding.phone.text = state.phoneNumber
+        supportActionBar?.title = getString(R.string.client_list_title)
+
+        binding.fab.setOnClickListener { view ->
+            Snackbar.make(view, "TODO: Add a client", Snackbar.LENGTH_LONG).show()
+        }
     }
 }

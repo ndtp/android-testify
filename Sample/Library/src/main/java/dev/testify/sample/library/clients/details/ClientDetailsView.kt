@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2021 Shopify Inc.
+ * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +22,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.ui.theme
+package dev.testify.sample.library.clients.details
 
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Shapes
-import androidx.compose.ui.unit.dp
+import android.content.Context
+import android.util.AttributeSet
+import android.widget.LinearLayout
+import dev.testify.sample.databinding.ViewClientDetailsBinding
 
-val Shapes = Shapes(
-    small = RoundedCornerShape(4.dp),
-    medium = RoundedCornerShape(4.dp),
-    large = RoundedCornerShape(0.dp)
-)
+class ClientDetailsView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+    LinearLayout(context, attrs) {
+
+    lateinit var binding: ViewClientDetailsBinding
+
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        binding = ViewClientDetailsBinding.bind(this)
+    }
+
+    fun render(state: ClientDetailsViewState) {
+        binding.profileImage.setImageResource(state.avatar)
+        binding.heading.text = state.heading
+
+        binding.addressRow.isVisible = state.address != null
+        binding.address.text = state.address
+
+        binding.phoneRow.isVisible = state.phoneNumber != null
+        binding.phone.text = state.phoneNumber
+    }
+}

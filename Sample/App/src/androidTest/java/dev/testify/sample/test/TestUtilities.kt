@@ -28,8 +28,8 @@ package dev.testify.sample.test
 import android.content.Context
 import android.view.ViewGroup
 import dev.testify.sample.R
-import dev.testify.sample.clients.details.ClientDetailsView
-import dev.testify.sample.clients.details.ClientDetailsViewState
+import dev.testify.sample.library.clients.details.ClientDetailsView
+import dev.testify.sample.library.clients.details.ClientDetailsViewState
 
 val ViewGroup.clientDetailsView: ClientDetailsView
     get() {

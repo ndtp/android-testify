@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2019 Shopify Inc.
+ * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.details
+package dev.testify.sample.library.ui.theme
 
-import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.Color
 
-data class ClientDetailsViewState(
-    val name: String,
-    @DrawableRes val avatar: Int,
-    val heading: String,
-    val address: String?,
-    val phoneNumber: String?)
+val Purple200 = Color(0xFFBB86FC)
+val Purple500 = Color(0xFF6200EE)
+val Purple700 = Color(0xFF3700B3)
+val Teal200 = Color(0xFF03DAC5)

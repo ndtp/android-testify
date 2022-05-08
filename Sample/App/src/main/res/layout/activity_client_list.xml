@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffc4cdd5"
-    tools:context=".clients.index.ClientListActivity">
+    tools:context=".library.clients.index.ClientListActivity">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="dev.testify.sample.clients.index.ClientListFragment"
+        android:name="dev.testify.sample.library.clients.index.ClientListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

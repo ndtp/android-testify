@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.details
+package dev.testify.sample.library.clients.details
 
 import android.app.Activity
 import android.content.Context
@@ -30,7 +30,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import dev.testify.sample.R
-import dev.testify.sample.clients.MockClientData
+import dev.testify.sample.library.clients.MockClientData
 
 class ClientDetailsActivity : AppCompatActivity() {
 
