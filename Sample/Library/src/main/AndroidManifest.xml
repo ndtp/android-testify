@@ -1,2 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="dev.testify.sample.library" />
+<manifest package="dev.testify.sample.library"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="dev.testify.sample.library.ComposeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_compose"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="dev.testify.sample.library.clients.details.ClientDetailsActivity"
+            android:exported="false"
+            android:parentActivityName="dev.testify.sample.library.clients.index.ClientListActivity" />
+        <activity
+            android:name="dev.testify.sample.library.clients.index.ClientListActivity"
+            android:exported="false"
+            android:label="@string/title_activity_client"
+            android:parentActivityName="dev.testify.sample.library.MainActivity" />
+        <activity
+            android:name="dev.testify.sample.library.MainActivity"
+            android:exported="true">
+        </activity>
+    </application>
+</manifest>

@@ -13,11 +13,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".library.ComposeActivity"
-            android:exported="false"
-            android:label="@string/title_activity_compose"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".test.TestHarnessActivity"
             android:exported="false" />
         <activity
@@ -29,15 +24,6 @@
         <activity
             android:name="dev.testify.ComposableTestActivity"
             android:exported="false" />
-        <activity
-            android:name=".library.clients.details.ClientDetailsActivity"
-            android:exported="false"
-            android:parentActivityName=".library.clients.index.ClientListActivity" />
-        <activity
-            android:name=".library.clients.index.ClientListActivity"
-            android:exported="false"
-            android:label="@string/title_activity_client"
-            android:parentActivityName=".library.MainActivity" />
         <activity
             android:name=".library.MainActivity"
             android:exported="true">
