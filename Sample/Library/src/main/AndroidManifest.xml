@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="dev.testify.sample.library"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <application>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dev.testify.sample.library">
+
+    <application android:theme="@style/AppTheme">
         <activity
             android:name="dev.testify.sample.library.ComposeActivity"
             android:exported="false"
@@ -18,7 +19,7 @@
             android:parentActivityName="dev.testify.sample.library.MainActivity" />
         <activity
             android:name="dev.testify.sample.library.MainActivity"
-            android:exported="true">
-        </activity>
+            android:label="@string/app_name"
+            android:exported="true" />
     </application>
 </manifest>
