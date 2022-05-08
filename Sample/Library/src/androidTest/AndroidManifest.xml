@@ -1,0 +1,20 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dev.testify.sample.library">
+
+    <application>
+        <activity
+            android:name=".test.TestHarnessActivity"
+            android:label="@string/app_name"
+            android:exported="false" />
+        <activity
+            android:name=".test.TestLocaleHarnessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".test.TestLocaleHarnessNoWrapActivity"
+            android:exported="false" />
+        <activity
+            android:name="dev.testify.ComposableTestActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>
