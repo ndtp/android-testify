@@ -27,7 +27,6 @@ package dev.testify.sample.library.clients.details
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
-import dev.testify.sample.databinding.ViewClientDetailsBinding
 
 class ClientDetailsView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     LinearLayout(context, attrs) {

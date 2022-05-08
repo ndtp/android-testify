@@ -27,10 +27,9 @@ package dev.testify.sample.library.clients.index
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
-import dev.testify.sample.R
+import dev.testify.sample.library.R
 import dev.testify.sample.library.clients.MockClientData
 import dev.testify.sample.library.clients.details.ClientDetailsActivity.Companion.startClientDetailsActivity
-import dev.testify.sample.databinding.ActivityClientListBinding
 
 class ClientListActivity : AppCompatActivity(), ClientListFragment.OnListFragmentInteractionListener {
 

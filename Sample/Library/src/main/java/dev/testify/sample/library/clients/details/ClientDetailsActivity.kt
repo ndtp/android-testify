@@ -29,7 +29,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import dev.testify.sample.R
+import dev.testify.sample.library.R
 import dev.testify.sample.library.clients.MockClientData
 
 class ClientDetailsActivity : AppCompatActivity() {
