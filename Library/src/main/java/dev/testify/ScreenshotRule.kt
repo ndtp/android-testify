@@ -370,8 +370,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private val TestifyLayout.resolvedLayoutId: Int
         get() {
             if (this.layoutResName.isNotEmpty()) {
-                return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null)
-                    ?: NO_ID
+                val resources = getInstrumentation().targetContext.resources
+                val id = resources?.getIdentifier(layoutResName, null, null) ?: 0
+                return if (id != 0) id else NO_ID
             }
             return layoutId
         }

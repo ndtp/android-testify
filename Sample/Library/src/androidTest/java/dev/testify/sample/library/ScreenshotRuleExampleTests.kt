@@ -52,7 +52,6 @@ import dev.testify.sample.library.test.getViewState
 import org.junit.Rule
 import org.junit.Test
 import kotlin.random.Random
-import dev.testify.sample.library.R
 
 class ScreenshotRuleExampleTests {
 
@@ -112,19 +111,17 @@ class ScreenshotRuleExampleTests {
      *
      * This approach is useful for library projects where the R.id values are not constant.
      */
-
-    // TODO: Determine the correct format for library project resource names
-//    @TestifyLayout(layoutResName = "dev.testify.sample.library:layout/view_client_details")
-//    @ScreenshotInstrumentation
-//    @Test
-//    fun usingLayoutResName() {
-//        rule.setViewModifications { harnessRoot ->
-//            rule.activity.getViewState(name = "usingLayoutResName").let {
-//                harnessRoot.clientDetailsView.render(it)
-//                rule.activity.title = it.name
-//            }
-//        }.assertSame()
-//    }
+    @TestifyLayout(layoutResName = "dev.testify.sample.library.test:layout/view_client_details")
+    @ScreenshotInstrumentation
+    @Test
+    fun usingLayoutResName() {
+        rule.setViewModifications { harnessRoot ->
+            rule.activity.getViewState(name = "usingLayoutResName").let {
+                harnessRoot.clientDetailsView.render(it)
+                rule.activity.title = it.name
+            }
+        }.assertSame()
+    }
 
     /**
      * Demonstrates how to load a layout file programmatically using setTargetLayoutId
