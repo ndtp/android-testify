@@ -113,8 +113,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected var rootViewId = rootViewId
         @JvmName("rootViewIdResource") set
 
-    @LayoutRes
-    private var targetLayoutId: Int = NO_ID
+    @LayoutRes private var targetLayoutId: Int = NO_ID
 
     @Suppress("MemberVisibilityCanBePrivate")
     open lateinit var testMethodName: String
@@ -220,7 +219,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     /**
      * Allows Testify to deliberately set the keyboard focus to the specified view
      *
-     * @param clearFocus when true, removes focus from all views in the activity
+     * @param enabled when true, removes focus from all views in the activity
+     * @param focusTargetId the View ID to set focus on
      */
     fun setFocusTarget(enabled: Boolean = true, @IdRes focusTargetId: Int = android.R.id.content): ScreenshotRule<T> {
         this.focusModification.isEnabled = enabled
@@ -351,19 +351,59 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         ResourceWrapper.beforeActivityLaunched()
     }
 
+    /**
+     * Modifies the method-running [Statement] to implement this test-running rule.
+     * @param base – The [Statement] to be modified
+     * @param description – A [Description] of the test implemented in base
+     *
+     * @return a new statement, which may be the same as base, a wrapper around base, or a completely new [Statement].
+     */
     override fun apply(base: Statement, description: Description): Statement {
-        checkForScreenshotInstrumentationAnnotation(description)
-        applyExactness(description)
-        espressoActions = null
-        testSimpleClassName = description.testClass.simpleName
-        testMethodName = description.methodName
-        testClass = "${description.testClass?.canonicalName}#${description.methodName}"
-
-        reporter?.startTest(this, description)
-
-        val testifyLayout: TestifyLayout? = description.getAnnotation(TestifyLayout::class.java)
-        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
+        val methodAnnotations = description.annotations
+        apply(description.methodName, description.testClass, methodAnnotations)
         return super.apply(ScreenshotStatement(base), description)
+    }
+
+    /**
+     * Configures the [ScreenshotRule] based on the currently running test.
+     * This is a generalization of the modifications expected by the JUnit4's [apply] method which exposes these
+     * modification to non-JUnit4 implementations.
+     *
+     * @param methodName - The name of the currently running test
+     * @param testClass - The [Class] of the currently running test
+     * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+     */
+    open fun apply(
+        methodName: String,
+        testClass: Class<*>,
+        methodAnnotations: Collection<Annotation>?
+    ) {
+        val classAnnotations = testClass.annotations.asList()
+        val classScreenshotInstrumentation = classAnnotations.getAnnotation<ScreenshotInstrumentation>()
+        val methodScreenshotInstrumentation = methodAnnotations?.getAnnotation<ScreenshotInstrumentation>()
+
+        checkForScreenshotInstrumentationAnnotation(
+            methodName,
+            classScreenshotInstrumentation,
+            methodScreenshotInstrumentation
+        )
+
+        val bitmapComparison = classAnnotations.getAnnotation<BitmapComparisonExactness>()
+        applyExactness(bitmapComparison)
+
+        espressoActions = null
+        testSimpleClassName = testClass.simpleName
+        testMethodName = methodName
+        this.testClass = "${testClass.canonicalName}#$methodName"
+
+        reporter?.startTest(this, testClass)
+
+        val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
+        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
+    }
+
+    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
+        return this.find { it is T } as? T
     }
 
     @get:LayoutRes
@@ -376,12 +416,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             return layoutId
         }
 
-    private fun checkForScreenshotInstrumentationAnnotation(description: Description) {
-        val classAnnotation = description.testClass.getAnnotation(ScreenshotInstrumentation::class.java)
+    private fun checkForScreenshotInstrumentationAnnotation(
+        methodName: String,
+        classAnnotation: ScreenshotInstrumentation?,
+        methodAnnotation: ScreenshotInstrumentation?
+    ) {
         if (classAnnotation == null) {
-            val methodAnnotation = description.getAnnotation(ScreenshotInstrumentation::class.java)
             if (methodAnnotation == null) {
-                this.throwable = MissingScreenshotInstrumentationAnnotationException(description.methodName)
+                this.throwable = MissingScreenshotInstrumentationAnnotationException(methodName)
             } else {
                 orientationToIgnore = methodAnnotation.orientationToIgnore
             }
@@ -417,9 +459,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return intent
     }
 
-    private fun applyExactness(description: Description) {
+    private fun applyExactness(bitmapComparison: BitmapComparisonExactness?) {
         if (exactness == null) {
-            val bitmapComparison = description.getAnnotation(BitmapComparisonExactness::class.java)
             exactness = bitmapComparison?.exactness
         }
     }
@@ -731,24 +772,39 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         override fun evaluate() {
             try {
-                getInstrumentation()?.run {
-                    reporter?.identifySession(this)
-                }
-
-                assertSameInvoked = false
+                evaluateBeforeEach()
                 base.evaluate()
-                // Safeguard against accidentally omitting the call to `assertSame`
-                if (!assertSameInvoked) {
-                    throw MissingAssertSameException()
-                }
-                reporter?.pass()
+                evaluateAfterEach()
             } catch (throwable: Throwable) {
-                reporter?.fail(throwable)
-                throw throwable
+                handleTestException(throwable)
             } finally {
-                reporter?.endTest()
+                evaluateAfterTestExecution()
             }
         }
+    }
+
+    protected fun evaluateBeforeEach() {
+        getInstrumentation()?.run {
+            reporter?.identifySession(this)
+        }
+        assertSameInvoked = false
+    }
+
+    protected fun evaluateAfterEach() {
+        // Safeguard against accidentally omitting the call to `assertSame`
+        if (!assertSameInvoked) {
+            throw MissingAssertSameException()
+        }
+        reporter?.pass()
+    }
+
+    protected fun evaluateAfterTestExecution() {
+        reporter?.endTest()
+    }
+
+    protected fun handleTestException(throwable: Throwable) {
+        reporter?.fail(throwable)
+        throw throwable
     }
 
     @VisibleForTesting
