@@ -36,11 +36,8 @@ import dev.testify.tasks.report.ReportShowTask
 import dev.testify.tasks.utility.DeviceKeyTask
 import dev.testify.tasks.utility.DevicesTask
 import dev.testify.tasks.utility.DisableSoftKeyboardTask
-import dev.testify.tasks.utility.GenerateDiffImagesTask
 import dev.testify.tasks.utility.HidePasswordsTasks
-import dev.testify.tasks.utility.ImageMagickTask
 import dev.testify.tasks.utility.LocaleTask
-import dev.testify.tasks.utility.RemoveDiffImagesTask
 import dev.testify.tasks.utility.SettingsTask
 import dev.testify.tasks.utility.TimeZoneTask
 import dev.testify.tasks.utility.VersionTask
@@ -79,7 +76,6 @@ class TestifyPlugin : Plugin<Project> {
         private fun Project.addDependencies() {
             ScreenshotTestTask.setDependencies(ScreenshotTestTask.Companion, project = this)
             ScreenshotRecordTask.setDependencies(ScreenshotRecordTask.Companion, project = this)
-            GenerateDiffImagesTask.setDependencies(GenerateDiffImagesTask.Companion, project = this)
         }
     }
 
@@ -87,13 +83,10 @@ class TestifyPlugin : Plugin<Project> {
         tasks.create(DeviceKeyTask.taskName(), DeviceKeyTask::class.java)
         tasks.create(DevicesTask.taskName(), DevicesTask::class.java)
         tasks.create(DisableSoftKeyboardTask.taskName(), DisableSoftKeyboardTask::class.java)
-        tasks.create(GenerateDiffImagesTask.taskName(), GenerateDiffImagesTask::class.java)
         tasks.create(HidePasswordsTasks.taskName(), HidePasswordsTasks::class.java)
-        tasks.create(ImageMagickTask.taskName(), ImageMagickTask::class.java)
         tasks.create(LocaleTask.taskName(), LocaleTask::class.java)
         tasks.create(ReportPullTask.taskName(), ReportPullTask::class.java)
         tasks.create(ReportShowTask.taskName(), ReportShowTask::class.java)
-        tasks.create(RemoveDiffImagesTask.taskName(), RemoveDiffImagesTask::class.java)
         tasks.create(ScreenshotClearTask.taskName(), ScreenshotClearTask::class.java)
         tasks.create(ScreenshotPullTask.taskName(), ScreenshotPullTask::class.java)
         tasks.create(ScreenshotRecordTask.taskName(), ScreenshotRecordTask::class.java)

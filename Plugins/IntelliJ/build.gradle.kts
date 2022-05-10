@@ -6,18 +6,19 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun properties(key: String) = project.findProperty(key).toString()
 
+@Suppress("UNCHECKED_CAST")
 val versions = rootProject.extra["versions"] as Map<String, String>
 val testifyVersion = versions["testify"] as String
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
-    id("org.jetbrains.intellij")
-    id("org.jetbrains.changelog")
-    id("org.jlleitschuh.gradle.ktlint")
+    id("org.jetbrains.intellij") version "1.4.0"
+    id("org.jetbrains.changelog") version "1.3.1"
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
 }
 
-group = properties("pluginGroup")
-version = testifyVersion
+group = project.property("pluginGroup") as String
+version = testifyVersion // The version of the built plugin
 
 /**
  * Configure gradle-intellij-plugin plugin.
@@ -25,32 +26,31 @@ version = testifyVersion
  */
 intellij {
     pluginName.set(project.name)
-    version.set(properties("platformVersion"))
-    type.set(properties("platformType"))
-
+    updateSinceUntilBuild.set(false)
     // https://www.jetbrains.org/intellij/sdk/docs/basics/plugin_structure/plugin_dependencies.html
     plugins.set(
         listOf(
-            "Kotlin",
             "android"
         )
     )
 
-    /*
-    // Unresolved reference: alternativeIdePath
-    alternativeIdePath.set("/Applications/Android Studio.app")
-    // https://github.com/JetBrains/gradle-intellij-plugin/blob/master/README.md#setup-dsl
-    localPath.set("/Applications/Android Studio Preview.app")
-     */
+    if (project.hasProperty("StudioRunPath")) {
+        localPath.set(properties("StudioRunPath"))
+    } else {
+        version.set(properties("platformVersion"))
+    }
 }
 
 repositories {
     mavenCentral()
 }
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("script-runtime"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.6.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:${versions["kotlin"]}")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 changelog {
@@ -59,6 +59,9 @@ changelog {
 }
 
 tasks {
+    instrumentCode {
+        compilerVersion.set(properties("InstrumentCodeVersion"))
+    }
     properties("javaVersion").let {
         withType<JavaCompile> {
             sourceCompatibility = it
@@ -99,5 +102,9 @@ tasks {
         dependsOn("patchChangelog")
         token.set(System.getenv("PUBLISH_TOKEN"))
         channels.set(listOf(properties("pluginVersion").split('-').getOrElse(1) { "default" }.split('.').first()))
+    }
+
+    buildSearchableOptions {
+        enabled = false
     }
 }

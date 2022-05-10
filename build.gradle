@@ -47,11 +47,6 @@ buildscript {
         classpath "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
-
-        // IntelliJ plugins
-        classpath "org.jetbrains.intellij.plugins:gradle-intellij-plugin:1.4.0"
-        classpath "org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.3.1"
-        classpath "org.jlleitschuh.gradle:ktlint-gradle:10.2.1"
     }
 }
 
@@ -60,6 +55,7 @@ allprojects {
         mavenLocal()
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
     configurations.all {
         resolutionStrategy.force 'org.objenesis:objenesis:2.6'
