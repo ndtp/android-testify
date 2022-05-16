@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [1.2.0-alpha02]
+
+- Support both new (dev.testify) and legacy (com.shopify) annotations.
+ 
 ## [1.2.0-alpha01]
 
 - Unified version scheme with the core Testify library.

@@ -51,7 +51,13 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
 
         if (descriptor == null) return null
         if (descriptor?.annotations == null) return null
-        val annotation = descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) ?: return null
+        val annotation = descriptor
+            ?.annotations
+            ?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION))
+            ?: descriptor
+                ?.annotations
+                ?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION_LEGACY))
+            ?: return null
 
         val anchorElement = annotation.source.getPsi() ?: return null
 

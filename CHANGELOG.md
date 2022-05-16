@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Bump Testify core version to 1.2.0-alpha02
+ 
+---
+
+## 1.2.0-alpha01
+
 - Bump Testify core version to 1.2.0-alpha01
 
 ### Library
