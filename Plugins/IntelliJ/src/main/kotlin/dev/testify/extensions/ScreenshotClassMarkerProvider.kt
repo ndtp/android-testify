@@ -55,7 +55,8 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
 
         if (
             functions.none {
-                it.descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) != null
+                it.descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) != null ||
+                    it.descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION_LEGACY)) != null
             }
         ) return null
 
