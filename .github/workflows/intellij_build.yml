@@ -15,7 +15,7 @@
 ## JBIJPPTPL
 
 name: Build IntelliJ Platform Plugin
-on: [pull_request]
+on: [push, pull_request]
 
 jobs:
 
