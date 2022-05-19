@@ -382,7 +382,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             methodName = methodName,
             testClass = testClass
         )
-        reporter?.startTest(this, testClass)
+        reporter?.startTest(TestDescription.current)
 
         val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID

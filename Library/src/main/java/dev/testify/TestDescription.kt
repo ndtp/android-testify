@@ -25,9 +25,9 @@ package dev.testify
 
 import dev.testify.internal.TestName
 
-class TestDescription(
+data class TestDescription(
     val methodName: String,
-    testClass: Class<*>
+    val testClass: Class<*>
 ) {
 
     val nameComponents = TestName(testClass.simpleName, methodName)
