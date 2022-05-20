@@ -54,6 +54,7 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.FailedToCaptureBitmapException
@@ -103,7 +104,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected val activityClass: Class<T>,
     @IdRes rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    enableReporter: Boolean = false
+    enableReporter: Boolean = false,
+    protected val configuration: TestifyConfiguration = TestifyConfiguration()
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, false), TestRule {
 
     @IdRes
@@ -286,6 +288,16 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun defineExclusionRects(provider: ExclusionRectProvider): ScreenshotRule<T> {
         this.exclusionRectProvider = provider
+        return this
+    }
+
+    /**
+     * Set the configuration for the ScreenshotRule
+     *
+     * @param configureRule - [TestifyConfiguration]
+     */
+    fun configure(configureRule: (TestifyConfiguration) -> Unit): ScreenshotRule<T> {
+        configureRule.invoke(configuration)
         return this
     }
 
