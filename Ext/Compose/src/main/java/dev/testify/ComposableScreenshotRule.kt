@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.test.espresso.Espresso
 import dev.testify.compose.R
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.disposeComposition
 import org.junit.Assert.assertTrue
 import java.util.concurrent.CountDownLatch
@@ -39,9 +40,10 @@ import java.util.concurrent.TimeUnit
  * Helper extension of [ScreenshotRule] which simplifies testing [Composable] functions.
  */
 open class ComposableScreenshotRule(
-    var exactness: Float = 0.9f
+    exactness: Float = 0.9f
 ) : ScreenshotRule<ComposableTestActivity>(
-    ComposableTestActivity::class.java
+    activityClass = ComposableTestActivity::class.java,
+    configuration = TestifyConfiguration(exactness = exactness)
 ) {
     lateinit var composeFunction: @Composable () -> Unit
 
@@ -55,7 +57,6 @@ open class ComposableScreenshotRule(
     override fun beforeAssertSame() {
         super.beforeAssertSame()
         TestifyFeatures.PixelCopyCapture.setEnabled(true)
-        setExactness(exactness)
         setScreenshotViewProvider {
             it.getChildAt(0)
         }

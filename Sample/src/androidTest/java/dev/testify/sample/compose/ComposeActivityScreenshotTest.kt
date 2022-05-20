@@ -54,7 +54,9 @@ class ComposeActivityScreenshotTest {
     @Test
     fun default() {
         rule
-            .setExactness(0.9f)
+            .configure {
+                exactness = 0.95f
+            }
             .assertSame()
     }
 }

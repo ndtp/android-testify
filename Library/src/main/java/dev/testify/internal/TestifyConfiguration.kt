@@ -26,13 +26,30 @@ package dev.testify.internal
 
 import android.graphics.Rect
 import android.view.ViewGroup
+import androidx.annotation.FloatRange
+import dev.testify.annotation.BitmapComparisonExactness
+import dev.testify.annotation.getAnnotation
 
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
     val exclusionRects: MutableSet<Rect> = HashSet(),
+    @FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null
 ) {
+    val hasExactness: Boolean
+        get() = exactness != null
+
+    /**
+     * Update the internal configuration values based on any annotations that may be present on the test method
+     */
+    internal fun applyAnnotations(methodAnnotations: Collection<Annotation>?) {
+        val bitmapComparison = methodAnnotations?.getAnnotation<BitmapComparisonExactness>()
+        if (exactness == null) {
+            exactness = bitmapComparison?.exactness
+        }
+    }
+
     /**
      * Allow the test to define a set of rectangles to exclude from the comparison.
      * Any pixels contained within the bounds of any of the provided Rects are ignored.

@@ -30,13 +30,17 @@ import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.capture.fullscreen.captureFullscreen
 import dev.testify.capture.fullscreen.provider.excludeSystemUi
+import dev.testify.internal.TestifyConfiguration
 import org.junit.Rule
 import org.junit.Test
 
 class FullscreenCaptureExampleTest {
 
     @get:Rule
-    var rule = ScreenshotRule(MainActivity::class.java)
+    var rule = ScreenshotRule(
+        activityClass = MainActivity::class.java,
+        configuration = TestifyConfiguration(exactness = 0.95f)
+    )
 
     @ScreenshotInstrumentation
     @Test
@@ -46,7 +50,6 @@ class FullscreenCaptureExampleTest {
             .configure {
                 excludeSystemUi()
             }
-            .setExactness(0.95f)
             .assertSame()
     }
 
@@ -58,7 +61,6 @@ class FullscreenCaptureExampleTest {
             .configure {
                 excludeSystemUi()
             }
-            .setExactness(0.95f)
             .setEspressoActions {
                 openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
             }
@@ -73,7 +75,6 @@ class FullscreenCaptureExampleTest {
             .configure {
                 excludeSystemUi()
             }
-            .setExactness(0.95f)
             .setViewModifications {
                 MaterialAlertDialogBuilder(it.context)
                     .setMessage("Hello, world!")

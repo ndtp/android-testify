@@ -26,6 +26,7 @@ package dev.testify
 
 import android.graphics.Bitmap
 import android.graphics.Rect
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.processor._executorDispatcher
 import dev.testify.internal.processor.compare.FuzzyCompare
 import kotlinx.coroutines.Dispatchers
@@ -66,7 +67,7 @@ class RegionCompareTest {
     }
 
     private val rectSet = HashSet<Rect>()
-    private val regionCompare = FuzzyCompare(null, rectSet)
+    private val regionCompare = FuzzyCompare(TestifyConfiguration(exclusionRects = rectSet))
 
     @Test
     fun `compareBitmaps succeeds when bitmaps are identical`() {
