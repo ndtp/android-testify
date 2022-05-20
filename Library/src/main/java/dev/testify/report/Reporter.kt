@@ -52,6 +52,7 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal val builder = StringBuilder()
+    private lateinit var testDescription: TestDescription
 
     /**
      * Creates a unique session ID for the given test run
@@ -65,6 +66,7 @@ internal open class Reporter(
      * Records the test entry
      */
     fun startTest(description: TestDescription) {
+        testDescription = description
         session.addTest()
 
         builder.appendLine("- test:", indent = 4)
@@ -124,7 +126,7 @@ internal open class Reporter(
     internal open fun getBaselinePath(rule: ScreenshotRule<*>): String {
         return outputFileUtility.getFileRelativeToRoot(
             subpath = DeviceIdentifier.getDescription(context),
-            fileName = TestDescription.current.methodName,
+            fileName = testDescription.methodName,
             extension = PNG_EXTENSION
         )
     }
@@ -134,7 +136,7 @@ internal open class Reporter(
             return DeviceIdentifier.formatDeviceString(
                 DeviceIdentifier.DeviceStringFormatter(
                     this.testContext,
-                    TestDescription.current.nameComponents
+                    testDescription.nameComponents
                 ), DeviceIdentifier.DEFAULT_NAME_FORMAT
             )
         }

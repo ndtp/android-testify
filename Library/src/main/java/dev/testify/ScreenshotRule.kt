@@ -378,11 +378,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         espressoActions = null
 
-        TestDescription.current = TestDescription(
+        getInstrumentation().testDescription = TestDescription(
             methodName = methodName,
             testClass = testClass
         )
-        reporter?.startTest(TestDescription.current)
+        reporter?.startTest(getInstrumentation().testDescription)
 
         val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
@@ -577,7 +577,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         try {
             try {
-                val description = TestDescription.current
+                val description = getInstrumentation().testDescription
                 reporter?.captureOutput(this)
                 outputFileName = DeviceIdentifier.formatDeviceString(
                     DeviceIdentifier.DeviceStringFormatter(

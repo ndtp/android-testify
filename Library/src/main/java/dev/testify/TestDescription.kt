@@ -23,6 +23,7 @@
  */
 package dev.testify
 
+import android.app.Instrumentation
 import dev.testify.internal.TestName
 
 data class TestDescription(
@@ -35,6 +36,19 @@ data class TestDescription(
     val fullyQualifiedTestName = "${testClass.canonicalName}#$methodName"
 
     companion object {
-        lateinit var current: TestDescription
+        internal var current: TestDescription? = null
+        internal var hashCode: Int = 0
     }
 }
+
+var Instrumentation.testDescription: TestDescription
+    set(value) {
+        TestDescription.hashCode = this.hashCode()
+        TestDescription.current = value
+    }
+    get() {
+        if (TestDescription.hashCode != this.hashCode())
+            throw IllegalStateException("TestDescription is not initialized for $this")
+        return TestDescription.current
+            ?: throw UninitializedPropertyAccessException("TestDescription is not initialized")
+    }

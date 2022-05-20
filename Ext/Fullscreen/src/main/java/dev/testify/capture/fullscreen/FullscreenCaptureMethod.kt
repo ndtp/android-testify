@@ -28,16 +28,17 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
 import dev.testify.ScreenshotRule
 import dev.testify.ScreenshotUtility
-import dev.testify.TestDescription
 import dev.testify.exception.FailedToCaptureFullscreenBitmapException
 import dev.testify.exception.FailedToLoadCapturedBitmapException
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.output.OutputFileUtility
+import dev.testify.testDescription
 import java.io.File
 
 /**
@@ -106,7 +107,7 @@ private fun getFileName(testContext: Context): String {
     return DeviceIdentifier.formatDeviceString(
         DeviceIdentifier.DeviceStringFormatter(
             testContext,
-            TestDescription.current.nameComponents
+            getInstrumentation().testDescription.nameComponents
         ), DEFAULT_NAME_FORMAT
     )
 }

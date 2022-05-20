@@ -37,9 +37,9 @@ import android.view.View
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.ScreenshotRule
 import dev.testify.ScreenshotUtility
-import dev.testify.TestDescription
 import dev.testify.TestifyFeatures
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
@@ -50,6 +50,7 @@ import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
 import dev.testify.sample.test.getViewState
+import dev.testify.testDescription
 import org.junit.Rule
 import org.junit.Test
 import kotlin.random.Random
@@ -394,7 +395,12 @@ class ScreenshotRuleExampleTests {
                             textSize = 50f
                             isAntiAlias = true
                         }
-                        this.drawText("<<Testify ${TestDescription.current.methodName}>>", 50f, 2000f, textPaint)
+                        this.drawText(
+                            "<<Testify ${getInstrumentation().testDescription.methodName}>>",
+                            50f,
+                            2000f,
+                            textPaint
+                        )
                     }
                 }
             }
