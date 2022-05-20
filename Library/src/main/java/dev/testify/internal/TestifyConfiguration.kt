@@ -26,88 +26,13 @@ package dev.testify.internal
 
 import android.graphics.Rect
 import android.view.ViewGroup
-import androidx.annotation.CallSuper
-import androidx.annotation.IdRes
-import androidx.test.espresso.Espresso
-import dev.testify.internal.modification.FocusModification
-import dev.testify.internal.modification.HideCursorViewModification
-import dev.testify.internal.modification.HidePasswordViewModification
-import dev.testify.internal.modification.HideScrollbarsViewModification
-import dev.testify.internal.modification.HideTextSuggestionsViewModification
-import dev.testify.internal.modification.SoftwareRenderViewModification
-import java.util.Locale
 
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 data class TestifyConfiguration(
-    var hideSoftKeyboard: Boolean = true,
-    var isLayoutInspectionModeEnabled: Boolean = false,
-    var locale: Locale? = null,
     var exclusionRectProvider: ExclusionRectProvider? = null,
     val exclusionRects: MutableSet<Rect> = HashSet(),
-    val focusModification: FocusModification = FocusModification(),
-    var fontScale: Float? = null
 ) {
-    private val hideCursorViewModification = HideCursorViewModification()
-    private val hidePasswordViewModification = HidePasswordViewModification()
-    private val hideScrollbarsViewModification = HideScrollbarsViewModification()
-    private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification()
-    private val softwareRenderViewModification = SoftwareRenderViewModification()
-
-    var exactness: Float? = null
-        set(value) {
-            require(value == null || value in 0.0..1.0)
-            field = value
-        }
-
-    fun hasExactness() = exactness != null
-
-    fun setHideScrollbars(hideScrollbars: Boolean) {
-        this.hideScrollbarsViewModification.isEnabled = hideScrollbars
-    }
-
-    fun setHidePasswords(hidePasswords: Boolean) {
-        this.hidePasswordViewModification.isEnabled = hidePasswords
-    }
-
-    fun setHideCursor(hideCursor: Boolean) {
-        this.hideCursorViewModification.isEnabled = hideCursor
-    }
-
-    fun setHideTextSuggestions(hideTextSuggestions: Boolean) {
-        this.hideTextSuggestionsViewModification.isEnabled = hideTextSuggestions
-    }
-
-    fun setUseSoftwareRenderer(useSoftwareRenderer: Boolean) {
-        this.softwareRenderViewModification.isEnabled = useSoftwareRenderer
-    }
-
-    internal fun hideSoftKeyboard() {
-        if (hideSoftKeyboard) {
-            Espresso.closeSoftKeyboard()
-        }
-    }
-
-    /**
-     * Allows Testify to deliberately set the keyboard focus to the specified view
-     *
-     * @param enabled when true, removes focus from all views in the activity
-     * @param focusTargetId the View ID to set focus on
-     */
-    fun setFocusTarget(enabled: Boolean, @IdRes focusTargetId: Int) {
-        focusModification.isEnabled = enabled
-        focusModification.focusTargetId = focusTargetId
-    }
-
-    @CallSuper
-    internal fun applyViewModifications(parentView: ViewGroup) {
-        hideScrollbarsViewModification.modify(parentView)
-        hideTextSuggestionsViewModification.modify(parentView)
-        hidePasswordViewModification.modify(parentView)
-        softwareRenderViewModification.modify(parentView)
-        hideCursorViewModification.modify(parentView)
-    }
-
     /**
      * Allow the test to define a set of rectangles to exclude from the comparison.
      * Any pixels contained within the bounds of any of the provided Rects are ignored.
