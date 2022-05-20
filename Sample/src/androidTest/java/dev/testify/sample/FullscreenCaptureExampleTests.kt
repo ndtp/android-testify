@@ -43,7 +43,9 @@ class FullscreenCaptureExampleTest {
     fun fullscreen() {
         rule
             .captureFullscreen()
-            .excludeSystemUi()
+            .configure {
+                excludeSystemUi()
+            }
             .setExactness(0.95f)
             .assertSame()
     }
@@ -53,7 +55,9 @@ class FullscreenCaptureExampleTest {
     fun withMenu() {
         rule
             .captureFullscreen()
-            .excludeSystemUi()
+            .configure {
+                excludeSystemUi()
+            }
             .setExactness(0.95f)
             .setEspressoActions {
                 openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
@@ -66,7 +70,9 @@ class FullscreenCaptureExampleTest {
     fun withDialog() {
         rule
             .captureFullscreen()
-            .excludeSystemUi()
+            .configure {
+                excludeSystemUi()
+            }
             .setExactness(0.95f)
             .setViewModifications {
                 MaterialAlertDialogBuilder(it.context)

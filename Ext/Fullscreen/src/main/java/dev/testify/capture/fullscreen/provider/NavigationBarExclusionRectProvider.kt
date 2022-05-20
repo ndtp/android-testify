@@ -27,8 +27,8 @@ import android.graphics.Rect
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import dev.testify.ExclusionRectProvider
-import dev.testify.ScreenshotRule
+import dev.testify.internal.ExclusionRectProvider
+import dev.testify.internal.TestifyConfiguration
 
 /**
  * This file provides extension methods that will add the rectangle covering the system navigation bar to the
@@ -57,10 +57,9 @@ val navigationBarExclusionRectProvider: ExclusionRectProvider = { rootView, excl
 }
 
 /**
- * Extension method for [ScreenshotRule] that will add the rectangle covering the system navigation bar to the
+ * Extension method for [TestifyConfiguration] that will add the rectangle covering the system navigation bar to the
  * exclusion area.
  */
-fun ScreenshotRule<*>.excludeNavigationBar(): ScreenshotRule<*> {
+fun TestifyConfiguration.excludeNavigationBar() {
     defineExclusionRects(navigationBarExclusionRectProvider)
-    return this
 }

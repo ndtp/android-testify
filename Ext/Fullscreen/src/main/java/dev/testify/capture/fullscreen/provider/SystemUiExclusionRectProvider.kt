@@ -23,8 +23,8 @@
  */
 package dev.testify.capture.fullscreen.provider
 
-import dev.testify.ExclusionRectProvider
-import dev.testify.ScreenshotRule
+import dev.testify.internal.ExclusionRectProvider
+import dev.testify.internal.TestifyConfiguration
 
 /**
  * This file provides extension methods that will add rectangles covering both the status bar and the navigation
@@ -47,10 +47,9 @@ val systemUiExclusionRectProvider: ExclusionRectProvider = { rootView, exclusion
 }
 
 /**
- * Extension method for [ScreenshotRule] that will add the rectangles covering the system status bar and navigation
+ * Extension method for [TestifyConfiguration] that will add the rectangles covering the system status bar and navigation
  * bar to the exclusion area.
  */
-fun ScreenshotRule<*>.excludeSystemUi(): ScreenshotRule<*> {
+fun TestifyConfiguration.excludeSystemUi() {
     defineExclusionRects(systemUiExclusionRectProvider)
-    return this
 }

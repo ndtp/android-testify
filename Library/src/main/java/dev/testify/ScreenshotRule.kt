@@ -33,7 +33,6 @@ import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 import android.graphics.Bitmap
-import android.graphics.Rect
 import android.os.Bundle
 import android.os.Debug
 import android.os.Looper
@@ -97,7 +96,6 @@ typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias EspressoActions = () -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
 typealias ExtrasProvider = (bundle: Bundle) -> Unit
-typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
@@ -139,8 +137,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     internal var reporter: Reporter? = null
         private set
     private var orientationHelper = OrientationHelper(activityClass)
-    private var exclusionRectProvider: ExclusionRectProvider? = null
-    private val exclusionRects = HashSet<Rect>()
     private var orientationToIgnore: Int = SCREEN_ORIENTATION_UNSPECIFIED
     private val screenshotUtility = ScreenshotUtility()
     private lateinit var outputFileName: String
@@ -277,26 +273,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
-     * Allow the test to define a set of rectangles to exclude from the comparison.
-     * Any pixels contained within the bounds of any of the provided Rects are ignored.
-     * The provided callback is invoked after the layout is fully rendered and immediately before
-     * the screenshot is captured.
-     *
-     * Note: This comparison method is significantly slower than the default.
-     *
-     * @param provider A callback of type ExclusionRectProvider
-     */
-    fun defineExclusionRects(provider: ExclusionRectProvider): ScreenshotRule<T> {
-        this.exclusionRectProvider = provider
-        return this
-    }
-
-    /**
      * Set the configuration for the ScreenshotRule
      *
      * @param configureRule - [TestifyConfiguration]
      */
-    fun configure(configureRule: (TestifyConfiguration) -> Unit): ScreenshotRule<T> {
+    fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
         configureRule.invoke(configuration)
         return this
     }
@@ -535,7 +516,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * against a black background.
      */
     open fun generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap) {
-        HighContrastDiff(exclusionRects)
+        HighContrastDiff(configuration.exclusionRects)
             .name(outputFileName)
             .baseline(baselineBitmap)
             .current(currentBitmap)
@@ -546,7 +527,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     fun getBitmapCompare(): CompareMethod {
         return when {
             compareMethod != null -> compareMethod!!
-            exclusionRects.isNotEmpty() || exactness != null -> FuzzyCompare(exactness, exclusionRects)::compareBitmaps
+            configuration.hasExclusionRect() || exactness != null -> FuzzyCompare(
+                exactness,
+                configuration.exclusionRects
+            )::compareBitmaps
             else -> ::sameAsCompare
         }
     }
@@ -618,9 +602,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 
-                exclusionRectProvider?.let { provider ->
-                    provider(getRootView(activity), exclusionRects)
-                }
+                configuration.applyExclusionRects(getRootView(activity))
 
                 beforeScreenshot(activity)
 
@@ -678,7 +660,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             } finally {
             }
         } finally {
-            exclusionRects.clear()
+            configuration.resetExclusionRects()
             ResourceWrapper.afterTestFinished(activity)
             orientationHelper.afterTestFinished()
             TestifyFeatures.reset()
