@@ -88,9 +88,8 @@ data class TestifyConfiguration(
 
     @WorkerThread
     internal fun applyViewModificationsTestThread(activity: Activity) {
-        if (focusTargetId != View.NO_ID) FocusModification().modify(activity)
+        if (focusTargetId != View.NO_ID) FocusModification(focusTargetId).modify(activity)
     }
-
 
     /**
      * This method is called before each test method, including any method annotated with Before.
