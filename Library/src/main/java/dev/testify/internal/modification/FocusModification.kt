@@ -33,9 +33,7 @@ import androidx.annotation.WorkerThread
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class FocusModification : ViewModification() {
-
-    @IdRes var focusTargetId: Int = View.NO_ID
+class FocusModification(@IdRes var focusTargetId: Int) : ViewModification() {
 
     private fun Activity.getFocusTargetView(): View {
         val id = if (focusTargetId == View.NO_ID) android.R.id.content else focusTargetId

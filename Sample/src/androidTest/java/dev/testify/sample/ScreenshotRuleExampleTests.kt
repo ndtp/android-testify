@@ -206,7 +206,9 @@ class ScreenshotRuleExampleTests {
                     rule.activity.title = it.name
                 }
             }
-            .setUseSoftwareRenderer(true)
+            .configure {
+                useSoftwareRenderer = true
+            }
             .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
             .assertSame()
     }
