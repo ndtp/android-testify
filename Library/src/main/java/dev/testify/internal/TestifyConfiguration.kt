@@ -24,14 +24,20 @@
 
 package dev.testify.internal
 
+import android.app.Activity
 import android.graphics.Rect
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.FloatRange
+import androidx.annotation.IdRes
+import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.getAnnotation
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.WrappedFontScale
 import dev.testify.internal.helpers.WrappedLocale
+import dev.testify.internal.modification.FocusModification
 import dev.testify.internal.modification.HideCursorViewModification
 import dev.testify.internal.modification.HidePasswordViewModification
 import dev.testify.internal.modification.HideScrollbarsViewModification
@@ -41,6 +47,9 @@ import java.util.Locale
 
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
+/**
+ * @param focusTargetId - Allows Testify to deliberately set the keyboard focus to the specified view ID
+ */
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
     val exclusionRects: MutableSet<Rect> = HashSet(),
@@ -52,6 +61,7 @@ data class TestifyConfiguration(
     var hideScrollbars: Boolean = true,
     var hideTextSuggestions: Boolean = true,
     var useSoftwareRenderer: Boolean = false,
+    @IdRes var focusTargetId: Int = View.NO_ID,
 ) {
 
     val hasExactness: Boolean
@@ -67,13 +77,20 @@ data class TestifyConfiguration(
         }
     }
 
-    internal fun applyViewModifications(parentView: ViewGroup) {
+    @UiThread
+    internal fun applyViewModificationsMainThread(parentView: ViewGroup) {
         if (hideCursor) HideCursorViewModification().modify(parentView)
         if (hidePasswords) HidePasswordViewModification().modify(parentView)
         if (hideScrollbars) HideScrollbarsViewModification().modify(parentView)
         if (hideTextSuggestions) HideTextSuggestionsViewModification().modify(parentView)
         if (useSoftwareRenderer) SoftwareRenderViewModification().modify(parentView)
     }
+
+    @WorkerThread
+    internal fun applyViewModificationsTestThread(activity: Activity) {
+        if (focusTargetId != View.NO_ID) FocusModification().modify(activity)
+    }
+
 
     /**
      * This method is called before each test method, including any method annotated with Before.
