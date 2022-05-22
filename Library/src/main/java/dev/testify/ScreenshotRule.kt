@@ -40,6 +40,7 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -68,7 +69,6 @@ import dev.testify.internal.extensions.cyan
 import dev.testify.internal.extensions.yellow
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
-import dev.testify.internal.modification.FocusModification
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
@@ -106,7 +106,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @LayoutRes private var targetLayoutId: Int = NO_ID
 
-    private val focusModification = FocusModification() // isEnabled = false
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
@@ -146,18 +145,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun setHideSoftKeyboard(hideSoftKeyboard: Boolean): ScreenshotRule<T> {
         this.hideSoftKeyboard = hideSoftKeyboard
-        return this
-    }
-
-    /**
-     * Allows Testify to deliberately set the keyboard focus to the specified view
-     *
-     * @param enabled when true, removes focus from all views in the activity
-     * @param focusTargetId the View ID to set focus on
-     */
-    fun setFocusTarget(enabled: Boolean = true, @IdRes focusTargetId: Int = android.R.id.content): ScreenshotRule<T> {
-        // this.focusModification.isEnabled = enabled
-        this.focusModification.focusTargetId = focusTargetId
         return this
     }
 
@@ -579,9 +566,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
+    @UiThread
     @CallSuper
     open fun applyViewModifications(parentView: ViewGroup) {
-        configuration.applyViewModifications(parentView)
+        configuration.applyViewModificationsMainThread(parentView)
     }
 
     private fun initializeView(activity: Activity) {
@@ -606,7 +594,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
             latch.countDown()
         }
-        focusModification.modify(activity)
+        configuration.applyViewModificationsTestThread(activity)
+
         if (Debug.isDebuggerConnected()) {
             latch.await()
         } else {
