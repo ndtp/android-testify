@@ -65,8 +65,6 @@ import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
-import dev.testify.internal.helpers.WrappedFontScale
-import dev.testify.internal.helpers.WrappedLocale
 import dev.testify.internal.modification.FocusModification
 import dev.testify.internal.modification.HideCursorViewModification
 import dev.testify.internal.modification.HidePasswordViewModification
@@ -87,7 +85,6 @@ import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -120,10 +117,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
-    private var fontScale: Float? = null
     private var hideSoftKeyboard = true
     private var isLayoutInspectionModeEnabled = false
-    private var locale: Locale? = null
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
@@ -228,18 +223,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
-    fun setFontScale(fontScale: Float): ScreenshotRule<T> {
-        this.fontScale = fontScale
-        return this
-    }
-
     fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotRule<T> {
         this.screenshotViewProvider = viewProvider
-        return this
-    }
-
-    fun setLocale(newLocale: Locale): ScreenshotRule<T> {
-        this.locale = newLocale
         return this
     }
 
@@ -297,12 +282,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @CallSuper
     override fun beforeActivityLaunched() {
         super.beforeActivityLaunched()
-        locale?.let {
-            ResourceWrapper.addOverride(WrappedLocale(it))
-        }
-        fontScale?.let {
-            ResourceWrapper.addOverride(WrappedFontScale(it))
-        }
+        configuration.beforeActivityLaunched()
         ResourceWrapper.beforeActivityLaunched()
     }
 

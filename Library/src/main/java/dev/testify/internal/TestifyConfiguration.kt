@@ -29,13 +29,19 @@ import android.view.ViewGroup
 import androidx.annotation.FloatRange
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.getAnnotation
+import dev.testify.internal.helpers.ResourceWrapper
+import dev.testify.internal.helpers.WrappedFontScale
+import dev.testify.internal.helpers.WrappedLocale
+import java.util.Locale
 
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
     val exclusionRects: MutableSet<Rect> = HashSet(),
-    @FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null
+    @FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null,
+    var fontScale: Float? = null,
+    var locale: Locale? = null
 ) {
     val hasExactness: Boolean
         get() = exactness != null
@@ -47,6 +53,18 @@ data class TestifyConfiguration(
         val bitmapComparison = methodAnnotations?.getAnnotation<BitmapComparisonExactness>()
         if (exactness == null) {
             exactness = bitmapComparison?.exactness
+        }
+    }
+
+    /**
+     * This method is called before each test method, including any method annotated with Before.
+     */
+    internal fun beforeActivityLaunched() {
+        locale?.let {
+            ResourceWrapper.addOverride(WrappedLocale(it))
+        }
+        fontScale?.let {
+            ResourceWrapper.addOverride(WrappedFontScale(it))
         }
     }
 
