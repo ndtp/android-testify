@@ -27,13 +27,9 @@ package dev.testify.internal.modification
 import android.view.View
 import android.view.ViewGroup
 
-abstract class ViewModification(var isEnabled: Boolean = false) {
+abstract class ViewModification {
 
     fun modify(view: View) {
-        if (!isEnabled) {
-            return
-        }
-
         if (qualifies(view)) {
             performModification(view)
         }

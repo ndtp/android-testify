@@ -111,12 +111,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @LayoutRes private var targetLayoutId: Int = NO_ID
 
-    private val hideCursorViewModification = HideCursorViewModification()
-    private val hidePasswordViewModification = HidePasswordViewModification()
-    private val hideScrollbarsViewModification = HideScrollbarsViewModification()
-    private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification()
-    private val softwareRenderViewModification = SoftwareRenderViewModification()
-    private val focusModification = FocusModification()
+    private val hideCursorViewModification = HideCursorViewModification() // true
+    private val hidePasswordViewModification = HidePasswordViewModification() // true
+    private val hideScrollbarsViewModification = HideScrollbarsViewModification() // true
+    private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification() // true
+    private val softwareRenderViewModification = SoftwareRenderViewModification() // false
+    private val focusModification = FocusModification() // isEnabled = false
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
@@ -159,31 +159,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
-    fun setHideScrollbars(hideScrollbars: Boolean): ScreenshotRule<T> {
-        this.hideScrollbarsViewModification.isEnabled = hideScrollbars
-        return this
-    }
-
-    fun setHidePasswords(hidePasswords: Boolean): ScreenshotRule<T> {
-        this.hidePasswordViewModification.isEnabled = hidePasswords
-        return this
-    }
-
-    fun setHideCursor(hideCursor: Boolean): ScreenshotRule<T> {
-        this.hideCursorViewModification.isEnabled = hideCursor
-        return this
-    }
-
-    fun setHideTextSuggestions(hideTextSuggestions: Boolean): ScreenshotRule<T> {
-        this.hideTextSuggestionsViewModification.isEnabled = hideTextSuggestions
-        return this
-    }
-
-    fun setUseSoftwareRenderer(useSoftwareRenderer: Boolean): ScreenshotRule<T> {
-        this.softwareRenderViewModification.isEnabled = useSoftwareRenderer
-        return this
-    }
-
     /**
      * Allows Testify to deliberately set the keyboard focus to the specified view
      *
@@ -191,7 +166,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @param focusTargetId the View ID to set focus on
      */
     fun setFocusTarget(enabled: Boolean = true, @IdRes focusTargetId: Int = android.R.id.content): ScreenshotRule<T> {
-        this.focusModification.isEnabled = enabled
+        // this.focusModification.isEnabled = enabled
         this.focusModification.focusTargetId = focusTargetId
         return this
     }
