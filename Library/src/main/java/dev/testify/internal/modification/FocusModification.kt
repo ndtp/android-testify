@@ -33,7 +33,7 @@ import androidx.annotation.WorkerThread
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class FocusModification : ViewModification(isEnabled = false) {
+class FocusModification : ViewModification() {
 
     @IdRes var focusTargetId: Int = View.NO_ID
 
@@ -48,10 +48,6 @@ class FocusModification : ViewModification(isEnabled = false) {
      */
     @WorkerThread
     fun modify(activity: Activity) {
-        if (!isEnabled) {
-            return
-        }
-
         val threadLatch = CountDownLatch(2)
         activity.runOnUiThread {
             performModification(activity.getFocusTargetView())

@@ -28,7 +28,7 @@ import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.EditText
 
-class HidePasswordViewModification : ViewModification(true) {
+class HidePasswordViewModification : ViewModification() {
 
     override fun performModification(view: View) {
         (view as EditText).transformationMethod = StaticPasswordTransformationMethod.getInstance()

@@ -28,7 +28,7 @@ import android.text.InputType
 import android.view.View
 import android.widget.EditText
 
-class HideTextSuggestionsViewModification : ViewModification(true) {
+class HideTextSuggestionsViewModification : ViewModification() {
 
     override fun performModification(view: View) {
         val inputType = (view as EditText).inputType

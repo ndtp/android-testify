@@ -27,7 +27,7 @@ package dev.testify.internal.modification
 import android.view.View
 import android.widget.EditText
 
-class HideCursorViewModification : ViewModification(true) {
+class HideCursorViewModification : ViewModification() {
 
     override fun performModification(view: View) {
         (view as EditText).isCursorVisible = false
