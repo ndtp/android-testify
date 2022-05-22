@@ -69,11 +69,6 @@ import dev.testify.internal.extensions.yellow
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.modification.FocusModification
-import dev.testify.internal.modification.HideCursorViewModification
-import dev.testify.internal.modification.HidePasswordViewModification
-import dev.testify.internal.modification.HideScrollbarsViewModification
-import dev.testify.internal.modification.HideTextSuggestionsViewModification
-import dev.testify.internal.modification.SoftwareRenderViewModification
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
@@ -111,11 +106,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @LayoutRes private var targetLayoutId: Int = NO_ID
 
-    private val hideCursorViewModification = HideCursorViewModification() // true
-    private val hidePasswordViewModification = HidePasswordViewModification() // true
-    private val hideScrollbarsViewModification = HideScrollbarsViewModification() // true
-    private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification() // true
-    private val softwareRenderViewModification = SoftwareRenderViewModification() // false
     private val focusModification = FocusModification() // isEnabled = false
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
@@ -591,11 +581,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @CallSuper
     open fun applyViewModifications(parentView: ViewGroup) {
-        hideScrollbarsViewModification.modify(parentView)
-        hideTextSuggestionsViewModification.modify(parentView)
-        hidePasswordViewModification.modify(parentView)
-        softwareRenderViewModification.modify(parentView)
-        hideCursorViewModification.modify(parentView)
+        configuration.applyViewModifications(parentView)
     }
 
     private fun initializeView(activity: Activity) {
