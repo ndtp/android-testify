@@ -69,6 +69,7 @@ data class TestifyConfiguration(
     var hideTextSuggestions: Boolean = true,
     var useSoftwareRenderer: Boolean = false,
     @IdRes var focusTargetId: Int = View.NO_ID,
+    var pauseForInspection: Boolean = false,
 ) {
 
     init {

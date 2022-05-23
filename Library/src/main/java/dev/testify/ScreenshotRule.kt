@@ -111,7 +111,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
     private var hideSoftKeyboard = true
-    private var isLayoutInspectionModeEnabled = false
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
@@ -167,11 +166,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             throw AssertSameMustBeLastException()
         }
         this.viewModification = viewModification
-        return this
-    }
-
-    fun setLayoutInspectionModeEnabled(layoutInspectionModeEnabled: Boolean): ScreenshotRule<T> {
-        this.isLayoutInspectionModeEnabled = layoutInspectionModeEnabled
         return this
     }
 
@@ -484,7 +478,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 screenshotLifecycleObservers.map { it.afterScreenshot(activity, currentBitmap) }
 
-                if (isLayoutInspectionModeEnabled) {
+                if (configuration.pauseForInspection) {
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
                 }
 
