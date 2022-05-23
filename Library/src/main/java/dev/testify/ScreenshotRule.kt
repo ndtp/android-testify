@@ -39,7 +39,6 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
-import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import dev.testify.TestifyFeatures.CanvasCapture
@@ -85,7 +84,6 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
-typealias EspressoActions = () -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
 typealias ExtrasProvider = (bundle: Bundle) -> Unit
 
@@ -109,8 +107,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
-    private var espressoActions: EspressoActions? = null
-    private var hideSoftKeyboard = true
+    private var espressoHelper = EspressoHelper(configuration)
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
@@ -138,11 +135,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return Looper.getMainLooper().thread == Thread.currentThread()
     }
 
-    fun setHideSoftKeyboard(hideSoftKeyboard: Boolean): ScreenshotRule<T> {
-        this.hideSoftKeyboard = hideSoftKeyboard
-        return this
-    }
-
     fun setRootViewId(@IdRes rootViewId: Int): ScreenshotRule<T> {
         this.rootViewId = rootViewId
         return this
@@ -157,7 +149,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         if (assertSameInvoked) {
             throw AssertSameMustBeLastException()
         }
-        this.espressoActions = espressoActions
+        espressoHelper.actions = espressoActions
         return this
     }
 
@@ -258,7 +250,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         )
         configuration.applyAnnotations(methodAnnotations)
 
-        espressoActions = null
+        espressoHelper.reset()
 
         getInstrumentation().testDescription = TestDescription(
             methodName = methodName,
@@ -456,13 +448,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 initializeView(activity)
                 screenshotLifecycleObservers.map { it.afterInitializeView(activity) }
 
-                espressoActions?.invoke()
-
-                Espresso.onIdle()
-
-                if (hideSoftKeyboard) {
-                    Espresso.closeSoftKeyboard()
-                }
+                espressoHelper.beforeScreenshot()
 
                 val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 

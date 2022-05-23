@@ -70,6 +70,7 @@ data class TestifyConfiguration(
     var useSoftwareRenderer: Boolean = false,
     @IdRes var focusTargetId: Int = View.NO_ID,
     var pauseForInspection: Boolean = false,
+    var hideSoftKeyboard: Boolean = true,
 ) {
 
     init {
