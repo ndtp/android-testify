@@ -51,7 +51,9 @@ class OrientationTest {
     private fun testOrientation(title: String, orientation: Int) {
         rule
             .setTargetLayoutId(R.layout.view_client_details)
-            .setOrientation(orientation)
+            .configure {
+                this.orientation = orientation
+            }
             .setViewModifications { harnessRoot ->
                 val viewState =
                     harnessRoot.context.getViewState(title + if (orientation == SCREEN_ORIENTATION_PORTRAIT) " Portrait" else " Landscape")
