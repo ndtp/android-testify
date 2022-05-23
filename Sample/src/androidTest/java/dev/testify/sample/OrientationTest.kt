@@ -7,7 +7,6 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.clients.details.ClientDetailsView
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.getViewState
-import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 
@@ -47,13 +46,6 @@ class OrientationTest {
     @ScreenshotInstrumentation
     fun d() {
         testOrientation("Four", SCREEN_ORIENTATION_LANDSCAPE)
-    }
-
-    @Test
-    @ScreenshotInstrumentation(orientationToIgnore = SCREEN_ORIENTATION_PORTRAIT)
-    fun e() {
-        testOrientation("Five", SCREEN_ORIENTATION_PORTRAIT)
-        assertFalse(rule.outputFileExists)
     }
 
     private fun testOrientation(title: String, orientation: Int) {

@@ -23,6 +23,7 @@
  * THE SOFTWARE.
  */
 @file:Suppress("deprecation")
+
 package dev.testify.internal.helpers
 
 import android.app.Activity
@@ -76,16 +77,6 @@ class OrientationHelper<T : Activity>(
 
     fun afterTestFinished() {
         requestedOrientation = null
-    }
-
-    fun shouldIgnoreOrientation(orientationToIgnore: Int): Boolean {
-        require(
-            orientationToIgnore in ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED..ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        )
-        return when (orientationToIgnore) {
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED -> false
-            else -> activity.isRequestedOrientation(orientationToIgnore)
-        }
     }
 
     private val activity: T
