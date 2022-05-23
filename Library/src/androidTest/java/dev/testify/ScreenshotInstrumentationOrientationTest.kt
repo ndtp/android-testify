@@ -24,32 +24,30 @@
  */
 package dev.testify
 
-import android.content.pm.ActivityInfo
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import dev.testify.annotation.ScreenshotInstrumentation
 import org.junit.Rule
 import org.junit.Test
-import org.junit.Assert.assertFalse
 
 class ScreenshotInstrumentationOrientationTest {
 
     @get:Rule
     val rule: ScreenshotRule<TestActivity> = ScreenshotRule(TestActivity::class.java)
 
-    @ScreenshotInstrumentation(orientationToIgnore = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    @ScreenshotInstrumentation
     @Test
     fun testLandscapeOnly() {
-        rule.assertSame()
-        if (rule.deviceOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            assertFalse(rule.outputFileExists)
-        }
+        rule
+            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
+            .assertSame()
     }
 
-    @ScreenshotInstrumentation(orientationToIgnore = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    @ScreenshotInstrumentation
     @Test
     fun testPortraitOnly() {
-        rule.assertSame()
-        if (rule.deviceOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            assertFalse(rule.outputFileExists)
-        }
+        rule
+            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_PORTRAIT)
+            .assertSame()
     }
 }
