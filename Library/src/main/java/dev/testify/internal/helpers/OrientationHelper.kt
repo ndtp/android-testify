@@ -30,6 +30,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.Point
 import androidx.test.espresso.Espresso
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import dev.testify.internal.exception.UnexpectedOrientationException
@@ -41,6 +42,7 @@ class OrientationHelper(
 ) {
     var deviceOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     private lateinit var lifecycleLatch: CountDownLatch
+    private lateinit var activityClass: Class<*>
 
     fun afterActivityLaunched() {
         // Set the orientation based on how the activity was launched
@@ -76,8 +78,7 @@ class OrientationHelper(
 
     private val activity: Activity
         get() {
-            TODO()
-//            return rule.activity
+            return getInstrumentation().getActivityProvider<Activity>().getActivity()
         }
 
     private val Activity.isLandscape: Boolean
@@ -99,16 +100,15 @@ class OrientationHelper(
      * Lifecycle callback. Wait for the activity under test to completely resume after configuration change.
      */
     private fun lifecycleCallback(activity: Activity, stage: Stage) {
-        TODO("$activity $stage")
-        // Need another way to determine the activity class
-        //if (activity::class.java == activityClass) {
-        //    if (stage == Stage.RESUMED) {
-        //        lifecycleLatch.countDown()
-        //    }
-        //}
+        if (activity::class.java == activityClass) {
+            if (stage == Stage.RESUMED) {
+                lifecycleLatch.countDown()
+            }
+        }
     }
 
     private fun Activity.changeOrientation(requestedOrientation: Int) {
+        activityClass = this@changeOrientation.javaClass
         ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(::lifecycleCallback)
 
         Espresso.onIdle()

@@ -61,7 +61,9 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ViewModificationException
+import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.ResourceWrapper
+import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
@@ -90,7 +92,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     protected val configuration: TestifyConfiguration = TestifyConfiguration()
-) : ActivityTestRule<T>(activityClass, initialTouchMode, false), TestRule {
+) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
+    TestRule,
+    ActivityProvider<T> {
 
     @IdRes
     protected var rootViewId = rootViewId
@@ -336,7 +340,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Test lifecycle method.
      * Invoked immediately before assertSame and before the activity is launched.
      */
-    open fun beforeAssertSame() {}
+    @CallSuper
+    open fun beforeAssertSame() {
+        getInstrumentation().registerActivityProvider(this)
+    }
 
     /**
      * Test lifecycle method.
