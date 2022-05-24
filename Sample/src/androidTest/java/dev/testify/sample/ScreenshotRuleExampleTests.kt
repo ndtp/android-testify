@@ -46,7 +46,9 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.extensions.boundingBox
 import dev.testify.internal.exception.ScreenshotIsDifferentException
+import dev.testify.internal.processor.capture.canvasCapture
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
+import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
@@ -168,8 +170,8 @@ class ScreenshotRuleExampleTests {
     /**
      * Demonstrates how to enable experimental features programmatically.
      *
-     * In this example, CanvasCapture is enabled. If you compare to the [default] test case,
-     * you will notice minor capture differences owning to the different capture methods used.
+     * In this example, GenerateDiffs is enabled and the file
+     * ScreenshotRuleExampleTests_withExperimentalFeatureEnabled.diff.png is created for this test.
      */
     @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
@@ -182,7 +184,7 @@ class ScreenshotRuleExampleTests {
                     rule.activity.title = it.name
                 }
             }
-            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
+            .withExperimentalFeatureEnabled(TestifyFeatures.GenerateDiffs)
             .assertSame()
     }
 
@@ -209,7 +211,7 @@ class ScreenshotRuleExampleTests {
             .configure {
                 useSoftwareRenderer = true
             }
-            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
+            .setCaptureMethod(::canvasCapture)
             .assertSame()
     }
 
@@ -318,9 +320,9 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun exclusions() {
-        TestifyFeatures.PixelCopyCapture.setEnabled(true)
         TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule
+            .setCaptureMethod(::pixelCopyCapture)
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 val g = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')

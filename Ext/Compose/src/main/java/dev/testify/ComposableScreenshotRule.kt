@@ -32,6 +32,7 @@ import androidx.test.espresso.Espresso
 import dev.testify.compose.R
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.disposeComposition
+import dev.testify.internal.processor.capture.pixelCopyCapture
 import org.junit.Assert.assertTrue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -56,7 +57,7 @@ open class ComposableScreenshotRule(
      */
     override fun beforeAssertSame() {
         super.beforeAssertSame()
-        TestifyFeatures.PixelCopyCapture.setEnabled(true)
+        setCaptureMethod(::pixelCopyCapture)
         setScreenshotViewProvider {
             it.getChildAt(0)
         }

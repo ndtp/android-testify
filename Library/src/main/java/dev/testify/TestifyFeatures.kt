@@ -46,9 +46,7 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
      * - Yellow pixels are different, but within the Exactness threshold
      * - Red pixels are different
      */
-    GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false),
-    CanvasCapture(listOf("testify-canvas-capture")),
-    PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture"));
+    GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false);
 
     private var override: Boolean? = null
 
