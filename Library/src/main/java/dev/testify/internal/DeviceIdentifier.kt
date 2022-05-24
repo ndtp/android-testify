@@ -29,7 +29,6 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.util.Pair
 import android.view.WindowManager
-import dev.testify.TestifyFeatures
 import dev.testify.internal.extensions.languageTag
 import java.util.Locale
 
@@ -114,13 +113,7 @@ object DeviceIdentifier {
             get() = context.resources.displayMetrics.densityDpi.toString() + "dp"
 
         internal open val locale: String
-            get() {
-                return if (TestifyFeatures.Locale.isEnabled(context)) {
-                    Locale.getDefault().languageTag
-                } else {
-                    Locale.getDefault().languageTag.substringBefore("_")
-                }
-            }
+            get() = Locale.getDefault().languageTag
 
         internal open val testClass: String
             get() = if (testName == null) "" else testName.first

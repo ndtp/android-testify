@@ -47,7 +47,6 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
      * - Red pixels are different
      */
     GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false),
-    Locale(listOf("testify-experimental-locale"), defaultValue = true),
     CanvasCapture(listOf("testify-canvas-capture")),
     PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture"));
 
