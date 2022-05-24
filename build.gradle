@@ -33,7 +33,7 @@ buildscript {
                 'dokka'              : '1.4.32',            // https://github.com/Kotlin/dokka/releases
                 'kotlin'             : '1.5.31',            // https://kotlinlang.org/
                 'kotlinx'            : '1.5.1',             // https://github.com/Kotlin/kotlinx.coroutines/releases
-                'ktlint'             : '0.36.0',            // https://github.com/pinterest/ktlint
+                'ktlint'             : '0.45.2',            // https://github.com/pinterest/ktlint
                 'material'           : '1.4.0',             // https://material.io/develop/android/docs/getting-started/
                 'mockito2'           : '4.0.0',             // https://github.com/mockito/mockito/releases
                 'mockitokotlin'      : '4.0.0',             // https://github.com/nhaarman/mockito-kotlin
