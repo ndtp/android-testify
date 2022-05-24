@@ -27,9 +27,9 @@ package dev.testify
 import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
-import dev.testify.TestifyFeatures.PixelCopyCapture
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
+import dev.testify.internal.processor.capture.pixelCopyCapture
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,7 +52,7 @@ class ExperimentalPixelCopyTest {
     @Test
     fun withPixelCopy() {
         rule
-            .withExperimentalFeatureEnabled(PixelCopyCapture)
+            .setCaptureMethod(::pixelCopyCapture)
             .configure {
                 exactness = 0.99f // Required due to difference with CI GPU architecture
             }

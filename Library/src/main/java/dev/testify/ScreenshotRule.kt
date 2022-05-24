@@ -41,8 +41,6 @@ import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
-import dev.testify.TestifyFeatures.CanvasCapture
-import dev.testify.TestifyFeatures.PixelCopyCapture
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.DeviceIdentifier
@@ -68,9 +66,7 @@ import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.output.OutputFileUtility
-import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
-import dev.testify.internal.processor.capture.createBitmapUsingPixelCopy
 import dev.testify.internal.processor.compare.FuzzyCompare
 import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.internal.processor.diff.HighContrastDiff
@@ -348,8 +344,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     fun getCaptureMethod(): CaptureMethod {
         return when {
             captureMethod != null -> captureMethod!!
-            PixelCopyCapture.isEnabled(activity) -> ::createBitmapUsingPixelCopy
-            CanvasCapture.isEnabled(activity) -> ::createBitmapFromCanvas
             else -> ::createBitmapFromDrawingCache
         }
     }

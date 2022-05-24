@@ -35,9 +35,8 @@ import android.view.PixelCopy
 import android.view.View
 import java.util.concurrent.CountDownLatch
 
-@Suppress("unused")
 @TargetApi(Build.VERSION_CODES.O)
-fun createBitmapUsingPixelCopy(activity: Activity, targetView: View?): Bitmap {
+fun pixelCopyCapture(activity: Activity, targetView: View?): Bitmap {
     val window = activity.window!!
     val view: View = targetView ?: activity.window.decorView
     val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
