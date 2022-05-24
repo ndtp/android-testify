@@ -59,9 +59,10 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.NO_ASSERT, ErrorCause.match(MissingAssertSameException()))
         assertEquals(ErrorCause.NO_BASELINE, ErrorCause.match(ScreenshotBaselineNotDefinedException("", "", "", "")))
         assertEquals(ErrorCause.NO_DIRECTORY, ErrorCause.match(ScreenshotDirectoryNotFoundException(false, "")))
-        assertEquals(ErrorCause.NO_ROOT_VIEW, ErrorCause.match(RootViewNotFoundException(mock {
-            whenever(mock.resources).thenReturn(mock())
-        }, 0)))
+        assertEquals(
+            ErrorCause.NO_ROOT_VIEW,
+            ErrorCause.match(RootViewNotFoundException(mock { whenever(mock.resources).thenReturn(mock()) }, 0))
+        )
         assertEquals(ErrorCause.UI_THREAD, ErrorCause.match(NoScreenshotsOnUiThreadException()))
         assertEquals(ErrorCause.VIEW_MODIFICATION, ErrorCause.match(ViewModificationException(Throwable())))
         assertEquals(ErrorCause.WRAP_CONTEXT, ErrorCause.match(TestMustWrapContextException("")))

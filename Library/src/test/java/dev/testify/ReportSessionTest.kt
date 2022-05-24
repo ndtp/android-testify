@@ -165,7 +165,8 @@ class ReportSessionTest {
                 "- date: 2020-06-26@17:34:57\n" +
                 "- failed: 1\n" +
                 "- passed: 2\n" +
-                "- total: 3\n", info
+                "- total: 3\n",
+            info
         )
     }
 }

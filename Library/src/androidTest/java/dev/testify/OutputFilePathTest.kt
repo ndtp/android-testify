@@ -38,9 +38,13 @@ class OutputFilePathTest {
     fun useSdCard() {
         val subject = OutputFileUtility()
         assertFalse(subject.useSdCard(Bundle.EMPTY))
-        assertTrue(subject.useSdCard(Bundle().apply {
-            putString("useSdCard", "true")
-        }))
+        assertTrue(
+            subject.useSdCard(
+                Bundle().apply {
+                    putString("useSdCard", "true")
+                }
+            )
+        )
     }
 
     @Test

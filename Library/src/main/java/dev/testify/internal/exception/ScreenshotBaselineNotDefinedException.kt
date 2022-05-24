@@ -31,11 +31,11 @@ class ScreenshotBaselineNotDefinedException(
     testClass: String,
     deviceKey: String
 ) :
-        Exception(
-"""
+    Exception(
+        """
 
 *  A baseline screenshot could not be found for '$testName'.
 *  Baseline could not be found in $deviceKey.
 *  To record a baseline screenshot, run `./gradlew $moduleName:screenshotRecord -PtestClass=$testClass`
 """
-        )
+    )

@@ -52,12 +52,14 @@ class TestifyFeaturesTest {
             on { packageManager } doReturn mockPackageManager
             on { packageName } doReturn "com.testify.sample"
         }
-        doReturn(mock<ApplicationInfo>().apply {
-            metaData = mock {
-                on { containsKey(tag) } doReturn true
-                on { getBoolean(tag) } doReturn enabled
+        doReturn(
+            mock<ApplicationInfo>().apply {
+                metaData = mock {
+                    on { containsKey(tag) } doReturn true
+                    on { getBoolean(tag) } doReturn enabled
+                }
             }
-        }).whenever(mockPackageManager).getApplicationInfo("com.testify.sample", GET_META_DATA)
+        ).whenever(mockPackageManager).getApplicationInfo("com.testify.sample", GET_META_DATA)
         return mockContext
     }
 

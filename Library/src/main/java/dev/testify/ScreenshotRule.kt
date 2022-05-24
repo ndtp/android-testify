@@ -569,7 +569,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     DeviceIdentifier.DeviceStringFormatter(
                         testContext,
                         description.nameComponents
-                    ), DEFAULT_NAME_FORMAT
+                    ),
+                    DEFAULT_NAME_FORMAT
                 )
 
                 if (orientationHelper.shouldIgnoreOrientation(orientationToIgnore)) {
@@ -634,7 +635,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                                 DeviceIdentifier.DeviceStringFormatter(
                                     testContext,
                                     null
-                                ), DeviceIdentifier.DEFAULT_FOLDER_FORMAT
+                                ),
+                                DeviceIdentifier.DEFAULT_FOLDER_FORMAT
                             )
                         )
                     }
