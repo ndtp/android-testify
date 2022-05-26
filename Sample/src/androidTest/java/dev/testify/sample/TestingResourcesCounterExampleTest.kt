@@ -32,18 +32,16 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import dev.testify.ScreenshotRule
 import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
-import dev.testify.internal.exception.TestMustLaunchActivityException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.WrappedLocale
 import dev.testify.resources.TestifyResourcesOverride
 import dev.testify.sample.test.TestHarnessActivity
-import dev.testify.sample.test.TestLocaleHarnessActivity
 import dev.testify.sample.test.TestLocaleHarnessNoWrapActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.util.*
+import java.util.Locale
 
 /**
  * These tests demonstrate counter-examples or incorrect usages of the Testify locale support
@@ -54,20 +52,6 @@ class TestingResourcesCounterExampleTest {
     @After
     fun resetResourceWrapper() {
         ResourceWrapper.reset()
-    }
-
-    /**
-     * Throws LocaleTestMustLaunchActivityException unless launchActivity is set to false
-     */
-    @Test(expected = TestMustLaunchActivityException::class)
-    fun usingSetLocaleRequiresLaunchActivityToBeFalse() {
-
-        val rule = ScreenshotRule(
-            activityClass = TestLocaleHarnessActivity::class.java,
-            rootViewId = R.id.harness_root
-        )
-
-        rule.setLocale(Locale.FRANCE)
     }
 
     /**
@@ -95,7 +79,6 @@ class TestingResourcesCounterExampleTest {
     fun usingSetLocaleRequiresActivityToWrapContext() {
         val rule = ScreenshotRule(
             activityClass = TestLocaleHarnessNoWrapActivity::class.java,
-            launchActivity = false,
             rootViewId = R.id.harness_root
         ).apply {
             isDebugMode = true

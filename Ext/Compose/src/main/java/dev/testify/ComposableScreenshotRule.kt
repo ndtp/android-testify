@@ -29,7 +29,6 @@ import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.test.espresso.Espresso
-import dev.testify.TestifyFeatures
 import dev.testify.compose.R
 import dev.testify.internal.disposeComposition
 import org.junit.Assert.assertTrue
@@ -42,8 +41,7 @@ import java.util.concurrent.TimeUnit
 open class ComposableScreenshotRule(
     var exactness: Float = 0.9f
 ) : ScreenshotRule<ComposableTestActivity>(
-    ComposableTestActivity::class.java,
-    launchActivity = false,
+    ComposableTestActivity::class.java
 ) {
     lateinit var composeFunction: @Composable () -> Unit
 

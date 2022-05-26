@@ -36,10 +36,7 @@ class InvalidActivity : Activity()
 class ActivityNotRegisteredExceptionTest {
 
     @get:Rule
-    val rule = ScreenshotRule(
-        activityClass = InvalidActivity::class.java,
-        launchActivity = false
-    )
+    val rule = ScreenshotRule(activityClass = InvalidActivity::class.java)
 
     @get:Rule
     var thrown: ExpectedException = ExpectedException.none()

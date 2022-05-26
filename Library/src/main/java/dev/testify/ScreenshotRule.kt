@@ -63,7 +63,6 @@ import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
 import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.exception.TestMustLaunchActivityException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
@@ -104,9 +103,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected val activityClass: Class<T>,
     @IdRes rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    protected val launchActivity: Boolean = true,
     enableReporter: Boolean = false
-) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
+) : ActivityTestRule<T>(activityClass, initialTouchMode, false), TestRule {
 
     @IdRes
     protected var rootViewId = rootViewId
@@ -245,9 +243,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setFontScale(fontScale: Float): ScreenshotRule<T> {
-        if (launchActivity) {
-            throw TestMustLaunchActivityException("setFontScale")
-        }
         this.fontScale = fontScale
         return this
     }
@@ -258,9 +253,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setLocale(newLocale: Locale): ScreenshotRule<T> {
-        if (launchActivity) {
-            throw TestMustLaunchActivityException("setLocale")
-        }
         this.locale = newLocale
         return this
     }
@@ -278,9 +270,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
         require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        if (launchActivity) {
-            throw TestMustLaunchActivityException("setOrientation")
-        }
         this.orientationHelper.requestedOrientation = requestedOrientation
         return this
     }
@@ -568,12 +557,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun assertSame() {
         assertSameInvoked = true
-
         beforeAssertSame()
 
-        if (!launchActivity) {
-            launchActivity(activityIntent)
+        if (isRunningOnUiThread()) {
+            throw NoScreenshotsOnUiThreadException()
         }
+
+        launchActivity(activityIntent)
 
         try {
             try {
@@ -585,10 +575,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         description.nameComponents
                     ), DEFAULT_NAME_FORMAT
                 )
-
-                if (isRunningOnUiThread()) {
-                    throw NoScreenshotsOnUiThreadException()
-                }
 
                 if (orientationHelper.shouldIgnoreOrientation(orientationToIgnore)) {
                     val orientationName =
