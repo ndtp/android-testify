@@ -1,14 +1,24 @@
 # Android Testify - IntelliJ Platform Plugin
 
-<img width="800px" src="./marketplace/screenshot_22606.png"/>
+<img width="720px" src="./marketplace/screenshot_19166.jpg"/>
 
 <!-- Plugin description -->
-Testify screenshot tests are built on top of Android Instrumentation tests and so already integrate seamlessly with existing test suites. Screenshots can be captured directly from within Android Studio or using the Gradle command-line tools.
+Expand your test coverage by including the View layer. Testify allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.
 
-However, the current Android Studio support relies fully on the fact that Testify tests extend ActivityTestRule and can be invoked using the built-in support for running instrumentation tests with various commands (notably sidebar icons) in Android Studio. These are limited to run and debug commands. Android Studio has no concept of recording or pulling screenshots from the device. Thus, it requires developers to drop to the Gradle Panel or command-line to fully use Testify. This project will enhance the developer experience by adding fully integrated IDE UI for all relevant Testify commands.
+This plugin will enhance the developer experience by adding fully integrated IDE UI for all relevant Testify commands.
+
+- Run the Testify screenshot tests
+- Record a new baseline image
+- Pull screenshots from the device and into your project
+- Remove any existing screenshot test images from the device
+- Reveal the baseline image in Android Studio
+- Delete the baseline image from your project
+
 <!-- Plugin description end -->
 
-<a href="https://plugins.jetbrains.com/plugin/14687-android-testify--screenshot-instrumentation-tests"><img width="300px" alt="Get from Marketplace" src="./marketplace/get.png"/></a>
+---
+
+<a href="https://plugins.jetbrains.com/plugin/19166-android-testify--screenshot-instrumentation-tests"><img width="300px" alt="Get from Marketplace" src="./marketplace/get.png"/></a>
 
 ---
 
@@ -26,5 +36,5 @@ However, the current Android Studio support relies fully on the fact that Testif
 
 ### License
 
-[MIT License Modified work copyright (c) 2022 ndtp](LICENSE)
-[MIT License Original work copyright (c) 2020 Shopify](LICENSE)
+[MIT License -- Modified work copyright (c) 2022 ndtp](LICENSE)<br/>
+[MIT License -- Original work copyright (c) 2020 Shopify](LICENSE)
