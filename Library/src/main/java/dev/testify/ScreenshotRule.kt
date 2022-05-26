@@ -54,7 +54,6 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
-import dev.testify.internal.TestName
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.FailedToCaptureBitmapException
@@ -64,7 +63,6 @@ import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
 import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.exception.TestMustLaunchActivityException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
@@ -105,9 +103,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected val activityClass: Class<T>,
     @IdRes rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
-    protected val launchActivity: Boolean = true,
     enableReporter: Boolean = false
-) : ActivityTestRule<T>(activityClass, initialTouchMode, launchActivity), TestRule {
+) : ActivityTestRule<T>(activityClass, initialTouchMode, false), TestRule {
 
     @IdRes
     protected var rootViewId = rootViewId
@@ -115,10 +112,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @LayoutRes private var targetLayoutId: Int = NO_ID
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    open lateinit var testMethodName: String
-    private lateinit var testClass: String
-    private lateinit var testSimpleClassName: String
     private val hideCursorViewModification = HideCursorViewModification()
     private val hidePasswordViewModification = HidePasswordViewModification()
     private val hideScrollbarsViewModification = HideScrollbarsViewModification()
@@ -156,10 +149,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    val testName: String
-        get() = "${testSimpleClassName}_$testMethodName"
-
     val deviceOrientation: Int
         get() = orientationHelper.deviceOrientation
 
@@ -169,12 +158,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
     }
-
-    val testNameComponents: TestName
-        get() = TestName(testSimpleClassName, testMethodName)
-
-    val fullyQualifiedTestPath: String
-        get() = testClass
 
     fun getExactness(): Float? {
         return exactness
@@ -260,9 +243,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setFontScale(fontScale: Float): ScreenshotRule<T> {
-        if (launchActivity) {
-            throw TestMustLaunchActivityException("setFontScale")
-        }
         this.fontScale = fontScale
         return this
     }
@@ -273,9 +253,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     fun setLocale(newLocale: Locale): ScreenshotRule<T> {
-        if (launchActivity) {
-            throw TestMustLaunchActivityException("setLocale")
-        }
         this.locale = newLocale
         return this
     }
@@ -293,9 +270,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
         require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        if (launchActivity) {
-            throw TestMustLaunchActivityException("setOrientation")
-        }
         this.orientationHelper.requestedOrientation = requestedOrientation
         return this
     }
@@ -392,11 +366,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         applyExactness(bitmapComparison)
 
         espressoActions = null
-        testSimpleClassName = testClass.simpleName
-        testMethodName = methodName
-        this.testClass = "${testClass.canonicalName}#$methodName"
 
-        reporter?.startTest(this, testClass)
+        getInstrumentation().testDescription = TestDescription(
+            methodName = methodName,
+            testClass = testClass
+        )
+        reporter?.startTest(getInstrumentation().testDescription)
 
         val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
@@ -582,32 +557,30 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun assertSame() {
         assertSameInvoked = true
-
         beforeAssertSame()
 
-        if (!launchActivity) {
-            launchActivity(activityIntent)
+        if (isRunningOnUiThread()) {
+            throw NoScreenshotsOnUiThreadException()
         }
+
+        launchActivity(activityIntent)
 
         try {
             try {
+                val description = getInstrumentation().testDescription
                 reporter?.captureOutput(this)
                 outputFileName = DeviceIdentifier.formatDeviceString(
                     DeviceIdentifier.DeviceStringFormatter(
                         testContext,
-                        testNameComponents
+                        description.nameComponents
                     ), DEFAULT_NAME_FORMAT
                 )
-
-                if (isRunningOnUiThread()) {
-                    throw NoScreenshotsOnUiThreadException()
-                }
 
                 if (orientationHelper.shouldIgnoreOrientation(orientationToIgnore)) {
                     val orientationName =
                         if (orientationToIgnore == SCREEN_ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
                     instrumentationPrintln(
-                        "\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + testName +
+                        "\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + description.name +
                             " due to $orientationName orientation" + 27.toChar() + "[0m"
                     )
                     assertFalse(
@@ -651,18 +624,18 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
                 }
 
-                val baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(testContext, testName)
+                val baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(testContext, description.name)
                     ?: if (isRecordMode()) {
                         instrumentationPrintln(
-                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
+                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + description.name +
                                 27.toChar() + "[0m"
                         )
                         return
                     } else {
                         throw ScreenshotBaselineNotDefinedException(
                             moduleName = getModuleName(),
-                            testName = testName,
-                            testClass = fullyQualifiedTestPath,
+                            testName = description.name,
+                            testClass = description.fullyQualifiedTestName,
                             deviceKey = DeviceIdentifier.formatDeviceString(
                                 DeviceIdentifier.DeviceStringFormatter(
                                     testContext,
@@ -674,7 +647,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 if (compareBitmaps(baselineBitmap, currentBitmap)) {
                     assertTrue(
-                        "Could not delete cached bitmap $testName",
+                        "Could not delete cached bitmap ${description.name}",
                         screenshotUtility.deleteBitmap(activity, outputFileName)
                     )
                 } else {
@@ -683,11 +656,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     }
                     if (isRecordMode()) {
                         instrumentationPrintln(
-                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + testName +
+                            "\n\t✓ " + 27.toChar() + "[36mRecording baseline for " + description.name +
                                 27.toChar() + "[0m"
                         )
                     } else {
-                        throw ScreenshotIsDifferentException(getModuleName(), fullyQualifiedTestPath)
+                        throw ScreenshotIsDifferentException(getModuleName(), description.fullyQualifiedTestName)
                     }
                 }
             } finally {

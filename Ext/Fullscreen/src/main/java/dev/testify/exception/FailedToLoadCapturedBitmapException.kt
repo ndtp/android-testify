@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2021 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.exception
 
-import android.app.Activity
-import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.exception.ActivityNotRegisteredException
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.ExpectedException
-
-class InvalidActivity : Activity()
-
-class ActivityNotRegisteredExceptionTest {
-
-    @get:Rule
-    val rule = ScreenshotRule(activityClass = InvalidActivity::class.java)
-
-    @get:Rule
-    var thrown: ExpectedException = ExpectedException.none()
-
-    @ScreenshotInstrumentation
-    @Test
-    fun default() {
-        thrown.expect(ActivityNotRegisteredException::class.java)
-        rule.assertSame()
-    }
-}
+/**
+ * Exception thrown when an error is returned by [dev.testify.ScreenshotUtility.loadBitmapFromFile]
+ */
+class FailedToLoadCapturedBitmapException : RuntimeException("Failed to load the captured bitmap")

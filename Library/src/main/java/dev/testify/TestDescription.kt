@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2021 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +23,32 @@
  */
 package dev.testify
 
-import android.app.Activity
-import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.exception.ActivityNotRegisteredException
-import org.junit.Rule
-import org.junit.Test
-import org.junit.rules.ExpectedException
+import android.app.Instrumentation
+import dev.testify.internal.TestName
 
-class InvalidActivity : Activity()
+data class TestDescription(
+    val methodName: String,
+    val testClass: Class<*>
+) {
 
-class ActivityNotRegisteredExceptionTest {
+    val nameComponents = TestName(testClass.simpleName, methodName)
+    val name = "${nameComponents.first}_${nameComponents.second}"
+    val fullyQualifiedTestName = "${testClass.canonicalName}#$methodName"
 
-    @get:Rule
-    val rule = ScreenshotRule(activityClass = InvalidActivity::class.java)
-
-    @get:Rule
-    var thrown: ExpectedException = ExpectedException.none()
-
-    @ScreenshotInstrumentation
-    @Test
-    fun default() {
-        thrown.expect(ActivityNotRegisteredException::class.java)
-        rule.assertSame()
+    companion object {
+        internal var current: TestDescription? = null
+        internal var hashCode: Int = 0
     }
 }
+
+var Instrumentation.testDescription: TestDescription
+    set(value) {
+        TestDescription.hashCode = this.hashCode()
+        TestDescription.current = value
+    }
+    get() {
+        if (TestDescription.hashCode != this.hashCode())
+            throw IllegalStateException("TestDescription is not initialized for $this")
+        return TestDescription.current
+            ?: throw UninitializedPropertyAccessException("TestDescription is not initialized")
+    }

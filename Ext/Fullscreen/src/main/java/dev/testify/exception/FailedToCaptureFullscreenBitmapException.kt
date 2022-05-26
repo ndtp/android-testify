@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.internal.exception
+package dev.testify.exception
 
 /**
- * Some features of Testify will not work correctly unless you allow the underlying ActivityTestRule
- * to launch the Activity under test on its own.
+ * Exception thrown when an error is returned by [androidx.test.uiautomator.UiDevice.takeScreenshot]
  */
-class TestMustLaunchActivityException(context: String) :
-    RuntimeException(
-        "\n\n* You must specify `launchActivity = false` on the ScreenshotRule constructor when using " +
-            "$context *\n"
-    )
+class FailedToCaptureFullscreenBitmapException : RuntimeException("Failed to capture fullscreen bitmap")

@@ -49,7 +49,7 @@ open class ScreenshotUtility {
 
     protected val outputFileUtility = OutputFileUtility()
 
-    protected val preferredBitmapOptions: BitmapFactory.Options
+    val preferredBitmapOptions: BitmapFactory.Options
         get() {
             val options = BitmapFactory.Options()
             options.inPreferredConfig = Bitmap.Config.ARGB_8888
@@ -75,7 +75,7 @@ open class ScreenshotUtility {
         }
     }
 
-    protected fun assureScreenshotDirectory(context: Context): Boolean {
+    fun assureScreenshotDirectory(context: Context): Boolean {
         var created = true
         val outputDirectory = outputFileUtility.getOutputDirectoryPath(context)
         if (!outputDirectory.exists()) {

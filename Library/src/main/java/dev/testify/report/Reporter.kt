@@ -30,6 +30,7 @@ import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.ScreenshotRule
+import dev.testify.TestDescription
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
@@ -51,6 +52,7 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal val builder = StringBuilder()
+    private lateinit var testDescription: TestDescription
 
     /**
      * Creates a unique session ID for the given test run
@@ -63,13 +65,14 @@ internal open class Reporter(
      * Called by [ScreenshotRule.apply] when a new test case starts
      * Records the test entry
      */
-    fun startTest(rule: ScreenshotRule<*>, testClass: Class<*>) {
+    fun startTest(description: TestDescription) {
+        testDescription = description
         session.addTest()
 
         builder.appendLine("- test:", indent = 4)
-        builder.appendLine("name: ${rule.testMethodName}", indent = 8)
-        builder.appendLine("class: ${testClass.simpleName}", indent = 8)
-        builder.appendLine("package: ${testClass.`package`?.name}", indent = 8)
+        builder.appendLine("name: ${description.methodName}", indent = 8)
+        builder.appendLine("class: ${description.testClass.simpleName}", indent = 8)
+        builder.appendLine("package: ${description.testClass.`package`?.name}", indent = 8)
     }
 
     /**
@@ -123,7 +126,7 @@ internal open class Reporter(
     internal open fun getBaselinePath(rule: ScreenshotRule<*>): String {
         return outputFileUtility.getFileRelativeToRoot(
             subpath = DeviceIdentifier.getDescription(context),
-            fileName = rule.testMethodName,
+            fileName = testDescription.methodName,
             extension = PNG_EXTENSION
         )
     }
@@ -133,7 +136,7 @@ internal open class Reporter(
             return DeviceIdentifier.formatDeviceString(
                 DeviceIdentifier.DeviceStringFormatter(
                     this.testContext,
-                    this.testNameComponents
+                    testDescription.nameComponents
                 ), DeviceIdentifier.DEFAULT_NAME_FORMAT
             )
         }

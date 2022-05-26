@@ -35,7 +35,6 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.exception.TestMustLaunchActivityException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.UnexpectedOrientationException
 import dev.testify.internal.exception.ViewModificationException
@@ -49,7 +48,6 @@ enum class ErrorCause(val klass: KClass<*>) {
     ACTIVITY_OVERRIDE(ActivityMustImplementResourceOverrideException::class),
     ASSERT_LAST(AssertSameMustBeLastException::class),
     DIFFERENT(ScreenshotIsDifferentException::class),
-    LAUNCH_ACTIVITY(TestMustLaunchActivityException::class),
     NO_ACTIVITY(ActivityNotRegisteredException::class),
     NO_ANNOTATION(MissingScreenshotInstrumentationAnnotationException::class),
     NO_ASSERT(MissingAssertSameException::class),

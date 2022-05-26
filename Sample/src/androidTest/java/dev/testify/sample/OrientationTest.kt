@@ -22,7 +22,6 @@ class OrientationTest {
     @get:Rule
     var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
-        launchActivity = false,
         rootViewId = R.id.harness_root
     )
 
@@ -62,7 +61,8 @@ class OrientationTest {
             .setTargetLayoutId(R.layout.view_client_details)
             .setOrientation(orientation)
             .setViewModifications { harnessRoot ->
-                val viewState = harnessRoot.context.getViewState(title + if (orientation == SCREEN_ORIENTATION_PORTRAIT) " Portrait" else " Landscape")
+                val viewState =
+                    harnessRoot.context.getViewState(title + if (orientation == SCREEN_ORIENTATION_PORTRAIT) " Portrait" else " Landscape")
                 val view = harnessRoot.getChildAt(0) as ClientDetailsView
                 view.render(viewState)
                 rule.activity.title = viewState.name
