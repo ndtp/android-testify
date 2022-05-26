@@ -39,7 +39,9 @@ class ScreenshotInstrumentationOrientationTest {
     @Test
     fun testLandscapeOnly() {
         rule
-            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
+            .configure {
+                orientation = SCREEN_ORIENTATION_LANDSCAPE
+            }
             .assertSame()
     }
 
@@ -47,7 +49,9 @@ class ScreenshotInstrumentationOrientationTest {
     @Test
     fun testPortraitOnly() {
         rule
-            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_PORTRAIT)
+            .configure {
+                orientation = SCREEN_ORIENTATION_PORTRAIT
+            }
             .assertSame()
     }
 }
