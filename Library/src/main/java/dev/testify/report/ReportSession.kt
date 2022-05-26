@@ -64,14 +64,17 @@ internal open class ReportSession {
     }
 
     fun insertSessionInfo(builder: StringBuilder): StringBuilder {
-        return builder.insert(0, StringBuilder().apply {
-            appendLine("- session: $sessionId")
-            val timestamp = getTimestamp(Calendar.getInstance().time)
-            appendLine("- date: $timestamp")
-            appendLine("- failed: $failCount")
-            appendLine("- passed: $passCount")
-            appendLine("- total: $testCount")
-        })
+        return builder.insert(
+            0,
+            StringBuilder().apply {
+                appendLine("- session: $sessionId")
+                val timestamp = getTimestamp(Calendar.getInstance().time)
+                appendLine("- date: $timestamp")
+                appendLine("- failed: $failCount")
+                appendLine("- passed: $passCount")
+                appendLine("- total: $testCount")
+            }
+        )
     }
 
     fun identifySession(instrumentation: Instrumentation) {

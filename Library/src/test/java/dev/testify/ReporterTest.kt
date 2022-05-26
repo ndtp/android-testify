@@ -161,7 +161,8 @@ internal open class ReporterTest {
                 "    baseline_image: assets/screenshots/22-480x800@240dp-en_US/default.png\n" +
                 "    test_image: /data/data/dev.testify.sample/app_images/screenshots/22-480x800@240dp-en_US/" +
                 "ClientDetailsViewScreenshotTest_default.png\n" +
-                "    status: PASS\n", reporter.yaml
+                "    status: PASS\n",
+            reporter.yaml
         )
     }
 
@@ -217,7 +218,8 @@ internal open class ReporterTest {
                 "        package: dev.testify\n" +
                 "        baseline_image: assets/foo\n" +
                 "        test_image: bar\n" +
-                "        status: PASS\n", yaml
+                "        status: PASS\n",
+            yaml
         )
     }
 

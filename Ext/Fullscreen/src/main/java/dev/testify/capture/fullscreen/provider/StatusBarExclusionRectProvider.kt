@@ -28,8 +28,8 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.statusBars
-import dev.testify.ExclusionRectProvider
-import dev.testify.ScreenshotRule
+import dev.testify.internal.ExclusionRectProvider
+import dev.testify.internal.TestifyConfiguration
 
 /**
  * This file provides extension methods that will add the rectangle covering the system status bar to the
@@ -58,10 +58,9 @@ val statusBarExclusionRectProvider: ExclusionRectProvider = { rootView, exclusio
 }
 
 /**
- * Extension method for [ScreenshotRule] that will add the rectangle covering the system status bar to the
+ * Extension method for [TestifyConfiguration] that will add the rectangle covering the system status bar to the
  * exclusion area.
  */
-fun ScreenshotRule<*>.excludeStatusBar(): ScreenshotRule<*> {
+fun TestifyConfiguration.excludeStatusBar() {
     defineExclusionRects(statusBarExclusionRectProvider)
-    return this
 }

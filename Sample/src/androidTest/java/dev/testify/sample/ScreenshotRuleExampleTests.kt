@@ -308,9 +308,11 @@ class ScreenshotRuleExampleTests {
                 val b = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#$r$g$b"))
             }
-            .defineExclusionRects { rootView, exclusionRects ->
-                val card = rootView.findViewById<View>(R.id.info_card)
-                exclusionRects.add(card.boundingBox)
+            .configure {
+                defineExclusionRects { rootView, exclusionRects ->
+                    val card = rootView.findViewById<View>(R.id.info_card)
+                    exclusionRects.add(card.boundingBox)
+                }
             }
             .assertSame()
     }

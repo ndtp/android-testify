@@ -128,9 +128,11 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .execute()
 
         if (!isRecordMode &&
-            (log.contains("FAILURES!!!") ||
-                log.contains("INSTRUMENTATION_CODE: 0") ||
-                log.contains("Process crashed while executing"))
+            (
+                log.contains("FAILURES!!!") ||
+                    log.contains("INSTRUMENTATION_CODE: 0") ||
+                    log.contains("Process crashed while executing")
+                )
         ) {
             println(AnsiFormat.Red, "SCREENSHOT TESTS HAVE FAILED!!!")
             throw RuntimeException("Screenshot tests have failed")

@@ -33,7 +33,7 @@ import androidx.annotation.WorkerThread
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-internal class FocusModification : ViewModification(isEnabled = false) {
+class FocusModification : ViewModification(isEnabled = false) {
 
     @IdRes var focusTargetId: Int = View.NO_ID
 

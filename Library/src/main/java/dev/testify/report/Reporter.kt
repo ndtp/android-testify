@@ -137,7 +137,8 @@ internal open class Reporter(
                 DeviceIdentifier.DeviceStringFormatter(
                     this.testContext,
                     testDescription.nameComponents
-                ), DeviceIdentifier.DEFAULT_NAME_FORMAT
+                ),
+                DeviceIdentifier.DEFAULT_NAME_FORMAT
             )
         }
 
