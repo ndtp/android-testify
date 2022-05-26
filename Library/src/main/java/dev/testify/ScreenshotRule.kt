@@ -28,8 +28,6 @@ package dev.testify
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
@@ -124,7 +122,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @VisibleForTesting
     internal var reporter: Reporter? = null
         private set
-    private var orientationHelper: OrientationHelper? = null
     private val screenshotUtility = ScreenshotUtility()
     private lateinit var outputFileName: String
     private val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
@@ -189,18 +186,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
-     * Install an activity monitor and set the requested orientation.
-     * Blocks and waits for the orientation change to complete before returning.
-     *
-     * @param requestedOrientation SCREEN_ORIENTATION_LANDSCAPE or SCREEN_ORIENTATION_PORTRAIT
-     */
-    fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
-        require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        this.orientationHelper = OrientationHelper(requestedOrientation)
-        return this
-    }
-
-    /**
      * Set the configuration for the ScreenshotRule
      *
      * @param configureRule - [TestifyConfiguration]
@@ -231,7 +216,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
-        orientationHelper?.afterActivityLaunched()
+        configuration.afterActivityLaunched()
     }
 
     @CallSuper
@@ -485,11 +470,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Espresso.closeSoftKeyboard()
                 }
 
-                orientationHelper?.assertOrientation()
-
                 val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 
-                configuration.applyExclusionRects(getRootView(activity))
+                configuration.beforeScreenshot(getRootView(activity))
 
                 screenshotLifecycleObservers.map { it.beforeScreenshot(activity) }
 
@@ -546,9 +529,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             } finally {
             }
         } finally {
-            configuration.resetExclusionRects()
             ResourceWrapper.afterTestFinished(activity)
-            orientationHelper?.afterTestFinished()
+            configuration.afterTestFinished()
             TestifyFeatures.reset()
             removeScreenshotObserver(this)
             if (throwable != null) {

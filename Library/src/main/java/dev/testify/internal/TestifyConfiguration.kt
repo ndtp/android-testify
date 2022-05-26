@@ -25,6 +25,7 @@
 package dev.testify.internal
 
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,7 @@ import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.getAnnotation
+import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.WrappedFontScale
 import dev.testify.internal.helpers.WrappedLocale
@@ -48,12 +50,17 @@ import java.util.Locale
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 /**
+ *
+ * @param orientation - Install an activity monitor and set the requested orientation.
+ *                      Blocks and waits for the orientation change to complete before returning.
+ *                      SCREEN_ORIENTATION_LANDSCAPE or SCREEN_ORIENTATION_PORTRAIT
  * @param focusTargetId - Allows Testify to deliberately set the keyboard focus to the specified view ID
  */
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
     val exclusionRects: MutableSet<Rect> = HashSet(),
     @FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null,
+    var orientation: Int? = null,
     var fontScale: Float? = null,
     var locale: Locale? = null,
     var hideCursor: Boolean = true,
@@ -64,8 +71,18 @@ data class TestifyConfiguration(
     @IdRes var focusTargetId: Int = View.NO_ID,
 ) {
 
+    init {
+        require(
+            orientation == null ||
+                orientation in ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE..ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
+
     val hasExactness: Boolean
         get() = exactness != null
+
+    private val orientationHelper: OrientationHelper?
+        get() = orientation?.let { OrientationHelper(it) }
 
     /**
      * Update the internal configuration values based on any annotations that may be present on the test method
@@ -103,6 +120,20 @@ data class TestifyConfiguration(
         }
     }
 
+    internal fun afterActivityLaunched() {
+        orientationHelper?.afterActivityLaunched()
+    }
+
+    internal fun beforeScreenshot(rootView: ViewGroup) {
+        orientationHelper?.assertOrientation()
+        applyExclusionRects(rootView)
+    }
+
+    internal fun afterTestFinished() {
+        exclusionRects.clear()
+        orientationHelper?.afterTestFinished()
+    }
+
     /**
      * Allow the test to define a set of rectangles to exclude from the comparison.
      * Any pixels contained within the bounds of any of the provided Rects are ignored.
@@ -117,12 +148,11 @@ data class TestifyConfiguration(
         this.exclusionRectProvider = provider
     }
 
-    internal fun applyExclusionRects(rootView: ViewGroup) {
+    private fun applyExclusionRects(rootView: ViewGroup) {
         exclusionRectProvider?.let { provider ->
             provider(rootView, exclusionRects)
         }
     }
 
     internal fun hasExclusionRect() = exclusionRects.isNotEmpty()
-    internal fun resetExclusionRects() = exclusionRects.clear()
 }
