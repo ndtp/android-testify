@@ -25,12 +25,12 @@
 package dev.testify.internal.processor.compare
 
 import android.graphics.Bitmap
-import android.graphics.Rect
 import com.github.ajalt.colormath.RGB
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.processor.ParallelPixelProcessor
 import dev.testify.internal.processor.compare.colorspace.calculateDeltaE
 
-internal class FuzzyCompare(private val exactness: Float?, private val exclusionRects: Set<Rect>) {
+internal class FuzzyCompare(private val configuration: TestifyConfiguration) {
 
     fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
         if (baselineBitmap.height != currentBitmap.height) {
@@ -54,7 +54,7 @@ internal class FuzzyCompare(private val exactness: Float?, private val exclusion
                     /* return  */ true
                 } else {
                     var exclude = false
-                    for (rect in exclusionRects) {
+                    for (rect in configuration.exclusionRects) {
                         if (rect.contains(x, y)) {
                             exclude = true
                             break
@@ -62,7 +62,7 @@ internal class FuzzyCompare(private val exactness: Float?, private val exclusion
                     }
                     when {
                         exclude -> true // return ^analyze
-                        exactness != null -> {
+                        configuration.hasExactness -> {
                             val baselineLab = RGB.fromInt(baselinePixel).toLAB()
                             val currentLab = RGB.fromInt(currentPixel).toLAB()
 
@@ -74,7 +74,7 @@ internal class FuzzyCompare(private val exactness: Float?, private val exclusion
                                 currentLab.a,
                                 currentLab.b
                             )
-                            ((100.0 - deltaE) / 100.0f >= exactness) // return ^analyze
+                            ((100.0 - deltaE) / 100.0f >= configuration.exactness!!) // return ^analyze
                         }
                         else -> baselinePixel == currentPixel // return ^analyze
                     }

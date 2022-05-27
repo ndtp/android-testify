@@ -29,6 +29,7 @@ package dev.testify
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.processor.compare.FuzzyCompare
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -55,8 +56,8 @@ class FuzzyCompareBitmapTest {
         val similarBitmap = baselineBitmap.copy(baselineBitmap.config, true)!!
         similarBitmap.setPixel(0, 0, similarBitmap.getPixel(0, 0) + 1)
 
-        assertFalse(FuzzyCompare(1.0f, emptySet()).compareBitmaps(similarBitmap, baselineBitmap))
-        assertTrue(FuzzyCompare(0.99f, emptySet()).compareBitmaps(similarBitmap, baselineBitmap))
+        assertFalse(FuzzyCompare(TestifyConfiguration(exactness = 1.0f)).compareBitmaps(similarBitmap, baselineBitmap))
+        assertTrue(FuzzyCompare(TestifyConfiguration(exactness = 0.99f)).compareBitmaps(similarBitmap, baselineBitmap))
     }
 
     @Test
@@ -69,7 +70,7 @@ class FuzzyCompareBitmapTest {
          of the text whose black values are shifted slightly so that it varies from
          solid 0,0,0 black to fully-saturated, nearly black 0,1,0.004
          */
-        assertTrue(FuzzyCompare(0.975f, emptySet()).compareBitmaps(baselineBitmap, currentBitmap))
+        assertTrue(FuzzyCompare(TestifyConfiguration(exactness = 0.975f)).compareBitmaps(baselineBitmap, currentBitmap))
     }
 
     /**
@@ -80,6 +81,6 @@ class FuzzyCompareBitmapTest {
     fun compareWorstCase() {
         val baselineBitmap = loadBitmap("benchmark_baseline")
         val currentBitmap = loadBitmap("benchmark_current")
-        assertTrue(FuzzyCompare(0.95f, emptySet()).compareBitmaps(baselineBitmap, currentBitmap))
+        assertTrue(FuzzyCompare(TestifyConfiguration(exactness = 0.95f)).compareBitmaps(baselineBitmap, currentBitmap))
     }
 }

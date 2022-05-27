@@ -41,6 +41,7 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.ScreenshotRule
 import dev.testify.ScreenshotUtility
 import dev.testify.TestifyFeatures
+import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.extensions.boundingBox
@@ -226,17 +227,32 @@ class ScreenshotRuleExampleTests {
     @Test
     fun setExactness() {
         rule
-            .setScreenshotViewProvider {
-                it.findViewById(R.id.info_card)
-            }
-            .setExactness(0.95f)
-            .setViewModifications {
-                val r = Integer.toHexString(Random.nextInt(0, 25) + 230).padStart(2, '0')
-                it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#${r}0000"))
+            .setupExactness()
+            .configure {
+                exactness = 0.95f
             }
             .assertSame()
     }
 
+
+    private fun ScreenshotRule<TestHarnessActivity>.setupExactness(): ScreenshotRule<TestHarnessActivity> {
+        return this
+            .setScreenshotViewProvider {
+                it.findViewById(R.id.info_card)
+            }
+            .setViewModifications {
+                val r = Integer.toHexString(Random.nextInt(0, 25) + 230).padStart(2, '0')
+                it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#${r}0000"))
+            }
+    }
+
+    @TestifyLayout(R.layout.view_client_details)
+    @BitmapComparisonExactness(exactness = 0.95f)
+    @ScreenshotInstrumentation
+    @Test
+    fun setExactnessAnnotation() {
+        rule.setupExactness().assertSame()
+    }
 
     @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
@@ -301,7 +317,6 @@ class ScreenshotRuleExampleTests {
         TestifyFeatures.PixelCopyCapture.setEnabled(true)
         TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule
-            .setExactness(0.9f)
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 val g = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
@@ -309,6 +324,7 @@ class ScreenshotRuleExampleTests {
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#$r$g$b"))
             }
             .configure {
+                exactness = 0.9f
                 defineExclusionRects { rootView, exclusionRects ->
                     val card = rootView.findViewById<View>(R.id.info_card)
                     exclusionRects.add(card.boundingBox)

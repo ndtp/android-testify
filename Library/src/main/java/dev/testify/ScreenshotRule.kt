@@ -48,7 +48,6 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import dev.testify.TestifyFeatures.CanvasCapture
 import dev.testify.TestifyFeatures.PixelCopyCapture
-import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.DeviceIdentifier
@@ -121,7 +120,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
-    private var exactness: Float? = null
     private var fontScale: Float? = null
     private var hideSoftKeyboard = true
     private var isLayoutInspectionModeEnabled = false
@@ -155,16 +153,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
-    }
-
-    fun getExactness(): Float? {
-        return exactness
-    }
-
-    fun setExactness(exactness: Float?): ScreenshotRule<T> {
-        require(exactness == null || exactness in 0.0..1.0)
-        this.exactness = exactness
-        return this
     }
 
     fun setHideSoftKeyboard(hideSoftKeyboard: Boolean): ScreenshotRule<T> {
@@ -354,9 +342,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             classScreenshotInstrumentation,
             methodScreenshotInstrumentation
         )
-
-        val bitmapComparison = classAnnotations.getAnnotation<BitmapComparisonExactness>()
-        applyExactness(bitmapComparison)
+        configuration.applyAnnotations(methodAnnotations)
 
         espressoActions = null
 
@@ -425,12 +411,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             intent = Intent()
         }
         return intent
-    }
-
-    private fun applyExactness(bitmapComparison: BitmapComparisonExactness?) {
-        if (exactness == null) {
-            exactness = bitmapComparison?.exactness
-        }
     }
 
     override fun launchActivity(startIntent: Intent?): T {
@@ -520,16 +500,15 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             .name(outputFileName)
             .baseline(baselineBitmap)
             .current(currentBitmap)
-            .exactness(exactness)
+            .exactness(configuration.exactness)
             .generate(context = activity)
     }
 
     fun getBitmapCompare(): CompareMethod {
         return when {
             compareMethod != null -> compareMethod!!
-            configuration.hasExclusionRect() || exactness != null -> FuzzyCompare(
-                exactness,
-                configuration.exclusionRects
+            configuration.hasExclusionRect() || configuration.hasExactness -> FuzzyCompare(
+                configuration
             )::compareBitmaps
             else -> ::sameAsCompare
         }

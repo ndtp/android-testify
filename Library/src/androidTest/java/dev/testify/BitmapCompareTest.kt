@@ -31,6 +31,7 @@ import android.graphics.Bitmap
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.compare.FuzzyCompare
 import dev.testify.internal.processor.compare.sameAsCompare
@@ -82,7 +83,7 @@ class BitmapCompareTest {
         val similarBitmap = baselineBitmap.copy(baselineBitmap.config, true)!!
         similarBitmap.setPixel(0, 0, similarBitmap.getPixel(0, 0) + 1)
 
-        assertFalse(FuzzyCompare(1.0f, emptySet()).compareBitmaps(similarBitmap, baselineBitmap))
-        assertTrue(FuzzyCompare(0.99f, emptySet()).compareBitmaps(similarBitmap, baselineBitmap))
+        assertFalse(FuzzyCompare(TestifyConfiguration(exactness = 1.0f)).compareBitmaps(similarBitmap, baselineBitmap))
+        assertTrue(FuzzyCompare(TestifyConfiguration(exactness = 0.99f)).compareBitmaps(similarBitmap, baselineBitmap))
     }
 }
