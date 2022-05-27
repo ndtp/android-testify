@@ -84,7 +84,10 @@ class TestingResourcesCounterExampleTest {
             isDebugMode = true
         }
 
-        rule.setLocale(Locale.FRANCE)
+        rule
+            .configure {
+                locale = Locale.FRANCE
+            }
             .assertSame()
     }
 }

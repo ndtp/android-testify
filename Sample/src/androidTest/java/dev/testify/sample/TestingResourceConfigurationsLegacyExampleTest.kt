@@ -86,7 +86,9 @@ class TestingResourceConfigurationsLegacyExampleTest {
     fun increaseFontScale() {
         rule
             .configure(name = "Scale 2.0f")
-            .setFontScale(2.0f)
+            .configure {
+                fontScale = 2.0f
+            }
             .assertSame()
     }
 
@@ -99,8 +101,10 @@ class TestingResourceConfigurationsLegacyExampleTest {
     @Test
     fun reduceFontScaleAndChangeLocale() {
         rule.configure("${Locale.JAPAN.displayName} @ 0.75")
-            .setFontScale(0.75f)
-            .setLocale(Locale.JAPAN)
+            .configure {
+                fontScale = 0.75f
+                locale = Locale.JAPAN
+            }
             .assertSame()
     }
 
@@ -118,7 +122,9 @@ class TestingResourceConfigurationsLegacyExampleTest {
     private fun assertLocale(locale: Locale) {
         rule
             .configure(name = "Locale ${locale.displayName}")
-            .setLocale(locale)
+            .configure {
+                this.locale = locale
+            }
             .assertSame()
     }
 }
