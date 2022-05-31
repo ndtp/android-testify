@@ -43,7 +43,7 @@ open class OutputFileUtility {
         return arguments.containsKey("useSdCard") && arguments.get("useSdCard") == "true"
     }
 
-    internal fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
+    fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
         return "${getPathRelativeToRoot(subpath)}$fileName$extension"
     }
 
