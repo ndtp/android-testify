@@ -66,6 +66,7 @@ android {
         exclude("META-INF/LGPL2.1")
         exclude("META-INF/licenses/ASM")
         exclude("**/attach_hotspot_windows.dll")
+        exclude("META-INF/androidx.test.core.kotlin_module")
     }
 }
 
@@ -89,6 +90,7 @@ dependencies {
     androidTestImplementation project(":Library")
     androidTestImplementation project(":ComposeExtensions")
     androidTestImplementation project(":FullscreenCaptureMethod")
+    androidTestImplementation project(":Accessibility")
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.4.0"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.4.0"
     androidTestImplementation "androidx.test.ext:junit:1.1.3"

@@ -1,0 +1,42 @@
+[
+  {
+    "check": "SpeakableTextPresentCheck",
+    "elementClass": "androidx.appcompat.widget.AppCompatImageView",
+    "id": 4,
+    "message": "This item may not have a label readable by screen readers.",
+    "resourceName": "dev.testify.sample:id/add_button",
+    "type": "ERROR"
+  },
+  {
+    "check": "SpeakableTextPresentCheck",
+    "elementClass": "androidx.appcompat.widget.AppCompatImageView",
+    "id": 4,
+    "message": "This item may not have a label readable by screen readers.",
+    "resourceName": "dev.testify.sample:id/subtract_button",
+    "type": "ERROR"
+  },
+  {
+    "check": "TouchTargetSizeCheck",
+    "elementClass": "androidx.appcompat.widget.AppCompatImageView",
+    "id": 3,
+    "message": "This item\u0027s size is 24dp x 24dp. Consider making this touch target 48dp wide and 48dp high or larger.",
+    "resourceName": "dev.testify.sample:id/add_button",
+    "type": "ERROR"
+  },
+  {
+    "check": "TouchTargetSizeCheck",
+    "elementClass": "androidx.appcompat.widget.AppCompatImageView",
+    "id": 3,
+    "message": "This item\u0027s size is 24dp x 24dp. Consider making this touch target 48dp wide and 48dp high or larger.",
+    "resourceName": "dev.testify.sample:id/subtract_button",
+    "type": "ERROR"
+  },
+  {
+    "check": "TextContrastCheck",
+    "elementClass": "com.google.android.material.textview.MaterialTextView",
+    "id": 8,
+    "message": "The item\u0027s text contrast ratio is 2.46. This ratio is based on a text color of #999999 and background color of #EEEEEE. Consider increasing this item\u0027s text contrast ratio to 3.00 or greater.",
+    "resourceName": "dev.testify.sample:id/countTV",
+    "type": "ERROR"
+  }
+]

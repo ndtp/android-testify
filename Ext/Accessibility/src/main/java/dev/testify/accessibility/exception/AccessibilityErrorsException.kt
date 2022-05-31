@@ -25,9 +25,9 @@ package dev.testify.accessibility.exception
 
 import android.app.Activity
 import dev.testify.TestDescription
-import dev.testify.accessibility.CheckResults
+import dev.testify.accessibility.internal.CheckResults
 
-class AccessibilityErrorsException(
+internal class AccessibilityErrorsException(
     results: CheckResults,
     activity: Activity,
     description: TestDescription,

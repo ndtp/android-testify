@@ -24,44 +24,42 @@
  */
 package dev.testify.sample
 
-import android.content.Intent
-import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
+import dev.testify.ScreenshotRule
+import dev.testify.accessibility.assertAccessibility
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.a11y.CounterActivity
-import dev.testify.sample.clients.index.ClientListActivity
+import dev.testify.sample.a11y.CounterActivity.Companion.EXTRA_LAYOUT
+import org.junit.Rule
+import org.junit.Test
 
-class MainActivity : AppCompatActivity() {
+class AccessibilityExampleTest {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    @get:Rule
+    var rule = ScreenshotRule(CounterActivity::class.java)
+
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .assertSame()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
+    @ScreenshotInstrumentation
+    @Test
+    fun withErrors() {
+        rule
+            .assertAccessibility()
+            .assertSame()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_clients -> {
-                val intent = Intent(this, ClientListActivity::class.java)
-                startActivity(intent)
-                return true
+    @ScreenshotInstrumentation
+    @Test
+    fun fixed() {
+        rule
+            .addIntentExtras {
+                it.putInt(EXTRA_LAYOUT, R.layout.activity_counter_fixed)
             }
-            R.id.action_compose -> {
-                val intent = Intent(this, ComposeActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-            R.id.action_counter -> {
-                val intent = Intent(this, CounterActivity::class.java)
-                startActivity(intent)
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
+            .assertAccessibility()
+            .assertSame()
     }
 }
