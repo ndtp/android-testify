@@ -35,12 +35,11 @@ import android.view.View
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
+import dev.testify.internal.helpers.loadAsset
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -87,27 +86,11 @@ open class ScreenshotUtility {
 
     @Throws(Exception::class)
     protected fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap? {
-        val assetManager = context.assets
-        var inputStream: InputStream? = null
-        var bitmap: Bitmap?
-        try {
-            inputStream = assetManager.open(filePath)
-            bitmap = BitmapFactory.decodeStream(inputStream, null, preferredBitmapOptions)
-        } catch (e: IOException) {
-            Log.e(LOG_TAG, "Unable to decode bitmap file.", e)
-            bitmap = null
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close()
-                } catch (e: IOException) {
-                    Log.e(LOG_TAG, "Unable to close input stream.", e)
-                    bitmap = null
-                }
-            }
+        return loadAsset(context, filePath) {
+            BitmapFactory.decodeStream(it, null, preferredBitmapOptions)
         }
-        return bitmap
     }
+
 
     /**
      * Load a baseline bitmap from the androidTest assets directory.
