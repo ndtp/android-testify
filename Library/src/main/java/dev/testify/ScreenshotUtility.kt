@@ -91,7 +91,6 @@ open class ScreenshotUtility {
         }
     }
 
-
     /**
      * Load a baseline bitmap from the androidTest assets directory.
      */
