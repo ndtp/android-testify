@@ -39,13 +39,13 @@ data class Size(val width: Int, val height: Int)
  * Get the real, physical display resolution in pixels.
  * Reports the full [Size] of the device including all system UI.
  */
+@Suppress("DEPRECATION")
 val Context.realDisplaySize: Size
     get() {
         val screenSize = Point()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             this.display
         } else {
-            @Suppress("DEPRECATION")
             (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
         }?.getRealSize(screenSize)
         return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
