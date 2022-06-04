@@ -1,6 +1,17 @@
 # Testify Change Log
 
-## Unreleased
+## 2.0.0-alpha01
+
+:warning: Major breaking changes.
+
+This version is provided as an easier migration path to the Testify 2.0 libraries.
+2.0.0-alpha01 is identical functionality to 1.2.0-alpha01 but all classes have been updated to use the new `dev.testify` namespace.
+
+If you update all of your code to reference `dev.testify` instead of `com.shopify.testify` you will be better positioned to adopt the new Testify 2.0 API.
+
+---
+
+## 1.2.0-alpha01
 
 - Bump Testify core version to 1.2.0-alpha01
 
