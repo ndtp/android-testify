@@ -26,6 +26,8 @@ package dev.testify.sample.compose
 
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.capture.fullscreen.fullscreenCapture
+import dev.testify.capture.fullscreen.provider.excludeSystemUi
 import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.sample.ComposeActivity
 import org.junit.Before
@@ -35,7 +37,7 @@ import org.junit.Test
 class ComposeActivityScreenshotTest {
 
     @get:Rule
-    var rule = ScreenshotRule(ComposeActivity::class.java, launchActivity = false)
+    var rule = ScreenshotRule(ComposeActivity::class.java)
 
     @Before
     fun setUp() {
@@ -63,12 +65,29 @@ class ComposeActivityScreenshotTest {
 
     @ScreenshotInstrumentation
     @Test
-    fun drowDown() {
+    fun drowDownCollapsed() {
         rule
-            .setExactness(0.9f)
+            .configure {
+                exactness = 0.9f
+            }
+            .addIntentExtras {
+                it.putBoolean(ComposeActivity.EXTRA_DROPDOWN, false)
+            }
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun drowDownExpanded() {
+        rule
+            .configure {
+                exactness = 0.9f
+                excludeSystemUi()
+            }
             .addIntentExtras {
                 it.putBoolean(ComposeActivity.EXTRA_DROPDOWN, true)
             }
+            .setCaptureMethod(::fullscreenCapture)
             .assertSame()
     }
 }
