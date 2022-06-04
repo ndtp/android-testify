@@ -22,13 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.actions.utility
+package dev.testify.actions.utility
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.shopify.testify.ConfirmationDialogWrapper
+import dev.testify.ConfirmationDialogWrapper
 import java.awt.event.ActionEvent
 
 class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {

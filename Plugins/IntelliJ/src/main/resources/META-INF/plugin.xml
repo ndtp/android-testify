@@ -1,5 +1,5 @@
 <idea-plugin require-restart="false">
-    <id>com.shopify.testify</id>
+    <id>dev.testify</id>
     <name>Android Testify - Screenshot Instrumentation Tests</name>
     <vendor email="support@shopify.com" url="http://testify.dev">Shopify</vendor>
 
@@ -17,11 +17,11 @@ However, the current Android Studio support relies fully on the fact that Testif
     <extensions defaultExtensionNs="com.intellij">
         <codeInsight.lineMarkerProvider
                 language="kotlin"
-                implementationClass="com.shopify.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
+                implementationClass="dev.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
 
         <codeInsight.lineMarkerProvider
                 language="kotlin"
-                implementationClass="com.shopify.testify.extensions.ScreenshotClassMarkerProvider"/>
+                implementationClass="dev.testify.extensions.ScreenshotClassMarkerProvider"/>
 
     </extensions>
 

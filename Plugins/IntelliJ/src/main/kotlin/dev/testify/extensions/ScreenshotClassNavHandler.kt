@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.extensions
+package dev.testify.extensions
 
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
 import com.intellij.ide.DataManager
@@ -37,10 +37,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.ui.awt.RelativePoint
-import com.shopify.testify.actions.screenshot.ScreenshotClearAction
-import com.shopify.testify.actions.screenshot.ScreenshotPullAction
-import com.shopify.testify.actions.screenshot.ScreenshotRecordAction
-import com.shopify.testify.actions.screenshot.ScreenshotTestAction
+import dev.testify.actions.screenshot.ScreenshotClearAction
+import dev.testify.actions.screenshot.ScreenshotPullAction
+import dev.testify.actions.screenshot.ScreenshotRecordAction
+import dev.testify.actions.screenshot.ScreenshotTestAction
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
 

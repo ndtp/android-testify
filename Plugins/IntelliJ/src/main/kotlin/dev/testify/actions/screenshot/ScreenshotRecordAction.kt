@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.shopify.testify.actions.screenshot
+package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
 
