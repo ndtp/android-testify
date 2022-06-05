@@ -41,6 +41,7 @@ import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
@@ -65,12 +66,6 @@ import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
-import dev.testify.internal.modification.FocusModification
-import dev.testify.internal.modification.HideCursorViewModification
-import dev.testify.internal.modification.HidePasswordViewModification
-import dev.testify.internal.modification.HideScrollbarsViewModification
-import dev.testify.internal.modification.HideTextSuggestionsViewModification
-import dev.testify.internal.modification.SoftwareRenderViewModification
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
@@ -108,12 +103,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @LayoutRes private var targetLayoutId: Int = NO_ID
 
-    private val hideCursorViewModification = HideCursorViewModification()
-    private val hidePasswordViewModification = HidePasswordViewModification()
-    private val hideScrollbarsViewModification = HideScrollbarsViewModification()
-    private val hideTextSuggestionsViewModification = HideTextSuggestionsViewModification()
-    private val softwareRenderViewModification = SoftwareRenderViewModification()
-    private val focusModification = FocusModification()
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
@@ -152,43 +141,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun setHideSoftKeyboard(hideSoftKeyboard: Boolean): ScreenshotRule<T> {
         this.hideSoftKeyboard = hideSoftKeyboard
-        return this
-    }
-
-    fun setHideScrollbars(hideScrollbars: Boolean): ScreenshotRule<T> {
-        this.hideScrollbarsViewModification.isEnabled = hideScrollbars
-        return this
-    }
-
-    fun setHidePasswords(hidePasswords: Boolean): ScreenshotRule<T> {
-        this.hidePasswordViewModification.isEnabled = hidePasswords
-        return this
-    }
-
-    fun setHideCursor(hideCursor: Boolean): ScreenshotRule<T> {
-        this.hideCursorViewModification.isEnabled = hideCursor
-        return this
-    }
-
-    fun setHideTextSuggestions(hideTextSuggestions: Boolean): ScreenshotRule<T> {
-        this.hideTextSuggestionsViewModification.isEnabled = hideTextSuggestions
-        return this
-    }
-
-    fun setUseSoftwareRenderer(useSoftwareRenderer: Boolean): ScreenshotRule<T> {
-        this.softwareRenderViewModification.isEnabled = useSoftwareRenderer
-        return this
-    }
-
-    /**
-     * Allows Testify to deliberately set the keyboard focus to the specified view
-     *
-     * @param enabled when true, removes focus from all views in the activity
-     * @param focusTargetId the View ID to set focus on
-     */
-    fun setFocusTarget(enabled: Boolean = true, @IdRes focusTargetId: Int = android.R.id.content): ScreenshotRule<T> {
-        this.focusModification.isEnabled = enabled
-        this.focusModification.focusTargetId = focusTargetId
         return this
     }
 
@@ -632,13 +584,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
+    @UiThread
     @CallSuper
     open fun applyViewModifications(parentView: ViewGroup) {
-        hideScrollbarsViewModification.modify(parentView)
-        hideTextSuggestionsViewModification.modify(parentView)
-        hidePasswordViewModification.modify(parentView)
-        softwareRenderViewModification.modify(parentView)
-        hideCursorViewModification.modify(parentView)
+        configuration.applyViewModificationsMainThread(parentView)
     }
 
     private fun initializeView(activity: Activity) {
@@ -663,7 +612,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
             latch.countDown()
         }
-        focusModification.modify(activity)
+        configuration.applyViewModificationsTestThread(activity)
+
         if (Debug.isDebuggerConnected()) {
             latch.await()
         } else {

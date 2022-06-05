@@ -26,7 +26,7 @@ package dev.testify.internal.modification
 
 import android.view.View
 
-class HideScrollbarsViewModification : ViewModification(true) {
+class HideScrollbarsViewModification : ViewModification() {
 
     override fun performModification(view: View) {
         view.isHorizontalScrollBarEnabled = false

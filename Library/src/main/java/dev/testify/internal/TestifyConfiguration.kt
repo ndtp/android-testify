@@ -24,25 +24,46 @@
 
 package dev.testify.internal
 
+import android.app.Activity
 import android.graphics.Rect
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.FloatRange
+import androidx.annotation.IdRes
+import androidx.annotation.UiThread
+import androidx.annotation.WorkerThread
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.getAnnotation
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.WrappedFontScale
 import dev.testify.internal.helpers.WrappedLocale
+import dev.testify.internal.modification.FocusModification
+import dev.testify.internal.modification.HideCursorViewModification
+import dev.testify.internal.modification.HidePasswordViewModification
+import dev.testify.internal.modification.HideScrollbarsViewModification
+import dev.testify.internal.modification.HideTextSuggestionsViewModification
+import dev.testify.internal.modification.SoftwareRenderViewModification
 import java.util.Locale
 
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
+/**
+ * @param focusTargetId - Allows Testify to deliberately set the keyboard focus to the specified view ID
+ */
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
     val exclusionRects: MutableSet<Rect> = HashSet(),
     @FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null,
     var fontScale: Float? = null,
-    var locale: Locale? = null
+    var locale: Locale? = null,
+    var hideCursor: Boolean = true,
+    var hidePasswords: Boolean = true,
+    var hideScrollbars: Boolean = true,
+    var hideTextSuggestions: Boolean = true,
+    var useSoftwareRenderer: Boolean = false,
+    @IdRes var focusTargetId: Int = View.NO_ID,
 ) {
+
     val hasExactness: Boolean
         get() = exactness != null
 
@@ -54,6 +75,20 @@ data class TestifyConfiguration(
         if (exactness == null) {
             exactness = bitmapComparison?.exactness
         }
+    }
+
+    @UiThread
+    internal fun applyViewModificationsMainThread(parentView: ViewGroup) {
+        if (hideCursor) HideCursorViewModification().modify(parentView)
+        if (hidePasswords) HidePasswordViewModification().modify(parentView)
+        if (hideScrollbars) HideScrollbarsViewModification().modify(parentView)
+        if (hideTextSuggestions) HideTextSuggestionsViewModification().modify(parentView)
+        if (useSoftwareRenderer) SoftwareRenderViewModification().modify(parentView)
+    }
+
+    @WorkerThread
+    internal fun applyViewModificationsTestThread(activity: Activity) {
+        if (focusTargetId != View.NO_ID) FocusModification(focusTargetId).modify(activity)
     }
 
     /**

@@ -26,7 +26,7 @@ package dev.testify.internal.modification
 
 import android.view.View
 
-class SoftwareRenderViewModification : ViewModification(false) {
+class SoftwareRenderViewModification : ViewModification() {
 
     override fun performModification(view: View) {
         view.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
