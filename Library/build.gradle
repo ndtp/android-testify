@@ -64,6 +64,7 @@ android {
         implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
         implementation "androidx.test:rules:${versions.androidx.test.rules}"
         implementation "androidx.test:runner:${versions.androidx.test.runner}"
+        implementation "androidx.test:core-ktx:1.4.0"
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
         implementation "com.github.ajalt:colormath:${versions.colormath}"
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinx}") {

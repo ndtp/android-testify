@@ -62,6 +62,8 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.ins
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
 import dev.testify.internal.extensions.cyan
 import dev.testify.internal.extensions.yellow
+import dev.testify.internal.helpers.EspressoActions
+import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
@@ -329,7 +331,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Invoked immediately before assertSame and before the activity is launched.
      */
     @CallSuper
-    open fun beforeAssertSame() {
+    override fun beforeAssertSame() {
         getInstrumentation().registerActivityProvider(this)
     }
 

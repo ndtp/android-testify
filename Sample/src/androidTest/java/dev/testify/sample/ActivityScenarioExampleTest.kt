@@ -1,8 +1,6 @@
 package dev.testify.sample
 
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ActivityScenario.launch
-import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -12,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.testify.ScreenshotScenario
 import dev.testify.sample.clients.MockClientData
 import dev.testify.sample.clients.details.ClientDetailsActivity
 import dev.testify.sample.clients.index.ClientListActivity
@@ -25,7 +24,7 @@ import org.junit.Test
 class ActivityScenarioExampleTest {
     @Test
     fun activityScenarioNoIntentUseCase() {
-        launchActivity<ClientListActivity>().use {
+        ScreenshotScenario.launchActivity<ClientListActivity>().use {
             onView(ViewMatchers.withClassName(endsWith("RecyclerView")))
                 .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(THE_CLIENT_POSITION, scrollTo()))
                 .check(matches(hasDescendant(withText(THE_CLIENT.name))))
@@ -34,7 +33,7 @@ class ActivityScenarioExampleTest {
 
     @Test
     fun activityScenarioIntentUseCase() {
-        launch<ClientDetailsActivity>(
+        ScreenshotScenario.launch<ClientDetailsActivity>(
             ClientDetailsActivity.createClientDetailsActivityIntent(
                 InstrumentationRegistry.getInstrumentation().targetContext,
                 THE_CLIENT
