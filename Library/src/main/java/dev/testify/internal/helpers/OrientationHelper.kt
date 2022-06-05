@@ -30,24 +30,21 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.Point
 import androidx.test.espresso.Espresso
-import androidx.test.rule.ActivityTestRule
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import dev.testify.internal.exception.UnexpectedOrientationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class OrientationHelper<T : Activity>(
-    private val activityClass: Class<T>
+class OrientationHelper(
+    private var requestedOrientation: Int?
 ) {
     var deviceOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-    var requestedOrientation: Int? = null
-    private lateinit var rule: ActivityTestRule<T>
     private lateinit var lifecycleLatch: CountDownLatch
+    private lateinit var activityClass: Class<*>
 
-    fun afterActivityLaunched(rule: ActivityTestRule<T>) {
-        this.rule = rule
-
+    fun afterActivityLaunched() {
         // Set the orientation based on how the activity was launched
         deviceOrientation = if (activity.isLandscape)
             ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -79,9 +76,9 @@ class OrientationHelper<T : Activity>(
         requestedOrientation = null
     }
 
-    private val activity: T
+    private val activity: Activity
         get() {
-            return rule.activity
+            return getInstrumentation().getActivityProvider<Activity>().getActivity()
         }
 
     private val Activity.isLandscape: Boolean
@@ -111,6 +108,7 @@ class OrientationHelper<T : Activity>(
     }
 
     private fun Activity.changeOrientation(requestedOrientation: Int) {
+        activityClass = this@changeOrientation.javaClass
         ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(::lifecycleCallback)
 
         Espresso.onIdle()

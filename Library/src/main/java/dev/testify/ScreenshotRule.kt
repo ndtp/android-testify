@@ -63,8 +63,10 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ViewModificationException
+import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
+import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
@@ -93,7 +95,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     protected val configuration: TestifyConfiguration = TestifyConfiguration()
-) : ActivityTestRule<T>(activityClass, initialTouchMode, false), TestRule {
+) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
+    TestRule,
+    ActivityProvider<T> {
 
     @IdRes
     protected var rootViewId = rootViewId
@@ -116,7 +120,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @VisibleForTesting
     internal var reporter: Reporter? = null
         private set
-    private var orientationHelper = OrientationHelper(activityClass)
+    private var orientationHelper: OrientationHelper? = null
     private val screenshotUtility = ScreenshotUtility()
     private lateinit var outputFileName: String
 
@@ -187,7 +191,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
         require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        this.orientationHelper.requestedOrientation = requestedOrientation
+        this.orientationHelper = OrientationHelper(requestedOrientation)
         return this
     }
 
@@ -222,7 +226,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
-        orientationHelper.afterActivityLaunched(this)
+        orientationHelper?.afterActivityLaunched()
     }
 
     @CallSuper
@@ -352,7 +356,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Test lifecycle method.
      * Invoked immediately before assertSame and before the activity is launched.
      */
-    open fun beforeAssertSame() {}
+    @CallSuper
+    open fun beforeAssertSame() {
+        getInstrumentation().registerActivityProvider(this)
+    }
 
     /**
      * Test lifecycle method.
@@ -488,7 +495,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Espresso.closeSoftKeyboard()
                 }
 
-                orientationHelper.assertOrientation()
+                orientationHelper?.assertOrientation()
 
                 val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 
@@ -553,7 +560,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         } finally {
             configuration.resetExclusionRects()
             ResourceWrapper.afterTestFinished(activity)
-            orientationHelper.afterTestFinished()
+            orientationHelper?.afterTestFinished()
             TestifyFeatures.reset()
             if (throwable != null) {
                 //noinspection ThrowFromfinallyBlock
