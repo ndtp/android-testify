@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2021 Shopify Inc.
+ * Copyright (c) 2022 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
 
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-import dev.testify.annotation.ScreenshotInstrumentation
-import org.junit.Rule
-import org.junit.Test
+package dev.testify.internal.helpers
 
-class ScreenshotInstrumentationOrientationTest {
+import android.app.Activity
+import android.app.Instrumentation
 
-    @get:Rule
-    val rule: ScreenshotRule<TestActivity> = ScreenshotRule(TestActivity::class.java)
+interface ActivityProvider<T : Activity> {
+    fun getActivity(): T
+}
 
-    @ScreenshotInstrumentation
-    @Test
-    fun testLandscapeOnly() {
-        rule
-            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
-            .assertSame()
-    }
+private object ActivityProviderRegistry {
+    lateinit var provider: ActivityProvider<*>
+    var hashCode: Int = 0
+}
 
-    @ScreenshotInstrumentation
-    @Test
-    fun testPortraitOnly() {
-        rule
-            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_PORTRAIT)
-            .assertSame()
-    }
+fun <T : Activity> Instrumentation.getActivityProvider(): ActivityProvider<T> {
+    require(ActivityProviderRegistry.hashCode == this.targetContext.hashCode())
+    @Suppress("UNCHECKED_CAST")
+    return ActivityProviderRegistry.provider as ActivityProvider<T>
+}
+
+fun <T : Activity> Instrumentation.registerActivityProvider(activityProvider: ActivityProvider<T>) {
+    ActivityProviderRegistry.hashCode = this.targetContext.hashCode()
+    ActivityProviderRegistry.provider = activityProvider
 }

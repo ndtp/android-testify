@@ -25,7 +25,6 @@
 
 package dev.testify.annotation
 
-import android.content.pm.ActivityInfo
 import java.lang.annotation.Inherited
 
 @Inherited
@@ -37,6 +36,4 @@ import java.lang.annotation.Inherited
     AnnotationTarget.CLASS,
     AnnotationTarget.FILE
 )
-annotation class ScreenshotInstrumentation(
-    val orientationToIgnore: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-)
+annotation class ScreenshotInstrumentation

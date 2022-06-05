@@ -31,7 +31,6 @@ import android.app.Instrumentation
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
@@ -64,8 +63,10 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ViewModificationException
+import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
+import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.processor.capture.createBitmapFromCanvas
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
@@ -75,7 +76,6 @@ import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.internal.processor.diff.HighContrastDiff
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
@@ -95,7 +95,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     protected val configuration: TestifyConfiguration = TestifyConfiguration()
-) : ActivityTestRule<T>(activityClass, initialTouchMode, false), TestRule {
+) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
+    TestRule,
+    ActivityProvider<T> {
 
     @IdRes
     protected var rootViewId = rootViewId
@@ -118,8 +120,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @VisibleForTesting
     internal var reporter: Reporter? = null
         private set
-    private var orientationHelper = OrientationHelper(activityClass)
-    private var orientationToIgnore: Int = SCREEN_ORIENTATION_UNSPECIFIED
+    private var orientationHelper: OrientationHelper? = null
     private val screenshotUtility = ScreenshotUtility()
     private lateinit var outputFileName: String
 
@@ -128,9 +129,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             reporter = Reporter(getInstrumentation().targetContext, ReportSession(), OutputFileUtility())
         }
     }
-
-    val deviceOrientation: Int
-        get() = orientationHelper.deviceOrientation
 
     val outputFileExists: Boolean
         get() = OutputFileUtility().doesOutputFileExist(activity, outputFileName)
@@ -193,7 +191,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      */
     fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
         require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        this.orientationHelper.requestedOrientation = requestedOrientation
+        this.orientationHelper = OrientationHelper(requestedOrientation)
         return this
     }
 
@@ -228,7 +226,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
-        orientationHelper.afterActivityLaunched(this)
+        orientationHelper?.afterActivityLaunched()
     }
 
     @CallSuper
@@ -310,8 +308,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         if (classAnnotation == null) {
             if (methodAnnotation == null) {
                 this.throwable = MissingScreenshotInstrumentationAnnotationException(methodName)
-            } else {
-                orientationToIgnore = methodAnnotation.orientationToIgnore
             }
         }
     }
@@ -360,7 +356,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Test lifecycle method.
      * Invoked immediately before assertSame and before the activity is launched.
      */
-    open fun beforeAssertSame() {}
+    @CallSuper
+    open fun beforeAssertSame() {
+        getInstrumentation().registerActivityProvider(this)
+    }
 
     /**
      * Test lifecycle method.
@@ -484,20 +483,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     DEFAULT_NAME_FORMAT
                 )
 
-                if (orientationHelper.shouldIgnoreOrientation(orientationToIgnore)) {
-                    val orientationName =
-                        if (orientationToIgnore == SCREEN_ORIENTATION_PORTRAIT) "Portrait" else "Landscape"
-                    instrumentationPrintln(
-                        "\n\t✓ " + 27.toChar() + "[33mIgnoring baseline for " + description.name +
-                            " due to $orientationName orientation" + 27.toChar() + "[0m"
-                    )
-                    assertFalse(
-                        "Output file should not exist for $orientationName orientation",
-                        outputFileExists
-                    )
-                    return
-                }
-
                 beforeInitializeView(activity)
                 initializeView(activity)
                 afterInitializeView(activity)
@@ -510,7 +495,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Espresso.closeSoftKeyboard()
                 }
 
-                orientationHelper.assertOrientation()
+                orientationHelper?.assertOrientation()
 
                 val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 
@@ -575,7 +560,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         } finally {
             configuration.resetExclusionRects()
             ResourceWrapper.afterTestFinished(activity)
-            orientationHelper.afterTestFinished()
+            orientationHelper?.afterTestFinished()
             TestifyFeatures.reset()
             if (throwable != null) {
                 //noinspection ThrowFromfinallyBlock
