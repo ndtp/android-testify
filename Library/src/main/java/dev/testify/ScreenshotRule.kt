@@ -29,8 +29,6 @@ package dev.testify
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
@@ -64,7 +62,6 @@ import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.helpers.ActivityProvider
-import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.output.OutputFileUtility
@@ -109,7 +106,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var assertSameInvoked = false
     private var espressoActions: EspressoActions? = null
     private var hideSoftKeyboard = true
-    private var isLayoutInspectionModeEnabled = false
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
@@ -120,7 +116,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @VisibleForTesting
     internal var reporter: Reporter? = null
         private set
-    private var orientationHelper: OrientationHelper? = null
     private val screenshotUtility = ScreenshotUtility()
     private lateinit var outputFileName: String
 
@@ -168,11 +163,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
-    fun setLayoutInspectionModeEnabled(layoutInspectionModeEnabled: Boolean): ScreenshotRule<T> {
-        this.isLayoutInspectionModeEnabled = layoutInspectionModeEnabled
-        return this
-    }
-
     fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotRule<T> {
         this.screenshotViewProvider = viewProvider
         return this
@@ -180,18 +170,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ScreenshotRule<T> {
         feature.setEnabled(true)
-        return this
-    }
-
-    /**
-     * Install an activity monitor and set the requested orientation.
-     * Blocks and waits for the orientation change to complete before returning.
-     *
-     * @param requestedOrientation SCREEN_ORIENTATION_LANDSCAPE or SCREEN_ORIENTATION_PORTRAIT
-     */
-    fun setOrientation(requestedOrientation: Int): ScreenshotRule<T> {
-        require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
-        this.orientationHelper = OrientationHelper(requestedOrientation)
         return this
     }
 
@@ -226,7 +204,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
-        orientationHelper?.afterActivityLaunched()
+        configuration.afterActivityLaunched()
     }
 
     @CallSuper
@@ -495,11 +473,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Espresso.closeSoftKeyboard()
                 }
 
-                orientationHelper?.assertOrientation()
-
                 val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
 
-                configuration.applyExclusionRects(getRootView(activity))
+                configuration.beforeScreenshot(getRootView(activity))
 
                 beforeScreenshot(activity)
 
@@ -511,7 +487,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 afterScreenshot(activity, currentBitmap)
 
-                if (isLayoutInspectionModeEnabled) {
+                if (configuration.pauseForInspection) {
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
                 }
 
@@ -558,9 +534,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             } finally {
             }
         } finally {
-            configuration.resetExclusionRects()
             ResourceWrapper.afterTestFinished(activity)
-            orientationHelper?.afterTestFinished()
+            configuration.afterTestFinished()
             TestifyFeatures.reset()
             if (throwable != null) {
                 //noinspection ThrowFromfinallyBlock
