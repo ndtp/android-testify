@@ -95,7 +95,7 @@ internal class AccessibilityScreenshotLifecycleObserver(private val context: Con
             check = this.sourceCheckClass.simpleName,
             elementClass = this.element?.className.toString(),
             resourceName = this.element?.resourceName.toString(),
-            message = this.getMessage(Locale.getDefault()).toString()
+            message = this.getMessage(Locale.ROOT).toString()
         )
     }
 }
