@@ -108,7 +108,8 @@ private fun getFileName(testContext: Context): String {
         DeviceIdentifier.DeviceStringFormatter(
             testContext,
             getInstrumentation().testDescription.nameComponents
-        ), DEFAULT_NAME_FORMAT
+        ),
+        DEFAULT_NAME_FORMAT
     )
 }
 

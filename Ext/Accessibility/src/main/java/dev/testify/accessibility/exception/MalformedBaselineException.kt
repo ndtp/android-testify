@@ -21,35 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.capture.fullscreen.provider
+package dev.testify.accessibility.exception
 
-import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Point
-import android.os.Build
-import android.view.WindowManager
+import dev.testify.TestDescription
 
-/**
- * Simple immutable class for describing width and height dimensions in pixels.
- * Provided as an alternative to [android.util.Size] which was only added in API 21.
- */
-data class Size(val width: Int, val height: Int)
-
-/**
- * Get the real, physical display resolution in pixels.
- * Reports the full [Size] of the device including all system UI.
- */
-@Suppress("DEPRECATION")
-val Context.realDisplaySize: Size
-    get() {
-        val screenSize = Point()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            this.display
-        } else {
-            (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-        }?.getRealSize(screenSize)
-        return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            Size(screenSize.x, screenSize.y)
-        else
-            Size(screenSize.y, screenSize.x)
-    }
+class MalformedBaselineException(description: TestDescription, exception: Exception) : Exception(
+    "Error loading baseline for ${description.fullyQualifiedTestName}",
+    exception
+)

@@ -21,35 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.capture.fullscreen.provider
+package dev.testify.internal.helpers
 
 import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Point
-import android.os.Build
-import android.view.WindowManager
+import android.util.Log
+import java.io.IOException
+import java.io.InputStream
 
-/**
- * Simple immutable class for describing width and height dimensions in pixels.
- * Provided as an alternative to [android.util.Size] which was only added in API 21.
- */
-data class Size(val width: Int, val height: Int)
+private const val LOG_TAG = "AssetLoader"
 
-/**
- * Get the real, physical display resolution in pixels.
- * Reports the full [Size] of the device including all system UI.
- */
-@Suppress("DEPRECATION")
-val Context.realDisplaySize: Size
-    get() {
-        val screenSize = Point()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            this.display
-        } else {
-            (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-        }?.getRealSize(screenSize)
-        return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            Size(screenSize.x, screenSize.y)
-        else
-            Size(screenSize.y, screenSize.x)
+@Throws(Exception::class)
+fun <T> loadAsset(context: Context, filePath: String, decoder: (InputStream) -> T): T? {
+    val assetManager = context.assets
+    var inputStream: InputStream? = null
+    var asset: T?
+    try {
+        inputStream = assetManager.open(filePath)
+        asset = decoder(inputStream)
+    } catch (e: IOException) {
+        Log.e(LOG_TAG, "Unable to decode file $filePath.", e)
+        asset = null
+    } finally {
+        if (inputStream != null) {
+            try {
+                inputStream.close()
+            } catch (e: IOException) {
+                Log.e(LOG_TAG, "Unable to close input stream.", e)
+                asset = null
+            }
+        }
     }
+    return asset
+}

@@ -21,35 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.capture.fullscreen.provider
+package dev.testify.accessibility.exception
 
-import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Point
-import android.os.Build
-import android.view.WindowManager
+import android.app.Activity
+import dev.testify.TestDescription
+import dev.testify.accessibility.internal.CheckResults
 
-/**
- * Simple immutable class for describing width and height dimensions in pixels.
- * Provided as an alternative to [android.util.Size] which was only added in API 21.
- */
-data class Size(val width: Int, val height: Int)
+internal class AccessibilityErrorsException(
+    results: CheckResults,
+    activity: Activity,
+    description: TestDescription,
+    moduleName: String
+) : Exception(
+    """
 
-/**
- * Get the real, physical display resolution in pixels.
- * Reports the full [Size] of the device including all system UI.
- */
-@Suppress("DEPRECATION")
-val Context.realDisplaySize: Size
-    get() {
-        val screenSize = Point()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            this.display
-        } else {
-            (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-        }?.getRealSize(screenSize)
-        return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            Size(screenSize.x, screenSize.y)
-        else
-            Size(screenSize.y, screenSize.x)
-    }
+    *
+    * Accessibility errors have been detected in the hierarchy of ${activity.javaClass.simpleName}
+    *
+    * $results
+    *
+    * Run `./gradlew $moduleName:screenshotPull` to copy the accessibility report to assets.
+    * Run `./gradlew $moduleName:screenshotTest -PtestClass=${description.fullyQualifiedTestName}` to run this test again.
+    * Run `./gradlew $moduleName:screenshotRecord -PtestClass=${description.fullyQualifiedTestName}` to update the baseline.
+    *
+    """.trimIndent()
+)

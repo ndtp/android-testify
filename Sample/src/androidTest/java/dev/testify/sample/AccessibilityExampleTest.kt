@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022 ndtp
+ * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,35 +22,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.capture.fullscreen.provider
+package dev.testify.sample
 
-import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Point
-import android.os.Build
-import android.view.WindowManager
+import dev.testify.ScreenshotRule
+import dev.testify.accessibility.assertAccessibility
+import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.sample.a11y.CounterActivity
+import dev.testify.sample.a11y.CounterActivity.Companion.EXTRA_LAYOUT
+import org.junit.Rule
+import org.junit.Test
 
-/**
- * Simple immutable class for describing width and height dimensions in pixels.
- * Provided as an alternative to [android.util.Size] which was only added in API 21.
- */
-data class Size(val width: Int, val height: Int)
+class AccessibilityExampleTest {
 
-/**
- * Get the real, physical display resolution in pixels.
- * Reports the full [Size] of the device including all system UI.
- */
-@Suppress("DEPRECATION")
-val Context.realDisplaySize: Size
-    get() {
-        val screenSize = Point()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            this.display
-        } else {
-            (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
-        }?.getRealSize(screenSize)
-        return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            Size(screenSize.x, screenSize.y)
-        else
-            Size(screenSize.y, screenSize.x)
+    @get:Rule
+    var rule = ScreenshotRule(CounterActivity::class.java)
+
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .assertSame()
     }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun withErrors() {
+        rule
+            .assertAccessibility()
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun fixed() {
+        rule
+            .addIntentExtras {
+                it.putInt(EXTRA_LAYOUT, R.layout.activity_counter_fixed)
+            }
+            .assertAccessibility()
+            .assertSame()
+    }
+}

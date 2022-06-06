@@ -36,13 +36,15 @@ open class ComposableTestActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(ComposeView(this).apply {
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-            setBackgroundColor(Color.WHITE)
-            id = R.id.compose_container
-        })
+        setContentView(
+            ComposeView(this).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                setBackgroundColor(Color.WHITE)
+                id = R.id.compose_container
+            }
+        )
     }
 }
