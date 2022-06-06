@@ -30,8 +30,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.view.View
 
-@Suppress("unused")
-fun createBitmapFromCanvas(activity: Activity, targetView: View?): Bitmap {
+fun canvasCapture(activity: Activity, targetView: View?): Bitmap {
     val view: View = targetView ?: activity.window.decorView
     val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
