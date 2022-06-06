@@ -1,0 +1,23 @@
+name: Build Ext
+on: [pull_request]
+
+jobs:
+
+  instrumentationTests:
+    name: Instrumentation Tests
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+    - name: Fetch Sources
+      uses: actions/checkout@v2
+
+    - name: Setup Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+
+    - name: Run KtLint
+      run: ./gradlew :Accessibility:ktlint :ComposeExtensions:ktlint :FullscreenCaptureMethod:ktlint
+
+    - name: Build
+      run: ./gradlew :Accessibility:assemble :ComposeExtensions:assemble :FullscreenCaptureMethod:assemble
