@@ -29,6 +29,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import dev.testify.sample.a11y.CounterActivity
 import dev.testify.sample.clients.index.ClientListActivity
 
 class MainActivity : AppCompatActivity() {
@@ -52,6 +53,11 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_compose -> {
                 val intent = Intent(this, ComposeActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.action_counter -> {
+                val intent = Intent(this, CounterActivity::class.java)
                 startActivity(intent)
                 return true
             }

@@ -14,5 +14,9 @@
     <string name="mock_phone">1-613-555-5555</string>
     <string name="type_here">Type here</string>
     <string name="title_activity_compose">ComposeActivity</string>
-
+    <string name="counter_title">Counter</string>
+    <string name="counter_instructions">Click + or - to change the value</string>
+    <string name="counter_increment">Increment</string>
+    <string name="counter_decrement">Decrement</string>
+    <string name="action_counter">Accessibility sample</string>
 </resources>

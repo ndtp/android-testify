@@ -68,14 +68,13 @@ android {
     dependencies {
         implementation project(":Library")
 
-        implementation 'com.google.code.gson:gson:2.9.0'
         implementation "androidx.core:core-ktx:${versions.androidx.core}"
-        implementation "androidx.test:rules:${versions.androidx.test.rules}"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
-
-        implementation "androidx.test.espresso:espresso-accessibility:3.5.0-alpha06"
-        implementation "com.google.guava:guava:31.1-android"
+        implementation "androidx.test.espresso:espresso-accessibility:3.4.0"
         implementation "androidx.test:monitor:${versions.androidx.test.monitor}"
+        implementation "androidx.test:rules:${versions.androidx.test.rules}"
+        implementation "com.google.guava:guava:30.0-android"
+        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+        implementation 'com.google.code.gson:gson:2.9.0'
     }
 }
 
