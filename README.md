@@ -11,6 +11,17 @@ Testify screenshot tests are built on top of [Android Instrumentation tests](htt
 
 You can easily capture screenshots with different resolutions, orientations, API versions and languages by simply configuring different emulators. Testify natively supports grouping screenshot tests by device characteristics. Testify captures a bitmap of your specified View after all layout and draw calls have completed so you know that you're capturing an authentic rendering representative of what your users will see in your final product.
 
+---
+
+> **Warning**
+> 
+> **The Testify 2.0 platform requires new build artifacts and a migration from the `com.shopify.testify` package to the new `dev.testify` package.**
+> 
+> **Please refer to the [migration guide](./MIGRATION.md) for more information**
+> 
+
+---
+
 # Set up Testify
 
 Before building your screenshot test with Testify, make sure to set a dependency reference to the Testify plugin:
