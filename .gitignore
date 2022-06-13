@@ -1,9 +1,0 @@
-.gradle
-local.properties
-.idea/*
-build
-captures
-*.iml
-projectFilesBackup/
-.DS_Store
-Plugins/IntelliJ/.idea

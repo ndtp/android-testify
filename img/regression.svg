@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="991px" height="560px" viewBox="0 0 991 560" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>regression</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="41.3757637" y="122.178269" width="271.465377" height="42.1304375" rx="8"></rect>
+        <rect id="path-2" x="41.3757637" y="229.610884" width="271.465377" height="42.1304375" rx="8"></rect>
+        <rect id="path-3" x="42.3849287" y="451.848942" width="172.56721" height="37.9173938" rx="8"></rect>
+        <rect id="path-4" x="41.3757637" y="122.178269" width="271.465377" height="42.1304375" rx="8"></rect>
+        <rect id="path-5" x="41.3757637" y="229.610884" width="271.465377" height="42.1304375" rx="8"></rect>
+        <rect id="path-6" x="42.3849287" y="451.848942" width="172.56721" height="37.9173938" rx="8"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="regression">
+            <g id="Group-6">
+                <rect id="Rectangle-7" fill="#D6D0D7" x="0" y="83.9550974" width="991" height="475.32646"></rect>
+                <g id="Group-4" transform="translate(64.586558, 0.000000)">
+                    <rect id="Rectangle-8" fill="#FFFFFF" x="0" y="0" width="356.235234" height="508.725033"></rect>
+                    <rect id="Rectangle-9" fill="#2918A6" x="0" y="0" width="356.235234" height="64.2489172"></rect>
+                    <text id="Lorem-Ipsum" font-family="Arial-BoldMT, Arial" font-size="36" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="14.1362315" y="46.6923922">Lorem Ipsum</tspan>
+                    </text>
+                    <text id="Dolor-sit-amet" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="47.3052464" y="105.420658">Dolor sit amet</tspan>
+                    </text>
+                    <g id="Rectangle-10">
+                        <use fill="#F4F1F1" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        <rect stroke="#979797" stroke-width="1" x="41.8757637" y="122.678269" width="270.465377" height="41.1304375" rx="8"></rect>
+                    </g>
+                    <text id="Consectetur-adipisci" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="53.8203642" y="208.64023">Consectetur adipiscing elit</tspan>
+                    </text>
+                    <g id="Rectangle-10">
+                        <use fill="#F4F1F1" fill-rule="evenodd" xlink:href="#path-2"></use>
+                        <rect stroke="#979797" stroke-width="1" x="41.8757637" y="230.110884" width="270.465377" height="41.1304375" rx="8"></rect>
+                    </g>
+                    <path d="M241.190428,262.788604 L241.190428,237.510341" id="Line" stroke="#4A4A4A" stroke-width="2" stroke-linecap="square"></path>
+                    <text id="Mauris-ullamcorper" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="63.8274189" y="258.143494">Mauris ullamcorper</tspan>
+                    </text>
+                    <text id="Elementum-rhoncus" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#9B9B9B">
+                        <tspan x="63.9578288" y="150.710878">Elementum rhoncus</tspan>
+                    </text>
+                    <g id="Rectangle-11">
+                        <use fill="#C19FDF" fill-rule="evenodd" xlink:href="#path-3"></use>
+                        <rect stroke="#979797" stroke-width="1" x="42.8849287" y="452.348942" width="171.56721" height="36.9173938" rx="8"></rect>
+                    </g>
+                    <text id="Nunc" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="105.323807" y="477.221769">Nunc</tspan>
+                    </text>
+                </g>
+                <g id="Group-4-Copy" transform="translate(581.279022, 0.000000)">
+                    <rect id="Rectangle-8" fill="#FFFFFF" x="0" y="0" width="356.235234" height="508.725033"></rect>
+                    <rect id="Rectangle-9" fill="#2918A6" x="0" y="0" width="356.235234" height="64.2489172"></rect>
+                    <text id="Lorem-Ipsum" font-family="Arial-BoldMT, Arial" font-size="36" font-weight="bold" fill="#FFFFFF">
+                        <tspan x="14.1362315" y="46.6923922">Lorem Ipsum</tspan>
+                    </text>
+                    <text id="Dolor-sit-amet" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="47.3052464" y="105.420658">Dolor sit amet</tspan>
+                    </text>
+                    <g id="Rectangle-10">
+                        <use fill="#F4F1F1" fill-rule="evenodd" xlink:href="#path-4"></use>
+                        <rect stroke="#979797" stroke-width="1" x="41.8757637" y="122.678269" width="270.465377" height="41.1304375" rx="8"></rect>
+                    </g>
+                    <text id="Consectetur-adipisci" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="53.8203642" y="208.64023">Consectetur adipiscing elit</tspan>
+                    </text>
+                    <g id="Rectangle-10">
+                        <use fill="#F4F1F1" fill-rule="evenodd" xlink:href="#path-5"></use>
+                        <rect stroke="#979797" stroke-width="1" x="41.8757637" y="230.110884" width="270.465377" height="41.1304375" rx="8"></rect>
+                    </g>
+                    <path d="M241.190428,262.788604 L241.190428,237.510341" id="Line" stroke="#4A4A4A" stroke-width="2" stroke-linecap="square"></path>
+                    <text id="Mauris-pulvinar-ut-v" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="69.9309346" y="258.143494">Mauris pulvinar ut </tspan>
+                        <tspan x="131.06863" y="280.143494">velit</tspan>
+                    </text>
+                    <text id="Elementum-rhoncus" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#9B9B9B">
+                        <tspan x="63.9578288" y="150.710878">Elementum rhoncus</tspan>
+                    </text>
+                    <g id="Rectangle-11">
+                        <use fill="#C19FDF" fill-rule="evenodd" xlink:href="#path-6"></use>
+                        <rect stroke="#979797" stroke-width="1" x="42.8849287" y="452.348942" width="171.56721" height="36.9173938" rx="8"></rect>
+                    </g>
+                    <text id="Nunc" font-family="ArialMT, Arial" font-size="20" font-weight="normal" fill="#000000">
+                        <tspan x="105.323807" y="477.221769">Nunc</tspan>
+                    </text>
+                </g>
+                <g id="Group-5-Copy" transform="translate(451.096741, 206.672652)" fill="#000000">
+                    <g id="curved-arrow" transform="translate(0.000000, 51.506280)">
+                        <path d="M37.8146481,34.8606018 L35.7321957,20.7200381 C35.6556152,20.1894353 35.795341,19.6295097 36.1607778,19.1938569 C36.8217885,18.4063307 37.9745267,18.3225513 38.7322706,19.0095423 L66.5524908,44.1964179 L66.758049,44.4184332 C67.3989069,45.2227153 67.290082,46.4179679 66.5162158,47.0826176 L38.6959956,71.0072172 C38.2942839,71.343731 37.7609073,71.5084971 37.2140957,71.4079619 C36.2279537,71.2236472 35.5709736,70.2406358 35.7483179,69.217131 L37.8227092,57.2324901 C35.4070644,56.9406585 32.7724263,56.3151058 30.0612076,55.3670024 C22.9862436,52.8969069 15.2878875,48.1885055 9.46239488,41.3576931 C3.57913105,34.4598571 -0.405742333,25.4102873 0.0335879415,14.3234821 C0.190779508,10.2853157 0.940462362,5.98184804 2.40220958,1.4284385 C2.58224094,0.69117992 3.18413685,0.1089132 3.95397247,0.0139632307 C4.95354961,-0.1089132 5.86042403,0.633930674 5.97731007,1.67139872 C7.58012664,15.6458 12.7661048,23.7486628 19.1773711,28.4528752 C24.9074739,32.6586003 31.6976121,34.2266711 37.8146481,34.8606018 L37.8146481,34.8606018 Z" id="Shape"></path>
+                    </g>
+                    <g id="curved-arrow-copy" transform="translate(54.806517, 36.311494) scale(-1, -1) translate(-54.806517, -36.311494) translate(20.806517, 0.311494)">
+                        <path d="M37.8146481,34.8606018 L35.7321957,20.7200381 C35.6556152,20.1894353 35.795341,19.6295097 36.1607778,19.1938569 C36.8217885,18.4063307 37.9745267,18.3225513 38.7322706,19.0095423 L66.5524908,44.1964179 L66.758049,44.4184332 C67.3989069,45.2227153 67.290082,46.4179679 66.5162158,47.0826176 L38.6959956,71.0072172 C38.2942839,71.343731 37.7609073,71.5084971 37.2140957,71.4079619 C36.2279537,71.2236472 35.5709736,70.2406358 35.7483179,69.217131 L37.8227092,57.2324901 C35.4070644,56.9406585 32.7724263,56.3151058 30.0612076,55.3670024 C22.9862436,52.8969069 15.2878875,48.1885055 9.46239488,41.3576931 C3.57913105,34.4598571 -0.405742333,25.4102873 0.0335879415,14.3234821 C0.190779508,10.2853157 0.940462362,5.98184804 2.40220958,1.4284385 C2.58224094,0.69117992 3.18413685,0.1089132 3.95397247,0.0139632307 C4.95354961,-0.1089132 5.86042403,0.633930674 5.97731007,1.67139872 C7.58012664,15.6458 12.7661048,23.7486628 19.1773711,28.4528752 C24.9074739,32.6586003 31.6976121,34.2266711 37.8146481,34.8606018 L37.8146481,34.8606018 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+            <path d="M669.082433,161.083286 C670.523433,161.083286 672.948433,159.492286 677.332433,158.771286 C691.480433,156.442286 700.808433,155.686286 729.598433,161.083286 C768.173433,168.315286 826.765433,209.402286 842.066433,236.536286 C849.496433,249.712286 853.082433,268.627286 853.082433,289.942286 C853.082433,301.913286 851.175433,317.727286 846.051433,324.645286 C832.769433,342.577286 785.109433,350.871286 753.566433,343.724286 C720.215433,336.166286 660.388433,312.412286 637.441433,296.067286 C604.409433,272.539286 582.227433,228.820286 587.879433,207.739286 C590.452433,198.142286 593.770433,194.504286 606.082433,186.739286 C625.540433,174.468286 646.136433,172.202286 681.082433,186.083286" id="Page-1" stroke="#FF0000" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></path>
+        </g>
+    </g>
+</svg>
