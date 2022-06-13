@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[4490],{1179:function(s){s.exports=JSON.parse('{"label":"setup","permalink":"/android-testify/blog/tags/setup","allTagsPath":"/android-testify/blog/tags","count":2}')}}]);

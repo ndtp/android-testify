@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[8713],{1055:function(a){a.exports=JSON.parse('{"label":"gradle","permalink":"/android-testify/blog/tags/gradle","allTagsPath":"/android-testify/blog/tags","count":1}')}}]);
