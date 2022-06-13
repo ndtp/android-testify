@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[7457],{6045:function(s){s.exports=JSON.parse('{"title":"Basics","description":"The basic Testify concepts.","slug":"/category/basics","permalink":"/docs/category/basics","navigation":{"next":{"title":"Set up Testify","permalink":"/docs/testify-basics/setup"}}}')}}]);
