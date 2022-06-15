@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://ndtp.github.io/android-testify/blog</id>
-    <title>android-testify Blog</title>
+    <title>Android Testify Blog</title>
     <updated>2022-06-12T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://ndtp.github.io/android-testify/blog"/>
-    <subtitle>android-testify Blog</subtitle>
+    <subtitle>Android Testify Blog</subtitle>
     <icon>https://ndtp.github.io/android-testify/img/favicon.ico</icon>
     <entry>
         <title type="html"><![CDATA[How to create a test]]></title>
