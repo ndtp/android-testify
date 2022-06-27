@@ -20,6 +20,12 @@ function HomepageHeader() {
             to="/docs/intro">
             Get Started
           </Link>
+          &nbsp;&nbsp;&nbsp;
+          <Link
+            className="button button--secondary button--lg"
+            to="/docs/migration">
+            Migrate to 2.0
+          </Link>
         </div>
       </div>
     </header>
