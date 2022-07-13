@@ -9,7 +9,7 @@ class MainActivityScreenshotTest {
 
     @get:Rule var rule = ScreenshotRule(MainActivity::class.java)
 
-    @TestifyLayout(layoutResName = "com.shopify.testify.sample:layout/view_client_details")
+    @TestifyLayout(layoutResName = "dev.testify.sample:layout/view_client_details")
     @ScreenshotInstrumentation
     @Test
     fun default() {

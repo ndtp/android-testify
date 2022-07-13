@@ -11,7 +11,7 @@ The three capture methods available are:
 For legacy compatibility reasons, `DrawingCache` mode is the default Testify capture method.
 
 If you wish to select an alternative capture method, you can enable the experimental feature either in code, or in your manifest.
-Available features can be found in [TestifyFeatures](https://github.com/ndtp/android-testify/blob/6a04294efc63f736654760288892880ee2a1d1c8/Library/src/main/java/com/shopify/testify/TestifyFeatures.kt#L29)
+Available features can be found in [TestifyFeatures](https://github.com/ndtp/android-testify/blob/230607acc598afe7d54f9618d55fdecd0da83800/Library/src/main/java/dev/testify/TestifyFeatures.kt#L30)
 
 **Code:**
 ```kotlin
@@ -26,7 +26,7 @@ Available features can be found in [TestifyFeatures](https://github.com/ndtp/and
 
 **Manifest:**
 ```xml
-<manifest package="com.shopify.testify.sample"
+<manifest package="dev.testify.sample"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
