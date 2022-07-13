@@ -73,6 +73,7 @@ const config = {
           {to: '/docs/intro', label: 'Get Started', position: 'left'},
           {to: '/docs/category/recipes', label: 'Recipes', position: 'left'},
           {to: '/docs/category/extensions', label: 'Extensions', position: 'left'},
+          {to: '/docs/migration', label: 'Migration', position: 'left'},
           {
             type: 'docsVersionDropdown',
             position: 'right'
