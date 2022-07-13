@@ -67,10 +67,10 @@ const config = {
           {to: '/docs/intro', label: 'Get Started', position: 'left'},
           {to: '/docs/category/recipes', label: 'Recipes', position: 'left'},
           {to: '/docs/category/extensions', label: 'Extensions', position: 'left'},
-          // {
-          //   type: 'docsVersionDropdown',
-          //   position: 'right'
-          // },
+          {
+            type: 'docsVersionDropdown',
+            position: 'right'
+          },
           {
             href: 'https://github.com/ndtp/android-testify',
             label: 'GitHub',
