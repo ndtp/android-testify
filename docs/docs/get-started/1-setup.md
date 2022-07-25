@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.shopify.testify:plugin:1.2.0-alpha01"
+        classpath "dev.testify:plugin:2.0.0-alpha01"
     }
 }
 ```
@@ -17,7 +17,7 @@ buildscript {
 **Application build.gradle**
 ```groovy
 plugins {
-    id("com.shopify.testify")
+    id("dev.testify")
 }
 
 dependencies {
