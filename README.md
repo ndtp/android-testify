@@ -9,7 +9,7 @@ Expand your test coverage by including the View-layer. Testify allows you to eas
 
 Testify screenshot tests are built on top of [Android Instrumentation tests](https://developer.android.com/training/testing/unit-testing/instrumented-unit-tests) and so integrate seamlessly with your existing test suites. You can run tests and capture screenshots from within Android Studio or using the Gradle command-line tools. Testify also works well with most Continuous Integration services. 
 
-You can easily capture screenshots with different resolutions, orientations, API versions and languages by simply configuring different emulators. Testify natively supports grouping screenshot tests by device characteristics. Testify captures a bitmap of your specified View after all layout and draw calls have completed so you know that you're capturing an authentic rendering representative of what your users will see in your final product.
+You can easily capture screenshots with different resolutions, orientations, API versions, and languages by simply configuring different emulators. Testify natively supports grouping screenshot tests by device characteristics. Testify captures a bitmap of your specified View after all layout and draw calls have been completed so you know that you're capturing an authentic rendering representative of what your users will see in your final product.
 
 ---
 
@@ -69,6 +69,7 @@ Android Studio support relies on the fact that Testify tests extend [ActivityTes
 
 This plugin will enhance the developer experience by adding fully integrated IDE UI for all relevant Testify commands:
 
+With the installation of an Intellij-platform plugin, many common Testify actions can be seamlessly integrated into your IDE. The Testify Android Studio plugin is available for Android Studio version 4.0 through 4.2 via the Intellij Marketplace.
 - Run the Testify screenshot tests
 - Record a new baseline image
 - Pull screenshots from the device and into your project
