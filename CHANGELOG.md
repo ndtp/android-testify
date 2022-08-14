@@ -1,5 +1,17 @@
 # Testify Change Log
 
+## Unreleased
+
+### Fullscreen Extension Library
+
+Capture the entire device screen, including system UI, dialogs and menus.
+
+### Accessibility Checks Extension Library
+
+Combine visual regression testing with accessibility checks to further improve the quality and expand the reach of your application.
+
+---
+
 ## 2.0.0-alpha01
 
 :warning: Major breaking changes.
