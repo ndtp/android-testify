@@ -23,13 +23,6 @@
  */
 package dev.testify.junit5
 
-import android.app.Activity
-import dev.testify.EspressoActions
-import dev.testify.ScreenshotCore
-import dev.testify.ScreenshotTestInterface
-import dev.testify.ViewModification
-import dev.testify.ViewProvider
-import dev.testify.internal.TestifyConfigurationInterface
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -47,12 +40,11 @@ open class ScreenshotExtension :
     AfterEachCallback,
     BeforeEachCallback,
     AfterTestExecutionCallback,
-    TestExecutionExceptionHandler,
-    ScreenshotTestInterface {
+    TestExecutionExceptionHandler {
 
-    private val core = ScreenshotCore<Activity>(
-        rootViewId = 0,
-    )
+//    private val core = ScreenshotCore<Activity>(
+//        rootViewId = 0,
+//    )
 
     private val ExtensionContext.testMethodName: String
         get() {
@@ -72,7 +64,7 @@ open class ScreenshotExtension :
         val methodAnnotations = testMethod.annotations.asList()
         val name = context.testMethodName
 
-        core.apply(name, context.testClass?.get()!!, methodAnnotations)
+//        core.apply(name, context.testClass?.get()!!, methodAnnotations)
     }
 
     /**
@@ -82,14 +74,14 @@ open class ScreenshotExtension :
      */
     override fun beforeEach(context: ExtensionContext) {
         initialize(context)
-        core.evaluateBeforeEach()
+//        core.evaluateBeforeEach()
     }
 
     /**
      * Handle the supplied throwable.
      */
     override fun handleTestExecutionException(context: ExtensionContext, throwable: Throwable) {
-        core.handleTestException(throwable)
+//        core.handleTestException(throwable)
     }
 
     /**
@@ -99,7 +91,7 @@ open class ScreenshotExtension :
      * @param context – the current extension context
      */
     override fun afterEach(context: ExtensionContext) {
-        core.evaluateAfterEach()
+//        core.evaluateAfterEach()
     }
 
     /**
@@ -109,28 +101,28 @@ open class ScreenshotExtension :
      * @param context – the current extension context
      */
     override fun afterTestExecution(context: ExtensionContext) {
-        core.evaluateAfterTestExecution()
+//        core.evaluateAfterTestExecution()
     }
 
-    override var screenshotViewProvider: ViewProvider? = null // TODO: Not yet implemented
-
-    override fun configure(configure: TestifyConfigurationInterface.() -> Unit): ScreenshotTestInterface {
-        TODO("Not yet implemented")
-    }
-
-    override fun setEspressoActions(espressoActions: EspressoActions): ScreenshotTestInterface {
-        TODO("Not yet implemented")
-    }
-
-    override fun setViewModifications(viewModification: ViewModification): ScreenshotTestInterface {
-        TODO("Not yet implemented")
-    }
-
-    override fun assertSame() {
-        core.assertSame()
-    }
-
-    override fun isRecordMode(): Boolean {
-        TODO("Not yet implemented")
-    }
+//    override var screenshotViewProvider: ViewProvider? = null // TODO: Not yet implemented
+//
+//    override fun configure(configure: TestifyConfigurationInterface.() -> Unit): ScreenshotTestInterface {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun setEspressoActions(espressoActions: EspressoActions): ScreenshotTestInterface {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun setViewModifications(viewModification: ViewModification): ScreenshotTestInterface {
+//        TODO("Not yet implemented")
+//    }
+//
+//    override fun assertSame() {
+//        core.assertSame()
+//    }
+//
+//    override fun isRecordMode(): Boolean {
+//        TODO("Not yet implemented")
+//    }
 }
