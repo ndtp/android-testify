@@ -26,4 +26,10 @@ jobs:
         api-level: 29
         target: google_apis
         profile: pixel_3a
-        script: ./github_action_emulator_command.sh Sample:screenshotTest
+        script: ./test_and_archive.sh
+
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: testify
+        path: output/*.png
