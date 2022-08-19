@@ -33,7 +33,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:1.2.0-alpha02"
+        classpath "dev.testify:plugin:2.0.0-alpha01"
     }
 }
 ```
