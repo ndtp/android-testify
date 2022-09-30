@@ -1,5 +1,21 @@
 # Testify Change Log
 
+## 2.0.0-alpha02
+
+### Compose Extension Library
+
+#### Added
+
+- `ComposableTestActivity` now supports resource wrapping. This means that Testify can configure the font scale and locale for tests. Compose screenshot tests will now respect the `locale` and `fontScale` configuration parameters. Usage:
+  ```kotlin
+  rule
+      .setCompose {
+          Text("Example")
+      }
+      .setLocale(Locale.FRANCE)
+      .setFontScale(2.0f)
+  ```
+
 ## 2.0.0-alpha01
 
 :warning: Major breaking changes.
