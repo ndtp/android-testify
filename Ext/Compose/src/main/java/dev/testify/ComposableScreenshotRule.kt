@@ -28,24 +28,25 @@ import android.app.Activity
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
-import androidx.test.espresso.Espresso
-import dev.testify.TestifyFeatures
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import dev.testify.compose.R
 import dev.testify.internal.disposeComposition
-import org.junit.Assert.assertTrue
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import org.junit.runner.Description
+import org.junit.runners.model.Statement
 
 /**
  * Helper extension of [ScreenshotRule] which simplifies testing [Composable] functions.
  */
 open class ComposableScreenshotRule(
-    var exactness: Float = 0.9f
+    var exactness: Float = 0.9f,
+    private val composeTestRule: ComposeTestRule = createEmptyComposeRule()
 ) : ScreenshotRule<ComposableTestActivity>(
     ComposableTestActivity::class.java,
     launchActivity = false,
 ) {
     lateinit var composeFunction: @Composable () -> Unit
+    private var composeActions: ((ComposeTestRule) -> Unit)? = null
 
     open fun onCleanUp(activity: Activity) {
         activity.disposeComposition()
@@ -67,17 +68,13 @@ open class ComposableScreenshotRule(
      * Render the composable function after the activity has loaded.
      */
     override fun afterActivityLaunched() {
-        Espresso.onIdle()
-        val latch = CountDownLatch(1)
         activity.runOnUiThread {
             val composeView = activity.findViewById<ComposeView>(R.id.compose_container)
             composeView.setContent {
                 composeFunction()
-                latch.countDown()
             }
         }
-        assertTrue(latch.await(COMPOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS))
-        Espresso.onIdle()
+        composeTestRule.waitForIdle()
         super.afterActivityLaunched()
     }
 
@@ -97,7 +94,31 @@ open class ComposableScreenshotRule(
         return this
     }
 
-    companion object {
-        private const val COMPOSE_TIMEOUT_SECONDS: Long = 15
+    /**
+     * TODO
+     */
+    fun setComposeActions(actions: (ComposeTestRule) -> Unit): ComposableScreenshotRule {
+        composeActions = actions
+        return this
+    }
+
+    override fun afterInitializeView(activity: Activity) {
+        composeActions?.invoke(composeTestRule)
+        super.afterInitializeView(activity)
+    }
+
+    override fun beforeScreenshot(activity: Activity) {
+        val targetView = getRootView(activity).getChildAt(0)
+        if (targetView.width == 0 && targetView.height == 0)
+            throw IllegalStateException("Check if you passed the rule")
+
+        super.beforeScreenshot(activity)
+    }
+
+    override fun apply(base: Statement, description: Description): Statement {
+
+
+        val statement = composeTestRule.apply(base, description)
+        return super.apply(statement, description)
     }
 }

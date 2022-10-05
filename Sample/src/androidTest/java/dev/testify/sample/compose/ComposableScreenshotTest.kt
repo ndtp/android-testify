@@ -37,9 +37,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.testify.ComposableScreenshotRule
+import dev.testify.ComposableTestActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.ClientListItem
 import dev.testify.sample.R
@@ -55,6 +57,9 @@ class ComposableScreenshotTest {
 
     @get:Rule
     val rule = ComposableScreenshotRule()
+
+//    @get:Rule
+//    val composeTestRule = createAndroidComposeRule(ComposableTestActivity::class.java)
 
     @Composable
     private fun PaddedBox(color: Color, content: @Composable BoxScope.() -> Unit) {
