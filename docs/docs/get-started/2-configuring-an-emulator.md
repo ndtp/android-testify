@@ -2,8 +2,22 @@
 
 The Sample application includes a baseline for an emulator that's compatible with GitHub Actions. To configure an AVD locally, create a new virtual device with the following settings in the Android Virtual Device (AVD) configuration:
 
+## Intel based hardware
+
 - Phone: Pixel 3a (1080x2220 440dpi)
 - Q API level 29, x86, Android 10.0 (Google APIs)
+- RAM: 1536 MB
+- VM heap: 256 MB
+- Internal Storage: 2048 MB
+- SD card, Studio-managed: 512 MB
+- Enable Device Frame with pixel_3a skin
+- Enable keyboard input
+
+
+## Apple M1 hardware
+
+- Phone: Pixel 3a (1080x2220 440dpi)
+- Q API level 29, **arm64**, Android 10.0 (Google APIs)
 - RAM: 1536 MB
 - VM heap: 256 MB
 - Internal Storage: 2048 MB
