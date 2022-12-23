@@ -28,11 +28,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.unit.dp
 import dev.testify.ComposableScreenshotRule
 import dev.testify.ComposableTestActivity
@@ -43,10 +51,32 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.random.Random
 
+/**
+ * These tests demonstrate how to use a [ComposableScreenshotRule] with a [ComposeTestRule]
+ */
 class ComposeRuleInteropScreenshotTest {
 
     @get:Rule
     val rule = ComposableScreenshotRule(composeTestRule = createAndroidComposeRule(ComposableTestActivity::class.java))
+
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setCompose {
+                var text by remember { mutableStateOf("") }
+                TextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Default") },
+                    modifier = Modifier.testTag("field")
+                )
+            }
+            .setComposeActions { composeTestRule ->
+                composeTestRule.onNodeWithTag("field").performTextInput("testify")
+            }
+            .assertSame()
+    }
 
     @ScreenshotInstrumentation
     @Test

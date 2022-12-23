@@ -57,9 +57,6 @@ class ComposableScreenshotTest {
     @get:Rule
     val rule = ComposableScreenshotRule()
 
-//    @get:Rule
-//    val composeTestRule = createAndroidComposeRule(ComposableTestActivity::class.java)
-
     @Composable
     private fun PaddedBox(color: Color, content: @Composable BoxScope.() -> Unit) {
         Box(

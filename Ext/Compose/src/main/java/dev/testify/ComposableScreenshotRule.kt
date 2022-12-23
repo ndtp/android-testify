@@ -37,6 +37,10 @@ import org.junit.runners.model.Statement
 
 /**
  * Helper extension of [ScreenshotRule] which simplifies testing [Composable] functions.
+ *
+ * @param exactness: The tolerance used when comparing the current image to the baseline. A value of 1f requires
+ *      a perfect binary match. 0f will ignore all differences.
+ * @param composeTestRule: A TestRule that allows you to test and control composables and applications using Compose.
  */
 open class ComposableScreenshotRule(
     var exactness: Float = 0.9f,
@@ -95,29 +99,51 @@ open class ComposableScreenshotRule(
     }
 
     /**
-     * TODO
+     * UI tests in Compose use semantics to interact with the UI hierarchy. [setComposeActions] allows you to manipulate
+     * your Compose UI using [Finders](https://developer.android.com/jetpack/compose/testing#finders) and [Actions](https://developer.android.com/jetpack/compose/testing#actions).
+     *
+     * The provided [actions] lambda will be invoked after the Activity is loaded, before any Espresso actions and before
+     * the screenshot is taken.
+     *
+     * **For more information:**
+     * - [ComposeTestRule](https://developer.android.com/reference/kotlin/androidx/compose/ui/test/junit4/ComposeTestRule)
+     * - [Testing your Compose layout](https://developer.android.com/jetpack/compose/testing)
+     *
+     * @param actions: A lambda which provides a [ComposeTestRule] instance that can be used with semantics to interact
+     * with the UI hierarchy.
+     *
      */
     fun setComposeActions(actions: (ComposeTestRule) -> Unit): ComposableScreenshotRule {
         composeActions = actions
         return this
     }
 
+    /**
+     * Test lifecycle method.
+     * Invoked after layout inflation and all view modifications have been applied.
+     */
     override fun afterInitializeView(activity: Activity) {
         composeActions?.invoke(composeTestRule)
         super.afterInitializeView(activity)
     }
 
+    /**
+     * Test lifecycle method.
+     * Invoked immediately before the screenshot is taken.
+     */
     override fun beforeScreenshot(activity: Activity) {
         val targetView = getRootView(activity).getChildAt(0)
         if (targetView.width == 0 && targetView.height == 0)
-            throw IllegalStateException("Check if you passed the rule")
-
+            throw IllegalStateException(
+                "Target view has 0 size. Verify if you have provided a ComposeTestRule instance to ComposableScreenshotRule."
+            )
         super.beforeScreenshot(activity)
     }
 
+    /**
+     * Modifies the method-running Statement to implement this test-running rule.
+     */
     override fun apply(base: Statement, description: Description): Statement {
-
-
         val statement = composeTestRule.apply(base, description)
         return super.apply(statement, description)
     }
