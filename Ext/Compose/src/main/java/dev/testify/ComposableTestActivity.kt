@@ -24,14 +24,23 @@
  */
 package dev.testify
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.ui.platform.ComposeView
 import dev.testify.compose.R
+import dev.testify.resources.TestifyResourcesOverride
 
-open class ComposableTestActivity : AppCompatActivity() {
+open class ComposableTestActivity : AppCompatActivity(), TestifyResourcesOverride {
+
+    /**
+     * This is required to correctly support dynamic Locale changes
+     */
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase?.wrap())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

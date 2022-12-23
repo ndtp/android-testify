@@ -37,17 +37,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.testify.ComposableScreenshotRule
-import dev.testify.ComposableTestActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.ClientListItem
 import dev.testify.sample.R
 import dev.testify.sample.TopAppBar
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
 
 /**
  * Demonstrates how to use the testify-compose extension library to test
@@ -134,6 +133,23 @@ class ComposableScreenshotTest {
                     TopAppBar()
                 }
             }
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun localeAndFontScale() {
+        val locale = Locale.JAPAN
+        val fontScale = 3.0f
+        rule
+            .setCompose {
+                Text(
+                    text = "Locale ${locale.displayName} at scale $fontScale",
+                    fontSize = 16.sp
+                )
+            }
+            .setLocale(locale)
+            .setFontScale(fontScale)
             .assertSame()
     }
 }
