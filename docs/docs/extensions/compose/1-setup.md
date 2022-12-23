@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-alpha01"
+        classpath "dev.testify:plugin:2.0.0-alpha02"
     }
 }
 ```
@@ -17,6 +17,6 @@ buildscript {
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-compose:2.0.0-alpha01"
+    androidTestImplementation "dev.testify:testify-compose:2.0.0-alpha02"
 }
 ```
