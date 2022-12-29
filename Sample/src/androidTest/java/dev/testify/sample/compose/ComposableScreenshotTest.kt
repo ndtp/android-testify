@@ -47,6 +47,7 @@ import dev.testify.sample.R
 import dev.testify.sample.TopAppBar
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
 
 /**
  * Demonstrates how to use the testify-compose extension library to test
@@ -146,6 +147,25 @@ class ComposableScreenshotTest {
                 ) {
                     DropdownDemo(true)
                 }
+            }
+            .assertSame()
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun localeAndFontScale() {
+        val locale = Locale.JAPAN
+        val fontScale = 3.0f
+        rule
+            .setCompose {
+                Text(
+                    text = "Locale ${locale.displayName} at scale $fontScale",
+                    fontSize = 16.sp
+                )
+            }
+            .configure {
+                this.locale = locale
+                this.fontScale = fontScale
             }
             .assertSame()
     }
