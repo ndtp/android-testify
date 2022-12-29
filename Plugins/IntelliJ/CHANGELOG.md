@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [2.0.0-alpha02]
+
+- Public availability on IntelliJ Marketplace
+
+## [2.0.0-alpha01]
+
+- Add support for Android Studio Chipmunk and Dolphin
+
 ## [1.2.0-alpha02]
 
 - Support both new (dev.testify) and legacy (com.shopify) annotations.
