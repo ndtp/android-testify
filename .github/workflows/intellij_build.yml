@@ -162,7 +162,7 @@ jobs:
   # If accepted and published, release workflow would be triggered
   releaseDraft:
     name: Release Draft
-    if: github.ref == 'refs/heads/main'
+    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'intellij') }}
     needs: [build, verify]
     runs-on: ubuntu-latest
     steps:
