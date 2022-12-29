@@ -4,6 +4,32 @@
 
 ### Compose Extension Library
 
+#### Changed
+
+- `ComposableScreenshotRule` now has an additional constructor argument, `composeTestRule`. This provides you with a default instance of `ComposeTestRule` or allows you to provide your own instance. With this `composeTestRule` instance, you can now use the `ComposeTestRule` semantics to interact with the UI hierarchy prior to taking screenshots.
+
+  ```kotlin
+    @get:Rule
+    val rule = ComposableScreenshotRule(composeTestRule = createAndroidComposeRule(ComposableTestActivity::class.java))
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setCompose {
+                var text by remember { mutableStateOf("") }
+                TextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    modifier = Modifier.testTag("field")
+                )
+            }
+            .setComposeActions { composeTestRule ->
+                composeTestRule.onNodeWithTag("field").performTextInput("testify")
+            }
+            .assertSame()
+    }
+  ```
+
 #### Added
 
 - `ComposableTestActivity` now supports resource wrapping. This means that Testify can configure the font scale and locale for tests. Compose screenshot tests will now respect the `locale` and `fontScale` configuration parameters. Usage:
