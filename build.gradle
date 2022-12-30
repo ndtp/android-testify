@@ -33,7 +33,7 @@ buildscript {
                 'material'           : '1.4.0',             // https://material.io/develop/android/docs/getting-started/
                 'mockito2'           : '4.0.0',             // https://github.com/mockito/mockito/releases
                 'mockitokotlin'      : '4.0.0',             // https://github.com/nhaarman/mockito-kotlin
-                'testify'            : '2.0.0-alpha02',     // https://github.com/ndtp/android-testify/releases
+                'testify'            : '2.0.0-alpha03',     // https://github.com/ndtp/android-testify/releases
         ]
         coreVersions = [
                 'compileSdk': 30,
