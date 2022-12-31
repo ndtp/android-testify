@@ -32,6 +32,13 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
     ExampleFeature(listOf("testify-example", "testify-alias"), defaultValue = true),
     ExampleDisabledFeature(listOf("testify-disabled")),
 
+//    Locale(listOf("testify-experimental-locale"), defaultValue = true),
+
+    @Deprecated("Please use setCaptureMethod()", ReplaceWith("setCaptureMethod(::canvasCapture)"))
+    CanvasCapture(listOf("testify-canvas-capture")),
+
+//    PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture"));
+
     Reporter(listOf("testify-reporter")),
 
     /**

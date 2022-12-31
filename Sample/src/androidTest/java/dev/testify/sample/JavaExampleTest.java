@@ -28,16 +28,42 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.testify.ScreenshotRule;
+import dev.testify.TestifyFeatures;
 import dev.testify.annotation.ScreenshotInstrumentation;
+import dev.testify.internal.Configurable;
+import dev.testify.internal.processor.capture.PixelCopyCaptureKt;
+
+import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
 public class JavaExampleTest {
 
     @Rule
-    public ScreenshotRule rule = new ScreenshotRule<>(MainActivity.class);
+    public ScreenshotRule<MainActivity> rule = new ScreenshotRule<>(MainActivity.class);
 
     @ScreenshotInstrumentation
     @Test
     public void testJava() {
         rule.assertSame();
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    public void testConfiguration() {
+        Configurable.makeConfigurable(
+                        rule.setCaptureMethod(PixelCopyCaptureKt::pixelCopyCapture)
+                )
+                .setExactness(0.95f)
+                .setHideCursor(true)
+                .setHidePasswords(true)
+                .setHideScrollbars(true)
+                .setHideSoftKeyboard(true)
+                .setHideSoftKeyboard(true)
+                .setHideTextSuggestions(true)
+                .setUseSoftwareRenderer(true)
+                .setFocusTarget(true, android.R.id.content)
+                .setLayoutInspectionModeEnabled(false)
+                .setOrientation(SCREEN_ORIENTATION_PORTRAIT)
+                .withExperimentalFeatureEnabled(TestifyFeatures.Reporter)
+                .assertSame();
     }
 }
