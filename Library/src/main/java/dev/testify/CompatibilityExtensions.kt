@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Copyright (c) 2023 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,9 +28,14 @@ package dev.testify
 import android.app.Activity
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+import androidx.annotation.IdRes
 import dev.testify.internal.ExclusionRectProvider
+import java.util.Locale
 
-@Deprecated("Please use configure()", ReplaceWith("configure { this@configure.exactness = exactness }"))
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.exactness = exactness }")
+)
 fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setExactness(exactness: Float?): TRule {
     this.configure {
         this@configure.exactness = exactness
@@ -38,7 +43,10 @@ fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setExactness
     return this
 }
 
-@Deprecated("Please use configure()", ReplaceWith("configure { this@configure.orientation = requestedOrientation }"))
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.orientation = requestedOrientation }")
+)
 fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setOrientation(requestedOrientation: Int): TRule {
     require(requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT)
     this.configure {
@@ -47,8 +55,13 @@ fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setOrientati
     return this
 }
 
-@Deprecated("Please use configure()", ReplaceWith("configure { this@configure.defineExclusionRects(provider) }"))
-fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.defineExclusionRects(provider: ExclusionRectProvider): TRule {
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.defineExclusionRects(provider) }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.defineExclusionRects(
+    provider: ExclusionRectProvider
+): TRule {
     this.configure {
         this@configure.defineExclusionRects(provider)
     }
@@ -56,121 +69,119 @@ fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.defineExclus
 }
 
 @Deprecated(
-    "Please use configure()",
-    ReplaceWith("configure { this@configure.useSoftwareRenderer = useSoftwareRenderer }")
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.useSoftwareRenderer = useSoftwareRenderer }")
 )
-fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setUseSoftwareRenderer(useSoftwareRenderer: Boolean): TRule {
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setUseSoftwareRenderer(
+    useSoftwareRenderer: Boolean
+): TRule {
     this.configure {
         this@configure.useSoftwareRenderer = useSoftwareRenderer
     }
     return this
 }
 
-//class ConfigurationBuilder<T : Activity> internal constructor(private val rule: ScreenshotRule<T>) {
-//
-//    private val innerConfiguration = TestifyConfiguration()
-//
-//    fun defineExclusionRects(provider: ExclusionRectProvider): ConfigurationBuilder<T> {
-//        innerConfiguration.exclusionRectProvider = provider
-//        return this
-//    }
-//
-//    fun setExactness(exactness: Float?): ConfigurationBuilder<T> {
-//        require(exactness == null || exactness in 0.0..1.0)
-//        innerConfiguration.exactness = exactness
-//        return this
-//    }
-//
-//    fun setFocusTarget(
-//        enabled: Boolean = true,
-//        @IdRes focusTargetId: Int = android.R.id.content
-//    ): ConfigurationBuilder<T> {
-//        if (enabled)
-//            innerConfiguration.focusTargetId = focusTargetId
-//        else
-//            innerConfiguration.focusTargetId = View.NO_ID
-//        return this
-//    }
-//
-//    fun setFontScale(fontScale: Float): ConfigurationBuilder<T> {
-//        innerConfiguration.fontScale = fontScale
-//        return this
-//    }
-//
-//    fun setHideCursor(hideCursor: Boolean): ConfigurationBuilder<T> {
-//        innerConfiguration.hideCursor = hideCursor
-//        return this
-//    }
-//
-//    fun setHidePasswords(hidePasswords: Boolean): ConfigurationBuilder<T> {
-//        innerConfiguration.hidePasswords = hidePasswords
-//        return this
-//    }
-//
-//    fun setHideScrollbars(hideScrollbars: Boolean): ConfigurationBuilder<T> {
-//        innerConfiguration.hideScrollbars = hideScrollbars
-//        return this
-//    }
-//
-//    fun setHideSoftKeyboard(hideSoftKeyboard: Boolean): ConfigurationBuilder<T> {
-//        innerConfiguration.hideSoftKeyboard = hideSoftKeyboard
-//        return this
-//    }
-//
-//    fun setHideTextSuggestions(hideTextSuggestions: Boolean): ConfigurationBuilder<T> {
-//        innerConfiguration.hideTextSuggestions = hideTextSuggestions
-//        return this
-//    }
-//
-//    fun setLayoutInspectionModeEnabled(layoutInspectionModeEnabled: Boolean): ConfigurationBuilder<T> {
-//        innerConfiguration.pauseForInspection = layoutInspectionModeEnabled
-//        return this
-//    }
-//
-//    fun setLocale(newLocale: Locale): ConfigurationBuilder<T> {
-//        innerConfiguration.locale = newLocale
-//        return this
-//    }
-//
-//    fun setOrientation(requestedOrientation: Int): ConfigurationBuilder<T> {
-//        innerConfiguration.orientation = requestedOrientation
-//        return this
-//    }
-//
-//    fun setUseSoftwareRenderer(useSoftwareRenderer: Boolean): ConfigurationBuilder<T> {
-//        innerConfiguration.useSoftwareRenderer = useSoftwareRenderer
-//        return this
-//    }
-//
-//    fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ConfigurationBuilder<T> {
-//        feature.setEnabled(true)
-//        return this
-//    }
-//
-//    private fun build(): TestifyConfiguration.() -> Unit = {
-//        this.exactness = innerConfiguration.exactness
-//        this.exclusionRectProvider = innerConfiguration.exclusionRectProvider
-//        this.exclusionRects.addAll(innerConfiguration.exclusionRects)
-//        this.focusTargetId = innerConfiguration.focusTargetId
-//        this.fontScale = innerConfiguration.fontScale
-//        this.hideCursor = innerConfiguration.hideCursor
-//        this.hidePasswords = innerConfiguration.hidePasswords
-//        this.hideScrollbars = innerConfiguration.hideScrollbars
-//        this.hideSoftKeyboard = innerConfiguration.hideSoftKeyboard
-//        this.hideTextSuggestions = innerConfiguration.hideTextSuggestions
-//        this.locale = innerConfiguration.locale
-//        this.orientation = innerConfiguration.orientation
-//        this.pauseForInspection = innerConfiguration.pauseForInspection
-//        this.useSoftwareRenderer = innerConfiguration.useSoftwareRenderer
-//    }
-//
-//    fun assertSame() {
-//        rule
-//            .configure(build())
-//            .assertSame()
-//    }
-//}
-//
-//fun <T : Activity> makeConfigurable(rule: ScreenshotRule<T>): ConfigurationBuilder<T> {
-//    return ConfigurationBuilder(rule)
-//}
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.focusTargetId = id }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setFocusTarget(@IdRes id: Int): TRule {
+    this.configure {
+        this@configure.focusTargetId = id
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.fontScale = fontScale }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setFontScale(fontScale: Float): TRule {
+    this.configure {
+        this@configure.fontScale = fontScale
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.hideCursor = hideCursor }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setHideCursor(hideCursor: Boolean): TRule {
+    this.configure {
+        this@configure.hideCursor = hideCursor
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.hidePasswords = hidePasswords }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setHidePasswords(hidePasswords: Boolean): TRule {
+    this.configure {
+        this@configure.hidePasswords = hidePasswords
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.hideScrollbars = hideScrollbars }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setHideScrollbars(hideScrollbars: Boolean): TRule {
+    this.configure {
+        this@configure.hideScrollbars = hideScrollbars
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.hideSoftKeyboard = hideSoftKeyboard }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setHideSoftKeyboard(
+    hideSoftKeyboard: Boolean
+): TRule {
+    this.configure {
+        this@configure.hideSoftKeyboard = hideSoftKeyboard
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.hideTextSuggestions = hideTextSuggestions }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setHideTextSuggestions(
+    hideTextSuggestions: Boolean
+): TRule {
+    this.configure {
+        this@configure.hideTextSuggestions = hideTextSuggestions
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.pauseForInspection = pauseForInspection }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setLayoutInspectionModeEnabled(
+    pauseForInspection: Boolean
+): TRule {
+    this.configure {
+        this@configure.pauseForInspection = pauseForInspection
+    }
+    return this
+}
+
+@Deprecated(
+    message = "Please use configure()",
+    replaceWith = ReplaceWith("configure { this@configure.locale = locale }")
+)
+fun <TRule : ScreenshotRule<TActivity>, TActivity : Activity> TRule.setLocale(locale: Locale): TRule {
+    this.configure {
+        this@configure.locale = locale
+    }
+    return this
+}

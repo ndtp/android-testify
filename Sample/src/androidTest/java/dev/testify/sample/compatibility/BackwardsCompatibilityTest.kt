@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2023 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package dev.testify.sample
+package dev.testify.sample.compatibility
 
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.graphics.Color
@@ -38,7 +37,7 @@ import dev.testify.annotation.TestifyLayout
 import dev.testify.defineExclusionRects
 import dev.testify.extensions.boundingBox
 import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.processor.capture.pixelCopyCapture
+import dev.testify.sample.R
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
@@ -62,7 +61,8 @@ class BackwardsCompatibilityTest {
     @get:Rule
     var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
-        rootViewId = R.id.harness_root
+        rootViewId = R.id.harness_root,
+        launchActivity = false
     )
 
     /**
@@ -292,7 +292,7 @@ class BackwardsCompatibilityTest {
     @ScreenshotInstrumentation
     @Test
     fun exclusions() {
-        rule.setCaptureMethod(::pixelCopyCapture) // TODO: TestifyFeatures.PixelCopyCapture.setEnabled(true)
+        TestifyFeatures.PixelCopyCapture.setEnabled(true)
         TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule
             .setExactness(0.9f)

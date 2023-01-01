@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2023 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,4 +30,5 @@ data class ClientDetailsEditViewState(
     @DrawableRes val avatar: Int,
     val heading: String,
     val address: String?,
-    val phoneNumber: String?)
+    val phoneNumber: String?
+)
