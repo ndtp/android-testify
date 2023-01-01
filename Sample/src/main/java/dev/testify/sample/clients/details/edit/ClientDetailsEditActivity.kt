@@ -22,35 +22,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.details
+package dev.testify.sample.clients.details.edit
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import dev.testify.sample.R
 import dev.testify.sample.clients.MockClientData
-import dev.testify.sample.clients.details.edit.ClientDetailsEditActivity.Companion.startClientDetailsEditActivity
 
-class ClientDetailsActivity : AppCompatActivity() {
+class ClientDetailsEditActivity : AppCompatActivity() {
 
-    private lateinit var view: ClientDetailsView
-    private lateinit var client: MockClientData.Client
+    private lateinit var view: ClientDetailsEditView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.view_client_details)
+        setContentView(R.layout.view_edit_client_details)
         view = findViewById(R.id.view_root)
 
-        client = intent?.getSerializableExtra(EXTRA_CLIENT_ITEM) as? MockClientData.Client
-            ?: throw IllegalArgumentException()
-        supportActionBar?.title = client.name
-        view.render(client.toViewState())
+        val client = intent?.getSerializableExtra(EXTRA_CLIENT_ITEM) as? MockClientData.Client
+        if (client != null) {
+            supportActionBar?.title = getString(R.string.edit_name, client.name)
+            view.render(client.toViewState())
+        }
     }
 
-    private fun MockClientData.Client.toViewState(): ClientDetailsViewState {
-        return ClientDetailsViewState(
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_edit_client, menu)
+        return true
+    }
+
+    private fun MockClientData.Client.toViewState(): ClientDetailsEditViewState {
+        return ClientDetailsEditViewState(
             name = this.name,
             avatar = resources.getIdentifier(this.avatar, "drawable", packageName),
             heading = getString(R.string.client_since, this.date),
@@ -59,21 +64,15 @@ class ClientDetailsActivity : AppCompatActivity() {
         )
     }
 
-    fun handleEvent(event: ClientDetailsEvent) {
-        when (event) {
-            ClientDetailsEvent.AvatarClick -> this.startClientDetailsEditActivity(client)
-        }
-    }
-
     companion object {
         private const val EXTRA_CLIENT_ITEM = "client_item"
 
-        fun Activity.startClientDetailsActivity(item: MockClientData.Client) {
-            startActivity(createClientDetailsActivityIntent(this, item))
+        fun Activity.startClientDetailsEditActivity(item: MockClientData.Client) {
+            startActivity(createClientDetailsEditActivityIntent(this, item))
         }
 
-        fun createClientDetailsActivityIntent(context: Context, item: MockClientData.Client): Intent {
-            return Intent(context, ClientDetailsActivity::class.java).apply {
+        fun createClientDetailsEditActivityIntent(context: Context, item: MockClientData.Client): Intent {
+            return Intent(context, ClientDetailsEditActivity::class.java).apply {
                 putExtra(EXTRA_CLIENT_ITEM, item)
             }
         }

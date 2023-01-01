@@ -19,4 +19,6 @@
     <string name="counter_increment">Increment</string>
     <string name="counter_decrement">Decrement</string>
     <string name="action_counter">Accessibility sample</string>
+    <string name="edit_name">Edit %s</string>
+    <string name="save">Save</string>
 </resources>

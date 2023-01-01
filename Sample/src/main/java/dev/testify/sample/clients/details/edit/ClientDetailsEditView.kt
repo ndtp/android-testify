@@ -22,36 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.details
+package dev.testify.sample.clients.details.edit
 
 import android.content.Context
+import android.text.Editable
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import androidx.core.view.isVisible
-import dev.testify.sample.databinding.ViewClientDetailsBinding
+import dev.testify.sample.databinding.ViewEditClientDetailsBinding
 
-class ClientDetailsView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+class ClientDetailsEditView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
     LinearLayout(context, attrs) {
 
-    lateinit var binding: ViewClientDetailsBinding
+    lateinit var binding: ViewEditClientDetailsBinding
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        binding = ViewClientDetailsBinding.bind(this)
-
-        binding.profileImage.setOnClickListener {
-            (context as? ClientDetailsActivity)?.handleEvent(ClientDetailsEvent.AvatarClick)
-        }
+        binding = ViewEditClientDetailsBinding.bind(this)
     }
 
-    fun render(state: ClientDetailsViewState) {
+    fun render(state: ClientDetailsEditViewState) {
         binding.profileImage.setImageResource(state.avatar)
-        binding.heading.text = state.heading
+        binding.heading.text = Editable.Factory().newEditable(state.name)
 
         binding.addressRow.isVisible = state.address != null
-        binding.address.text = state.address
+        binding.address.text = Editable.Factory().newEditable(state.address)
 
         binding.phoneRow.isVisible = state.phoneNumber != null
-        binding.phone.text = state.phoneNumber
+        binding.phone.text = Editable.Factory().newEditable(state.phoneNumber)
     }
 }

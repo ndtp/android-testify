@@ -22,11 +22,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.sample.clients.details
+package dev.testify.sample.clients.details.edit
 
 import androidx.annotation.DrawableRes
 
-data class ClientDetailsViewState(
+data class ClientDetailsEditViewState(
     val name: String,
     @DrawableRes val avatar: Int,
     val heading: String,
