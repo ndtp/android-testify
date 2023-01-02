@@ -150,4 +150,13 @@ open class ComposableScreenshotRule(
         val statement = composeTestRule.apply(base, description)
         return super.apply(statement, description)
     }
+
+    /**
+     * Set the configuration for the ComposableScreenshotRule
+     *
+     * @param configureRule - [TestifyConfiguration]
+     */
+    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ComposableScreenshotRule {
+        return super.configure(configureRule) as ComposableScreenshotRule
+    }
 }
