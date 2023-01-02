@@ -80,6 +80,7 @@ android {
         implementation "androidx.activity:activity-compose:${versions.androidx.activityCompose}"
         implementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
         implementation "androidx.compose.material:material:${versions.compose}"
+        implementation "androidx.compose.ui:ui-test-junit4:${versions.compose}"
         implementation "androidx.compose.ui:ui-tooling-preview:${versions.compose}"
         implementation "androidx.compose.ui:ui:${versions.compose}"
         implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidx.lifecycleKtx}"
