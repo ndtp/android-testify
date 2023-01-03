@@ -37,6 +37,10 @@
             android:exported="false"
             android:parentActivityName=".clients.index.ClientListActivity" />
         <activity
+            android:name=".clients.details.edit.ClientDetailsEditActivity"
+            android:exported="false"
+            android:parentActivityName=".clients.details.ClientDetailsActivity" />
+        <activity
             android:name=".clients.index.ClientListActivity"
             android:exported="false"
             android:label="@string/title_activity_client"

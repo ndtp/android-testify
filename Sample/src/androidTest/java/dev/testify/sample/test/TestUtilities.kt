@@ -30,10 +30,17 @@ import android.view.ViewGroup
 import dev.testify.sample.R
 import dev.testify.sample.clients.details.ClientDetailsView
 import dev.testify.sample.clients.details.ClientDetailsViewState
+import dev.testify.sample.clients.details.edit.ClientDetailsEditView
+import dev.testify.sample.clients.details.edit.ClientDetailsEditViewState
 
 val ViewGroup.clientDetailsView: ClientDetailsView
     get() {
         return this.getChildAt(0) as ClientDetailsView
+    }
+
+val ViewGroup.editClientDetailsView: ClientDetailsEditView
+    get() {
+        return this.getChildAt(0) as ClientDetailsEditView
     }
 
 fun Context.getViewState(name: String): ClientDetailsViewState {
@@ -41,6 +48,16 @@ fun Context.getViewState(name: String): ClientDetailsViewState {
         name = name,
         avatar = R.drawable.avatar1,
         heading = this.getString(R.string.client_since, "2020"),
+        address = "1 Address Street\nCity, State, Country\nZ1PC0D3",
+        phoneNumber = "1-234-567-8910"
+    )
+}
+
+fun Context.getEditViewState(): ClientDetailsEditViewState {
+    return ClientDetailsEditViewState(
+        name = "Daniel Jetté",
+        avatar = R.drawable.avatar1,
+        heading = "",
         address = "1 Address Street\nCity, State, Country\nZ1PC0D3",
         phoneNumber = "1-234-567-8910"
     )

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.testify.sample.clients.details.edit.ClientDetailsEditView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffc4cdd5"
+    android:orientation="vertical"
+    tools:context=".clients.details.ClientDetailsActivity">
+
+    <FrameLayout
+        android:layout_width="116dp"
+        android:layout_height="104dp"
+        android:orientation="horizontal">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:civ_border_color="#ff454f5b"
+            app:civ_border_width="2dp"
+            tools:src="@drawable/avatar1" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|end"
+            android:src="@android:drawable/ic_menu_edit" />
+    </FrameLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/info_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/card_spacing"
+        android:layout_marginRight="@dimen/card_spacing"
+        android:minHeight="100dp"
+        app:cardElevation="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/contact_information"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="#ff212b36" />
+
+            <EditText
+                android:id="@+id/heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:textColor="#ff212b36"
+                tools:text="Daniel Jetté" />
+
+            <LinearLayout
+                android:id="@+id/address_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/ic_dialog_map"
+                    app:tint="#000000" />
+
+                <EditText
+                    android:id="@+id/address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="?android:textAppearanceSmall"
+                    android:textColor="#ff212b36"
+                    tools:text="@string/mock_address" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/phone_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:scaleType="fitCenter"
+                    android:src="@android:drawable/stat_sys_phone_call"
+                    app:tint="#000000" />
+
+                <EditText
+                    android:id="@+id/phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="?android:textAppearanceMedium"
+                    android:textColor="#ff212b36"
+                    tools:text="@string/mock_phone" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/card_spacing"
+        android:layout_marginTop="@dimen/card_spacing"
+        android:layout_marginRight="@dimen/card_spacing"
+        android:minHeight="180dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/lorem_ipsum"
+            android:textColor="#ff212b36" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+</dev.testify.sample.clients.details.edit.ClientDetailsEditView>

@@ -32,6 +32,9 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
     ExampleFeature(listOf("testify-example", "testify-alias"), defaultValue = true),
     ExampleDisabledFeature(listOf("testify-disabled")),
 
+    @Deprecated("Please use setCaptureMethod()", ReplaceWith("ScreenshotRule.setCaptureMethod(::canvasCapture)"))
+    CanvasCapture(listOf("testify-canvas-capture")),
+
     Reporter(listOf("testify-reporter")),
 
     /**
@@ -46,7 +49,10 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
      * - Yellow pixels are different, but within the Exactness threshold
      * - Red pixels are different
      */
-    GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false);
+    GenerateDiffs(listOf("testify-generate-diffs"), defaultValue = false),
+
+    @Deprecated("Please use setCaptureMethod()", ReplaceWith("ScreenshotRule.setCaptureMethod(::pixelCopyCapture)"))
+    PixelCopyCapture(listOf("testify-experimental-capture", "testify-pixelcopy-capture"));
 
     private var override: Boolean? = null
 

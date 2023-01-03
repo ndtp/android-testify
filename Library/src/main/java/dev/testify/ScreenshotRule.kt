@@ -27,6 +27,7 @@
 package dev.testify
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -66,7 +67,9 @@ import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.processor.capture.canvasCapture
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
+import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.internal.processor.compare.FuzzyCompare
 import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.internal.processor.diff.HighContrastDiff
@@ -94,6 +97,24 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     TestRule,
     ActivityProvider<T>,
     ScreenshotLifecycle {
+
+    @Deprecated(
+        message = "Parameter launchActivity is deprecated and no longer required",
+        replaceWith = ReplaceWith("ScreenshotRule(activityClass = activityClass, rootViewId = rootViewId, initialTouchMode = initialTouchMode, enableReporter = enableReporter, configuration = TestifyConfiguration())") // ktlint-disable max-line-length
+    )
+    constructor(
+        activityClass: Class<T>,
+        @IdRes rootViewId: Int = android.R.id.content,
+        initialTouchMode: Boolean = false,
+        @Suppress("UNUSED_PARAMETER") launchActivity: Boolean,
+        enableReporter: Boolean = false
+    ) : this(
+        activityClass = activityClass,
+        rootViewId = rootViewId,
+        initialTouchMode = initialTouchMode,
+        enableReporter = enableReporter,
+        configuration = TestifyConfiguration()
+    )
 
     @IdRes
     protected var rootViewId = rootViewId
@@ -341,8 +362,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         getInstrumentation().registerActivityProvider(this)
     }
 
-    fun getCaptureMethod(): CaptureMethod {
+    fun getCaptureMethod(context: Context): CaptureMethod {
         return when {
+            TestifyFeatures.CanvasCapture.isEnabled(context) -> ::canvasCapture
+            TestifyFeatures.PixelCopyCapture.isEnabled(context) -> ::pixelCopyCapture
             captureMethod != null -> captureMethod!!
             else -> ::createBitmapFromDrawingCache
         }
@@ -355,7 +378,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @param fileName The name to use when writing the captured image to disk.
      * @param screenshotView A [View] found in the [activity]'s view hierarchy.
      *          If screenshotView is null, defaults to activity.window.decorView.
-     *
+     * @param captureMethod The [CaptureMethod] used to take the screenshot from the
+     *          provided activity.
      * @return A [Bitmap] representing the captured [screenshotView] in [activity]
      *          Will return [null] if there is an error capturing the bitmap.
      */
@@ -363,12 +387,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         activity: Activity,
         fileName: String,
         screenshotView: View?,
-        captureMethod: CaptureMethod? = this.captureMethod
+        captureMethod: CaptureMethod = getCaptureMethod(activity)
     ): Bitmap? {
         return screenshotUtility.createBitmapFromActivity(
             activity,
             fileName,
-            getCaptureMethod(),
+            captureMethod,
             screenshotView
         )
     }

@@ -24,34 +24,16 @@
  */
 package dev.testify.sample.clients.details
 
-import android.content.Context
-import android.util.AttributeSet
-import android.widget.LinearLayout
-import androidx.core.view.isVisible
-import dev.testify.sample.databinding.ViewClientDetailsBinding
+import androidx.annotation.DrawableRes
 
-class ClientDetailsView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
-    LinearLayout(context, attrs) {
+data class ClientDetailsViewState(
+    val name: String,
+    @DrawableRes val avatar: Int,
+    val heading: String,
+    val address: String?,
+    val phoneNumber: String?
+)
 
-    lateinit var binding: ViewClientDetailsBinding
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
-        binding = ViewClientDetailsBinding.bind(this)
-
-        binding.profileImage.setOnClickListener {
-            (context as? ClientDetailsActivity)?.handleEvent(ClientDetailsEvent.AvatarClick)
-        }
-    }
-
-    fun render(state: ClientDetailsViewState) {
-        binding.profileImage.setImageResource(state.avatar)
-        binding.heading.text = state.heading
-
-        binding.addressRow.isVisible = state.address != null
-        binding.address.text = state.address
-
-        binding.phoneRow.isVisible = state.phoneNumber != null
-        binding.phone.text = state.phoneNumber
-    }
+sealed class ClientDetailsEvent {
+    object AvatarClick : ClientDetailsEvent()
 }
