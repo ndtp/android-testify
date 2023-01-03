@@ -193,7 +193,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      *
      * @param configureRule - [TestifyConfiguration]
      */
-    fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
+    @CallSuper
+    open fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
         configureRule.invoke(configuration)
         return this
     }
