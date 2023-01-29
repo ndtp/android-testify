@@ -1,28 +1,70 @@
 <idea-plugin require-restart="false">
-    <id>dev.testify</id>
-    <name>Android Testify - Screenshot Instrumentation Tests</name>
-    <vendor email="testifyscreenshots@gmail.com" url="http://testify.dev">ndtp</vendor>
+  <id>dev.testify</id>
+  <name>Android Testify - Screenshot Instrumentation Tests</name>
+  <vendor email="testifyscreenshots@gmail.com" url="http://testify.dev">ndtp</vendor>
 
-    <description><![CDATA[
-Testify screenshot tests are built on top of Android Instrumentation tests and so already integrate seamlessly with existing test suites. Screenshots can be captured directly from within Android Studio or using the Gradle command-line tools.
+  <!-- Text to display as description on Preferences/Settings | Plugin page -->
+  <description><![CDATA[
+<p>Expand your test coverage by including the View layer.</p>
 
-However, the current Android Studio support relies fully on the fact that Testify tests extend ActivityTestRule and can be invoked using the built-in support for running instrumentation tests with various commands (notably sidebar icons) in Android Studio. These are limited to run and debug commands. Android Studio has no concept of recording or pulling screenshots from the device. Thus, it requires developers to drop to the Gradle Panel or command-line to fully use Testify. This project will enhance the developer experience by adding fully integrated IDE UI for all relevant Testify commands.
-    ]]></description>
+<p><b>Testify</b> allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.</p>
 
-    <depends>com.intellij.modules.platform</depends>
-    <depends>com.intellij.modules.lang</depends>
-    <depends>org.jetbrains.kotlin</depends>
-    <depends>com.intellij.modules.androidstudio</depends>
+<p>This plugin will enhance the developer experience by adding fully integrated IDE UI for all relevant Testify commands:</p>
 
-    <extensions defaultExtensionNs="com.intellij">
-        <codeInsight.lineMarkerProvider
-                language="kotlin"
-                implementationClass="dev.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
+<ul>
+  <li>Run the Testify screenshot tests</li>
+  <li>Record a new baseline image</li>
+  <li>Pull screenshots from the device and into your project</li>
+  <li>Remove any existing screenshot test images from the device</li>
+  <li>Reveal the baseline image in Android Studio</li>
+  <li>Delete the baseline image from your project</li>
+</ul>
 
-        <codeInsight.lineMarkerProvider
-                language="kotlin"
-                implementationClass="dev.testify.extensions.ScreenshotClassMarkerProvider"/>
+<p>Learn more at <a href="https://testify.dev/">testify.dev</a>
+<hr/>
+Copyright (c) 2023 ndtp
+]]></description>
 
-    </extensions>
+  <change-notes>
+    <![CDATA[
+
+      <h3>2.0.0-rc01</h3>
+      <ul>
+        <li>Added support for Android Studio Giraffe | 2022.3.1 Canary 2 | 223.+</li>
+        <li>Added support for Android Studio Flamingo | 2022.2.1 Beta 1 | 222.+</li>
+        <li>Added support for Android Studio Electric Eel | 2022.1.1 | 221.+</li>
+      </ul>
+
+      <h3>2.0.0-alpha02</h3>
+      <ul>
+        <li>Support both new (dev.testify) and legacy (com.shopify) annotations</li>
+      </ul>
+
+      <h3>1.2.0-alpha02</h3>
+      <ul>
+        <li>Added support for IntelliJ platform 213+ (Dolphin)</li>
+        <li>Added support for IntelliJ platform 212.+ (Chipmunk)</li>
+        <li>Added support for Android Studio Bumblebee | 2021.1.1 Canary 9 | 211.+</li>
+      </ul>
+    ]]>
+  </change-notes>
+
+  <!-- Indicate this plugin can be loaded in all IntelliJ Platform-based products. -->
+  <depends>com.intellij.modules.platform</depends>
+  <depends>org.jetbrains.kotlin</depends>
+
+  <!-- Declare the default resource location for localizing menu strings -->
+  <resource-bundle>messages.Bundle</resource-bundle>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <codeInsight.lineMarkerProvider
+            language="kotlin"
+            implementationClass="dev.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
+
+    <codeInsight.lineMarkerProvider
+            language="kotlin"
+            implementationClass="dev.testify.extensions.ScreenshotClassMarkerProvider"/>
+
+  </extensions>
 
 </idea-plugin>
