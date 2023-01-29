@@ -2,9 +2,21 @@
 
 ## [Unreleased]
 
+## [2.0.0-rc01]
+
+- Added support for Android Studio Giraffe | 2022.3.1 Canary 2 | 223.+
+- Added support for Android Studio Flamingo | 2022.2.1 Beta 1 | 222.+
+- Added support for Android Studio Electric Eel | 2022.1.1 | 221.+
+
+## [2.0.0-alpha02]
+
+- Support both new (dev.testify) and legacy (com.shopify) annotations
+
 ## [1.2.0-alpha02]
 
-- Support both new (dev.testify) and legacy (com.shopify) annotations.
+- Added support for IntelliJ platform 213+ (Dolphin)
+- Added support for IntelliJ platform 212.+ (Chipmunk)
+- Added support for Android Studio Bumblebee | 2021.1.1 Canary 9 | 211.+
  
 ## [1.2.0-alpha01]
 
