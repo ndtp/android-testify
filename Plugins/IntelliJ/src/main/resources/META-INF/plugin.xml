@@ -49,12 +49,12 @@ Copyright (c) 2023 ndtp
     ]]>
   </change-notes>
 
-  <!-- Indicate this plugin can be loaded in all IntelliJ Platform-based products. -->
-  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.androidstudio</depends>
   <depends>org.jetbrains.kotlin</depends>
+  <depends>org.jetbrains.android</depends>
 
   <!-- Declare the default resource location for localizing menu strings -->
-  <resource-bundle>messages.Bundle</resource-bundle>
+  <resource-bundle>messages.MyBundle</resource-bundle>
 
   <extensions defaultExtensionNs="com.intellij">
     <codeInsight.lineMarkerProvider

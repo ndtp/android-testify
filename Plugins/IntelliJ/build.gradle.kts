@@ -28,8 +28,13 @@ intellij {
     version.set(properties("InstrumentCodeVersion"))
     type.set(properties("platformType"))
 
-    plugins.add("Kotlin")
-    plugins.add("gradle")
+    plugins.set(
+        listOf(
+            "Kotlin",
+            "gradle",
+            "android"
+        )
+    )
 }
 
 tasks {
