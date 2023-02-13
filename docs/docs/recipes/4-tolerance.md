@@ -3,11 +3,7 @@
 In some cases, the captured screenshot may inherently contain randomness. It may then be desirable to allow for an inexact matching. By default, Testify employs an exact, pixel-by-pixel matching algorithm.
 Alternatively, you may optionally reduce this exactness.
 
-By providing a value less than 1 to `setExactness`, a test will be more tolerant to color differences. The fuzzy matching algorithm maps the captured image into the HSV color space
-and compares the Hue, Saturation and Lightness components of each pixel. If they are within the provided tolerance, the images are considered to be the same.
-
-:warning: Note that the fuzzy matching is approximately 10x slower than the default matching.
-**Use sparingly.**
+By providing a value less than 1 to `setExactness`, a test will be more tolerant to color differences. A value of less than 1 will enable the [_Delta E_](https://en.wikipedia.org/wiki/Color_difference#CIELAB_%CE%94E) comparison method. The Delta E algorithm will mathematically quantify the similarity between two different colors. It ignores differences between two pixels that the human eye would consider identical while still identifying differences in position, size or layout.
 
 ```kotlin
     @TestifyLayout(R.layout.view_client_details)
