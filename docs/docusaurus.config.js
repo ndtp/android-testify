@@ -109,6 +109,7 @@ const config = {
           {to: '/docs/category/recipes', label: 'Recipes', position: 'left'},
           {to: '/docs/category/extensions', label: 'Extensions', position: 'left'},
           {to: '/docs/migration', label: 'Migration', position: 'left'},
+          {to: 'blog', label: 'Blog', position: 'left'},
           {
             type: 'docsVersionDropdown',
             position: 'right'
