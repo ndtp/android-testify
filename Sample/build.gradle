@@ -24,9 +24,6 @@ android {
         targetCompatibility 1.8
     }
 
-    lintOptions {
-        disable 'GradleDependency'
-    }
 
     defaultConfig {
         applicationId "dev.testify.sample"
@@ -61,12 +58,20 @@ android {
         kotlinCompilerVersion '1.5.31'
     }
     packagingOptions {
-        exclude("META-INF/AL2.0")
-        exclude("META-INF/LGPL2.1")
-        exclude("META-INF/licenses/ASM")
-        exclude("**/attach_hotspot_windows.dll")
-        exclude("META-INF/androidx.test.core.kotlin_module")
+        resources {
+            excludes += [
+                    'META-INF/AL2.0',
+                    'META-INF/LGPL2.1',
+                    'META-INF/licenses/ASM',
+                    '**/attach_hotspot_windows.dll',
+                    'META-INF/androidx.test.core.kotlin_module'
+            ]
+        }
     }
+    lint {
+        disable 'GradleDependency'
+    }
+    namespace 'dev.testify.sample'
 }
 
 dependencies {
