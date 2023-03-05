@@ -21,7 +21,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'dev.testify'
 
 android {
-    compileSdkVersion 31
+    compileSdk 33
 
     compileOptions {
         sourceCompatibility 1.8
@@ -32,7 +32,7 @@ android {
     defaultConfig {
         applicationId "dev.testify.sample"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
