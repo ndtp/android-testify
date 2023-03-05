@@ -29,9 +29,9 @@ import android.graphics.Rect
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.processor._executorDispatcher
 import dev.testify.internal.processor.compare.FuzzyCompare
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -48,7 +48,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.nio.IntBuffer
 
-@ObsoleteCoroutinesApi
+@OptIn(DelicateCoroutinesApi::class)
 @ExperimentalCoroutinesApi
 class RegionCompareTest {
 
