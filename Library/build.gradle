@@ -25,13 +25,6 @@ archivesBaseName = pom.artifact
 android {
     compileSdkVersion coreVersions.compileSdk
 
-    lintOptions {
-        abortOnError true
-        warningsAsErrors true
-        textOutput 'stdout'
-        textReport true
-        xmlReport false
-    }
 
     defaultConfig {
         minSdkVersion coreVersions.minSdk
@@ -86,6 +79,14 @@ android {
         androidTestImplementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
         androidTestImplementation "androidx.multidex:multidex:2.0.1"
     }
+    lint {
+        abortOnError true
+        textOutput file('stdout')
+        textReport true
+        warningsAsErrors true
+        xmlReport false
+    }
+    namespace 'dev.testify'
 }
 
 task sourcesJar(type: Jar) {

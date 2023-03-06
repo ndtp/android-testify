@@ -1,5 +1,27 @@
 # Testify Change Log
 
+## Unreleased
+
+### All Projects
+
+#### Updates
+
+- kotlin to 1.7.21
+- kotlin-gradle-plugin to 1.7.21
+- kotlinx-coroutines-android to 1.6.4
+- kotlin-stdlib-jdk8 to 1.7.21
+- Android Gradle Plugin to 7.3.1
+- Gradle wrapper to 7.4
+- androidx.compose.ui to 1.4.0-alpha02
+- androidx.compose.material to 1.4.0-alpha02
+- androidx.compose.compiler to 1.4.0-alpha02
+
+### Sample
+
+#### Updates
+
+- Upgrade Sample target & compile SDK to 33
+
 ## 2.0.0-alpha02
 
 ### Compose Extension Library

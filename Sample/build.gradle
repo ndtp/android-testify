@@ -7,7 +7,11 @@ buildscript {
     }
     ext {
         versions = [
-                'compose': '1.0.5'
+                'compose': [
+                        'core'    : '1.4.0-alpha02',
+                        'material': '1.4.0-alpha02',
+                        'ui'      : '1.4.0-alpha02',
+                ]
         ]
     }
 }
@@ -17,21 +21,18 @@ apply plugin: 'kotlin-android'
 apply plugin: 'dev.testify'
 
 android {
-    compileSdkVersion 31
+    compileSdk 33
 
     compileOptions {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
 
-    lintOptions {
-        disable 'GradleDependency'
-    }
 
     defaultConfig {
         applicationId "dev.testify.sample"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
@@ -55,19 +56,26 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
-        useIR = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion versions.compose
-        kotlinCompilerVersion '1.5.31'
+        kotlinCompilerExtensionVersion versions.compose.core
+        kotlinCompilerVersion '1.7.21'
     }
     packagingOptions {
-        exclude("META-INF/AL2.0")
-        exclude("META-INF/LGPL2.1")
-        exclude("META-INF/licenses/ASM")
-        exclude("**/attach_hotspot_windows.dll")
-        exclude("META-INF/androidx.test.core.kotlin_module")
+        resources {
+            excludes += [
+                    'META-INF/AL2.0',
+                    'META-INF/LGPL2.1',
+                    'META-INF/licenses/ASM',
+                    '**/attach_hotspot_windows.dll',
+                    'META-INF/androidx.test.core.kotlin_module'
+            ]
+        }
     }
+    lint {
+        disable 'GradleDependency'
+    }
+    namespace 'dev.testify.sample'
 }
 
 dependencies {
@@ -75,17 +83,17 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.1"
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "com.google.android.material:material:1.4.0"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
-    implementation "androidx.compose.ui:ui:${versions.compose}"
-    implementation "androidx.compose.material:material:${versions.compose}"
-    implementation "androidx.compose.ui:ui-tooling-preview:${versions.compose}"
+    implementation "androidx.compose.ui:ui:${versions.compose.ui}"
+    implementation "androidx.compose.material:material:${versions.compose.material}"
+    implementation "androidx.compose.ui:ui-tooling-preview:${versions.compose.ui}"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
     implementation 'androidx.activity:activity-compose:1.4.0'
 
-    debugImplementation "androidx.compose.ui:ui-tooling:${versions.compose}"
+    debugImplementation "androidx.compose.ui:ui-tooling:${versions.compose.ui}"
 
     androidTestImplementation project(":Library")
     androidTestImplementation project(":ComposeExtensions")
@@ -99,5 +107,5 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-android:3.8.0"
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     androidTestImplementation "androidx.test:core-ktx:1.4.0"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose}"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
 }
