@@ -34,92 +34,85 @@ import java.util.Locale
 
 typealias TestName = Pair<String, String>
 
-object DeviceIdentifier {
+const val DEFAULT_FOLDER_FORMAT = "a-wxh@d-l"
+const val DEFAULT_NAME_FORMAT = "c_n"
 
-    @JvmStatic
-    val DEFAULT_FOLDER_FORMAT = "a-wxh@d-l"
+@Suppress("DEPRECATION")
+fun getDeviceDimensions(context: Context): Pair<Int, Int> {
+    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val metrics = DisplayMetrics()
+    val display = windowManager.defaultDisplay
 
-    @JvmStatic
-    val DEFAULT_NAME_FORMAT = "c_n"
+    display.getRealMetrics(metrics)
+    val realWidth = metrics.widthPixels
+    val realHeight = metrics.heightPixels
 
-    @Suppress("DEPRECATION")
-    fun getDeviceDimensions(context: Context): Pair<Int, Int> {
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val metrics = DisplayMetrics()
-        val display = windowManager.defaultDisplay
+    return Pair(realWidth, realHeight)
+}
 
-        display.getRealMetrics(metrics)
-        val realWidth = metrics.widthPixels
-        val realHeight = metrics.heightPixels
+fun getDeviceDescription(context: Context): String {
+    return formatDeviceString(DeviceStringFormatter(context, null), DEFAULT_FOLDER_FORMAT)
+}
 
-        return Pair(realWidth, realHeight)
-    }
+fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String {
+    /*
+    a: API level (ex. 21)
+    w: Device width (ex.720)
+    h: Device height (ex. 1440)
+    d: Device density (ex. 320dp)
+    l: Locale (ex. en_US)
+    c: Test class (ex. OrderDetailTest)
+    n: Test name (ex. testDefault)
+     */
+    val a = formatter.androidVersion
+    val w = formatter.deviceWidth
+    val h = formatter.deviceHeight
+    val d = formatter.deviceDensity
+    val l = formatter.locale
+    val c = formatter.testClass
+    val n = formatter.getTestName()
 
-    fun getDescription(context: Context): String {
-        return formatDeviceString(DeviceStringFormatter(context, null), DEFAULT_FOLDER_FORMAT)
-    }
-
-    @JvmStatic
-    fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String {
-        /*
-        a: API level (ex. 21)
-        w: Device width (ex.720)
-        h: Device height (ex. 1440)
-        d: Device density (ex. 320dp)
-        l: Locale (ex. en_US)
-        c: Test class (ex. OrderDetailTest)
-        n: Test name (ex. testDefault)
-         */
-        val a = formatter.androidVersion
-        val w = formatter.deviceWidth
-        val h = formatter.deviceHeight
-        val d = formatter.deviceDensity
-        val l = formatter.locale
-        val c = formatter.testClass
-        val n = formatter.getTestName()
-
-        val stringBuilder = StringBuilder("")
-        for (element in format) {
-            when (element) {
-                'a' -> stringBuilder.append(a)
-                'w' -> stringBuilder.append(w)
-                'h' -> stringBuilder.append(h)
-                'd' -> stringBuilder.append(d)
-                'l' -> stringBuilder.append(l)
-                'c' -> stringBuilder.append(c)
-                'n' -> stringBuilder.append(n)
-                else -> stringBuilder.append(element)
-            }
+    val stringBuilder = StringBuilder("")
+    for (element in format) {
+        when (element) {
+            'a' -> stringBuilder.append(a)
+            'w' -> stringBuilder.append(w)
+            'h' -> stringBuilder.append(h)
+            'd' -> stringBuilder.append(d)
+            'l' -> stringBuilder.append(l)
+            'c' -> stringBuilder.append(c)
+            'n' -> stringBuilder.append(n)
+            else -> stringBuilder.append(element)
         }
-
-        return stringBuilder.toString()
     }
 
-    open class DeviceStringFormatter(private val context: Context, private val testName: TestName?) {
+    return stringBuilder.toString()
+}
 
-        internal open val dimensions: Pair<Int, Int>
-            get() = getDeviceDimensions(context)
+open class DeviceStringFormatter(private val context: Context, private val testName: TestName?) {
 
-        internal open val androidVersion: String
-            get() = android.os.Build.VERSION.SDK_INT.toString()
+    internal open val dimensions: Pair<Int, Int>
+        get() = getDeviceDimensions(context)
 
-        internal open val deviceWidth: String
-            get() = dimensions.first.toString()
+    internal open val androidVersion: String
+        get() = android.os.Build.VERSION.SDK_INT.toString()
 
-        internal open val deviceHeight: String
-            get() = dimensions.second.toString()
+    internal open val deviceWidth: String
+        get() = dimensions.first.toString()
 
-        internal open val deviceDensity: String
-            get() = context.resources.displayMetrics.densityDpi.toString() + "dp"
+    internal open val deviceHeight: String
+        get() = dimensions.second.toString()
 
-        internal open val locale: String
-            get() = Locale.getDefault().languageTag
+    internal open val deviceDensity: String
+        get() = context.resources.displayMetrics.densityDpi.toString() + "dp"
 
-        internal open val testClass: String
-            get() = if (testName == null) "" else testName.first
+    internal open val locale: String
+        get() = Locale.getDefault().languageTag
 
-        internal open fun getTestName(): String {
-            return if (testName == null) "" else testName.second
-        }
+    internal open val testClass: String
+        get() = if (testName == null) "" else testName.first
+
+    internal open fun getTestName(): String {
+        return if (testName == null) "" else testName.second
     }
 }

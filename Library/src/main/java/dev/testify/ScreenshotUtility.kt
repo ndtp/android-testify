@@ -33,8 +33,8 @@ import android.os.Debug
 import android.util.Log
 import android.view.View
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.internal.DeviceIdentifier
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
+import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
@@ -96,7 +96,7 @@ open class ScreenshotUtility {
      */
     open fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap? {
         val filePath = outputFileUtility.getFileRelativeToRoot(
-            subpath = DeviceIdentifier.getDescription(context),
+            subpath = getDeviceDescription(context),
             fileName = testName,
             extension = PNG_EXTENSION
         )

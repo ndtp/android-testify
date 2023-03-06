@@ -27,7 +27,9 @@ package dev.testify.internal.output
 import android.content.Context
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.internal.DeviceIdentifier
+import dev.testify.internal.DEFAULT_FOLDER_FORMAT
+import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.formatDeviceString
 import java.io.File
 
 open class OutputFileUtility {
@@ -59,9 +61,9 @@ open class OutputFileUtility {
             context.getDir(DATA_DESTINATION_DIR, Context.MODE_PRIVATE)
         }
 
-        val deviceFormattedDirectory = DeviceIdentifier.formatDeviceString(
-            DeviceIdentifier.DeviceStringFormatter(context, null),
-            DeviceIdentifier.DEFAULT_FOLDER_FORMAT
+        val deviceFormattedDirectory = formatDeviceString(
+            DeviceStringFormatter(context, null),
+            DEFAULT_FOLDER_FORMAT
         )
         return File(path, "$ROOT_DIR/$deviceFormattedDirectory")
     }

@@ -44,8 +44,9 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
-import dev.testify.internal.DeviceIdentifier
-import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DEFAULT_FOLDER_FORMAT
+import dev.testify.internal.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
@@ -61,6 +62,7 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.get
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
 import dev.testify.internal.extensions.cyan
+import dev.testify.internal.formatDeviceString
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.EspressoActions
 import dev.testify.internal.helpers.EspressoHelper
@@ -455,8 +457,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             try {
                 val description = getInstrumentation().testDescription
                 reporter?.captureOutput(this)
-                outputFileName = DeviceIdentifier.formatDeviceString(
-                    DeviceIdentifier.DeviceStringFormatter(
+                outputFileName = formatDeviceString(
+                    DeviceStringFormatter(
                         testContext,
                         description.nameComponents
                     ),
@@ -498,12 +500,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                             moduleName = getModuleName(),
                             testName = description.name,
                             testClass = description.fullyQualifiedTestName,
-                            deviceKey = DeviceIdentifier.formatDeviceString(
-                                DeviceIdentifier.DeviceStringFormatter(
+                            deviceKey = formatDeviceString(
+                                DeviceStringFormatter(
                                     testContext,
                                     null
                                 ),
-                                DeviceIdentifier.DEFAULT_FOLDER_FORMAT
+                                DEFAULT_FOLDER_FORMAT
                             )
                         )
                     }

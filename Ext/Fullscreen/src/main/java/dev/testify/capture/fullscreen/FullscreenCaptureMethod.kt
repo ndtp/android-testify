@@ -34,9 +34,10 @@ import dev.testify.ScreenshotRule
 import dev.testify.ScreenshotUtility
 import dev.testify.exception.FailedToCaptureFullscreenBitmapException
 import dev.testify.exception.FailedToLoadCapturedBitmapException
-import dev.testify.internal.DeviceIdentifier
-import dev.testify.internal.DeviceIdentifier.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
+import dev.testify.internal.formatDeviceString
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.testDescription
 import java.io.File
@@ -104,8 +105,8 @@ private fun Context.assureScreenshotDirectory(screenshotUtility: ScreenshotUtili
  * Get the name of the currently executing test.
  */
 private fun getFileName(testContext: Context): String {
-    return DeviceIdentifier.formatDeviceString(
-        DeviceIdentifier.DeviceStringFormatter(
+    return formatDeviceString(
+        DeviceStringFormatter(
             testContext,
             getInstrumentation().testDescription.nameComponents
         ),
