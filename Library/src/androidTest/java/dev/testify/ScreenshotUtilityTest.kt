@@ -29,7 +29,7 @@ package dev.testify
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.output.getOutputFilePath
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -48,9 +48,8 @@ class ScreenshotUtilityTest {
     @Test
     fun loadBaselineBitmapForComparison() {
         val context = testActivityRule.activity
-        val screenshotUtility = ScreenshotUtility()
 
-        val baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(context, "test")
+        val baselineBitmap = loadBaselineBitmapForComparison(context, "test")
         assertNotNull(baselineBitmap)
     }
 
@@ -58,11 +57,10 @@ class ScreenshotUtilityTest {
     fun createBitmapFromActivity() {
         val activity = testActivityRule.activity
         val rootView = activity.findViewById<View>(R.id.test_root_view)
-        val screenshotUtility = ScreenshotUtility()
-        val outputFilePath = OutputFileUtility().getOutputFilePath(activity, "testing")
+        val outputFilePath = getOutputFilePath(activity, "testing")
         val bitmapFile = File(outputFilePath)
 
-        val capturedBitmap = screenshotUtility.createBitmapFromActivity(
+        val capturedBitmap = createBitmapFromActivity(
             activity = activity,
             fileName = "testing",
             captureMethod = ::createBitmapFromDrawingCache,
@@ -75,14 +73,13 @@ class ScreenshotUtilityTest {
     @Test
     fun deleteBitmap() {
         val activity = testActivityRule.activity
-        val screenshotUtility = ScreenshotUtility()
 
         createBitmapFromActivity()
 
         val fileName = "testing"
-        val outputFilePath = OutputFileUtility().getOutputFilePath(activity, fileName)
+        val outputFilePath = getOutputFilePath(activity, fileName)
 
-        screenshotUtility.deleteBitmap(activity, fileName)
+        deleteBitmap(activity, fileName)
         val fileThatShouldBeDeleted = File(outputFilePath)
         assertFalse(fileThatShouldBeDeleted.exists())
     }

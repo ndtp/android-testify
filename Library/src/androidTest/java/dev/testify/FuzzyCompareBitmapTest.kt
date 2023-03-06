@@ -43,10 +43,8 @@ class FuzzyCompareBitmapTest {
     @get:Rule
     var testActivityRule = ActivityTestRule(TestActivity::class.java)
 
-    private val screenshotUtility = ScreenshotUtility()
-
     private fun loadBitmap(name: String): Bitmap {
-        return screenshotUtility.loadBaselineBitmapForComparison(testActivityRule.activity, name)!!
+        return loadBaselineBitmapForComparison(testActivityRule.activity, name)!!
     }
 
     @Test

@@ -70,7 +70,7 @@ import dev.testify.internal.helpers.EspressoActions
 import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
-import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.output.doesOutputFileExist
 import dev.testify.internal.processor.capture.canvasCapture
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.capture.pixelCopyCapture
@@ -141,18 +141,17 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @VisibleForTesting
     internal var reporter: Reporter? = null
         private set
-    private val screenshotUtility = ScreenshotUtility()
     private lateinit var outputFileName: String
     private val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
 
     init {
         if (enableReporter || TestifyFeatures.Reporter.isEnabled(getInstrumentation().context)) {
-            reporter = Reporter(getInstrumentation().targetContext, ReportSession(), OutputFileUtility())
+            reporter = Reporter(getInstrumentation().targetContext, ReportSession())
         }
     }
 
     val outputFileExists: Boolean
-        get() = OutputFileUtility().doesOutputFileExist(activity, outputFileName)
+        get() = doesOutputFileExist(activity, outputFileName)
 
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
@@ -399,7 +398,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         screenshotView: View?,
         captureMethod: CaptureMethod = getCaptureMethod(activity)
     ): Bitmap? {
-        return screenshotUtility.createBitmapFromActivity(
+        return createBitmapFromActivity(
             activity,
             fileName,
             captureMethod,
@@ -503,7 +502,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
                 }
 
-                val baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(testContext, description.name)
+                val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
                     ?: if (isRecordMode) {
                         instrumentationPrintln(
                             "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
@@ -527,7 +526,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 if (compareBitmaps(baselineBitmap, currentBitmap)) {
                     assertTrue(
                         "Could not delete cached bitmap ${description.name}",
-                        screenshotUtility.deleteBitmap(activity, outputFileName)
+                        deleteBitmap(activity, outputFileName)
                     )
                 } else {
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {

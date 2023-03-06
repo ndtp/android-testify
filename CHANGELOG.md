@@ -18,10 +18,24 @@
 #### Changed
 
 - Library tests now use mockk.
+- Class `DeviceIdentifier.DeviceStringFormatter` has been migrated to a top-level class, `DeviceStringFormatter`
 - `DeviceIdentifier.getDeviceDimensions` has been replaced by `fun getDeviceDimensions(context: Context): Pair<Int, Int>`
 - `DeviceIdentifier.getDescription` has been replaced by `fun getDeviceDescription(context: Context): String`
 - `DeviceIdentifier.formatDeviceString` has been replaced by `fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String`
-- Class `DeviceIdentifier.DeviceStringFormatter` has been migrated to a top-level class, `DeviceStringFormatter`
+- `OutputFileUtility.doesOutputFileExist` has been replaced by `fun doesOutputFileExist(context: Context, filename: String): Boolean`
+- `OutputFileUtility.getFileRelativeToRoot` has been replaced by `fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String`
+- `OutputFileUtility.getOutputDirectoryPath` has been replaced by `fun getOutputDirectoryPath(context: Context): File`
+- `OutputFileUtility.getOutputFilePath` has been replaced by `fun getOutputFilePath(context: Context, fileName: String, extension: String = PNG_EXTENSION): String`
+- `OutputFileUtility.getPathRelativeToRoot` has been replaced by `fun getPathRelativeToRoot(subpath: String): String`
+- `OutputFileUtility.useSdCard` has been replaced by `fun useSdCard(arguments: Bundle): Boolean`
+- `ScreenshotUtility.assureScreenshotDirectory` has been replaced by `fun assureScreenshotDirectory(context: Context): Boolean`
+- `ScreenshotUtility.createBitmapFromActivity` has been replaced by `fun createBitmapFromActivity(activity: Activity, fileName: String, captureMethod: CaptureMethod, screenshotView: View? = activity.window.decorView): Bitmap?`
+- `ScreenshotUtility.loadBaselineBitmapForComparison` has been replaced by `fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap?`
+- `ScreenshotUtility.loadBitmapFromAsset` has been replaced by `fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap?`
+- `ScreenshotUtility.loadBitmapFromFile` has been replaced by `fun loadBitmapFromFile(outputPath: String, preferredBitmapOptions: BitmapFactory.Options): Bitmap?`
+- `ScreenshotUtility.preferredBitmapOptions` has been replaced by `val preferredBitmapOptions: BitmapFactory.Options`
+- `ScreenshotUtility.saveBitmapToFile` has been replaced by `fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean`
+
 
 ### All Projects
 

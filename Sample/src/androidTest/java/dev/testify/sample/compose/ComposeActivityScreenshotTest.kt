@@ -65,7 +65,7 @@ class ComposeActivityScreenshotTest {
 
     @ScreenshotInstrumentation
     @Test
-    fun drowDownCollapsed() {
+    fun dropDownCollapsed() {
         rule
             .configure {
                 exactness = 0.9f
@@ -78,7 +78,7 @@ class ComposeActivityScreenshotTest {
 
     @ScreenshotInstrumentation
     @Test
-    fun drowDownExpanded() {
+    fun dropDownExpanded() {
         rule
             .configure {
                 exactness = 0.9f

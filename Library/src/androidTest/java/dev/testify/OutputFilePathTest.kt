@@ -26,7 +26,10 @@ package dev.testify
 
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.output.getFileRelativeToRoot
+import dev.testify.internal.output.getOutputDirectoryPath
+import dev.testify.internal.output.getOutputFilePath
+import dev.testify.internal.output.useSdCard
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -35,11 +38,10 @@ import org.junit.Test
 class OutputFilePathTest {
 
     @Test
-    fun useSdCard() {
-        val subject = OutputFileUtility()
-        assertFalse(subject.useSdCard(Bundle.EMPTY))
+    fun testUseSdCard() {
+        assertFalse(useSdCard(Bundle.EMPTY))
         assertTrue(
-            subject.useSdCard(
+            useSdCard(
                 Bundle().apply {
                     putString("useSdCard", "true")
                 }
@@ -48,16 +50,14 @@ class OutputFilePathTest {
     }
 
     @Test
-    fun getFileRelativeToRoot() {
-        val subject = OutputFileUtility()
-        val value = subject.getFileRelativeToRoot("foo", "bar", ".ext")
+    fun testGetFileRelativeToRoot() {
+        val value = getFileRelativeToRoot("foo", "bar", ".ext")
         assertEquals("screenshots/foo/bar.ext", value)
     }
 
     @Test
-    fun getOutputDirectoryPath() {
-        val subject = OutputFileUtility()
-        val value = subject.getOutputDirectoryPath(InstrumentationRegistry.getInstrumentation().targetContext)
+    fun testGetOutputDirectoryPath() {
+        val value = getOutputDirectoryPath(InstrumentationRegistry.getInstrumentation().targetContext)
         assertEquals(
             "/data/user/0/dev.testify.test/app_images/screenshots/29-1080x2220@440dp-en_US",
             value.path
@@ -65,9 +65,8 @@ class OutputFilePathTest {
     }
 
     @Test
-    fun getOutputFilePath() {
-        val subject = OutputFileUtility()
-        val value = subject.getOutputFilePath(InstrumentationRegistry.getInstrumentation().targetContext, "foo")
+    fun testGetOutputFilePath() {
+        val value = getOutputFilePath(InstrumentationRegistry.getInstrumentation().targetContext, "foo")
         assertEquals(
             "/data/user/0/dev.testify.test/app_images/screenshots/29-1080x2220@440dp-en_US/foo.png",
             value

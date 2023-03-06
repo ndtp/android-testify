@@ -35,8 +35,10 @@ import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.formatDeviceString
 import dev.testify.internal.getDeviceDescription
-import dev.testify.internal.output.OutputFileUtility
-import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
+import dev.testify.internal.output.PNG_EXTENSION
+import dev.testify.internal.output.getFileRelativeToRoot
+import dev.testify.internal.output.getOutputFilePath
+import dev.testify.internal.output.useSdCard
 import java.io.File
 
 /**
@@ -49,8 +51,7 @@ import java.io.File
  */
 internal open class Reporter(
     private val context: Context,
-    private val session: ReportSession,
-    private val outputFileUtility: OutputFileUtility
+    private val session: ReportSession
 ) {
 
     @VisibleForTesting
@@ -127,7 +128,7 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal open fun getBaselinePath(rule: ScreenshotRule<*>): String {
-        return outputFileUtility.getFileRelativeToRoot(
+        return getFileRelativeToRoot(
             subpath = getDeviceDescription(context),
             fileName = testDescription.methodName,
             extension = PNG_EXTENSION
@@ -147,7 +148,7 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal open fun getOutputPath(rule: ScreenshotRule<*>): String {
-        return outputFileUtility.getOutputFilePath(context, rule.fileName)
+        return getOutputFilePath(context, rule.fileName)
     }
 
     @VisibleForTesting
@@ -157,7 +158,7 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal open fun getReportFile(): File {
-        val path = if (outputFileUtility.useSdCard(getEnvironmentArguments())) {
+        val path = if (useSdCard(getEnvironmentArguments())) {
             val sdCard = context.getExternalFilesDir(null)
             File(sdCard, "testify")
         } else {

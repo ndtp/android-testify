@@ -4,11 +4,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
-import dev.testify.ScreenshotUtility
-import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.output.getOutputFilePath
 import dev.testify.internal.processor.ParallelPixelProcessor
 import dev.testify.internal.processor.compare.colorspace.calculateDeltaE
 import dev.testify.internal.processor.createBitmap
+import dev.testify.saveBitmapToFile
 
 class HighContrastDiff(private val exclusionRects: Set<Rect>) {
 
@@ -45,10 +45,10 @@ class HighContrastDiff(private val exclusionRects: Set<Rect>) {
                 }
             }
 
-        ScreenshotUtility().saveBitmapToFile(
+        saveBitmapToFile(
             context = context,
             bitmap = transformResult.createBitmap(),
-            outputFilePath = OutputFileUtility().getOutputFilePath(context, "$fileName.diff")
+            outputFilePath = getOutputFilePath(context, "$fileName.diff")
         )
     }
 

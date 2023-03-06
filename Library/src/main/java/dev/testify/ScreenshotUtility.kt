@@ -36,131 +36,126 @@ import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
-import dev.testify.internal.output.OutputFileUtility
-import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
+import dev.testify.internal.output.PNG_EXTENSION
+import dev.testify.internal.output.getFileRelativeToRoot
+import dev.testify.internal.output.getOutputDirectoryPath
+import dev.testify.internal.output.getOutputFilePath
+import dev.testify.internal.output.useSdCard
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-@Suppress("MemberVisibilityCanBePrivate")
-open class ScreenshotUtility {
-
-    protected val outputFileUtility = OutputFileUtility()
-
-    val preferredBitmapOptions: BitmapFactory.Options
-        get() {
-            val options = BitmapFactory.Options()
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888
-            return options
-        }
-
-    open fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
-        if (bitmap == null) {
-            return false
-        }
-        if (assureScreenshotDirectory(context)) {
-            Log.d(LOG_TAG, "Writing screenshot to {$outputFilePath}")
-            val outputStream = FileOutputStream(outputFilePath)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
-            return true
-        } else {
-            throw ScreenshotDirectoryNotFoundException(
-                outputFileUtility.useSdCard(InstrumentationRegistry.getArguments()),
-                outputFileUtility.getOutputDirectoryPath(context).absolutePath
-            )
-        }
+val preferredBitmapOptions: BitmapFactory.Options
+    get() {
+        val options = BitmapFactory.Options()
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888
+        return options
     }
 
-    fun assureScreenshotDirectory(context: Context): Boolean {
-        var created = true
-        val outputDirectory = outputFileUtility.getOutputDirectoryPath(context)
-        if (!outputDirectory.exists()) {
-            Log.d(LOG_TAG, "Trying to make the directory")
-            created = outputDirectory.mkdirs()
-        }
-        return created
+fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
+    if (bitmap == null) {
+        return false
     }
-
-    @Throws(Exception::class)
-    protected fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap? {
-        return loadAsset(context, filePath) {
-            BitmapFactory.decodeStream(it, null, preferredBitmapOptions)
-        }
-    }
-
-    /**
-     * Load a baseline bitmap from the androidTest assets directory.
-     */
-    open fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap? {
-        val filePath = outputFileUtility.getFileRelativeToRoot(
-            subpath = getDeviceDescription(context),
-            fileName = testName,
-            extension = PNG_EXTENSION
+    if (assureScreenshotDirectory(context)) {
+        Log.d(LOG_TAG, "Writing screenshot to {$outputFilePath}")
+        val outputStream = FileOutputStream(outputFilePath)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        outputStream.flush()
+        outputStream.close()
+        return true
+    } else {
+        throw ScreenshotDirectoryNotFoundException(
+            useSdCard(InstrumentationRegistry.getArguments()),
+            getOutputDirectoryPath(context).absolutePath
         )
-        return loadBitmapFromAsset(context, filePath)
-    }
-
-    /**
-     * Capture a bitmap from the given Activity and save it to the screenshots directory.
-     *
-     * Calls [captureMethod] then [saveBitmapToFile] and returns the result of [loadBitmapFromFile]
-     *
-     * @param activity The [Activity] instance to capture.
-     * @param fileName The name to use when writing the captured image to disk.
-     * @param captureMethod a [CaptureMethod] that will return a [Bitmap] from the provided [Activity] and [View]
-     * @param screenshotView A [View] found in the [activity]'s view hierarchy.
-     *          If screenshotView is null, defaults to activity.window.decorView.
-     *
-     * @return A [Bitmap] representing the captured [screenshotView] in [activity]
-     *          Will return [null] if there is an error capturing the bitmap.
-     */
-    open fun createBitmapFromActivity(
-        activity: Activity,
-        fileName: String,
-        captureMethod: CaptureMethod,
-        screenshotView: View? = activity.window.decorView
-    ): Bitmap? {
-        val currentActivityBitmap = arrayOfNulls<Bitmap>(1)
-        val latch = CountDownLatch(1)
-        activity.runOnUiThread {
-            currentActivityBitmap[0] = captureMethod(activity, screenshotView)
-            latch.countDown()
-        }
-
-        try {
-            if (Debug.isDebuggerConnected()) {
-                latch.await()
-            } else if (!latch.await(2, TimeUnit.SECONDS)) {
-                return null
-            }
-        } catch (e: InterruptedException) {
-            Log.e(LOG_TAG, "createBitmapFromView interrupted.", e)
-            return null
-        }
-
-        val outputPath = outputFileUtility.getOutputFilePath(activity, fileName)
-        saveBitmapToFile(activity, currentActivityBitmap[0], outputPath)
-
-        return loadBitmapFromFile(outputPath, preferredBitmapOptions)
-    }
-
-    /**
-     * Decode the file specified by [outputPath] into a bitmap. If the specified file name is null, or cannot be
-     * decoded into a bitmap, the function returns null.
-     */
-    open fun loadBitmapFromFile(outputPath: String, preferredBitmapOptions: BitmapFactory.Options): Bitmap? {
-        return BitmapFactory.decodeFile(outputPath, preferredBitmapOptions)
-    }
-
-    open fun deleteBitmap(context: Context, fileName: String): Boolean {
-        val file = File(outputFileUtility.getOutputFilePath(context, fileName))
-        return file.delete()
-    }
-
-    companion object {
-        private val LOG_TAG = ScreenshotUtility::class.java.simpleName
     }
 }
+
+fun assureScreenshotDirectory(context: Context): Boolean {
+    var created = true
+    val outputDirectory = getOutputDirectoryPath(context)
+    if (!outputDirectory.exists()) {
+        Log.d(LOG_TAG, "Trying to make the directory")
+        created = outputDirectory.mkdirs()
+    }
+    return created
+}
+
+@Throws(Exception::class)
+private fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap? {
+    return loadAsset(context, filePath) {
+        BitmapFactory.decodeStream(it, null, preferredBitmapOptions)
+    }
+}
+
+/**
+ * Load a baseline bitmap from the androidTest assets directory.
+ */
+fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap? {
+    val filePath = getFileRelativeToRoot(
+        subpath = getDeviceDescription(context),
+        fileName = testName,
+        extension = PNG_EXTENSION
+    )
+    return loadBitmapFromAsset(context, filePath)
+}
+
+/**
+ * Capture a bitmap from the given Activity and save it to the screenshots directory.
+ *
+ * Calls [captureMethod] then [saveBitmapToFile] and returns the result of [loadBitmapFromFile]
+ *
+ * @param activity The [Activity] instance to capture.
+ * @param fileName The name to use when writing the captured image to disk.
+ * @param captureMethod a [CaptureMethod] that will return a [Bitmap] from the provided [Activity] and [View]
+ * @param screenshotView A [View] found in the [activity]'s view hierarchy.
+ *          If screenshotView is null, defaults to activity.window.decorView.
+ *
+ * @return A [Bitmap] representing the captured [screenshotView] in [activity]
+ *          Will return [null] if there is an error capturing the bitmap.
+ */
+fun createBitmapFromActivity(
+    activity: Activity,
+    fileName: String,
+    captureMethod: CaptureMethod,
+    screenshotView: View? = activity.window.decorView
+): Bitmap? {
+    val currentActivityBitmap = arrayOfNulls<Bitmap>(1)
+    val latch = CountDownLatch(1)
+    activity.runOnUiThread {
+        currentActivityBitmap[0] = captureMethod(activity, screenshotView)
+        latch.countDown()
+    }
+
+    try {
+        if (Debug.isDebuggerConnected()) {
+            latch.await()
+        } else if (!latch.await(2, TimeUnit.SECONDS)) {
+            return null
+        }
+    } catch (e: InterruptedException) {
+        Log.e(LOG_TAG, "createBitmapFromView interrupted.", e)
+        return null
+    }
+
+    val outputPath = getOutputFilePath(activity, fileName)
+    saveBitmapToFile(activity, currentActivityBitmap[0], outputPath)
+
+    return loadBitmapFromFile(outputPath, preferredBitmapOptions)
+}
+
+/**
+ * Decode the file specified by [outputPath] into a bitmap. If the specified file name is null, or cannot be
+ * decoded into a bitmap, the function returns null.
+ */
+fun loadBitmapFromFile(outputPath: String, preferredBitmapOptions: BitmapFactory.Options): Bitmap? {
+    return BitmapFactory.decodeFile(outputPath, preferredBitmapOptions)
+}
+
+fun deleteBitmap(context: Context, fileName: String): Boolean {
+    val file = File(getOutputFilePath(context, fileName))
+    return file.delete()
+}
+
+private const val LOG_TAG = "ScreenshotUtility"

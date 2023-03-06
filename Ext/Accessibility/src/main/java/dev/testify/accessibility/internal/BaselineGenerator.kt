@@ -32,7 +32,8 @@ import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.formatDeviceString
 import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
-import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.output.getFileRelativeToRoot
+import dev.testify.internal.output.getOutputFilePath
 import dev.testify.testDescription
 import java.io.File
 import java.io.InputStreamReader
@@ -51,7 +52,7 @@ internal fun writeAccessibilityCheckResults(results: CheckResults) {
  */
 internal fun readAccessibilityCheckResults(context: Context): CheckResults? {
     val description = getInstrumentation().testDescription
-    val filePath = OutputFileUtility().getFileRelativeToRoot(
+    val filePath = getFileRelativeToRoot(
         subpath = getDeviceDescription(context),
         fileName = description.name,
         extension = JSON_EXTENSION
@@ -73,7 +74,7 @@ private fun getOutputFile(context: Context, description: TestDescription): File 
         ),
         DEFAULT_NAME_FORMAT
     )
-    val outputPath = OutputFileUtility().getOutputFilePath(context, fileName, JSON_EXTENSION)
+    val outputPath = getOutputFilePath(context, fileName, JSON_EXTENSION)
     return File(outputPath)
 }
 

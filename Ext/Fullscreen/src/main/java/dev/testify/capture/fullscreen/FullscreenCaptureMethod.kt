@@ -31,16 +31,20 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
 import dev.testify.ScreenshotRule
-import dev.testify.ScreenshotUtility
 import dev.testify.exception.FailedToCaptureFullscreenBitmapException
 import dev.testify.exception.FailedToLoadCapturedBitmapException
 import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.formatDeviceString
-import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.output.getOutputDirectoryPath
+import dev.testify.internal.output.getOutputFilePath
+import dev.testify.internal.output.useSdCard
 import dev.testify.testDescription
 import java.io.File
+import dev.testify.assureScreenshotDirectory
+import dev.testify.loadBitmapFromFile
+import dev.testify.preferredBitmapOptions
 
 /**
  * Use the UiAutomator's built-in screenshotting capability to capture a [Bitmap] of the entire device.
@@ -65,24 +69,23 @@ import java.io.File
  */
 @Suppress("UNUSED_PARAMETER")
 fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap {
-    val screenshotUtility = ScreenshotUtility()
-    activity.assureScreenshotDirectory(screenshotUtility)
+    activity.assureScreenshotDirectory()
 
     val instrumentation = InstrumentationRegistry.getInstrumentation()
     val fileName = getFileName(instrumentation.context)
-    val outputPath = OutputFileUtility().getOutputFilePath(activity, fileName)
+    val outputPath = getOutputFilePath(activity, fileName)
     val file = File(outputPath)
 
     // Use UiAutomator to take a screenshot
     val device = UiDevice.getInstance(instrumentation)
-    device.waitForIdle(1000)
+    device.waitForIdle(5000)
     if (!device.takeScreenshot(file, 1f, 100)) throw FailedToCaptureFullscreenBitmapException()
 
     /**
-     * The screenshot is written as a PNG to [file] on the emulator. We can use [ScreenshotUtility.loadBitmapFromFile]
+     * The screenshot is written as a PNG to [file] on the emulator. We can use [loadBitmapFromFile]
      * to load it from a file into memory as a [Bitmap].
      */
-    return screenshotUtility.loadBitmapFromFile(outputPath, screenshotUtility.preferredBitmapOptions)
+    return loadBitmapFromFile(outputPath, preferredBitmapOptions)
         ?: throw FailedToLoadCapturedBitmapException()
 }
 
@@ -91,13 +94,12 @@ fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap {
  *
  * @throws ScreenshotDirectoryNotFoundException
  */
-private fun Context.assureScreenshotDirectory(screenshotUtility: ScreenshotUtility) {
-    if (screenshotUtility.assureScreenshotDirectory(this)) return
+private fun Context.assureScreenshotDirectory() {
+    if (assureScreenshotDirectory(this)) return
 
-    val outputFileUtility = OutputFileUtility()
     throw ScreenshotDirectoryNotFoundException(
-        useSdCard = outputFileUtility.useSdCard(InstrumentationRegistry.getArguments()),
-        path = outputFileUtility.getOutputDirectoryPath(this).absolutePath
+        useSdCard = useSdCard(InstrumentationRegistry.getArguments()),
+        path = getOutputDirectoryPath(this).absolutePath
     )
 }
 
