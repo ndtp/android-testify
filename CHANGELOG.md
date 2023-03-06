@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Library
+
+#### Changed
+
+- Library tests now use mockk.
+- `DeviceIdentifier.getDeviceDimensions` has been replaced by `fun getDeviceDimensions(context: Context): Pair<Int, Int>`
+- `DeviceIdentifier.getDescription` has been replaced by `fun getDeviceDescription(context: Context): String`
+- `DeviceIdentifier.formatDeviceString` has been replaced by `fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String`
+- Class `DeviceIdentifier.DeviceStringFormatter` has been migrated to a top-level class, `DeviceStringFormatter`
+
 ### All Projects
 
 #### Updates
