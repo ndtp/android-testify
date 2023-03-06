@@ -27,16 +27,12 @@ package dev.testify
 import android.app.Instrumentation
 import android.content.Context
 import dev.testify.report.ReportSession
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.whenever
 import java.io.BufferedReader
 import java.util.Date
 import java.util.TimeZone
@@ -90,12 +86,12 @@ class ReportSessionTest {
 
     @Test
     fun `session id is correctly formatted`() {
-        val instrumentation: Instrumentation = mock()
-        val thread: Thread = mock()
-        val context: Context = mock()
+        val instrumentation: Instrumentation = mockk()
+        val thread: Thread = mockk()
+        val context: Context = mockk()
 
-        doReturn(context).whenever(instrumentation).context
-        doReturn(123L).whenever(thread).id
+        every { instrumentation.context } returns context
+        every { thread.id } returns 123L
 
         val id = ReportSession.getSessionId(instrumentation, thread)
         assertTrue("^[0-9a-fA-F]{8}-123".toRegex().containsMatchIn(id))
@@ -103,10 +99,10 @@ class ReportSessionTest {
 
     @Test
     fun `can read session id from file`() {
-        val bufferedReader: BufferedReader = mock()
+        val bufferedReader: BufferedReader = mockk(relaxed = true)
 
         var count = 0
-        whenever(bufferedReader.readLine()).doAnswer {
+        every { bufferedReader.readLine() } answers {
             when (count++) {
                 0 -> "---"
                 1 -> "- session: 623815995-477"
@@ -149,13 +145,13 @@ class ReportSessionTest {
 
     @Test
     fun `insertSessionInfo() produces expected yaml`() {
-        val session = spy(ReportSession())
+        val session = spyk(ReportSession())
         repeat(1) { session.fail() }
         repeat(2) { session.pass() }
         repeat(3) { session.addTest() }
         ReportSession.injectSessionId(session, "12345678-123")
 
-        doReturn("2020-06-26@17:34:57").whenever(session).getTimestamp(any(), anyOrNull())
+        every { session.getTimestamp(any(), any()) } returns "2020-06-26@17:34:57"
 
         val builder = StringBuilder()
         val info = session.insertSessionInfo(builder).toString()

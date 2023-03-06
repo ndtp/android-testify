@@ -1,19 +1,16 @@
 package dev.testify
 
 import android.content.Context
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
-import android.content.pm.PackageManager.GET_META_DATA
 import dev.testify.TestifyFeatures.ExampleDisabledFeature
 import dev.testify.TestifyFeatures.ExampleFeature
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
 import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 class TestifyFeaturesTest {
 
@@ -47,20 +44,13 @@ class TestifyFeaturesTest {
     }
 
     private fun mockContext(tag: String, enabled: Boolean): Context {
-        val mockPackageManager: PackageManager = mock()
-        val mockContext: Context = mock {
-            on { packageManager } doReturn mockPackageManager
-            on { packageName } doReturn "com.testify.sample"
+        mockkStatic(::getMetaDataBundle)
+        every { getMetaDataBundle(any()) } returns mockk {
+            every { this@mockk.containsKey(any()) } returns false
+            every { this@mockk.containsKey(tag) } returns true
+            every { this@mockk.getBoolean(tag) } returns enabled
         }
-        doReturn(
-            mock<ApplicationInfo>().apply {
-                metaData = mock {
-                    on { containsKey(tag) } doReturn true
-                    on { getBoolean(tag) } doReturn enabled
-                }
-            }
-        ).whenever(mockPackageManager).getApplicationInfo("com.testify.sample", GET_META_DATA)
-        return mockContext
+        return mockk()
     }
 
     @Test

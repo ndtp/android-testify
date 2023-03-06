@@ -25,6 +25,7 @@
 package dev.testify
 
 import android.app.Activity
+import android.content.Context
 import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
@@ -39,12 +40,19 @@ import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.report.ErrorCause
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 class ErrorCauseTest {
+
+    @RelaxedMockK
+    private lateinit var mockContext: Context
+
+    @Before
+    fun setUp() = MockKAnnotations.init(this)
 
     @Test
     fun `all exceptions match their cause`() {
@@ -61,7 +69,9 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.NO_DIRECTORY, ErrorCause.match(ScreenshotDirectoryNotFoundException(false, "")))
         assertEquals(
             ErrorCause.NO_ROOT_VIEW,
-            ErrorCause.match(RootViewNotFoundException(mock { whenever(mock.resources).thenReturn(mock()) }, 0))
+            ErrorCause.match(
+                RootViewNotFoundException(mockContext, 0)
+            )
         )
         assertEquals(ErrorCause.UI_THREAD, ErrorCause.match(NoScreenshotsOnUiThreadException()))
         assertEquals(ErrorCause.VIEW_MODIFICATION, ErrorCause.match(ViewModificationException(Throwable())))
