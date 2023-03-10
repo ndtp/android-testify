@@ -29,6 +29,8 @@ import android.graphics.Rect
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.processor._executorDispatcher
 import dev.testify.internal.processor.compare.FuzzyCompare
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,12 +42,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import java.nio.IntBuffer
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -132,13 +128,12 @@ class RegionCompareTest {
     }
 
     private fun mockBitmap(color: Int, alternateColor: ((color: Int, x: Int, y: Int) -> Int)? = null): Bitmap {
-        return mock<Bitmap>().apply {
-            doReturn(100).whenever(this).height
-            doReturn(100).whenever(this).width
-            doReturn(false).whenever(this).sameAs(anyOrNull())
-
-            whenever(this.copyPixelsToBuffer(any())).thenAnswer {
-                val buffer = it.arguments[0] as IntBuffer
+        return mockk {
+            every { this@mockk.height } returns 100
+            every { this@mockk.width } returns 100
+            every { this@mockk.sameAs(any()) } returns false
+            every { copyPixelsToBuffer(any()) } answers {
+                val buffer = args[0] as IntBuffer
 
                 var index = 0
                 (0 until 100).forEach { x ->
@@ -151,27 +146,15 @@ class RegionCompareTest {
     }
 
     // Rect is an android platform type so can't be instantiated directly. It must be mocked.
-    private fun mockRect(left: Int, top: Int, right: Int, bottom: Int): Rect {
-        val rect = mock<Rect>()
-        rect.left = left
-        rect.top = top
-        rect.right = right
-        rect.bottom = bottom
+    private fun mockRect(left: Int, top: Int, right: Int, bottom: Int): Rect =
+        mockk(relaxed = true) {
+            every { this@mockk.contains(any(), any()) } answers {
+                if (left > top) right + bottom
 
-        whenever(rect.contains(any(), any())).doAnswer {
-            Point(it.arguments).intersects(rect)
+                val x: Int = arg(0)
+                val y: Int = arg(1)
+
+                (x in left..right) && (y in top..bottom)
+            }
         }
-
-        return rect
-    }
-
-    @Suppress("ArrayInDataClass")
-    private data class Point(private val arguments: Array<Any>) {
-        val x: Int = arguments[0] as Int
-        val y: Int = arguments[1] as Int
-
-        fun intersects(rect: Rect): Boolean {
-            return x >= rect.left && x < rect.right && y >= rect.top && y < rect.bottom
-        }
-    }
 }

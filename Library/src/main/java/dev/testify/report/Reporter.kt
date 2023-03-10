@@ -31,7 +31,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.ScreenshotRule
 import dev.testify.TestDescription
-import dev.testify.internal.DeviceIdentifier
+import dev.testify.internal.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.formatDeviceString
+import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.internal.output.OutputFileUtility.Companion.PNG_EXTENSION
 import java.io.File
@@ -125,7 +128,7 @@ internal open class Reporter(
     @VisibleForTesting
     internal open fun getBaselinePath(rule: ScreenshotRule<*>): String {
         return outputFileUtility.getFileRelativeToRoot(
-            subpath = DeviceIdentifier.getDescription(context),
+            subpath = getDeviceDescription(context),
             fileName = testDescription.methodName,
             extension = PNG_EXTENSION
         )
@@ -133,12 +136,12 @@ internal open class Reporter(
 
     private val ScreenshotRule<*>.fileName: String
         get() {
-            return DeviceIdentifier.formatDeviceString(
-                DeviceIdentifier.DeviceStringFormatter(
+            return formatDeviceString(
+                DeviceStringFormatter(
                     this.testContext,
                     testDescription.nameComponents
                 ),
-                DeviceIdentifier.DEFAULT_NAME_FORMAT
+                DEFAULT_NAME_FORMAT
             )
         }
 

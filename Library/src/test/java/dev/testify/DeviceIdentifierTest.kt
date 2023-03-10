@@ -24,27 +24,29 @@
  */
 package dev.testify
 
-import dev.testify.internal.DeviceIdentifier
+import dev.testify.internal.DEFAULT_FOLDER_FORMAT
+import dev.testify.internal.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.formatDeviceString
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
-import org.mockito.kotlin.whenever
 
 class DeviceIdentifierTest {
 
     private val formatter = mockFormatter()
 
-    private fun mockFormatter(): DeviceIdentifier.DeviceStringFormatter {
-        val formatter = mock(DeviceIdentifier.DeviceStringFormatter::class.java)
+    private fun mockFormatter(): DeviceStringFormatter {
+        val formatter = mockk<DeviceStringFormatter>()
 
-        doReturn("21").whenever<DeviceIdentifier.DeviceStringFormatter>(formatter).androidVersion
-        doReturn("380dp").whenever(formatter).deviceDensity
-        doReturn("1024").whenever<DeviceIdentifier.DeviceStringFormatter>(formatter).deviceHeight
-        doReturn("800").whenever<DeviceIdentifier.DeviceStringFormatter>(formatter).deviceWidth
-        doReturn("en_US").whenever(formatter).locale
-        doReturn("Class").whenever<DeviceIdentifier.DeviceStringFormatter>(formatter).testClass
-        doReturn("method").whenever(formatter).getTestName()
+        every { formatter.androidVersion } returns "21"
+        every { formatter.deviceDensity } returns "380dp"
+        every { formatter.deviceHeight } returns "1024"
+        every { formatter.deviceWidth } returns "800"
+        every { formatter.locale } returns "en_US"
+        every { formatter.testClass } returns "Class"
+        every { formatter.getTestName() } returns "method"
 
         return formatter
     }
@@ -53,7 +55,7 @@ class DeviceIdentifierTest {
     fun testFolderNameFormat() {
         assertEquals(
             "21-800x1024@380dp-en_US",
-            DeviceIdentifier.formatDeviceString(formatter, DeviceIdentifier.DEFAULT_FOLDER_FORMAT)
+            formatDeviceString(formatter, DEFAULT_FOLDER_FORMAT)
         )
     }
 
@@ -61,7 +63,7 @@ class DeviceIdentifierTest {
     fun testFileNameFormat() {
         assertEquals(
             "Class_method",
-            DeviceIdentifier.formatDeviceString(formatter, DeviceIdentifier.DEFAULT_NAME_FORMAT)
+            formatDeviceString(formatter, DEFAULT_NAME_FORMAT)
         )
     }
 
@@ -69,7 +71,7 @@ class DeviceIdentifierTest {
     fun testCIFormat() {
         assertEquals(
             "21-800x1024@380dp-en_US#Class_method",
-            DeviceIdentifier.formatDeviceString(formatter, "a-wxh@d-l#c_n")
+            formatDeviceString(formatter, "a-wxh@d-l#c_n")
         )
     }
 
@@ -77,7 +79,7 @@ class DeviceIdentifierTest {
     fun testCustomFormat() {
         assertEquals(
             "21Class380dp1024en_USmethod800",
-            DeviceIdentifier.formatDeviceString(formatter, "acdhlnw")
+            formatDeviceString(formatter, "acdhlnw")
         )
     }
 }

@@ -26,6 +26,7 @@ package dev.testify
 
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.annotation.VisibleForTesting
 
 enum class TestifyFeatures(internal val tags: List<String>, private val defaultValue: Boolean = false) {
 
@@ -70,13 +71,13 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
 
     private val Context?.isEnabledInManifest: Boolean?
         get() {
-            val applicationInfo = this?.packageManager?.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-            val metaData = applicationInfo?.metaData
-
-            val tag = tags.find { tag ->
-                metaData?.containsKey(tag) == true
+            return this?.let {
+                val metaData = getMetaDataBundle(this)
+                val tag = tags.find { tag ->
+                    metaData?.containsKey(tag) == true
+                }
+                if (tag != null) metaData?.getBoolean(tag) else null
             }
-            return if (tag != null) metaData?.getBoolean(tag) else null
         }
 
     companion object {
@@ -87,3 +88,7 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
         }
     }
 }
+
+@VisibleForTesting
+internal fun getMetaDataBundle(context: Context) =
+    context.packageManager?.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)?.metaData

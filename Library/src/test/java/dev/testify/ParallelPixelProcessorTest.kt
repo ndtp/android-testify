@@ -4,6 +4,10 @@ import android.graphics.Bitmap
 import dev.testify.internal.processor.ParallelPixelProcessor
 import dev.testify.internal.processor._executorDispatcher
 import dev.testify.internal.processor.maxNumberOfChunkThreads
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,10 +19,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.doReturn
-import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import java.util.concurrent.atomic.AtomicInteger
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -33,10 +33,11 @@ class ParallelPixelProcessorTest {
     }
 
     private fun mockBitmap(width: Int = WIDTH, height: Int = HEIGHT): Bitmap {
-        return mock<Bitmap>().apply {
-            doReturn(width).whenever(this).height
-            doReturn(height).whenever(this).width
-            doReturn(0xffffffff.toInt()).whenever(this).getPixel(any(), any())
+        return mockk {
+            every { this@mockk.height } returns height
+            every { this@mockk.width } returns width
+            every { this@mockk.getPixel(any(), any()) } returns 0xffffffff.toInt()
+            every { this@mockk.copyPixelsToBuffer(any()) } just runs
         }
     }
 

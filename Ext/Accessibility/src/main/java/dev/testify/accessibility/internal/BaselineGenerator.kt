@@ -27,7 +27,10 @@ import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.TestDescription
 import dev.testify.accessibility.exception.MalformedBaselineException
-import dev.testify.internal.DeviceIdentifier
+import dev.testify.internal.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.formatDeviceString
+import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
 import dev.testify.internal.output.OutputFileUtility
 import dev.testify.testDescription
@@ -49,7 +52,7 @@ internal fun writeAccessibilityCheckResults(results: CheckResults) {
 internal fun readAccessibilityCheckResults(context: Context): CheckResults? {
     val description = getInstrumentation().testDescription
     val filePath = OutputFileUtility().getFileRelativeToRoot(
-        subpath = DeviceIdentifier.getDescription(context),
+        subpath = getDeviceDescription(context),
         fileName = description.name,
         extension = JSON_EXTENSION
     )
@@ -63,12 +66,12 @@ internal fun readAccessibilityCheckResults(context: Context): CheckResults? {
 }
 
 private fun getOutputFile(context: Context, description: TestDescription): File {
-    val fileName = DeviceIdentifier.formatDeviceString(
-        DeviceIdentifier.DeviceStringFormatter(
+    val fileName = formatDeviceString(
+        DeviceStringFormatter(
             context,
             description.nameComponents
         ),
-        DeviceIdentifier.DEFAULT_NAME_FORMAT
+        DEFAULT_NAME_FORMAT
     )
     val outputPath = OutputFileUtility().getOutputFilePath(context, fileName, JSON_EXTENSION)
     return File(outputPath)
