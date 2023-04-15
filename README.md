@@ -17,8 +17,25 @@ You can easily capture screenshots with different resolutions, orientations, API
 > 
 > **The Testify 2.0 platform requires new build artifacts and a migration from the `com.shopify.testify` package to the new `dev.testify` package.**
 > 
-> **Please refer to the [migration guide](./MIGRATION.md) for more information**
+> **Please refer to the [migration guide](https://ndtp.github.io/android-testify/docs/migration) for more information**
 > 
+
+---
+
+# Getting Started
+
+
+📷 **Visit [testify.dev](https://testify.dev) for full documentation, blogs, and code recipes to help you get started with Android Testify!** 📷
+
+[Testify.dev](https://testify.dev) is the go-to resource for everything related to Android Testify. There, you'll find comprehensive documentation, tutorials, and code recipes that will help you write better tests for your Android apps. 
+
+By visiting testify.dev, you'll learn how to:
+- Write reliable and maintainable UI tests for your Android apps
+- Improve your test coverage and reduce flakiness
+- Save time and improve productivity with Testify's powerful APIs and tools
+- Get help and support from the Android Testify community
+
+Click the link above and start your journey to better Android testing today! 
 
 ---
 
