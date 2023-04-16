@@ -31,6 +31,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import dev.testify.ScreenshotRule
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.helpers.ResourceWrapper
@@ -40,6 +41,7 @@ import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestLocaleHarnessNoWrapActivity
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.util.Locale
 
@@ -61,7 +63,7 @@ class TestingResourcesCounterExampleTest {
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     @Test(expected = ActivityMustImplementResourceOverrideException::class)
     fun usingSetLocaleRequiresActivityToImplementResourceOverride() {
-
+        rule.isDebugMode = true
         val activity = mock<TestHarnessActivity>().apply {
             doReturn("TestHarnessActivity").whenever(this).localClassName
         }
@@ -70,24 +72,23 @@ class TestingResourcesCounterExampleTest {
         ResourceWrapper.afterActivityLaunched(activity)
     }
 
+    @get:Rule
+    val rule = ScreenshotRule(
+        activityClass = TestLocaleHarnessNoWrapActivity::class.java,
+        launchActivity = false,
+        rootViewId = R.id.harness_root
+    )
+
     /**
      * Throws TestMustWrapContextException unless you call newBase?.wrap() from within
      * attachBaseContext in your Activity under test.
      */
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
+    @ScreenshotInstrumentation
     @Test(expected = TestMustWrapContextException::class)
     fun usingSetLocaleRequiresActivityToWrapContext() {
-        val rule = ScreenshotRule(
-            activityClass = TestLocaleHarnessNoWrapActivity::class.java,
-            rootViewId = R.id.harness_root
-        ).apply {
-            isDebugMode = true
-        }
-
         rule
-            .configure {
-                locale = Locale.FRANCE
-            }
+            .setLocale(Locale.FRANCE)
             .assertSame()
     }
 }

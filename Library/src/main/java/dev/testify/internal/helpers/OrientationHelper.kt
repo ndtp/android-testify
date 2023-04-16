@@ -81,21 +81,6 @@ class OrientationHelper(
             return getInstrumentation().getActivityProvider<Activity>().getActivity()
         }
 
-    private val Activity.isLandscape: Boolean
-        get() {
-            val size = Point(-1, -1)
-            this.windowManager?.defaultDisplay?.getRealSize(size)
-            return size.y < size.x
-        }
-
-    /**
-     * Check if the activity's current orientation matches what was requested
-     */
-    private fun Activity.isRequestedOrientation(requestedOrientation: Int): Boolean {
-        return (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && this.isLandscape) ||
-            (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && !this.isLandscape)
-    }
-
     /**
      * Lifecycle callback. Wait for the activity under test to completely resume after configuration change.
      */
@@ -135,4 +120,19 @@ class OrientationHelper(
             ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(::lifecycleCallback)
         }
     }
+}
+
+private val Activity.isLandscape: Boolean
+    get() {
+        val size = Point(-1, -1)
+        this.windowManager?.defaultDisplay?.getRealSize(size)
+        return size.y < size.x
+    }
+
+/**
+ * Check if the activity's current orientation matches what was requested
+ */
+internal fun Activity.isRequestedOrientation(requestedOrientation: Int?): Boolean {
+    return (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && this.isLandscape) ||
+        (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && !this.isLandscape)
 }

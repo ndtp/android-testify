@@ -37,6 +37,7 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
+import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.report.ErrorCause
@@ -77,6 +78,7 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.VIEW_MODIFICATION, ErrorCause.match(ViewModificationException(Throwable())))
         assertEquals(ErrorCause.WRAP_CONTEXT, ErrorCause.match(TestMustWrapContextException("")))
         assertEquals(ErrorCause.FAILED_BITMAP_CAPTURE, ErrorCause.match(FailedToCaptureBitmapException()))
+        assertEquals(ErrorCause.SKIPPED, ErrorCause.match(ScreenshotTestIgnoredException()))
         assertEquals(ErrorCause.UNKNOWN, ErrorCause.match(Throwable()))
     }
 }

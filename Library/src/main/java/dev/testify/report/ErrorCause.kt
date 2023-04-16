@@ -35,6 +35,7 @@ import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
+import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.UnexpectedOrientationException
 import dev.testify.internal.exception.ViewModificationException
@@ -59,6 +60,7 @@ enum class ErrorCause(val klass: KClass<*>) {
     VIEW_MODIFICATION(ViewModificationException::class),
     WRAP_CONTEXT(TestMustWrapContextException::class),
     FAILED_BITMAP_CAPTURE(FailedToCaptureBitmapException::class),
+    SKIPPED(ScreenshotTestIgnoredException::class),
     UNKNOWN(Throwable::class);
 
     lateinit var description: String

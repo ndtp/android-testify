@@ -157,16 +157,14 @@ class ComposableScreenshotTest {
         val locale = Locale.JAPAN
         val fontScale = 3.0f
         rule
-            .configure {
-                this.locale = locale
-                this.fontScale = fontScale
-            }
             .setCompose {
                 Text(
                     text = "Locale ${locale.displayName} at scale $fontScale",
                     fontSize = 16.sp
                 )
             }
+            .setLocale(locale)
+            .setFontScale(fontScale)
             .assertSame()
     }
 }

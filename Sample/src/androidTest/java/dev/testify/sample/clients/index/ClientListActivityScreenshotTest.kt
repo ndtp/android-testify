@@ -41,9 +41,7 @@ class ClientListActivityScreenshotTest {
     @Test
     fun withFocusOnBackground() {
         rule
-            .configure {
-                focusTargetId = android.R.id.content
-            }
+            .setFocusTarget(enabled = true, focusTargetId = android.R.id.content)
             .assertSame()
     }
 
@@ -51,9 +49,7 @@ class ClientListActivityScreenshotTest {
     @Test
     fun withFocusOnFab() {
         rule
-            .configure {
-                focusTargetId = R.id.fab
-            }
+            .setFocusTarget(enabled = true, focusTargetId = R.id.fab)
             .assertSame()
     }
 }

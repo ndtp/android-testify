@@ -4,6 +4,17 @@
 
 ### Library
 
+#### Added
+
+- `@IgnoreScreenshot` annotation added
+  - An annotation used to ignore screenshots tests. Test will be reported as Skipped.
+  - Should be used as a more versatile replacement for the `orientationToIgnore` argument on `@ScreenshotInstrumentation`
+
+#### Removed
+
+- `orientationToIgnore` argument on `@ScreenshotInstrumentation` has been removed
+    - Use `@IgnoreScreenshot` instead
+
 #### Changed
 
 - Library tests now use mockk.
