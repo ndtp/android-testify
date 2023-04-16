@@ -35,7 +35,7 @@ import dev.testify.sample.test.clientDetailsView
 import dev.testify.sample.test.getViewState
 import org.junit.Rule
 import org.junit.Test
-import java.util.*
+import java.util.Locale
 
 /**
  * These tests demonstrate how to test the same Activity with different resource configurations

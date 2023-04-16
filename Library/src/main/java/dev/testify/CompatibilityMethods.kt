@@ -29,7 +29,7 @@ import dev.testify.internal.ExclusionRectProvider
 import java.util.Locale
 
 /**
- * CompatibilityMethods are provided for as API-compatible migration path to the new Testify
+ * CompatibilityMethods are provided for an API-compatible migration path to the new Testify
  * configuration method.
  */
 interface CompatibilityMethods<TRule : ScreenshotRule<TActivity>, TActivity : Activity> {
