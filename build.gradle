@@ -44,7 +44,7 @@ buildscript {
                 'material'           : '1.4.0',             // https://material.io/develop/android/docs/getting-started/
                 'mockk'              : '1.13.4',            // https://central.sonatype.com/artifact/io.mockk/mockk/1.13.4/versions
                 'slf4j'              : '2.0.6',
-                'testify'            : '2.0.0-beta01',      // https://github.com/ndtp/android-testify/releases
+                'testify'            : '2.0.0-beta01-SNAPSHOT',      // https://github.com/ndtp/android-testify/releases
         ]
         coreVersions = [
                 'compileSdk': 31,
