@@ -20,8 +20,8 @@ task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
 publishing {
     repositories {
         maven {
-            def release =  "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshot = "https://oss.sonatype.org/content/repositories/snapshots/"
+            def release =  "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             url = version.endsWith('SNAPSHOT') ? snapshot : release
 
             credentials {
