@@ -26,6 +26,7 @@ package dev.testify.internal
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
@@ -34,11 +35,14 @@ import androidx.annotation.IdRes
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import dev.testify.annotation.BitmapComparisonExactness
+import dev.testify.annotation.IgnoreScreenshot
 import dev.testify.annotation.getAnnotation
+import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.WrappedFontScale
 import dev.testify.internal.helpers.WrappedLocale
+import dev.testify.internal.helpers.isRequestedOrientation
 import dev.testify.internal.modification.FocusModification
 import dev.testify.internal.modification.HideCursorViewModification
 import dev.testify.internal.modification.HidePasswordViewModification
@@ -86,6 +90,8 @@ data class TestifyConfiguration(
     private val orientationHelper: OrientationHelper?
         get() = orientation?.let { OrientationHelper(it) }
 
+    private var ignoreAnnotation: IgnoreScreenshot? = null
+
     /**
      * Update the internal configuration values based on any annotations that may be present on the test method
      */
@@ -93,6 +99,18 @@ data class TestifyConfiguration(
         val bitmapComparison = methodAnnotations?.getAnnotation<BitmapComparisonExactness>()
         if (exactness == null) {
             exactness = bitmapComparison?.exactness
+        }
+
+        ignoreAnnotation = methodAnnotations?.getAnnotation()
+    }
+
+    private fun IgnoreScreenshot?.isIgnored(activity: Activity): Boolean {
+        return when {
+            (this?.ignoreAlways == true) -> true
+            (this != null) &&
+                (orientationToIgnore != SCREEN_ORIENTATION_UNSPECIFIED) &&
+                (activity.isRequestedOrientation(orientationToIgnore)) -> true
+            else -> false
         }
     }
 
@@ -122,7 +140,9 @@ data class TestifyConfiguration(
         }
     }
 
-    internal fun afterActivityLaunched() {
+    internal fun afterActivityLaunched(activity: Activity) {
+        if (ignoreAnnotation?.isIgnored(activity) == true) throw ScreenshotTestIgnoredException()
+
         orientationHelper?.afterActivityLaunched()
     }
 

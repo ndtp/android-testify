@@ -46,6 +46,7 @@ class TestingResourceConfigurationsExampleTest {
 
     @get:Rule var rule = ScreenshotRule(
         activityClass = TestLocaleHarnessActivity::class.java,
+        launchActivity = false,
         rootViewId = R.id.harness_root
     )
 
@@ -86,9 +87,7 @@ class TestingResourceConfigurationsExampleTest {
     fun increaseFontScale() {
         rule
             .configure(name = "Scale 2.0f")
-            .configure {
-                fontScale = 2.0f
-            }
+            .setFontScale(2.0f)
             .assertSame()
     }
 
@@ -101,10 +100,8 @@ class TestingResourceConfigurationsExampleTest {
     @Test
     fun reduceFontScaleAndChangeLocale() {
         rule.configure("${Locale.JAPAN.displayName} @ 0.75")
-            .configure {
-                fontScale = 0.75f
-                locale = Locale.JAPAN
-            }
+            .setFontScale(0.75f)
+            .setLocale(Locale.JAPAN)
             .assertSame()
     }
 
@@ -122,9 +119,7 @@ class TestingResourceConfigurationsExampleTest {
     private fun assertLocale(locale: Locale) {
         rule
             .configure(name = "Locale ${locale.displayName}")
-            .configure {
-                this.locale = locale
-            }
+            .setLocale(locale)
             .assertSame()
     }
 }

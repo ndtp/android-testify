@@ -47,6 +47,7 @@ import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.DEFAULT_FOLDER_FORMAT
 import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.ScreenshotRuleCompatibilityMethods
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
@@ -57,6 +58,7 @@ import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
 import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
+import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.getModuleName
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
@@ -78,6 +80,7 @@ import dev.testify.internal.processor.diff.HighContrastDiff
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -98,7 +101,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
     TestRule,
     ActivityProvider<T>,
-    ScreenshotLifecycle {
+    ScreenshotLifecycle,
+    CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods() {
 
     @Deprecated(
         message = "Parameter launchActivity is deprecated and no longer required",
@@ -222,7 +226,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override fun afterActivityLaunched() {
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
-        configuration.afterActivityLaunched()
+        configuration.afterActivityLaunched(activity)
     }
 
     @CallSuper
@@ -240,6 +244,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @return a new statement, which may be the same as base, a wrapper around base, or a completely new [Statement].
      */
     override fun apply(base: Statement, description: Description): Statement {
+        withRule(this)
+
         val methodAnnotations = description.annotations
         apply(description.methodName, description.testClass, methodAnnotations)
         return super.apply(ScreenshotStatement(base), description)
@@ -268,6 +274,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             classScreenshotInstrumentation,
             methodScreenshotInstrumentation
         )
+
         configuration.applyAnnotations(methodAnnotations)
 
         espressoHelper.reset()
@@ -367,9 +374,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun getCaptureMethod(context: Context): CaptureMethod {
         return when {
-            TestifyFeatures.CanvasCapture.isEnabled(context) -> ::canvasCapture
-            TestifyFeatures.PixelCopyCapture.isEnabled(context) -> ::pixelCopyCapture
             captureMethod != null -> captureMethod!!
+            TestifyFeatures.PixelCopyCapture.isEnabled(context) -> ::pixelCopyCapture
+            TestifyFeatures.CanvasCapture.isEnabled(context) -> ::canvasCapture
             else -> ::createBitmapFromDrawingCache
         }
     }
@@ -422,6 +429,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             configuration.hasExclusionRect() || configuration.hasExactness -> FuzzyCompare(
                 configuration
             )::compareBitmaps
+
             else -> ::sameAsCompare
         }
     }
@@ -451,7 +459,13 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             throw NoScreenshotsOnUiThreadException()
         }
 
-        launchActivity(activityIntent)
+        try {
+            launchActivity(activityIntent)
+        } catch (e: ScreenshotTestIgnoredException) {
+            // Exit gracefully; mark test as ignored
+            assumeTrue(false)
+            return
+        }
 
         try {
             try {

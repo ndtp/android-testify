@@ -42,13 +42,12 @@ import dev.testify.ScreenshotRule
 import dev.testify.ScreenshotUtility
 import dev.testify.TestifyFeatures
 import dev.testify.annotation.BitmapComparisonExactness
+import dev.testify.annotation.IgnoreScreenshot
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.extensions.boundingBox
 import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.processor.capture.canvasCapture
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
-import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
@@ -70,6 +69,7 @@ class ScreenshotRuleExampleTests {
     @get:Rule
     var rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
+        launchActivity = false,
         rootViewId = R.id.harness_root
     )
 
@@ -208,10 +208,8 @@ class ScreenshotRuleExampleTests {
                     rule.activity.title = it.name
                 }
             }
-            .configure {
-                useSoftwareRenderer = true
-            }
-            .setCaptureMethod(::canvasCapture)
+            .setUseSoftwareRenderer(true)
+            .withExperimentalFeatureEnabled(TestifyFeatures.CanvasCapture)
             .assertSame()
     }
 
@@ -232,9 +230,7 @@ class ScreenshotRuleExampleTests {
     fun setExactness() {
         rule
             .setupExactness()
-            .configure {
-                exactness = 0.95f
-            }
+            .setExactness(0.95f)
             .assertSame()
     }
 
@@ -305,9 +301,7 @@ class ScreenshotRuleExampleTests {
     @Test
     fun setOrientation() {
         rule
-            .configure {
-                orientation = SCREEN_ORIENTATION_LANDSCAPE
-            }
+            .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
             .assertSame()
     }
 
@@ -320,21 +314,19 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun exclusions() {
+        TestifyFeatures.PixelCopyCapture.setEnabled(true)
         TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule
-            .setCaptureMethod(::pixelCopyCapture)
+            .setExactness(0.9f)
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 val g = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 val b = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#$r$g$b"))
             }
-            .configure {
-                exactness = 0.9f
-                defineExclusionRects { rootView, exclusionRects ->
-                    val card = rootView.findViewById<View>(R.id.info_card)
-                    exclusionRects.add(card.boundingBox)
-                }
+            .defineExclusionRects { rootView, exclusionRects ->
+                val card = rootView.findViewById<View>(R.id.info_card)
+                exclusionRects.add(card.boundingBox)
             }
             .assertSame()
     }
@@ -454,5 +446,15 @@ class ScreenshotRuleExampleTests {
             }
             .setCompareMethod(::ignoreDifferences)
             .assertSame()
+    }
+
+    /**
+     * Demonstrated how to ignore (skip) a screenshot test.
+     */
+    @IgnoreScreenshot(ignoreAlways = true)
+    @ScreenshotInstrumentation
+    @Test
+    fun ignore() {
+        rule.assertSame()
     }
 }
