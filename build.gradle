@@ -35,7 +35,7 @@ buildscript {
                         'material': '1.4.0-alpha02',
                         'ui'      : '1.4.0-alpha02',
                 ],
-                'dokka'              : '1.4.32',            // https://github.com/Kotlin/dokka/releases
+                'dokka'              : '1.8.10',            // https://github.com/Kotlin/dokka/releases
                 'gson'               : '2.9.0',             // https://github.com/google/gson/releases
                 'guava'              : '30.0-android',      // https://github.com/google/guava/releases
                 'kotlin'             : '1.7.21',            // https://kotlinlang.org/
