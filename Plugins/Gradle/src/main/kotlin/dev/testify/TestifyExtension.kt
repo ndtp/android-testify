@@ -63,7 +63,17 @@ internal data class TestifySettings(
     val targetPackageId: String,
     val installTask: String?,
     val installAndroidTestTask: String?,
-    val autoImplementLibrary: Boolean = true
+    val autoImplementLibrary: Boolean = true,
+
+    /**
+     * The annotation used by ScreenshotTestTask as an argument to `adb shell am instrument`
+     * to filter tests being run.
+     *
+     * [@see https://developer.android.com/studio/test/command-line#run-tests-with-adb]
+     *
+     * If null, then will default to dev.testify.annotation.ScreenshotInstrumentation
+     */
+    val screenshotAnnotation: String? = null
 ) {
 
     internal companion object {
@@ -85,6 +95,7 @@ internal data class TestifySettings(
             val outputFileNameFormat = extension.outputFileNameFormat
             val installAndroidTestTask = extension.installAndroidTestTask ?: project.inferredAndroidTestInstallTask
             val moduleName = extension.moduleName ?: project.name
+            val screenshotAnnotation = extension.screenshotAnnotation
 
             return TestifySettings(
                 baselineSourceDir = baselineSourceDir,
@@ -97,7 +108,8 @@ internal data class TestifySettings(
                 targetPackageId = targetPackageId,
                 installTask = installTask,
                 installAndroidTestTask = installAndroidTestTask,
-                autoImplementLibrary = autoImplementLibrary
+                autoImplementLibrary = autoImplementLibrary,
+                screenshotAnnotation = screenshotAnnotation
             )
         }
     }
@@ -157,6 +169,7 @@ open class TestifyExtension {
     var installTask: String? = null
     var installAndroidTestTask: String? = null
     var autoImplementLibrary: Boolean? = null
+    var screenshotAnnotation: String? = null
 
     companion object {
         const val NAME = "testify"
