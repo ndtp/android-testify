@@ -24,5 +24,5 @@
  */
 package dev.testify.internal.exception
 
-class MissingScreenshotInstrumentationAnnotationException(methodName: String) :
-    Exception("Please add @ScreenshotInstrumentation for the test '$methodName'")
+class MissingScreenshotInstrumentationAnnotationException(annotationName: String, methodName: String) :
+    Exception("Please add annotation $annotationName to the test '$methodName'")

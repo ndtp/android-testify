@@ -78,6 +78,7 @@ android {
         androidTestImplementation "com.google.android.material:material:${versions.material}"
         androidTestImplementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
         androidTestImplementation "androidx.multidex:multidex:2.0.1"
+        androidTestImplementation "io.mockk:mockk-android:${versions.mockk}"
     }
     lint {
         abortOnError true
@@ -85,6 +86,15 @@ android {
         textReport true
         warningsAsErrors true
         xmlReport false
+    }
+    packagingOptions {
+        resources {
+            excludes += [
+                    'MANIFEST.MF',
+                    'META-INF/LICENSE.md',
+                    'META-INF/LICENSE-notice.md'
+            ]
+        }
     }
     namespace 'dev.testify'
 }

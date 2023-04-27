@@ -64,17 +64,13 @@ class RuleLifecycleTest {
         rule.assertSame()
     }
 
+    /**
+     * @ScreenshotInstrumentation is not required unless invoked from the gradle plugin.
+     */
     @Test
     fun testMethod2() {
         assertExpectedOrder(2, "testMethod2")
         assertExpectedOrder(3, "testMethod2")
-
-        thrown.expect(RuntimeException::class.java)
-        thrown.expectMessage(
-            "dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException: " +
-                "Please add @ScreenshotInstrumentation for the test 'testMethod2'"
-        )
-
         rule.assertSame()
     }
 
