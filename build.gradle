@@ -8,7 +8,7 @@ buildscript {
 
     ext {
         versions = [
-                'androidGradlePlugin': '7.3.1',             // https://developer.android.com/studio/releases/gradle-plugin.html
+                'androidGradlePlugin': '7.4.2',             // https://developer.android.com/studio/releases/gradle-plugin.html
                 'androidx'           : [
                         'core'            : '1.7.0',        // https://developer.android.com/jetpack/androidx/releases/core
                         'constraintLayout': '2.0.0-beta4',  // https://developer.android.com/jetpack/androidx/releases
@@ -31,14 +31,17 @@ buildscript {
                 ],
                 'colormath'          : '1.4.1',             // https://github.com/ajalt/colormath/releases
                 'compose'            : [                    // https://developer.android.com/jetpack/androidx/releases/compose
-                        'core'    : '1.4.0-alpha02',
-                        'material': '1.4.0-alpha02',
-                        'ui'      : '1.4.0-alpha02',
+//                        'core'    : '1.4.0-alpha02',
+//                        'material': '1.4.0-alpha02',
+//                        'ui'      : '1.4.0-alpha02',
+                    'core'    : '1.4.4',
+                    'material': '1.4.2',
+                    'ui'      : '1.4.2',
                 ],
                 'dokka'              : '1.8.10',            // https://github.com/Kotlin/dokka/releases
                 'gson'               : '2.9.0',             // https://github.com/google/gson/releases
                 'guava'              : '30.0-android',      // https://github.com/google/guava/releases
-                'kotlin'             : '1.7.21',            // https://kotlinlang.org/
+                'kotlin'             : '1.8.10',            // https://kotlinlang.org/
                 'kotlinx'            : '1.6.4',             // https://github.com/Kotlin/kotlinx.coroutines/releases
                 'ktlint'             : '0.45.2',            // https://github.com/pinterest/ktlint
                 'material'           : '1.4.0',             // https://material.io/develop/android/docs/getting-started/
@@ -60,17 +63,22 @@ buildscript {
     }
 }
 
-allprojects {
-    repositories {
-        mavenLocal()
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    configurations.all {
-        resolutionStrategy.force 'org.objenesis:objenesis:2.6'
-    }
+plugins {
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1' apply false
 }
+
+//allprojects {
+//    repositories {
+//        mavenLocal()
+//        google()
+//        mavenCentral()
+//        gradlePluginPortal()
+//    }
+//    configurations.all {
+//        resolutionStrategy.force 'org.objenesis:objenesis:2.6'
+//    }
+//}
 
 task clean(type: Delete) {
     delete rootProject.buildDir

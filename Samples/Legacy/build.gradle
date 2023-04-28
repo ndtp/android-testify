@@ -8,9 +8,9 @@ buildscript {
     ext {
         versions = [
                 'compose': [
-                        'core'    : '1.4.0-alpha02',
-                        'material': '1.4.0-alpha02',
-                        'ui'      : '1.4.0-alpha02',
+                        'core'    : '1.4.4',
+                        'material': '1.4.2',
+                        'ui'      : '1.4.2',
                 ]
         ]
     }
@@ -59,7 +59,7 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion versions.compose.core
-        kotlinCompilerVersion '1.7.21'
+        kotlinCompilerVersion '1.8.10'
     }
     packagingOptions {
         resources {

@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Flix</string>
+
+    <!-- Movie Details -->
+    <string name="movie_details_title_format_template">%1$s (%2$s)</string>
+    <string name="movie_details_runtime_format_template">%1$dh%2$dm</string>
+
+    <!-- HomeScreen -->
+    <string name="home_screen_now_playing">Now Playing</string>
+    <string name="home_screen_upcoming">Upcoming</string>
+
+    <!-- HeadliningMove composable -->
+    <string name="headlining_movie_my_list">My List</string>
+    <string name="headlining_movie_trailer">Trailer</string>
+    <string name="headlining_movie_info">Info</string>
+
+    <!-- CreditStrip -->
+    <string name="creditstrip_title">Starring</string>
+
+    <!-- View Action Descriptions -->
+    <!-- HomeScreenViewAction -->
+    <string name="view_action_view_headlining_movie_info">View more info regarding movie titled \"%1$s\"</string>
+    <string name="view_action_view_movie_detail">View details regarding movie title \"%1$s\"</string>
+
+</resources>
