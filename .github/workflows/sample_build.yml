@@ -18,7 +18,7 @@ jobs:
         java-version: 11
 
     - name: Validate build
-      run: ./gradlew Sample:assemble
+      run: ./gradlew LegacySample:assemble
 
     - name: Run Screenshot Tests
       uses: reactivecircus/android-emulator-runner@v2

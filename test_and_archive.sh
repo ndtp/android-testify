@@ -1,8 +1,8 @@
 #!/bin/sh
 
-./github_action_emulator_command.sh Sample:screenshotTest
+./github_action_emulator_command.sh LegacySample:screenshotTest
 
-./gradlew Sample:screenshotPull
+./gradlew LegarySample:screenshotPull
 
 mkdir -p ./output/
 
