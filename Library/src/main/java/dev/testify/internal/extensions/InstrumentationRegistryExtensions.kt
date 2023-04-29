@@ -83,7 +83,6 @@ fun isInvokedFromPlugin(): Boolean =
 fun getScreenshotAnnotationName(): String =
     InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
 
-
 private const val ESC_YELLOW = "${27.toChar()}[33m"
 private const val ESC_CYAN = "${27.toChar()}[36m"
 private const val ESC_RESET = "${27.toChar()}[0m"
