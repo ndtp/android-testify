@@ -13,7 +13,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-bet01"
+        classpath "dev.testify:plugin:2.0.0-alpha02"
     }
 }
 ```
@@ -25,6 +25,6 @@ The Android Testify Compose extension is packaged as a separate artifact. You mu
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-compose:2.0.0-beta01"
+    androidTestImplementation "dev.testify:testify-compose:2.0.0-alpha02"
 }
 ```

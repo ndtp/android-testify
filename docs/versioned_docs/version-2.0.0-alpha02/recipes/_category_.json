@@ -1,0 +1,9 @@
+{
+    "label": "Recipes",
+    "position": 3,
+    "link": {
+      "type": "generated-index",
+      "description": "Instructions on how to handle common testing scenarios."
+    }
+  }
+  
