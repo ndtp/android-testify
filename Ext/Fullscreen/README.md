@@ -16,13 +16,6 @@ You can set a comparison tolerance using [ScreenshotRule.setExactness](../../Lib
 
 # Set up testify-fullscreen
 
----
-> **Warning**
-> 
-> **Unreleased**
-> 
----
-
 **Root build.gradle**
 ```groovy
 buildscript {
@@ -30,7 +23,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-alpha02"
+        classpath "dev.testify:plugin:2.0.0-beta01"
     }
 }
 ```
@@ -38,7 +31,7 @@ buildscript {
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-fullscreen:2.0.0-alpha02"
+    androidTestImplementation "dev.testify:testify-fullscreen:2.0.0-beta01"
 }
 ```
 

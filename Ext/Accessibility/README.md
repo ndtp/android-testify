@@ -14,13 +14,6 @@ For more information about _Accessibility Checking_, please see https://develope
 
 # Set up testify-accessibility
 
----
-> **Warning**
-> 
-> **Unreleased**
-> 
----
-
 **Root build.gradle**
 ```groovy
 buildscript {
@@ -28,7 +21,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-alpha02"
+        classpath "dev.testify:plugin:2.0.0-beta01"
     }
 }
 ```
@@ -36,7 +29,7 @@ buildscript {
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-accessibility:2.0.0-alpha02"
+    androidTestImplementation "dev.testify:testify-accessibility:2.0.0-beta01"
 }
 ```
 
