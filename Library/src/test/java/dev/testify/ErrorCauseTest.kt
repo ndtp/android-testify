@@ -39,6 +39,7 @@ import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.TestMustWrapContextException
+import dev.testify.internal.exception.UnexpectedDeviceException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.report.ErrorCause
 import io.mockk.MockKAnnotations
@@ -79,6 +80,7 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.WRAP_CONTEXT, ErrorCause.match(TestMustWrapContextException("")))
         assertEquals(ErrorCause.FAILED_BITMAP_CAPTURE, ErrorCause.match(FailedToCaptureBitmapException()))
         assertEquals(ErrorCause.SKIPPED, ErrorCause.match(ScreenshotTestIgnoredException()))
+        assertEquals(ErrorCause.DEVICE_MISMATCH, ErrorCause.match(UnexpectedDeviceException("", "")))
         assertEquals(ErrorCause.UNKNOWN, ErrorCause.match(Throwable()))
     }
 }

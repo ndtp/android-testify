@@ -37,6 +37,7 @@ import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.TestMustWrapContextException
+import dev.testify.internal.exception.UnexpectedDeviceException
 import dev.testify.internal.exception.UnexpectedOrientationException
 import dev.testify.internal.exception.ViewModificationException
 import kotlin.reflect.KClass
@@ -61,6 +62,7 @@ enum class ErrorCause(val klass: KClass<*>) {
     WRAP_CONTEXT(TestMustWrapContextException::class),
     FAILED_BITMAP_CAPTURE(FailedToCaptureBitmapException::class),
     SKIPPED(ScreenshotTestIgnoredException::class),
+    DEVICE_MISMATCH(UnexpectedDeviceException::class),
     UNKNOWN(Throwable::class);
 
     lateinit var description: String

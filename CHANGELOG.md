@@ -9,6 +9,8 @@
 - `@IgnoreScreenshot` annotation added
   - An annotation used to ignore screenshots tests. Test will be reported as Skipped.
   - Should be used as a more versatile replacement for the `orientationToIgnore` argument on `@ScreenshotInstrumentation`
+- `ScreenshotRule.assertSame()` will now throw an `UnexpectedDeviceException` if a baseline exists with a different device description than that of the currently running device.
+    This can be helpful to catch cases where you may be running a test against the wrong emulator. You can add add `-Pdevice=N` to any Testify Gradle command to target a specific device.
 
 #### Removed
 

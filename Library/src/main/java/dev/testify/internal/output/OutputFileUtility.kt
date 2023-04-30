@@ -34,7 +34,7 @@ import java.io.File
 
 private const val SDCARD_DESTINATION_DIR = "testify_images"
 private const val DATA_DESTINATION_DIR = "images"
-private const val ROOT_DIR = "screenshots"
+internal const val ROOT_DIR = "screenshots"
 internal const val PNG_EXTENSION = ".png"
 
 fun useSdCard(arguments: Bundle): Boolean {
