@@ -49,6 +49,7 @@ import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.ScreenshotRuleCompatibilityMethods
 import dev.testify.internal.TestifyConfiguration
+import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.FailedToCaptureBitmapException
@@ -533,6 +534,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 if (configuration.pauseForInspection) {
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
                 }
+
+                assertExpectedDevice(testContext, description.name)
 
                 val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
                     ?: if (isRecordMode) {
