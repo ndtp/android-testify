@@ -27,12 +27,13 @@ package dev.testify
 import android.app.Instrumentation
 import android.content.Context
 import android.os.Bundle
-import dev.testify.internal.output.OutputFileUtility
+import dev.testify.internal.output.useSdCard
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.spyk
 import org.junit.Assert.assertEquals
@@ -45,7 +46,6 @@ internal open class ReporterTest {
 
     private lateinit var mockContext: Context
     private lateinit var mockSession: ReportSession
-    private val mockOutputFileUtility: OutputFileUtility = mockk()
     private val mockInstrumentation: Instrumentation = mockk()
     private val mockRule: ScreenshotRule<*> = mockk()
     private val mockTestClass: Class<*> = ReporterTest::class.java
@@ -73,10 +73,11 @@ internal open class ReporterTest {
             every { getExternalFilesDir(any()) } returns File("/sdcard")
         }
 
-        reporter = spyk(Reporter(mockContext, mockSession, mockOutputFileUtility))
+        reporter = spyk(Reporter(mockContext, mockSession))
         reporter.configureMocks(BODY_LINES)
 
-        every { mockOutputFileUtility.useSdCard(any()) } returns false
+        mockkStatic(::useSdCard)
+        every { useSdCard(any()) } returns false
         every { mockInstrumentation.context } returns mockContext
         every { mockFile.exists() } returns true
     }
@@ -175,7 +176,7 @@ internal open class ReporterTest {
 
     @Test
     fun `output file path when not using sdcard`() {
-        val reporter = spyk(Reporter(mockContext, mockSession, mockOutputFileUtility))
+        val reporter = spyk(Reporter(mockContext, mockSession))
         every { reporter.getEnvironmentArguments() } returns mockk<Bundle>()
         val file = reporter.getReportFile()
         assertEquals("/data/data/com.app.example/app_testify/report.yml", file.path)
@@ -183,9 +184,9 @@ internal open class ReporterTest {
 
     @Test
     fun `output file path when using sdcard`() {
-        val reporter = spyk(Reporter(mockContext, mockSession, mockOutputFileUtility))
-        every { reporter.getEnvironmentArguments() } returns mockk<Bundle>()
-        every { mockOutputFileUtility.useSdCard(any()) } returns true
+        val reporter = spyk(Reporter(mockContext, mockSession))
+        every { reporter.getEnvironmentArguments() } returns mockk()
+        every { useSdCard(any()) } returns true
         val file = reporter.getReportFile()
         assertEquals("/sdcard/testify/report.yml", file.path)
     }
@@ -269,7 +270,7 @@ internal open class ReporterTest {
         }
 
     private fun setUpForFirstTest(session: ReportSession): Reporter {
-        val reporter = spyk(Reporter(mockContext, session, mockOutputFileUtility))
+        val reporter = spyk(Reporter(mockContext, session))
         reporter.configureMocks()
         every { mockFile.exists() } returns false
         return reporter

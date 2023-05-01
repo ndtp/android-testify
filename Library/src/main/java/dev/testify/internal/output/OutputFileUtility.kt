@@ -32,47 +32,42 @@ import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.formatDeviceString
 import java.io.File
 
-open class OutputFileUtility {
+private const val SDCARD_DESTINATION_DIR = "testify_images"
+private const val DATA_DESTINATION_DIR = "images"
+private const val ROOT_DIR = "screenshots"
+internal const val PNG_EXTENSION = ".png"
 
-    companion object {
-        private const val SDCARD_DESTINATION_DIR = "testify_images"
-        private const val DATA_DESTINATION_DIR = "images"
-        private const val ROOT_DIR = "screenshots"
-        internal const val PNG_EXTENSION = ".png"
+fun useSdCard(arguments: Bundle): Boolean {
+    return arguments.containsKey("useSdCard") && arguments.get("useSdCard") == "true"
+}
+
+fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
+    return "${getPathRelativeToRoot(subpath)}$fileName$extension"
+}
+
+private fun getPathRelativeToRoot(subpath: String): String {
+    return "$ROOT_DIR/$subpath/"
+}
+
+fun getOutputDirectoryPath(context: Context): File {
+    val path: File = if (useSdCard(InstrumentationRegistry.getArguments())) {
+        val sdCard = context.getExternalFilesDir(null)
+        File("${sdCard?.absolutePath}/$SDCARD_DESTINATION_DIR")
+    } else {
+        context.getDir(DATA_DESTINATION_DIR, Context.MODE_PRIVATE)
     }
 
-    open fun useSdCard(arguments: Bundle): Boolean {
-        return arguments.containsKey("useSdCard") && arguments.get("useSdCard") == "true"
-    }
+    val deviceFormattedDirectory = formatDeviceString(
+        DeviceStringFormatter(context, null),
+        DEFAULT_FOLDER_FORMAT
+    )
+    return File(path, "$ROOT_DIR/$deviceFormattedDirectory")
+}
 
-    fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
-        return "${getPathRelativeToRoot(subpath)}$fileName$extension"
-    }
+fun getOutputFilePath(context: Context, fileName: String, extension: String = PNG_EXTENSION): String {
+    return "${getOutputDirectoryPath(context).path}/$fileName$extension"
+}
 
-    private fun getPathRelativeToRoot(subpath: String): String {
-        return "$ROOT_DIR/$subpath/"
-    }
-
-    fun getOutputDirectoryPath(context: Context): File {
-        val path: File = if (useSdCard(InstrumentationRegistry.getArguments())) {
-            val sdCard = context.getExternalFilesDir(null)
-            File("${sdCard?.absolutePath}/$SDCARD_DESTINATION_DIR")
-        } else {
-            context.getDir(DATA_DESTINATION_DIR, Context.MODE_PRIVATE)
-        }
-
-        val deviceFormattedDirectory = formatDeviceString(
-            DeviceStringFormatter(context, null),
-            DEFAULT_FOLDER_FORMAT
-        )
-        return File(path, "$ROOT_DIR/$deviceFormattedDirectory")
-    }
-
-    fun getOutputFilePath(context: Context, fileName: String, extension: String = PNG_EXTENSION): String {
-        return "${getOutputDirectoryPath(context).path}/$fileName$extension"
-    }
-
-    fun doesOutputFileExist(context: Context, filename: String): Boolean {
-        return File(getOutputFilePath(context, filename)).exists()
-    }
+fun doesOutputFileExist(context: Context, filename: String): Boolean {
+    return File(getOutputFilePath(context, filename)).exists()
 }

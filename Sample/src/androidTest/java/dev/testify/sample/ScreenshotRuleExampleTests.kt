@@ -337,7 +337,7 @@ class ScreenshotRuleExampleTests {
      * A [dev.testify.CaptureMethod] is used to define the method used to request and copy pixels into a bitmap
      * which will be used for the test validation.
      *
-     * You can create your own logic for capturing a bitmap, or you can extend the existing [ScreenshotUtility]
+     * You can create your own logic for capturing a bitmap, or you can use the functions in [ScreenshotUtility.kt]
      * to customize the capture behavior.
      *
      * This example demonstrates how to modify a captured bitmap.

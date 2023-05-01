@@ -49,14 +49,13 @@ class BitmapCompareTest {
     @get:Rule
     var testActivityRule = ActivityTestRule(TestActivity::class.java)
 
-    private val screenshotUtility = ScreenshotUtility()
     private lateinit var baselineBitmap: Bitmap
     private lateinit var activity: Activity
 
     @Before
     fun setUp() {
         activity = testActivityRule.activity
-        baselineBitmap = screenshotUtility.loadBaselineBitmapForComparison(activity, "test")!!
+        baselineBitmap = loadBaselineBitmapForComparison(activity, "test")!!
     }
 
     @Test
@@ -67,7 +66,7 @@ class BitmapCompareTest {
     @Test
     fun sameAsDifferent() {
         val rootView = activity.findViewById<View>(R.id.test_root_view)
-        val capturedBitmap = screenshotUtility.createBitmapFromActivity(
+        val capturedBitmap = createBitmapFromActivity(
             activity = activity,
             fileName = "testing",
             captureMethod = ::createBitmapFromDrawingCache,

@@ -24,6 +24,6 @@
 package dev.testify.exception
 
 /**
- * Exception thrown when an error is returned by [dev.testify.ScreenshotUtility.loadBitmapFromFile]
+ * Exception thrown when an error is returned by [dev.testify.loadBitmapFromFile]
  */
 class FailedToLoadCapturedBitmapException : RuntimeException("Failed to load the captured bitmap")
