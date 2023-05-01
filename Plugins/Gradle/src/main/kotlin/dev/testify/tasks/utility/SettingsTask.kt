@@ -41,6 +41,7 @@ open class SettingsTask : TestifyUtilityTask() {
             println("  moduleName             = $moduleName")
             println("  outputFileNameFormat   = $outputFileNameFormat")
             println("  pullWaitTime           = $pullWaitTime")
+            println("  screenshotAnnotation   = $screenshotAnnotation")
             println("  targetPackageId        = $targetPackageId")
             println("  testPackageId          = $testPackageId")
             println("  testRunner             = $testRunner")

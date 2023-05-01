@@ -64,6 +64,8 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.get
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
 import dev.testify.internal.extensions.cyan
+import dev.testify.internal.extensions.getScreenshotAnnotationName
+import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.formatDeviceString
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.EspressoActions
@@ -265,14 +267,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         testClass: Class<*>,
         methodAnnotations: Collection<Annotation>?
     ) {
-        val classAnnotations = testClass.annotations.asList()
-        val classScreenshotInstrumentation = classAnnotations.getAnnotation<ScreenshotInstrumentation>()
-        val methodScreenshotInstrumentation = methodAnnotations?.getAnnotation<ScreenshotInstrumentation>()
-
-        checkForScreenshotInstrumentationAnnotation(
-            methodName,
-            classScreenshotInstrumentation,
-            methodScreenshotInstrumentation
+        assertForScreenshotInstrumentationAnnotation(
+            methodName = methodName,
+            classAnnotations = testClass.annotations.asList(),
+            methodAnnotations = methodAnnotations
         )
 
         configuration.applyAnnotations(methodAnnotations)
@@ -293,6 +291,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this.find { it is T } as? T
     }
 
+    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(name: String): T? {
+        return this.find { it.annotationClass.qualifiedName == name } as? T
+    }
+
     @get:LayoutRes
     private val TestifyLayout.resolvedLayoutId: Int
         get() {
@@ -303,16 +305,46 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             return layoutId
         }
 
-    private fun checkForScreenshotInstrumentationAnnotation(
+    /**
+     * Get the [ScreenshotInstrumentation] instance associated with the test method
+     *
+     * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
+     * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+     */
+    internal fun getScreenshotInstrumentationAnnotation(
+        classAnnotations: List<Annotation>,
+        methodAnnotations: Collection<Annotation>?
+    ): Annotation? {
+        val annotationName = getScreenshotAnnotationName()
+        return classAnnotations.getAnnotation(annotationName) ?: methodAnnotations?.getAnnotation(annotationName)
+    }
+
+    /**
+     * Assert that the @ScreenshotInstrumentation is defined on the test method.
+     *
+     * The Gradle plugin requires the @ScreenshotInstrumentation annotation and so this
+     * check applies only when run via the Gradle plugin commands. e.g. screenshotTest
+     *
+     * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
+     * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+     */
+    open fun assertForScreenshotInstrumentationAnnotation(
         methodName: String,
-        classAnnotation: ScreenshotInstrumentation?,
-        methodAnnotation: ScreenshotInstrumentation?
+        classAnnotations: List<Annotation>,
+        methodAnnotations: Collection<Annotation>?
     ) {
-        if (classAnnotation == null) {
-            if (methodAnnotation == null) {
-                this.throwable = MissingScreenshotInstrumentationAnnotationException(methodName)
-            }
-        }
+        if (isInvokedFromPlugin().not()) return
+
+        val annotation = getScreenshotInstrumentationAnnotation(
+            classAnnotations,
+            methodAnnotations
+        )
+
+        if (annotation == null)
+            this.throwable = MissingScreenshotInstrumentationAnnotationException(
+                annotationName = getScreenshotAnnotationName(),
+                methodName = methodName
+            )
     }
 
     fun addIntentExtras(extrasProvider: ExtrasProvider): ScreenshotRule<T> {

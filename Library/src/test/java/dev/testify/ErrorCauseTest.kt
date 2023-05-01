@@ -63,7 +63,7 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.NO_ACTIVITY, ErrorCause.match(ActivityNotRegisteredException(Activity::class.java)))
         assertEquals(
             ErrorCause.NO_ANNOTATION,
-            ErrorCause.match(MissingScreenshotInstrumentationAnnotationException(""))
+            ErrorCause.match(MissingScreenshotInstrumentationAnnotationException("", ""))
         )
         assertEquals(ErrorCause.NO_ASSERT, ErrorCause.match(MissingAssertSameException()))
         assertEquals(ErrorCause.NO_BASELINE, ErrorCause.match(ScreenshotBaselineNotDefinedException("", "", "", "")))

@@ -101,7 +101,16 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             return params
         }
 
-    private val annotation = AdbParam("annotation", "dev.testify.annotation.ScreenshotInstrumentation")
+    private fun String?.notEmptyOrDefault(default: String): String =
+        if (this?.isNotEmpty() == true) this else default
+
+    private val annotation: AdbParam
+        get() = AdbParam(
+            "annotation",
+            settings.screenshotAnnotation.notEmptyOrDefault(
+                default = "dev.testify.annotation.ScreenshotInstrumentation"
+            )
+        )
 
     override fun taskAction() {
 

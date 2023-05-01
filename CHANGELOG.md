@@ -23,6 +23,12 @@
 - `DeviceIdentifier.formatDeviceString` has been replaced by `fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String`
 - Class `DeviceIdentifier.DeviceStringFormatter` has been migrated to a top-level class, `DeviceStringFormatter`
 
+### Plugin
+
+#### Changed
+
+- Added `screenshotAnnotation` setting to the Testify gradle extension, allowing customization of the instrumentation annotation used to identify screenshot tests. This makes the @ScreenshotInstrumentation annotation optional.
+
 ### All Projects
 
 #### Updates
