@@ -147,7 +147,7 @@ Testify infers several project properties. You can view these properties with th
 Displays the Testify gradle extension settings
 ------------------------------------------------------------
   applicationPackageId = dev.testify.sample
-  baselineSourceDir    = /Users/ndtp/android-testify/Sample/src/androidTest/assets/screenshots
+  baselineSourceDir    = /Users/ndtp/android-testify/Samples/Legacy/src/androidTest/assets/screenshots
   moduleName           = Sample
   outputFileNameFormat = null
   pullWaitTime         = 0
