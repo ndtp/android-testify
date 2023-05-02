@@ -40,7 +40,7 @@ dependencies {
 In order to capture the full device screen, you must set the capture method on `ScreenshotRule` to `fullscreenCapture()`.
 You can do this with either `setCaptureMethod(::fullscreenCapture)` or the helper extension method `captureFullscreen()`.
 
-Additonal examples can be found in [FullscreenCaptureExampleTest.kt](../../Sample/src/androidTest/java/dev/testify/sample/FullscreenCaptureExampleTests.kt).
+Additonal examples can be found in [FullscreenCaptureExampleTest.kt](../../Samples/Legacy/src/androidTest/java/dev/testify/sample/FullscreenCaptureExampleTests.kt).
 
 ```kotlin
 class FullscreenCaptureTest {

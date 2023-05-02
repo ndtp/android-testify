@@ -3,7 +3,7 @@
 In order to capture the full device screen, you must set the capture method on `ScreenshotRule` to `fullscreenCapture()`.
 You can do this with either `setCaptureMethod(::fullscreenCapture)` or the helper extension method `captureFullscreen()`.
 
-Additonal examples can be found in [FullscreenCaptureExampleTest.kt](https://github.com/ndtp/android-testify/blob/main/Sample/src/androidTest/java/dev/testify/sample/FullscreenCaptureExampleTests.kt).
+Additonal examples can be found in [FullscreenCaptureExampleTest.kt](https://github.com/ndtp/android-testify/blob/main/Samples/Legacy/src/androidTest/java/dev/testify/sample/FullscreenCaptureExampleTests.kt).
 
 :::tip
 The Fullscreen Capture Method will capture system UI, which can include changes out of your control. This includes system notifications, the current time and the network strength indicator.
