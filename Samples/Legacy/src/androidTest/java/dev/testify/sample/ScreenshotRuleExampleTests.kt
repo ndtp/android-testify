@@ -39,7 +39,6 @@ import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.ScreenshotRule
-import dev.testify.ScreenshotUtility
 import dev.testify.TestifyFeatures
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.IgnoreScreenshot
