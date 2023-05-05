@@ -69,8 +69,7 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion versions.compose.core
-        kotlinCompilerVersion versions.kotlin
+        kotlinCompilerExtensionVersion "1.4.7"
     }
 
     dependencies {
@@ -86,7 +85,6 @@ android {
         implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
         implementation "androidx.test:rules:${versions.androidx.test.rules}"
         implementation "androidx.test:runner:${versions.androidx.test.runner}"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
     }
 }
 

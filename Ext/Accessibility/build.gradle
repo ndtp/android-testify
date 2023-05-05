@@ -73,8 +73,6 @@ android {
         implementation "androidx.test:rules:${versions.androidx.test.rules}"
         implementation "com.google.code.gson:gson:${versions.gson}"
         implementation "com.google.guava:guava:${versions.guava}"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
-        implementation "androidx.test:monitor:${versions.androidx.test.monitor}"
     }
 }
 
