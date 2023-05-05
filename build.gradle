@@ -1,11 +1,4 @@
 buildscript {
-    repositories {
-        mavenLocal()
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-
     ext {
         versions = [
                 'androidGradlePlugin': '7.4.1',             // https://developer.android.com/studio/releases/gradle-plugin.html
@@ -52,24 +45,13 @@ buildscript {
                 'targetSdk' : 30
         ]
     }
-
-    dependencies {
-        classpath "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:${versions.dokka}"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
-    }
 }
 
-allprojects {
-    repositories {
-        mavenLocal()
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    configurations.all {
-        resolutionStrategy.force 'org.objenesis:objenesis:2.6'
-    }
+plugins {
+    id 'com.android.application' version '7.4.2' apply false
+    id 'com.android.library' version '7.4.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.7.21' apply false
+    id 'org.jetbrains.dokka' version '1.8.10' apply false
 }
 
 task clean(type: Delete) {

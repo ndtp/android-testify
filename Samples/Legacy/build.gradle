@@ -1,7 +1,4 @@
 buildscript {
-    repositories {
-        google()
-    }
     dependencies {
         classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
     }
@@ -16,8 +13,12 @@ buildscript {
     }
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
+
+// Not sure how to move to plugins block
 apply plugin: 'dev.testify'
 
 android {
