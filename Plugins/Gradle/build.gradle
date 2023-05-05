@@ -31,8 +31,8 @@ version = "$project.versions.testify"
 group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
-
-sourceCompatibility = 1.8
+// Not able to upgrade gradle android plugin with this in place, Java 11 works, not sure if safe
+sourceCompatibility = JavaVersion.VERSION_11
 
 test {
     testLogging {
