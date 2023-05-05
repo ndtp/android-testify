@@ -31,6 +31,7 @@ import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import dev.testify.sample.R
 import dev.testify.sample.clients.MockClientData
+import dev.testify.sample.clients.details.ClientDetailsActivity
 
 class ClientDetailsEditActivity : AppCompatActivity() {
 
@@ -41,10 +42,19 @@ class ClientDetailsEditActivity : AppCompatActivity() {
         setContentView(R.layout.view_edit_client_details)
         view = findViewById(R.id.view_root)
 
-        val client = intent?.getSerializableExtra(EXTRA_CLIENT_ITEM) as? MockClientData.Client
+        val client = intent?.getClientItem()
         if (client != null) {
             supportActionBar?.title = getString(R.string.edit_name, client.name)
             view.render(client.toViewState())
+        }
+    }
+
+    private fun Intent.getClientItem(): MockClientData.Client? {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            getSerializableExtra(EXTRA_CLIENT_ITEM, MockClientData.Client::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            getSerializableExtra(EXTRA_CLIENT_ITEM) as? MockClientData.Client
         }
     }
 

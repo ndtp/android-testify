@@ -27,9 +27,9 @@ package dev.testify
 import android.app.Activity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.internal.exception.ActivityNotRegisteredException
+import org.junit.Assert.assertThrows
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.ExpectedException
 
 class InvalidActivity : Activity()
 
@@ -38,13 +38,9 @@ class ActivityNotRegisteredExceptionTest {
     @get:Rule
     val rule = ScreenshotRule(activityClass = InvalidActivity::class.java)
 
-    @get:Rule
-    var thrown: ExpectedException = ExpectedException.none()
-
     @ScreenshotInstrumentation
     @Test
     fun default() {
-        thrown.expect(ActivityNotRegisteredException::class.java)
-        rule.assertSame()
+        assertThrows(ActivityNotRegisteredException::class.java, rule::assertSame)
     }
 }

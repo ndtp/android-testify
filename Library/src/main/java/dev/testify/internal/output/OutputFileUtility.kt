@@ -38,7 +38,7 @@ internal const val ROOT_DIR = "screenshots"
 internal const val PNG_EXTENSION = ".png"
 
 fun useSdCard(arguments: Bundle): Boolean {
-    return arguments.containsKey("useSdCard") && arguments.get("useSdCard") == "true"
+    return arguments.getString("useSdCard") == "true"
 }
 
 fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
