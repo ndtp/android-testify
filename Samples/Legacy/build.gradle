@@ -2,15 +2,6 @@ buildscript {
     dependencies {
         classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
     }
-    ext {
-        versions = [
-                'compose': [
-                        'core'    : '1.4.3',
-                        'material': '1.4.3',
-                        'ui'      : '1.4.3',
-                ]
-        ]
-    }
 }
 
 plugins {
@@ -18,7 +9,7 @@ plugins {
     id 'kotlin-android'
 }
 
-// Not sure how to move to plugins block
+// Not sure how to move to plugins block. I don't think it's possible.
 apply plugin: 'dev.testify'
 
 android {
@@ -59,7 +50,7 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.7"
+        kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
     }
     packagingOptions {
         resources {
