@@ -31,12 +31,12 @@ import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
 import org.junit.After
 import org.junit.AfterClass
+import org.junit.Assert.assertThrows
 import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import java.util.Stack
 
@@ -45,9 +45,6 @@ class RuleLifecycleTest {
 
     @get:Rule
     var rule: ScreenshotRule<TestActivity> = ScreenshotRule(TestActivity::class.java)
-
-    @get:Rule
-    var thrown: ExpectedException = ExpectedException.none()
 
     @Before
     fun beforeMethod() {
@@ -79,9 +76,6 @@ class RuleLifecycleTest {
     fun testMethod3() {
         assertExpectedOrder(2, "testMethod3")
         assertExpectedOrder(3, "testMethod3")
-
-        thrown.expect(RuntimeException::class.java)
-        thrown.expectMessage("* You must call assertSame on the ScreenshotRule *")
     }
 
     @UiThreadTest
@@ -91,9 +85,7 @@ class RuleLifecycleTest {
         assertExpectedOrder(2, "testMethod4")
         assertExpectedOrder(3, "testMethod4")
 
-        thrown.expect(NoScreenshotsOnUiThreadException::class.java)
-
-        rule.assertSame()
+        assertThrows(NoScreenshotsOnUiThreadException::class.java, rule::assertSame)
     }
 
     @ScreenshotInstrumentation
@@ -102,10 +94,8 @@ class RuleLifecycleTest {
         assertExpectedOrder(2, "testMethod5")
         assertExpectedOrder(3, "testMethod5")
 
-        thrown.expect(AssertSameMustBeLastException::class.java)
-
         rule.setViewModifications { }
-        rule.assertSame()
+        assertThrows(AssertSameMustBeLastException::class.java, rule::assertSame)
         rule.setEspressoActions { }
     }
 

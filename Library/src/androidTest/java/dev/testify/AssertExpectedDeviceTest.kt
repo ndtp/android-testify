@@ -26,9 +26,10 @@ package dev.testify
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.UnexpectedDeviceException
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.ExpectedException
 
 /**
  * Test that [UnexpectedDeviceException] is thrown as expected
@@ -37,9 +38,6 @@ class AssertExpectedDeviceTest {
 
     @get:Rule
     val rule: ScreenshotRule<TestActivity> = ScreenshotRule(TestActivity::class.java)
-
-    @get:Rule
-    val expectedException: ExpectedException = ExpectedException.none()
 
     /**
      * WHEN the baseline image matches the current device settings THEN success
@@ -64,8 +62,7 @@ class AssertExpectedDeviceTest {
     @ScreenshotInstrumentation
     @Test
     fun testMissingBaseline() {
-        expectedException.expect(ScreenshotBaselineNotDefinedException::class.java)
-        rule.assertSame()
+        assertThrows(ScreenshotBaselineNotDefinedException::class.java, rule::assertSame)
     }
 
     /**
@@ -77,11 +74,11 @@ class AssertExpectedDeviceTest {
     @ScreenshotInstrumentation
     @Test
     fun testUnexpectedDevice() {
-        expectedException.expect(UnexpectedDeviceException::class.java)
-        expectedException.expectMessage(
+        val e = assertThrows(UnexpectedDeviceException::class.java, rule::assertSame)
+        assertEquals(
             "The currently running device '33-1080x1920@395dp-en_CA' " +
-                "does not match the expected device '29-1080x2220@440dp-en_US'"
+                "does not match the expected device '29-1080x2220@440dp-en_US'",
+            e.message
         )
-        rule.assertSame()
     }
 }
