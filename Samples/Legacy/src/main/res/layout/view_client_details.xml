@@ -64,7 +64,7 @@
                     android:layout_gravity="center_vertical"
                     android:scaleType="fitCenter"
                     android:src="@android:drawable/ic_dialog_map"
-                    android:tint="#000000" />
+                    app:tint="#000000" />
 
                 <TextView
                     android:id="@+id/address"
@@ -89,7 +89,7 @@
                     android:layout_height="24dp"
                     android:scaleType="fitCenter"
                     android:src="@android:drawable/stat_sys_phone_call"
-                    android:tint="#000000" />
+                    app:tint="#000000" />
 
                 <TextView
                     android:id="@+id/phone"
