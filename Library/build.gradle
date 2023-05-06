@@ -54,6 +54,7 @@ android {
     }
 
     dependencies {
+        implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidx.lifecycleKtx}"
         implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
         implementation "androidx.test:rules:${versions.androidx.test.rules}"
         implementation "androidx.test:runner:${versions.androidx.test.runner}"
