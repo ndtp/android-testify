@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [2.0.0-rc02]
+
+- Added support for Android Studio Hedgehog | 2023.1.1 Canary 2 | 231.+
+- Fix bug parsing nested module names
+
+
 ## [2.0.0-rc01]
 
 - Added support for Android Studio Giraffe | 2022.3.1 Canary 2 | 223.+
