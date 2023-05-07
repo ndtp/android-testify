@@ -32,13 +32,22 @@ import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
+private const val ANDROID_TEST_MODULE = ".androidTest"
+private const val PROJECT_FORMAT = "%1s."
+
 val AnActionEvent.moduleName: String
     get() {
         val psiFile = this.getData(PlatformDataKeys.PSI_FILE)
         val ktFile = (psiFile as? KtFile)
         val projectName = ktFile?.project?.name?.replace(' ', '_') ?: ""
         val moduleName = ktFile?.module?.name ?: ""
-        return moduleName.removeSuffix(".androidTest").removePrefix("$projectName.")
+
+        val modules = moduleName.removePrefix(PROJECT_FORMAT.format(projectName))
+        val psiModule = modules.removeSuffix(ANDROID_TEST_MODULE)
+        val gradleModule = psiModule.replace(".", ":")
+        println("$modules $psiModule $gradleModule")
+
+        return gradleModule
     }
 
 val PsiElement.baselineImageName: String
