@@ -71,16 +71,17 @@ class RuleLifecycleTest {
         rule.assertSame()
     }
 
-    // Commenting this out for now.
-    // Testify throws MissingAssertSameException if a test case does not call assertSame. This test is proving that
-    // the exception is thrown. The problem is that ExpectedException is deprecated and I haven't been able to figure
-    // out how to make it work otherwise.
-//    @ScreenshotInstrumentation
-//    @Test
-//    fun testMethod3() {
-//        assertExpectedOrder(2, "testMethod3")
-//        assertExpectedOrder(3, "testMethod3")
-//    }
+    @Suppress("DEPRECATION")
+    @get:Rule val thrown: ExpectedException = ExpectedException.none()
+
+    @ScreenshotInstrumentation
+    @Test
+    fun testMethod3() {
+        assertExpectedOrder(2, "testMethod3")
+        assertExpectedOrder(3, "testMethod3")
+        thrown.expect(RuntimeException::class.java)
+        thrown.expectMessage("* You must call assertSame on the ScreenshotRule *")
+    }
 
     @UiThreadTest
     @ScreenshotInstrumentation
