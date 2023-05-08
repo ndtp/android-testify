@@ -71,7 +71,6 @@ android {
         implementation "androidx.test.uiautomator:uiautomator:${versions.androidx.test.uiautomator}"
         implementation "androidx.test:monitor:${versions.androidx.test.monitor}"
         implementation "androidx.test:rules:${versions.androidx.test.rules}"
-        implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
     }
 }
 

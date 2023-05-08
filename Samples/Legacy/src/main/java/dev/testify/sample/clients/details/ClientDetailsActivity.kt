@@ -42,11 +42,18 @@ class ClientDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_client_details)
         view = findViewById(R.id.view_root)
-
-        client = intent?.getSerializableExtra(EXTRA_CLIENT_ITEM) as? MockClientData.Client
-            ?: throw IllegalArgumentException()
+        client = intent?.getClientItem() ?: throw IllegalArgumentException()
         supportActionBar?.title = client.name
         view.render(client.toViewState())
+    }
+
+    private fun Intent.getClientItem(): MockClientData.Client? {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            getSerializableExtra(EXTRA_CLIENT_ITEM, MockClientData.Client::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            getSerializableExtra(EXTRA_CLIENT_ITEM) as? MockClientData.Client
+        }
     }
 
     private fun MockClientData.Client.toViewState(): ClientDetailsViewState {

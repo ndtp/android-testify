@@ -39,7 +39,7 @@ class TestInstrumentationRegistry {
         val isRecordMode: Boolean
             get() {
                 val extras = InstrumentationRegistry.getArguments()
-                return extras.containsKey("isRecordMode") && extras.get("isRecordMode") == "true"
+                return extras.getString("isRecordMode") == "true"
             }
 
         /**

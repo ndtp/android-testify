@@ -9,10 +9,11 @@ import io.mockk.every
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import org.junit.AfterClass
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
@@ -40,20 +41,17 @@ class ScreenshotAnnotationTest {
     @get:Rule
     var rule: ScreenshotRule<TestActivity> = ScreenshotRule(TestActivity::class.java)
 
-    @get:Rule
-    var thrown: ExpectedException = ExpectedException.none()
-
     /**
      * An annotation is required when run from the gradle plugin.
      */
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.P)
     @Test
     fun testAnnotationRequired() {
-        thrown.expect(RuntimeException::class.java)
-        thrown.expectMessage(
+        val e = assertThrows(RuntimeException::class.java, rule::assertSame)
+        assertEquals(
             "dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException: " +
-                "Please add annotation com.example.Annotation to the test 'testAnnotationRequired'"
+                "Please add annotation com.example.Annotation to the test 'testAnnotationRequired'",
+            e.message
         )
-        rule.assertSame()
     }
 }
