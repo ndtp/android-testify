@@ -1,5 +1,38 @@
 # Testify Change Log
 
+## Unreleased
+
+### All Projects
+
+#### Updates
+
+- Android Gradle Plugin to 7.4.1
+- Android Material `material` to 1.9.0
+- AndroidX `activity-compose` to 1.7.1
+- AndroidX `appcompat` to 1.6.1
+- AndroidX `core` to 1.10.0
+- AndroidX `lifecycle-runtime-ktx` to 2.6.1
+- AndroidX Test `espresso-accessibility`, `espresso-core`, `espresso-contrib` to 3.5.1
+- AndroidX Test `junit` to 1.1.5
+- AndroidX Test `monitor` to 1.6.1
+- AndroidX Test `rules` to 1.5.0
+- AndroidX Test `runner` to 1.5.2
+- Compile SDK to 33
+- Dokka to 1.8.10
+- Jetpack Compose `compose.ui`, `core`, `material` to 1.4.3
+- Jetpack Compose Compile to 1.4.7
+- Kotlin to 1.8.21
+- `com.android.application` to 7.4.2
+- `com.android.library` to 7.4.2
+
+
+### Sample
+
+#### Changed
+
+- `Sample` has been renamed to `LegacySample` and moved to the `Samples/Legacy` directory.
+
+
 ## 2.0.0-beta01
 
 ### Library
