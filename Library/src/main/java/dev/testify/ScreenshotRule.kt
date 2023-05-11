@@ -84,6 +84,7 @@ import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
+import org.junit.AssumptionViolatedException
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -670,7 +671,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     protected fun handleTestException(throwable: Throwable) {
-        reporter?.fail(throwable)
+        if (throwable is ScreenshotTestIgnoredException || throwable is AssumptionViolatedException)
+            reporter?.skip()
+        else
+            reporter?.fail(throwable)
         throw throwable
     }
 

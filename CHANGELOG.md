@@ -25,6 +25,15 @@
 - `com.android.application` to 7.4.2
 - `com.android.library` to 7.4.2
 
+### Library
+
+#### Bug fixes
+
+- Fix https://github.com/ndtp/android-testify/issues/81: `reportShow` and `reportPull` now support Gradle 7+.
+
+#### Added
+
+- Reporter now supports skipped or ignored tests.
 
 ### Sample
 
@@ -32,6 +41,7 @@
 
 - `Sample` has been renamed to `LegacySample` and moved to the `Samples/Legacy` directory.
 
+---
 
 ## 2.0.0-beta01
 

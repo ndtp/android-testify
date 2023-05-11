@@ -60,7 +60,8 @@ internal open class ReporterTest {
             every { getTimestamp(any(), any()) } returns "Today"
             every { failCount } returns 1
             every { passCount } returns 2
-            every { testCount } returns 3
+            every { skipCount } returns 3
+            every { testCount } returns 6
             every { isEqual(mockFile) } returns true
             val lines = HEADER_LINES + BODY_LINES
 
@@ -209,7 +210,8 @@ internal open class ReporterTest {
                 "- date: Today\n" +
                 "- failed: 1\n" +
                 "- passed: 2\n" +
-                "- total: 3\n" +
+                "- skipped: 3\n" +
+                "- total: 6\n" +
                 "- tests:\n" +
                 "    - test:\n" +
                 "        name: startTest\n" +
@@ -238,30 +240,45 @@ internal open class ReporterTest {
         reporter.fail(Exception("This is a failure"))
         reporter.endTest()
 
+        reporter = setUpForThirdTest()
+        reporter.startTest(mockDescription)
+        reporter.identifySession(mockInstrumentation)
+        reporter.captureOutput(mockRule)
+        reporter.skip()
+        reporter.endTest()
+
         val lines = reporter.yaml.lines()
         assertEquals("---", lines[0])
         assertTrue("- session: [0-9a-fA-F]{8}-[0-9]{1,3}".toRegex().containsMatchIn(lines[1]))
         assertTrue("- date: [0-9]{4}-[0-9]{2}-[0-9]{2}@[0-9]{2}:[0-9]{2}:[0-9]{2}".toRegex().containsMatchIn(lines[2]))
         assertEquals("- failed: 1", lines[3])
         assertEquals("- passed: 1", lines[4])
-        assertEquals("- total: 2", lines[5])
-        assertEquals("- tests:", lines[6])
-        assertEquals("    - test:", lines[7])
-        assertEquals("        name: failingTest", lines[8])
-        assertEquals("        class: ReporterTest", lines[9])
-        assertEquals("        package: dev.testify", lines[10])
-        assertEquals("        baseline_image: assets/foo", lines[11])
-        assertEquals("        test_image: bar", lines[12])
-        assertEquals("        status: FAIL", lines[13])
-        assertEquals("        cause: UNKNOWN", lines[14])
-        assertEquals("        description: \"This is a failure\"", lines[15])
-        assertEquals("    - test:", lines[16])
-        assertEquals("        name: passingTest", lines[17])
-        assertEquals("        class: ReporterTest", lines[18])
-        assertEquals("        package: dev.testify", lines[19])
-        assertEquals("        baseline_image: assets/foo", lines[20])
-        assertEquals("        test_image: bar", lines[21])
-        assertEquals("        status: PASS", lines[22])
+        assertEquals("- skipped: 1", lines[5])
+        assertEquals("- total: 3", lines[6])
+        assertEquals("- tests:", lines[7])
+        assertEquals("    - test:", lines[8])
+        assertEquals("        name: skipTest", lines[9])
+        assertEquals("        class: ReporterTest", lines[10])
+        assertEquals("        package: dev.testify", lines[11])
+        assertEquals("        baseline_image: assets/foo", lines[12])
+        assertEquals("        test_image: bar", lines[13])
+        assertEquals("        status: SKIP", lines[14])
+        assertEquals("    - test:", lines[15])
+        assertEquals("        name: failingTest", lines[16])
+        assertEquals("        class: ReporterTest", lines[17])
+        assertEquals("        package: dev.testify", lines[18])
+        assertEquals("        baseline_image: assets/foo", lines[19])
+        assertEquals("        test_image: bar", lines[20])
+        assertEquals("        status: FAIL", lines[21])
+        assertEquals("        cause: UNKNOWN", lines[22])
+        assertEquals("        description: \"This is a failure\"", lines[23])
+        assertEquals("    - test:", lines[24])
+        assertEquals("        name: passingTest", lines[25])
+        assertEquals("        class: ReporterTest", lines[26])
+        assertEquals("        package: dev.testify", lines[27])
+        assertEquals("        baseline_image: assets/foo", lines[28])
+        assertEquals("        test_image: bar", lines[29])
+        assertEquals("        status: PASS", lines[30])
     }
 
     private val Reporter.yaml: String
@@ -301,7 +318,51 @@ internal open class ReporterTest {
             "- date: 2020-06-26@14:49:45",
             "- failed: 0",
             "- passed: 1",
+            "- skipped: 0",
             "- total: 1",
+            "- tests:"
+        ) + bodyLines
+
+        every { session.initFromFile(mockFile) } answers { session.initFromLines(lines) }
+        return reporter
+    }
+
+    private fun setUpForThirdTest(): Reporter {
+        val session = spyk(ReportSession())
+        val reporter = setUpForFirstTest(session)
+        val bodyLines = listOf(
+            "    - test:",
+            "        name: failingTest",
+            "        class: ReporterTest",
+            "        package: dev.testify",
+            "        baseline_image: assets/foo",
+            "        test_image: bar",
+            "        status: FAIL",
+            "        cause: UNKNOWN",
+            "        description: \"This is a failure\"",
+            "    - test:",
+            "        name: passingTest",
+            "        class: ReporterTest",
+            "        package: dev.testify",
+            "        baseline_image: assets/foo",
+            "        test_image: bar",
+            "        status: PASS"
+        )
+
+        every { mockFile.exists() } returns true
+        every { session.isEqual(any()) } returns true
+        every { reporter.readBodyLines(mockFile) } returns bodyLines
+        mockDescription = mockDescription.copy(methodName = "skipTest")
+
+        every { session.isEqual(mockFile) } returns true
+        val lines = listOf(
+            "---",
+            "- session: 623815995-1",
+            "- date: 2020-06-26@14:49:45",
+            "- failed: 1",
+            "- passed: 1",
+            "- skipped: 0",
+            "- total: 2",
             "- tests:"
         ) + bodyLines
 
@@ -315,7 +376,8 @@ internal open class ReporterTest {
             "- date: Today\n" +
             "- failed: 1\n" +
             "- passed: 2\n" +
-            "- total: 3\n" +
+            "- skipped: 3\n" +
+            "- total: 6\n" +
             "- tests:\n"
 
         private val HEADER_LINES = listOf(
@@ -324,7 +386,8 @@ internal open class ReporterTest {
             "- date: 2020-06-26@14:49:45",
             "- failed: 1",
             "- passed: 3",
-            "- total: 4",
+            "- skipped: 2",
+            "- total: 6",
             "- tests:"
         )
 

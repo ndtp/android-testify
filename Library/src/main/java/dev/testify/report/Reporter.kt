@@ -98,6 +98,14 @@ internal open class Reporter(
     }
 
     /**
+     * Records a skipped or ignored test
+     */
+    fun skip() {
+        session.skip()
+        builder.appendLine("status: ${TestStatus.SKIP.name}", indent = 8)
+    }
+
+    /**
      * Records that a test has failed and the cause of the failure
      */
     fun fail(throwable: Throwable) {
@@ -168,6 +176,9 @@ internal open class Reporter(
         return File(path, "report.yml")
     }
 
+    private val headerLineCount: Int
+        get() = listOf(HEADER, "tests").size + session.sessionLineCount
+
     @VisibleForTesting
     internal fun insertHeader() {
         builder.insert(0, "- tests:\n")
@@ -209,7 +220,7 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal open fun readBodyLines(file: File): List<String> {
-        return file.readLines().drop(8)
+        return file.readLines().drop(headerLineCount)
     }
 
     companion object {

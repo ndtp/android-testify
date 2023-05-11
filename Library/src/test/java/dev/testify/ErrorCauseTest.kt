@@ -45,6 +45,7 @@ import dev.testify.report.ErrorCause
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.Assert.assertEquals
+import org.junit.AssumptionViolatedException
 import org.junit.Before
 import org.junit.Test
 
@@ -79,7 +80,8 @@ class ErrorCauseTest {
         assertEquals(ErrorCause.VIEW_MODIFICATION, ErrorCause.match(ViewModificationException(Throwable())))
         assertEquals(ErrorCause.WRAP_CONTEXT, ErrorCause.match(TestMustWrapContextException("")))
         assertEquals(ErrorCause.FAILED_BITMAP_CAPTURE, ErrorCause.match(FailedToCaptureBitmapException()))
-        assertEquals(ErrorCause.SKIPPED, ErrorCause.match(ScreenshotTestIgnoredException()))
+        assertEquals(ErrorCause.SKIPPED, ErrorCause.match(AssumptionViolatedException("")))
+        assertEquals(ErrorCause.IGNORED, ErrorCause.match(ScreenshotTestIgnoredException()))
         assertEquals(ErrorCause.DEVICE_MISMATCH, ErrorCause.match(UnexpectedDeviceException("", "")))
         assertEquals(ErrorCause.UNKNOWN, ErrorCause.match(Throwable()))
     }

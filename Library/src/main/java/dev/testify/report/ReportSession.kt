@@ -38,6 +38,7 @@ internal open class ReportSession {
     @VisibleForTesting internal open lateinit var sessionId: String
     @VisibleForTesting internal open var testCount = 0
     @VisibleForTesting internal open var passCount = 0
+    @VisibleForTesting internal open var skipCount = 0
     @VisibleForTesting internal open var failCount = 0
 
     fun addTest() {
@@ -46,6 +47,10 @@ internal open class ReportSession {
 
     fun pass() {
         passCount++
+    }
+
+    fun skip() {
+        skipCount++
     }
 
     fun fail() {
@@ -60,8 +65,12 @@ internal open class ReportSession {
     internal fun initFromLines(lines: List<String>) {
         failCount += lines[3].substringAfterLast(": ").toInt()
         passCount += lines[4].substringAfterLast(": ").toInt()
-        testCount += lines[5].substringAfterLast(": ").toInt()
+        skipCount += lines[5].substringAfterLast(": ").toInt()
+        testCount += lines[6].substringAfterLast(": ").toInt()
     }
+
+    val sessionLineCount: Int
+        get() = listOf("session", "date", "failed", "passed", "skipped", "total").size
 
     fun insertSessionInfo(builder: StringBuilder): StringBuilder {
         return builder.insert(
@@ -72,6 +81,7 @@ internal open class ReportSession {
                 appendLine("- date: $timestamp")
                 appendLine("- failed: $failCount")
                 appendLine("- passed: $passCount")
+                appendLine("- skipped: $skipCount")
                 appendLine("- total: $testCount")
             }
         )
