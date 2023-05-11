@@ -24,15 +24,19 @@
  */
 package dev.testify.tasks.internal
 
+import org.gradle.api.tasks.Internal
+
 abstract class ReportTask : TestifyDefaultTask() {
 
     override fun getGroup() = "Testify reports"
 
+    @get:Internal
     protected val reportName: String
         get() {
             return project.properties["reportFileName"]?.toString() ?: DEFAULT_REPORT_FILE_NAME
         }
 
+    @get:Internal
     protected val destinationPath: String
         get() {
             return project.properties["reportPath"]?.toString() ?: project.file(".").absolutePath
