@@ -29,5 +29,6 @@ package dev.testify.report
  */
 enum class TestStatus {
     PASS,
+    SKIP,
     FAIL;
 }

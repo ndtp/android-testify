@@ -48,6 +48,7 @@ class ReportSessionTest {
         assertEquals(2, session.testCount)
 
         assertEquals(0, session.passCount)
+        assertEquals(0, session.skipCount)
         assertEquals(0, session.failCount)
     }
 
@@ -60,6 +61,20 @@ class ReportSessionTest {
         assertEquals(2, session.passCount)
 
         assertEquals(0, session.testCount)
+        assertEquals(0, session.skipCount)
+        assertEquals(0, session.failCount)
+    }
+
+    @Test
+    fun `skip() increments skipCount`() {
+        val session = ReportSession()
+        session.skip()
+        assertEquals(1, session.skipCount)
+        session.skip()
+        assertEquals(2, session.skipCount)
+
+        assertEquals(0, session.testCount)
+        assertEquals(0, session.passCount)
         assertEquals(0, session.failCount)
     }
 
@@ -123,7 +138,8 @@ class ReportSessionTest {
             "- date: 2020-06-26@14:49:45",
             "- failed: 1",
             "- passed: 3",
-            "- total: 4",
+            "- skipped: 2",
+            "- total: 6",
             "- tests:",
             "  - test:",
             "    name: default",
@@ -140,7 +156,8 @@ class ReportSessionTest {
 
         assertEquals(1, session.failCount)
         assertEquals(3, session.passCount)
-        assertEquals(4, session.testCount)
+        assertEquals(2, session.skipCount)
+        assertEquals(6, session.testCount)
     }
 
     @Test
@@ -148,7 +165,8 @@ class ReportSessionTest {
         val session = spyk(ReportSession())
         repeat(1) { session.fail() }
         repeat(2) { session.pass() }
-        repeat(3) { session.addTest() }
+        repeat(3) { session.skip() }
+        repeat(6) { session.addTest() }
         ReportSession.injectSessionId(session, "12345678-123")
 
         every { session.getTimestamp(any(), any()) } returns "2020-06-26@17:34:57"
@@ -161,7 +179,8 @@ class ReportSessionTest {
                 "- date: 2020-06-26@17:34:57\n" +
                 "- failed: 1\n" +
                 "- passed: 2\n" +
-                "- total: 3\n",
+                "- skipped: 3\n" +
+                "- total: 6\n",
             info
         )
     }

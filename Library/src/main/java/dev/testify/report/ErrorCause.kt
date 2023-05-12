@@ -40,6 +40,7 @@ import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.UnexpectedDeviceException
 import dev.testify.internal.exception.UnexpectedOrientationException
 import dev.testify.internal.exception.ViewModificationException
+import org.junit.AssumptionViolatedException
 import kotlin.reflect.KClass
 
 /**
@@ -61,7 +62,8 @@ enum class ErrorCause(val klass: KClass<*>) {
     VIEW_MODIFICATION(ViewModificationException::class),
     WRAP_CONTEXT(TestMustWrapContextException::class),
     FAILED_BITMAP_CAPTURE(FailedToCaptureBitmapException::class),
-    SKIPPED(ScreenshotTestIgnoredException::class),
+    IGNORED(ScreenshotTestIgnoredException::class),
+    SKIPPED(AssumptionViolatedException::class),
     DEVICE_MISMATCH(UnexpectedDeviceException::class),
     UNKNOWN(Throwable::class);
 
