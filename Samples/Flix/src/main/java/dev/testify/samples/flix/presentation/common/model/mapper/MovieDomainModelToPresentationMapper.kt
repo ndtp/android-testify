@@ -1,7 +1,7 @@
-package com.andrewcarmichael.flix.presentation.common.model.mapper
+package dev.testify.samples.flix.presentation.common.model.mapper
 
-import com.andrewcarmichael.flix.domain.model.MovieDomainModel
-import com.andrewcarmichael.flix.presentation.common.model.MoviePresentationModel
+import dev.testify.samples.flix.domain.model.MovieDomainModel
+import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
 
 interface MovieDomainModelToPresentationMapper {
     fun convert(domainModel: MovieDomainModel): MoviePresentationModel

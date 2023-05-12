@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.common.composeables
+package dev.testify.samples.flix.ui.common.composeables
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import com.andrewcarmichael.flix.R
+import dev.testify.samples.flix.R
 
 @Composable
 fun OverviewText(

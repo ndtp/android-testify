@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.presentation.common.model
+package dev.testify.samples.flix.presentation.common.model
 
 data class MoviePresentationModel(
     val id: Int,

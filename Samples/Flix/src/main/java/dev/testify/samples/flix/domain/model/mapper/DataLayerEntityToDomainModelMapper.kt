@@ -1,8 +1,8 @@
-package com.andrewcarmichael.flix.domain.model.mapper
+package dev.testify.samples.flix.domain.model.mapper
 
-import com.andrewcarmichael.flix.data.remote.tmdb.TheMovieDbUrlResolver
-import com.andrewcarmichael.flix.data.remote.tmdb.entity.*
-import com.andrewcarmichael.flix.domain.model.*
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbUrlResolver
+import dev.testify.samples.flix.data.remote.tmdb.entity.*
+import dev.testify.samples.flix.domain.model.*
 import kotlinx.datetime.Instant
 
 interface DataLayerEntityToDomainModelMapper {

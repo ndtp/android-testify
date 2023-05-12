@@ -1,10 +1,10 @@
-package com.andrewcarmichael.flix.application.di
+package dev.testify.samples.flix.application.di
 
-import com.andrewcarmichael.flix.application.foundation.secret.secretModule
-import com.andrewcarmichael.flix.application.navigation.di.navigationModule
-import com.andrewcarmichael.flix.data.di.dataModule
-import com.andrewcarmichael.flix.domain.di.domainModule
-import com.andrewcarmichael.flix.presentation.di.presentationModule
+import dev.testify.samples.flix.application.foundation.secret.secretModule
+import dev.testify.samples.flix.application.navigation.di.navigationModule
+import dev.testify.samples.flix.data.di.dataModule
+import dev.testify.samples.flix.domain.di.domainModule
+import dev.testify.samples.flix.presentation.di.presentationModule
 import org.koin.dsl.module
 
 val applicationModule = module {

@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.theme
+package dev.testify.samples.flix.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

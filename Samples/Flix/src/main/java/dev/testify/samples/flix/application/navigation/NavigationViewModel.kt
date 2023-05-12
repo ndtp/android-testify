@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.application.navigation
+package dev.testify.samples.flix.application.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.data.remote.tmdb
+package dev.testify.samples.flix.data.remote.tmdb
 
 interface TheMovieDbUrlResolver {
     fun resolveImageUrl(imageName: String): String

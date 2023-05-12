@@ -1,7 +1,7 @@
-package com.andrewcarmichael.flix.data.remote.tmdb.httpclient
+package dev.testify.samples.flix.data.remote.tmdb.httpclient
 
 import android.util.Log
-import com.andrewcarmichael.flix.application.foundation.secret.SecretsProvider
+import dev.testify.samples.flix.application.foundation.secret.SecretsProvider
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.features.*

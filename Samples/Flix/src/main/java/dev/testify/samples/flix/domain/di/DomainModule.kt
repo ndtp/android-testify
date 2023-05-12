@@ -1,13 +1,13 @@
-package com.andrewcarmichael.flix.domain.di
+package dev.testify.samples.flix.domain.di
 
-import com.andrewcarmichael.flix.domain.model.mapper.DataLayerEntityToDomainModelMapper
-import com.andrewcarmichael.flix.domain.model.mapper.DataLayerEntityToDomainModelMapperImpl
-import com.andrewcarmichael.flix.domain.repository.MovieRepository
-import com.andrewcarmichael.flix.domain.repository.MovieRepositoryImpl
-import com.andrewcarmichael.flix.domain.usecase.LoadHomeScreenUseCase
-import com.andrewcarmichael.flix.domain.usecase.LoadHomeScreenUseCaseImpl
-import com.andrewcarmichael.flix.domain.usecase.LoadMovieDetailsUseCase
-import com.andrewcarmichael.flix.domain.usecase.LoadMovieDetailsUseCaseImpl
+import dev.testify.samples.flix.domain.model.mapper.DataLayerEntityToDomainModelMapper
+import dev.testify.samples.flix.domain.model.mapper.DataLayerEntityToDomainModelMapperImpl
+import dev.testify.samples.flix.domain.repository.MovieRepository
+import dev.testify.samples.flix.domain.repository.MovieRepositoryImpl
+import dev.testify.samples.flix.domain.usecase.LoadHomeScreenUseCase
+import dev.testify.samples.flix.domain.usecase.LoadHomeScreenUseCaseImpl
+import dev.testify.samples.flix.domain.usecase.LoadMovieDetailsUseCase
+import dev.testify.samples.flix.domain.usecase.LoadMovieDetailsUseCaseImpl
 import org.koin.dsl.module
 
 val domainModule = module {

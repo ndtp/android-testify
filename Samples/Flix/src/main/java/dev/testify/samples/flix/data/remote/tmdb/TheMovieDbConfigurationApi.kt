@@ -1,7 +1,7 @@
-package com.andrewcarmichael.flix.data.remote.tmdb
+package dev.testify.samples.flix.data.remote.tmdb
 
 import android.util.Log
-import com.andrewcarmichael.flix.data.remote.tmdb.entity.Configuration
+import dev.testify.samples.flix.data.remote.tmdb.entity.Configuration
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.koin.core.component.KoinComponent

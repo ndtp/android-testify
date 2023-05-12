@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.common.composeables
+package dev.testify.samples.flix.ui.common.composeables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,8 +12,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.andrewcarmichael.flix.application.foundation.ui.action.ViewAction
-import com.andrewcarmichael.flix.presentation.common.model.MoviePresentationModel
+import dev.testify.samples.flix.application.foundation.ui.action.ViewAction
+import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
 
 @Composable
 fun LoadingMovieThumbnail(

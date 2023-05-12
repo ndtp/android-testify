@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.data.remote.tmdb.entity
+package dev.testify.samples.flix.data.remote.tmdb.entity
 
 @kotlinx.serialization.Serializable
 data class DateRange(

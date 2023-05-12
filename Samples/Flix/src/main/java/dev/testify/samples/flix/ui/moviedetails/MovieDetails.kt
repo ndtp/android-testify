@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.moviedetails
+package dev.testify.samples.flix.ui.moviedetails
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,11 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.andrewcarmichael.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
-import com.andrewcarmichael.flix.presentation.moviedetails.viewmodel.MovieDetailsViewModel
-import com.andrewcarmichael.flix.presentation.moviedetails.viewmodel.MovieDetailsViewState
-import com.andrewcarmichael.flix.ui.common.composeables.*
-import com.andrewcarmichael.flix.ui.common.renderer.ScreenState
+import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
+import dev.testify.samples.flix.presentation.moviedetails.viewmodel.MovieDetailsViewModel
+import dev.testify.samples.flix.presentation.moviedetails.viewmodel.MovieDetailsViewState
+import dev.testify.samples.flix.ui.common.composeables.*
+import dev.testify.samples.flix.ui.common.renderer.ScreenState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 

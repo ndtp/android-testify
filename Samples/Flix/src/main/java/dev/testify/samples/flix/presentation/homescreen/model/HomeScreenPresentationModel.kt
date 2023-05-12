@@ -1,6 +1,6 @@
-package com.andrewcarmichael.flix.presentation.homescreen.model
+package dev.testify.samples.flix.presentation.homescreen.model
 
-import com.andrewcarmichael.flix.presentation.common.model.MoviePresentationModel
+import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
 
 data class HomeScreenPresentationModel(
     val headliningMovie: MoviePresentationModel?,

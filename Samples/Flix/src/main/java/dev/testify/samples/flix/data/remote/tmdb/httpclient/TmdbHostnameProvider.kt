@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.data.remote.tmdb.httpclient
+package dev.testify.samples.flix.data.remote.tmdb.httpclient
 
 interface TmdbHostnameProvider {
     fun provideHostname(): String

@@ -1,6 +1,6 @@
-package com.andrewcarmichael.flix.data.remote.tmdb
+package dev.testify.samples.flix.data.remote.tmdb
 
-import com.andrewcarmichael.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
+import dev.testify.samples.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
 
 interface TheMovieDbApiConfiguration {
     val baseUrl: String

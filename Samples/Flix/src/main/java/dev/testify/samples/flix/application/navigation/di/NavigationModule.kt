@@ -1,6 +1,6 @@
-package com.andrewcarmichael.flix.application.navigation.di
+package dev.testify.samples.flix.application.navigation.di
 
-import com.andrewcarmichael.flix.application.navigation.NavigationViewModel
+import dev.testify.samples.flix.application.navigation.NavigationViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

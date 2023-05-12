@@ -1,8 +1,8 @@
-package com.andrewcarmichael.flix.domain.usecase
+package dev.testify.samples.flix.domain.usecase
 
 import android.util.Log
-import com.andrewcarmichael.flix.domain.model.HomeScreenDomainModel
-import com.andrewcarmichael.flix.domain.repository.MovieRepository
+import dev.testify.samples.flix.domain.model.HomeScreenDomainModel
+import dev.testify.samples.flix.domain.repository.MovieRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 

@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.main
+package dev.testify.samples.flix.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,13 +13,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.andrewcarmichael.flix.application.navigation.NavigationCommands
-import com.andrewcarmichael.flix.application.navigation.NavigationDestination
-import com.andrewcarmichael.flix.application.navigation.NavigationDestinations
-import com.andrewcarmichael.flix.application.navigation.NavigationViewModel
-import com.andrewcarmichael.flix.ui.homescreen.HomeScreen
-import com.andrewcarmichael.flix.ui.moviedetails.MovieDetailsScreen
-import com.andrewcarmichael.flix.ui.theme.FlixTheme
+import dev.testify.samples.flix.application.navigation.NavigationCommands
+import dev.testify.samples.flix.application.navigation.NavigationDestination
+import dev.testify.samples.flix.application.navigation.NavigationDestinations
+import dev.testify.samples.flix.application.navigation.NavigationViewModel
+import dev.testify.samples.flix.ui.homescreen.HomeScreen
+import dev.testify.samples.flix.ui.moviedetails.MovieDetailsScreen
+import dev.testify.samples.flix.ui.theme.FlixTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 

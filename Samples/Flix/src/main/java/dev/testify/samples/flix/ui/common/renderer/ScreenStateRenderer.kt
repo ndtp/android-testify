@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.common.renderer
+package dev.testify.samples.flix.ui.common.renderer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -6,8 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.andrewcarmichael.flix.application.foundation.ui.state.*
-import com.andrewcarmichael.flix.ui.common.composeables.IndeterminateLoadingSpinner
+import dev.testify.samples.flix.application.foundation.ui.state.*
+import dev.testify.samples.flix.ui.common.composeables.IndeterminateLoadingSpinner
 
 @Composable
 inline fun <reified T : ViewState> ScreenState(

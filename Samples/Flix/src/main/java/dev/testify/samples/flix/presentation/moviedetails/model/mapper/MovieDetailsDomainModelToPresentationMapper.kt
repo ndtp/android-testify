@@ -1,12 +1,12 @@
-package com.andrewcarmichael.flix.presentation.moviedetails.model.mapper
+package dev.testify.samples.flix.presentation.moviedetails.model.mapper
 
 import android.content.Context
-import com.andrewcarmichael.flix.R
-import com.andrewcarmichael.flix.domain.model.MovieCreditsDomainModel
-import com.andrewcarmichael.flix.domain.model.MovieDetailsDomainModel
-import com.andrewcarmichael.flix.domain.model.MovieDomainModel
-import com.andrewcarmichael.flix.presentation.moviedetails.model.CreditPresentationModel
-import com.andrewcarmichael.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
+import dev.testify.samples.flix.R
+import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
+import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
+import dev.testify.samples.flix.domain.model.MovieDomainModel
+import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
+import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

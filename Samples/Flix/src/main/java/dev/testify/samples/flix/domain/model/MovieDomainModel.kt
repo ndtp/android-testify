@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.domain.model
+package dev.testify.samples.flix.domain.model
 
 import kotlinx.datetime.Instant
 

@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.application.foundation.secret
+package dev.testify.samples.flix.application.foundation.secret
 
 import android.content.Context
 import android.content.pm.ApplicationInfo

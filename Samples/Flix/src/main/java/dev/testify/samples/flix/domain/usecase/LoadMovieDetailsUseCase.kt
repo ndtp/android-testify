@@ -1,11 +1,11 @@
-package com.andrewcarmichael.flix.domain.usecase
+package dev.testify.samples.flix.domain.usecase
 
 import android.util.Log
-import com.andrewcarmichael.flix.domain.model.MovieCreditsDomainModel
-import com.andrewcarmichael.flix.domain.model.MovieDetailsDomainModel
-import com.andrewcarmichael.flix.domain.model.MovieReleaseDateDomainModel
-import com.andrewcarmichael.flix.domain.model.ReleaseType
-import com.andrewcarmichael.flix.domain.repository.MovieRepository
+import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
+import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
+import dev.testify.samples.flix.domain.model.MovieReleaseDateDomainModel
+import dev.testify.samples.flix.domain.model.ReleaseType
+import dev.testify.samples.flix.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

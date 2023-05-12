@@ -1,8 +1,8 @@
-package com.andrewcarmichael.flix.domain.repository
+package dev.testify.samples.flix.domain.repository
 
-import com.andrewcarmichael.flix.domain.model.MovieCreditsDomainModel
-import com.andrewcarmichael.flix.domain.model.MovieDomainModel
-import com.andrewcarmichael.flix.domain.model.MovieReleaseDatesDomainModel
+import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
+import dev.testify.samples.flix.domain.model.MovieDomainModel
+import dev.testify.samples.flix.domain.model.MovieReleaseDatesDomainModel
 
 interface MovieRepository {
     suspend fun getMostTrendingMovie(): Result<MovieDomainModel>

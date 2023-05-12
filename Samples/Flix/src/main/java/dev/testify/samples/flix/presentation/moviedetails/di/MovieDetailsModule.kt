@@ -1,6 +1,6 @@
-package com.andrewcarmichael.flix.presentation.moviedetails.di
+package dev.testify.samples.flix.presentation.moviedetails.di
 
-import com.andrewcarmichael.flix.presentation.moviedetails.viewmodel.MovieDetailsViewModel
+import dev.testify.samples.flix.presentation.moviedetails.viewmodel.MovieDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

@@ -1,9 +1,9 @@
-package com.andrewcarmichael.flix.presentation.di
+package dev.testify.samples.flix.presentation.di
 
-import com.andrewcarmichael.flix.presentation.common.model.mapper.MovieDomainModelToPresentationMapper
-import com.andrewcarmichael.flix.presentation.common.model.mapper.MovieDomainModelToPresentationMapperImpl
-import com.andrewcarmichael.flix.presentation.homescreen.di.homeScreenModule
-import com.andrewcarmichael.flix.presentation.moviedetails.di.movieDetailsModule
+import dev.testify.samples.flix.presentation.common.model.mapper.MovieDomainModelToPresentationMapper
+import dev.testify.samples.flix.presentation.common.model.mapper.MovieDomainModelToPresentationMapperImpl
+import dev.testify.samples.flix.presentation.homescreen.di.homeScreenModule
+import dev.testify.samples.flix.presentation.moviedetails.di.movieDetailsModule
 import org.koin.dsl.module
 
 val presentationModule = module {

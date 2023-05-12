@@ -1,18 +1,18 @@
-package com.andrewcarmichael.flix.presentation.homescreen.viewmodel
+package dev.testify.samples.flix.presentation.homescreen.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrewcarmichael.flix.application.foundation.ui.state.BasicScreenState
-import com.andrewcarmichael.flix.application.foundation.ui.state.ScreenState
-import com.andrewcarmichael.flix.application.foundation.ui.state.UnsetScreenState
-import com.andrewcarmichael.flix.application.foundation.ui.state.ViewState
-import com.andrewcarmichael.flix.domain.model.HomeScreenDomainModel
-import com.andrewcarmichael.flix.domain.usecase.LoadHomeScreenUseCase
-import com.andrewcarmichael.flix.presentation.homescreen.action.HomeScreenSystemAction
-import com.andrewcarmichael.flix.presentation.homescreen.action.HomeScreenViewAction
-import com.andrewcarmichael.flix.presentation.homescreen.model.HomeScreenPresentationModel
-import com.andrewcarmichael.flix.presentation.homescreen.model.mapper.HomeScreenDomainModelToPresentationMapper
+import dev.testify.samples.flix.application.foundation.ui.state.BasicScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.ScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.UnsetScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.ViewState
+import dev.testify.samples.flix.domain.model.HomeScreenDomainModel
+import dev.testify.samples.flix.domain.usecase.LoadHomeScreenUseCase
+import dev.testify.samples.flix.presentation.homescreen.action.HomeScreenSystemAction
+import dev.testify.samples.flix.presentation.homescreen.action.HomeScreenViewAction
+import dev.testify.samples.flix.presentation.homescreen.model.HomeScreenPresentationModel
+import dev.testify.samples.flix.presentation.homescreen.model.mapper.HomeScreenDomainModelToPresentationMapper
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

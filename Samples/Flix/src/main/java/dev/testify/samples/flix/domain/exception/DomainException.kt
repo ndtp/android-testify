@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.domain.exception
+package dev.testify.samples.flix.domain.exception
 
 open class DomainException(throwable: Throwable) : Throwable(throwable) {
     constructor(message: String) : this(Throwable(message))

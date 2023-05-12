@@ -1,6 +1,6 @@
-package com.andrewcarmichael.flix.data.remote.tmdb
+package dev.testify.samples.flix.data.remote.tmdb
 
-import com.andrewcarmichael.flix.data.remote.tmdb.entity.*
+import dev.testify.samples.flix.data.remote.tmdb.entity.*
 import kotlin.Result
 
 interface TheMovieDbApi {

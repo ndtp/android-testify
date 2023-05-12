@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.common.composeables
+package dev.testify.samples.flix.ui.common.composeables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -16,9 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.andrewcarmichael.flix.R
-import com.andrewcarmichael.flix.application.foundation.ui.action.ViewAction
-import com.andrewcarmichael.flix.presentation.moviedetails.model.CreditPresentationModel
+import dev.testify.samples.flix.R
+import dev.testify.samples.flix.application.foundation.ui.action.ViewAction
+import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
 
 @Composable
 fun CreditStrip(

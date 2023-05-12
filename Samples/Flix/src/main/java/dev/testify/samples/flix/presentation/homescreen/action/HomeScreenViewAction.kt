@@ -1,9 +1,9 @@
-package com.andrewcarmichael.flix.presentation.homescreen.action
+package dev.testify.samples.flix.presentation.homescreen.action
 
 import android.content.Context
-import com.andrewcarmichael.flix.R
-import com.andrewcarmichael.flix.application.foundation.ui.action.ViewAction
-import com.andrewcarmichael.flix.presentation.common.model.MoviePresentationModel
+import dev.testify.samples.flix.R
+import dev.testify.samples.flix.application.foundation.ui.action.ViewAction
+import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

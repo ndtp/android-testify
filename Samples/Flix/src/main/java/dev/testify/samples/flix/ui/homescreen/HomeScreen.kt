@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.homescreen
+package dev.testify.samples.flix.ui.homescreen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,15 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.andrewcarmichael.flix.R
-import com.andrewcarmichael.flix.presentation.common.model.MoviePresentationModel
-import com.andrewcarmichael.flix.presentation.homescreen.action.HomeScreenSystemAction
-import com.andrewcarmichael.flix.presentation.homescreen.action.HomeScreenViewAction
-import com.andrewcarmichael.flix.presentation.homescreen.viewmodel.HomeScreenViewActionHandler
-import com.andrewcarmichael.flix.presentation.homescreen.viewmodel.HomeScreenViewModel
-import com.andrewcarmichael.flix.presentation.homescreen.viewmodel.HomeScreenViewState
-import com.andrewcarmichael.flix.ui.common.composeables.*
-import com.andrewcarmichael.flix.ui.common.renderer.ScreenState
+import dev.testify.samples.flix.R
+import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
+import dev.testify.samples.flix.presentation.homescreen.action.HomeScreenSystemAction
+import dev.testify.samples.flix.presentation.homescreen.action.HomeScreenViewAction
+import dev.testify.samples.flix.presentation.homescreen.viewmodel.HomeScreenViewActionHandler
+import dev.testify.samples.flix.presentation.homescreen.viewmodel.HomeScreenViewModel
+import dev.testify.samples.flix.presentation.homescreen.viewmodel.HomeScreenViewState
+import dev.testify.samples.flix.ui.common.composeables.*
+import dev.testify.samples.flix.ui.common.renderer.ScreenState
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel

@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.theme
+package dev.testify.samples.flix.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

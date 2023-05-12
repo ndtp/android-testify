@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.application.foundation.ui.action
+package dev.testify.samples.flix.application.foundation.ui.action
 
 interface ViewAction {
     fun describe(): String

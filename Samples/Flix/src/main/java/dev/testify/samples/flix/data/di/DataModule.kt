@@ -1,10 +1,10 @@
-package com.andrewcarmichael.flix.data.di
+package dev.testify.samples.flix.data.di
 
-import com.andrewcarmichael.flix.data.remote.tmdb.*
-import com.andrewcarmichael.flix.data.remote.tmdb.TheMovieDbConfigurationApiImpl
-import com.andrewcarmichael.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
-import com.andrewcarmichael.flix.data.remote.tmdb.httpclient.buildKtorHttpClient
-import com.andrewcarmichael.flix.data.remote.tmdb.httpclient.getTmdbHostnameProvider
+import dev.testify.samples.flix.data.remote.tmdb.*
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApiImpl
+import dev.testify.samples.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
+import dev.testify.samples.flix.data.remote.tmdb.httpclient.buildKtorHttpClient
+import dev.testify.samples.flix.data.remote.tmdb.httpclient.getTmdbHostnameProvider
 import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

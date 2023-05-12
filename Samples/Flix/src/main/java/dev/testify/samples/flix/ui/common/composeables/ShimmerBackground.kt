@@ -1,4 +1,4 @@
-package com.andrewcarmichael.flix.ui.common.composeables
+package dev.testify.samples.flix.ui.common.composeables
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background

@@ -1,8 +1,8 @@
-package com.andrewcarmichael.flix.presentation.homescreen.model.mapper
+package dev.testify.samples.flix.presentation.homescreen.model.mapper
 
-import com.andrewcarmichael.flix.domain.model.HomeScreenDomainModel
-import com.andrewcarmichael.flix.presentation.common.model.mapper.MovieDomainModelToPresentationMapper
-import com.andrewcarmichael.flix.presentation.homescreen.model.HomeScreenPresentationModel
+import dev.testify.samples.flix.domain.model.HomeScreenDomainModel
+import dev.testify.samples.flix.presentation.common.model.mapper.MovieDomainModelToPresentationMapper
+import dev.testify.samples.flix.presentation.homescreen.model.HomeScreenPresentationModel
 
 interface HomeScreenDomainModelToPresentationMapper {
     fun convert(domainModel: HomeScreenDomainModel): HomeScreenPresentationModel

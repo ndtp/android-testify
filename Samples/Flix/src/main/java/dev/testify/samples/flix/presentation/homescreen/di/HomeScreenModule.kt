@@ -1,10 +1,10 @@
-package com.andrewcarmichael.flix.presentation.homescreen.di
+package dev.testify.samples.flix.presentation.homescreen.di
 
-import com.andrewcarmichael.flix.presentation.homescreen.model.mapper.HomeScreenDomainModelToPresentationMapper
-import com.andrewcarmichael.flix.presentation.homescreen.model.mapper.HomeScreenDomainModelToPresentationMapperImpl
-import com.andrewcarmichael.flix.presentation.homescreen.viewmodel.HomeScreenViewModel
-import com.andrewcarmichael.flix.presentation.moviedetails.model.mapper.MovieDetailsDomainModelToPresentationMapper
-import com.andrewcarmichael.flix.presentation.moviedetails.model.mapper.MovieDetailsDomainModelToPresentationMapperImpl
+import dev.testify.samples.flix.presentation.homescreen.model.mapper.HomeScreenDomainModelToPresentationMapper
+import dev.testify.samples.flix.presentation.homescreen.model.mapper.HomeScreenDomainModelToPresentationMapperImpl
+import dev.testify.samples.flix.presentation.homescreen.viewmodel.HomeScreenViewModel
+import dev.testify.samples.flix.presentation.moviedetails.model.mapper.MovieDetailsDomainModelToPresentationMapper
+import dev.testify.samples.flix.presentation.moviedetails.model.mapper.MovieDetailsDomainModelToPresentationMapperImpl
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

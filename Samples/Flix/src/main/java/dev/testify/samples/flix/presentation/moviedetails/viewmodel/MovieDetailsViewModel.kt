@@ -1,13 +1,13 @@
-package com.andrewcarmichael.flix.presentation.moviedetails.viewmodel
+package dev.testify.samples.flix.presentation.moviedetails.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.andrewcarmichael.flix.application.foundation.ui.state.*
-import com.andrewcarmichael.flix.domain.model.MovieDetailsDomainModel
-import com.andrewcarmichael.flix.domain.usecase.LoadMovieDetailsUseCase
-import com.andrewcarmichael.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
-import com.andrewcarmichael.flix.presentation.moviedetails.model.mapper.MovieDetailsDomainModelToPresentationMapper
+import dev.testify.samples.flix.application.foundation.ui.state.*
+import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
+import dev.testify.samples.flix.domain.usecase.LoadMovieDetailsUseCase
+import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
+import dev.testify.samples.flix.presentation.moviedetails.model.mapper.MovieDetailsDomainModelToPresentationMapper
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

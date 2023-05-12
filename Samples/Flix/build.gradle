@@ -23,7 +23,7 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.andrewcarmichael.flix"
+        applicationId "dev.testify.samples.flix"
         minSdk 24
         targetSdk 33
         versionCode 1

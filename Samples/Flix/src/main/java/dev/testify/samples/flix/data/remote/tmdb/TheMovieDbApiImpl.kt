@@ -1,7 +1,7 @@
-package com.andrewcarmichael.flix.data.remote.tmdb
+package dev.testify.samples.flix.data.remote.tmdb
 
 import android.util.Log
-import com.andrewcarmichael.flix.data.remote.tmdb.entity.*
+import dev.testify.samples.flix.data.remote.tmdb.entity.*
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
