@@ -18,6 +18,10 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
+secrets {
+    defaultPropertiesFileName = 'local.defaults.properties'
+}
+
 android {
     namespace 'dev.testify.samples.flix'
     compileSdk 33
