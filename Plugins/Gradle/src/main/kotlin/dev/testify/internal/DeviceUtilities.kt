@@ -35,7 +35,7 @@ internal val Project.deviceImageDirectory: String
         return if (this.testifySettings.useSdCard)
             "/sdcard/testify_images/"
         else
-            "/data/data/${this.testifySettings.targetPackageId}/app_images/"
+            "./app_images/"
     }
 
 internal val Project.screenshotDirectory: String
@@ -83,7 +83,7 @@ internal val Project.reportFilePath: String
         return if (this.testifySettings.useSdCard) {
             "/sdcard/testify"
         } else {
-            "/data/data/${this.testifySettings.targetPackageId}/app_testify"
+            "./app_testify"
         }
     }
 
