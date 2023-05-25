@@ -37,9 +37,6 @@ data class MovieDetail(
     @SerialName("backdrop_path")
     val backdropPath: String? = null,
 
-//    @SerialName("belongs_to_collection")
-//    val belongsToCollection: Any? = null,
-
     @SerialName("budget")
     val budget: Int? = null,
 
