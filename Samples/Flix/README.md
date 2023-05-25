@@ -1,11 +1,13 @@
 # Flix
 
 A modern Android application built with Jetpack Compose and Android Clean Architecture.
+The information and images displayed are provided by themoviedb.org.
 
 ## Setup
 
-
 1. Visit https://developer.themoviedb.org/reference/intro/getting-started and create an API key.
+   There are two types of API keys. This app makes use of the V4 style key that has the format:
+   "Bearer keymaterial".
 2. Create or edit `local.properties`
 3. Add `TMDB_API_KEY=<<your-api-key>>`
 
