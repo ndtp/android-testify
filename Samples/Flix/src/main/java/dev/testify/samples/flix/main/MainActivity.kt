@@ -38,8 +38,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import dev.testify.samples.flix.application.navigation.NavigationCommands
-import dev.testify.samples.flix.application.navigation.NavigationDestination
 import dev.testify.samples.flix.application.navigation.NavigationDestinations
 import dev.testify.samples.flix.application.navigation.NavigationViewModel
 import dev.testify.samples.flix.ui.homescreen.HomeScreen

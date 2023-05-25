@@ -25,7 +25,10 @@
 
 package dev.testify.samples.flix.ui.moviedetails
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -36,7 +39,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
 import dev.testify.samples.flix.presentation.moviedetails.viewmodel.MovieDetailsViewModel
 import dev.testify.samples.flix.presentation.moviedetails.viewmodel.MovieDetailsViewState
-import dev.testify.samples.flix.ui.common.composeables.*
+import dev.testify.samples.flix.ui.common.composeables.CreditStrip
+import dev.testify.samples.flix.ui.common.composeables.GenreStrip
+import dev.testify.samples.flix.ui.common.composeables.MetaData
+import dev.testify.samples.flix.ui.common.composeables.MoviePoster
+import dev.testify.samples.flix.ui.common.composeables.OverviewText
+import dev.testify.samples.flix.ui.common.composeables.PrimaryTitle
+import dev.testify.samples.flix.ui.common.composeables.SecondaryTitle
 import dev.testify.samples.flix.ui.common.renderer.ScreenState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -44,7 +53,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun MovieDetailsScreen(
     movieId: Int,
-    viewModel: MovieDetailsViewModel = koinViewModel() { parametersOf(movieId) }
+    viewModel: MovieDetailsViewModel = koinViewModel { parametersOf(movieId) }
 ) {
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     ScreenState<MovieDetailsViewState>(screenState) { viewState ->

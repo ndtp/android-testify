@@ -25,12 +25,13 @@
 
 package dev.testify.samples.flix.data.di
 
-import dev.testify.samples.flix.data.remote.tmdb.*
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApi
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApiImpl
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApi
 import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApiImpl
-import dev.testify.samples.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
+import dev.testify.samples.flix.data.remote.tmdb.defaultApiConfiguration
 import dev.testify.samples.flix.data.remote.tmdb.httpclient.buildKtorHttpClient
 import dev.testify.samples.flix.data.remote.tmdb.httpclient.getTmdbHostnameProvider
-import org.koin.core.qualifier.Qualifier
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

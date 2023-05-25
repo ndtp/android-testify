@@ -28,12 +28,23 @@ package dev.testify.samples.flix.presentation.moviedetails.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.testify.samples.flix.application.foundation.ui.state.*
+import dev.testify.samples.flix.application.foundation.ui.state.BasicScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.FullscreenLoadingState
+import dev.testify.samples.flix.application.foundation.ui.state.ScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.UnsetScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.ViewState
 import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
 import dev.testify.samples.flix.domain.usecase.LoadMovieDetailsUseCase
 import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
 import dev.testify.samples.flix.presentation.moviedetails.model.mapper.MovieDetailsDomainModelToPresentationMapper
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 sealed class MovieDetailsViewState : ViewState() {

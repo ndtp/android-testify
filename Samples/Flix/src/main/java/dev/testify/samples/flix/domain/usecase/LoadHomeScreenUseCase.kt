@@ -28,8 +28,11 @@ package dev.testify.samples.flix.domain.usecase
 import android.util.Log
 import dev.testify.samples.flix.domain.model.HomeScreenDomainModel
 import dev.testify.samples.flix.domain.repository.MovieRepository
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 interface LoadHomeScreenUseCase {
     fun execute(): Flow<Result<HomeScreenDomainModel>>

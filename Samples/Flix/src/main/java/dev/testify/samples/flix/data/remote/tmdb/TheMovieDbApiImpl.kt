@@ -26,15 +26,20 @@
 package dev.testify.samples.flix.data.remote.tmdb
 
 import android.util.Log
-import dev.testify.samples.flix.data.remote.tmdb.entity.*
-import io.ktor.client.*
-import io.ktor.client.features.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import kotlinx.serialization.SerializationException
+import dev.testify.samples.flix.data.remote.tmdb.entity.Configuration
+import dev.testify.samples.flix.data.remote.tmdb.entity.Movie
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieCredits
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieDetail
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieReleaseDates
+import dev.testify.samples.flix.data.remote.tmdb.entity.Page
+import io.ktor.client.HttpClient
+import io.ktor.client.features.ResponseException
+import io.ktor.client.features.ServerResponseException
+import io.ktor.client.request.get
+import io.ktor.http.pathComponents
 import java.io.IOException
 import java.util.concurrent.CancellationException
-import kotlin.Result
+import kotlinx.serialization.SerializationException
 
 class TheMovieDbApiImpl(
     private val client: HttpClient

@@ -31,7 +31,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import dev.testify.samples.flix.application.foundation.ui.state.*
+import dev.testify.samples.flix.application.foundation.ui.state.BasicScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.FullscreenLoadingState
+import dev.testify.samples.flix.application.foundation.ui.state.ScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.UnsetScreenState
+import dev.testify.samples.flix.application.foundation.ui.state.ViewState
 import dev.testify.samples.flix.ui.common.composeables.IndeterminateLoadingSpinner
 
 @Composable

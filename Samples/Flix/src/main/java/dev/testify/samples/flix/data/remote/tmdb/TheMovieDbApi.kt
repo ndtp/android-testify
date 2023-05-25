@@ -25,8 +25,12 @@
 
 package dev.testify.samples.flix.data.remote.tmdb
 
-import dev.testify.samples.flix.data.remote.tmdb.entity.*
-import kotlin.Result
+import dev.testify.samples.flix.data.remote.tmdb.entity.Configuration
+import dev.testify.samples.flix.data.remote.tmdb.entity.Movie
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieCredits
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieDetail
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieReleaseDates
+import dev.testify.samples.flix.data.remote.tmdb.entity.Page
 
 interface TheMovieDbApi {
 

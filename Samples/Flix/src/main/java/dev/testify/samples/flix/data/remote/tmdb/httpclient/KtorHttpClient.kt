@@ -27,14 +27,21 @@ package dev.testify.samples.flix.data.remote.tmdb.httpclient
 
 import android.util.Log
 import dev.testify.samples.flix.application.foundation.secret.SecretsProvider
-import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.features.DefaultRequest
+import io.ktor.client.features.defaultRequest
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
+import io.ktor.client.features.logging.Logging
+import io.ktor.client.request.header
+import io.ktor.client.request.headers
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
+import kotlinx.serialization.json.Json
 
 private const val TIME_OUT = 60_000
 
@@ -62,7 +69,7 @@ internal fun buildKtorHttpClient(
 
     install(JsonFeature) {
         serializer = KotlinxSerializer(
-            json = kotlinx.serialization.json.Json(kotlinx.serialization.json.Json.Default) {
+            json = Json(Json) {
                 prettyPrint = true
                 isLenient = true
                 ignoreUnknownKeys = true

@@ -26,8 +26,20 @@
 package dev.testify.samples.flix.domain.model.mapper
 
 import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbUrlResolver
-import dev.testify.samples.flix.data.remote.tmdb.entity.*
-import dev.testify.samples.flix.domain.model.*
+import dev.testify.samples.flix.data.remote.tmdb.entity.CastMember
+import dev.testify.samples.flix.data.remote.tmdb.entity.Movie
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieCredits
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieDetail
+import dev.testify.samples.flix.data.remote.tmdb.entity.MovieReleaseDates
+import dev.testify.samples.flix.data.remote.tmdb.entity.ReleaseDate
+import dev.testify.samples.flix.data.remote.tmdb.entity.ReleaseDateByCountry
+import dev.testify.samples.flix.data.remote.tmdb.entity.isValid
+import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
+import dev.testify.samples.flix.domain.model.MovieDomainModel
+import dev.testify.samples.flix.domain.model.MovieReleaseDateDomainModel
+import dev.testify.samples.flix.domain.model.MovieReleaseDatesDomainModel
+import dev.testify.samples.flix.domain.model.PersonDomainModel
+import dev.testify.samples.flix.domain.model.ReleaseType
 import kotlinx.datetime.Instant
 
 interface DataLayerEntityToDomainModelMapper {

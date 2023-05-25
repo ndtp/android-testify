@@ -38,10 +38,19 @@ import dev.testify.samples.flix.presentation.homescreen.action.HomeScreenSystemA
 import dev.testify.samples.flix.presentation.homescreen.action.HomeScreenViewAction
 import dev.testify.samples.flix.presentation.homescreen.model.HomeScreenPresentationModel
 import dev.testify.samples.flix.presentation.homescreen.model.mapper.HomeScreenDomainModelToPresentationMapper
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-sealed class HomeScreenViewState() : ViewState() {
+sealed class HomeScreenViewState : ViewState() {
     data class LoadedHomeScreenViewState(val presentationModel: HomeScreenPresentationModel) : HomeScreenViewState()
 }
 
@@ -91,7 +100,7 @@ class HomeScreenViewModel(
                     Log.d(LOG_TAG, "Finished collecting from HomeScreenUseCase")
                 }
                 .catch {
-                    Log.e(LOG_TAG, "Oh no, something bad happened ${it.toString()}")
+                    Log.e(LOG_TAG, "Oh no, something bad happened $it")
                 }
                 .collect()
         }
