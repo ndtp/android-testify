@@ -45,6 +45,6 @@ object NavigationCommands {
     ) : NavigationCommand {
         override val destination = NavigationDestinations.MovieDetailsScreen
         override val route: String
-            get() = "com.flix.navigation.moviedetails/$movieId"
+            get() = "dev.testify.samples.flix.navigation.moviedetails/$movieId"
     }
 }
