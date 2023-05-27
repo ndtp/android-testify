@@ -53,6 +53,8 @@ plugins {
     id 'com.android.library' version '7.4.2' apply false
     id 'org.jetbrains.kotlin.android' version '1.8.21' apply false
     id 'org.jetbrains.dokka' version '1.8.10' apply false
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1' apply false
 }
 
 task clean(type: Delete) {
