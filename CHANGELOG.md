@@ -41,6 +41,12 @@
 
 - `Sample` has been renamed to `LegacySample` and moved to the `Samples/Legacy` directory.
 
+### Gradle Plugin
+
+#### Added
+
+- Added unit tests to the `:Plugin` project.
+
 ---
 
 ## 2.0.0-beta01

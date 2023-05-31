@@ -28,6 +28,7 @@ package dev.testify.internal
 import dev.testify.internal.StreamData.BufferedStream
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting
 
 class Adb {
 
@@ -104,7 +105,7 @@ class Adb {
 
     companion object {
         private lateinit var adbPath: String
-        private var deviceTarget: String? = null
+        @VisibleForTesting var deviceTarget: String? = null
         private var verbose: Boolean = false
 
         fun init(project: Project) {
