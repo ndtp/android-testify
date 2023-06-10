@@ -32,8 +32,6 @@ import org.junit.Test
  */
 class ComposableScreenshotTest {
 
-//    val x = ScreenshotRule(Activity::class.java)
-
     @get:Rule
     val rule = ExperimentalScreenshotRule()
 

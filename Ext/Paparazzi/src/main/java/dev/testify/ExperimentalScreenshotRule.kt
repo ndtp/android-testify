@@ -68,17 +68,17 @@ open class ExperimentalScreenshotRule(
         val androidHome = Paths.get(app.cash.paparazzi.androidHome())
         val appTestDir = Paths.get("/Users/danieljette/DevSource/ndtp/android-testify/Samples/Module/build")
         val artifactsCacheDir = Paths.get("/Users/danieljette/.gradle")
-        val configLines = readConfig()
+        val configLines = Configs()
         return Environment(
-            platformDir = androidHome.resolve(configLines[3]).toString(),
+            platformDir = androidHome.resolve(configLines.platformDir).toString(),
             appTestDir = appTestDir.toString(),
-            resDir = appTestDir.resolve(configLines[1]).toString(),
-            assetsDir = appTestDir.resolve(configLines[4]).toString(),
-            packageName = configLines[0],
-            compileSdkVersion = configLines[2].toInt(),
-            resourcePackageNames = configLines[5].split(","),
-            localResourceDirs = configLines[6].split(","),
-            libraryResourceDirs = configLines[7].split(",").map { artifactsCacheDir.resolve(it).toString() }
+            resDir = appTestDir.resolve(configLines.resDir).toString(),
+            assetsDir = appTestDir.resolve(configLines.assetsDir).toString(),
+            packageName = configLines.packageName,
+            compileSdkVersion = configLines.compileSdkVersion.toInt(),
+            resourcePackageNames = configLines.resourcePackageNames.split(","),
+            localResourceDirs = configLines.localResourceDirs.split(","),
+            libraryResourceDirs = configLines.libraryResourceDirs.split(",").map { artifactsCacheDir.resolve(it).toString() }
         )
     }
 
