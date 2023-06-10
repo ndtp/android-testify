@@ -29,21 +29,34 @@ import app.cash.paparazzi.Paparazzi
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 
 class LaunchViewTest {
 
-    @get:Rule(order = 0)
-    val configuration = PaparazziConfigurationRule()
+//    @get:Rule(order = 0)
+//    val configuration = PaparazziConfigurationRule()
+
+    @get:Rule(order = 1)
+    val paparazzi : Paparazzi
+
+    init {
+        PaparazziConfigurationRule()
+        paparazzi = Paparazzi(
+            deviceConfig = PIXEL_5,
+            theme = "android:Theme.Material.Light.NoActionBar"
+            // ...see docs for more options
+        )
+    }
+
+//    @get:Rule
+//    val chain = RuleChain.outerRule(paparazzi).around(PaparazziConfigurationRule())
+
+
 
     // Need to integrate the paparazzi dependencies via their plugin
     // TODO https://github.com/cashapp/paparazzi/blob/master/paparazzi/paparazzi-gradle-plugin/src/main/java/app/cash/paparazzi/gradle/PaparazziPlugin.kt
     // TODO https://github.com/cashapp/paparazzi/blob/master/paparazzi-gradle-plugin/src/main/java/app/cash/paparazzi/gradle/PaparazziPlugin.kt
-    @get:Rule(order = 1)
-    val paparazzi = Paparazzi(
-        deviceConfig = PIXEL_5,
-        theme = "android:Theme.Material.Light.NoActionBar"
-        // ...see docs for more options
-    )
+
 
 //    @Test
 //    fun launchView() {
