@@ -124,13 +124,13 @@ open class ExperimentalScreenshotRule(
     }
 
     fun assertSame() {
-        try {
+//        try {
             paparazzi.snapshot {
                 composeFunction()
             }
-        } catch (e: Throwable) {
-            // TODO: This does not work
-        }
+//        } catch (e: Throwable) {
+//             TODO: This does not work
+//        }
     }
 
     /**

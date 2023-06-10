@@ -124,7 +124,7 @@ fun TopAppBar() {
         navigationIcon = {
             IconButton(onClick = { }) {
                 Icon(
-                    painterResource(id = R.drawable.ic_back_black_24dp),
+                    painterResource(id = android.R.drawable.arrow_down_float),
                     contentDescription = null
                 )
             }
