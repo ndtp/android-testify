@@ -24,12 +24,6 @@ apply plugin: 'dev.testify'
 android {
     compileSdk 33
 
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
-    }
-
-
     defaultConfig {
         applicationId "dev.testify.sample"
         minSdkVersion 21
@@ -55,8 +49,12 @@ android {
         compose true
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = '17'
     }
     composeOptions {
         kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
