@@ -1,12 +1,13 @@
 package com.example.mylibrary
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
-import org.junit.Test
-
-import org.junit.Assert.*
 import org.junit.Rule
+import org.junit.Test
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -25,7 +26,11 @@ class ExampleUnitTest {
     @Test
     fun launchComposable() {
         paparazzi.snapshot {
-            Text(text = "Hello, Testify!")
+            Text(
+                modifier = Modifier.fillMaxSize(),
+                text = "Hello, Testify!",
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
