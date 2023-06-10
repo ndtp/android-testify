@@ -106,4 +106,8 @@ dependencies {
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     androidTestImplementation "androidx.test:core-ktx:1.4.0"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
+
+    testImplementation project(":Paparazzi")
+    testImplementation "junit:junit:4.12"
+
 }

@@ -23,11 +23,21 @@
  */
 package dev.testify
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
+import app.cash.paparazzi.DeviceConfig
+import app.cash.paparazzi.Environment
+import app.cash.paparazzi.HtmlReportWriter
+import app.cash.paparazzi.Paparazzi
+import app.cash.paparazzi.SnapshotHandler
+import app.cash.paparazzi.SnapshotVerifier
 import dev.testify.internal.TestifyConfiguration
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Helper extension of [ScreenshotRule] which simplifies testing [Composable] functions.
@@ -35,46 +45,75 @@ import org.junit.runners.model.Statement
  * @param exactness: The tolerance used when comparing the current image to the baseline. A value of 1f requires
  *      a perfect binary match. 0f will ignore all differences.
  */
+@SuppressLint("NewApi") // TODO: Not sure what to do about this
 open class ExperimentalScreenshotRule(
     exactness: Float = 0.9f,
 ) : TestRule {
-    val configuration = TestifyConfiguration(exactness = exactness)
-    lateinit var composeFunction: @Composable () -> Unit
+    private val configuration = TestifyConfiguration(exactness = exactness)
+    private lateinit var composeFunction: @Composable () -> Unit
+    private val deviceConfig: DeviceConfig = DeviceConfig.NEXUS_5
+    private lateinit var paparazzi: Paparazzi
+
+    // TODO https://github.com/cashapp/paparazzi/blob/master/paparazzi/paparazzi-gradle-plugin/src/main/java/app/cash/paparazzi/gradle/PaparazziPlugin.kt
+    // TODO https://github.com/cashapp/paparazzi/blob/master/paparazzi-gradle-plugin/src/main/java/app/cash/paparazzi/gradle/PaparazziPlugin.kt
+
+    private fun readConfig(): List<String> {
+        // TODO: Build this manually
+        val resourcesFile =
+            File("/Users/danieljette/DevSource/ndtp/android-testify/Samples/Module/build/intermediates/paparazzi/debug/resources.txt")
+        return resourcesFile.readLines()
+    }
+
+    private fun createEnvironment(): Environment {
+        val androidHome = Paths.get(app.cash.paparazzi.androidHome())
+        val appTestDir = Paths.get("/Users/danieljette/DevSource/ndtp/android-testify/Samples/Module/build")
+        val artifactsCacheDir = Paths.get("/Users/danieljette/.gradle")
+        val configLines = readConfig()
+        return Environment(
+            platformDir = androidHome.resolve(configLines[3]).toString(),
+            appTestDir = appTestDir.toString(),
+            resDir = appTestDir.resolve(configLines[1]).toString(),
+            assetsDir = appTestDir.resolve(configLines[4]).toString(),
+            packageName = configLines[0],
+            compileSdkVersion = configLines[2].toInt(),
+            resourcePackageNames = configLines[5].split(","),
+            localResourceDirs = configLines[6].split(","),
+            libraryResourceDirs = configLines[7].split(",").map { artifactsCacheDir.resolve(it).toString() }
+        )
+    }
+
+    private fun initializeLayoutEngine() {
+        // TODO: figure out a first-class way of doing this
+        // TODO: This configures the layoutlib dependency
+        System.setProperty(
+            "paparazzi.platform.data.root",
+            "/Users/danieljette/.gradle/caches/transforms-3/05b2b8149b425c35cb6d1ea51a46e87b/transformed/layoutlib-native-macosx-2022.2.1-5128371-2"
+        )
+    }
+
+    private fun getSnapshotHandler(isRecordMode: Boolean) : SnapshotHandler {
+        return if (isRecordMode) {
+            System.setProperty("paparazzi.test.record", "true")
+            HtmlReportWriter()
+        } else {
+            SnapshotVerifier(0.0)
+        }
+    }
+
+    private fun createPaparazzi() {
+        initializeLayoutEngine()
+
+        paparazzi = Paparazzi(
+            deviceConfig = deviceConfig,
+            theme = "android:Theme.Material.Light.NoActionBar",
+            // ...see docs for more options
+            environment = createEnvironment(),
+            snapshotHandler = getSnapshotHandler(true)
+        )
+    }
 
     open fun onCleanUp() {
     }
-
-//    /**
-//     * Set a screenshot view provider to capture only the @Composable bounds
-//     */
-//    override fun beforeAssertSame() {
-//        super.beforeAssertSame()
-//        setCaptureMethod(::pixelCopyCapture)
-//        setScreenshotViewProvider {
-//            it.getChildAt(0)
-//        }
-//    }
-
-//    /**
-//     * Render the composable function after the activity has loaded.
-//     */
-//    override fun afterActivityLaunched() {
-//        activity.runOnUiThread {
-//            val composeView = activity.findViewById<ComposeView>(R.id.compose_container)
-//            composeView.setContent {
-//                composeFunction()
-//            }
-//        }
-//        super.afterActivityLaunched()
-//    }
-
-//    /**
-//     * Proactively dispose of any compositions after the screenshot has been taken.
-//     */
-//    override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {
-//        super.afterScreenshot(activity, currentBitmap)
-//        onCleanUp(activity)
-//    }
 
     /**
      * Used to provide a @Composable function to be rendered in the screenshot.
@@ -84,34 +123,22 @@ open class ExperimentalScreenshotRule(
         return this
     }
 
-//    /**
-//     * Test lifecycle method.
-//     * Invoked after layout inflation and all view modifications have been applied.
-//     */
-//    override fun afterInitializeView(activity: Activity) {
-//        super.afterInitializeView(activity)
-//    }
-
-//    /**
-//     * Test lifecycle method.
-//     * Invoked immediately before the screenshot is taken.
-//     */
-//    override fun beforeScreenshot(activity: Activity) {
-//        val targetView = getRootView(activity).getChildAt(0)
-//        if (targetView.width == 0 && targetView.height == 0)
-//            throw IllegalStateException(
-//                "Target view has 0 size. " +
-//                    "Verify if you have provided a ComposeTestRule instance to ComposableScreenshotRule."
-//            )
-//
-//        super.beforeScreenshot(activity)
-//    }
+    fun assertSame() {
+        try {
+            paparazzi.snapshot {
+                composeFunction()
+            }
+        } catch (e: Throwable) {
+            // TODO: This does not work
+        }
+    }
 
     /**
      * Modifies the method-running Statement to implement this test-running rule.
      */
     override fun apply(base: Statement, description: Description): Statement {
-        return base
+        createPaparazzi()
+        return paparazzi.apply(base, description)
     }
 
     /**
