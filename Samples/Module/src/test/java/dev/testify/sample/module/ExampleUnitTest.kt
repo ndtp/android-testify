@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
+import app.cash.paparazzi.SnapshotVerifier
 import org.junit.Rule
 import org.junit.Test
 
@@ -16,10 +17,15 @@ import org.junit.Test
  */
 class ExampleUnitTest {
 
+    init {
+        System.setProperty("paparazzi.test.verify", "true")
+    }
+
     @get:Rule
     val paparazzi = Paparazzi(
         deviceConfig = DeviceConfig.PIXEL_5,
-        theme = "android:Theme.Material.Light.NoActionBar"
+        theme = "android:Theme.Material.Light.NoActionBar",
+        snapshotHandler = SnapshotVerifier(0.1)
         // ...see docs for more options
     )
 

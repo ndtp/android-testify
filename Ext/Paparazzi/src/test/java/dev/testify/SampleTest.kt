@@ -25,32 +25,72 @@ package dev.testify
 
 import androidx.compose.material.Text
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
+import app.cash.paparazzi.Environment
 import app.cash.paparazzi.Paparazzi
-import org.junit.Assert.assertEquals
+import app.cash.paparazzi.SnapshotVerifier
 import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.RuleChain
+import java.io.File
+import java.nio.file.Paths
 
 class LaunchViewTest {
+
+    
+    @get:Rule
+    val screenshotRule = ExperimentalScreenshotRule()
 
 //    @get:Rule(order = 0)
 //    val configuration = PaparazziConfigurationRule()
 
     @get:Rule(order = 1)
-    val paparazzi : Paparazzi
+    val paparazzi: Paparazzi
 
     init {
-        PaparazziConfigurationRule()
+//        PaparazziConfigurationRule()
+//
+//        System.setProperty("paparazzi.test.resources", "/Users/danieljette/DevSource/ndtp/android-testify/Samples/Module/build/intermediates/paparazzi/debug/resources.txt")
+//        System.setProperty("paparazzi.build.dir", "/Users/danieljette/DevSource/ndtp/android-testify/Samples/Module/build")
+//        System.setProperty("paparazzi.artifacts.cache.dir", "/Users/danieljette/.gradle")
+        System.setProperty("paparazzi.platform.data.root", "/Users/danieljette/.gradle/caches/transforms-3/05b2b8149b425c35cb6d1ea51a46e87b/transformed/layoutlib-native-macosx-2022.2.1-5128371-2")
+
+
+        // TODO: Can't do this because it's loaded in a companion object
+        // System.setProperty("paparazzi.test.verify", "true")
+
+        val resourcesFile =
+            File("/Users/danieljette/DevSource/ndtp/android-testify/Samples/Module/build/intermediates/paparazzi/debug/resources.txt")
+        val configLines = resourcesFile.readLines()
+
+        val appTestDir = Paths.get("/Users/danieljette/DevSource/ndtp/android-testify/Samples/Module/build")
+        val artifactsCacheDir = Paths.get("/Users/danieljette/.gradle")
+        val androidHome = Paths.get(app.cash.paparazzi.androidHome())
+
+//        System.setProperty("paparazzi.test.record", "true")
+        // paparazzi.test.record
+
+        val environment = Environment(
+            platformDir = androidHome.resolve(configLines[3]).toString(),
+            appTestDir = appTestDir.toString(),
+            resDir = appTestDir.resolve(configLines[1]).toString(),
+            assetsDir = appTestDir.resolve(configLines[4]).toString(),
+            packageName = configLines[0],
+            compileSdkVersion = configLines[2].toInt(),
+            resourcePackageNames = configLines[5].split(","),
+            localResourceDirs = configLines[6].split(","),
+            libraryResourceDirs = configLines[7].split(",").map { artifactsCacheDir.resolve(it).toString() }
+        )
+
         paparazzi = Paparazzi(
             deviceConfig = PIXEL_5,
-            theme = "android:Theme.Material.Light.NoActionBar"
+            theme = "android:Theme.Material.Light.NoActionBar",
             // ...see docs for more options
+            environment = environment,
+            snapshotHandler = SnapshotVerifier(0.0)
         )
     }
 
 //    @get:Rule
 //    val chain = RuleChain.outerRule(paparazzi).around(PaparazziConfigurationRule())
-
 
 
     // Need to integrate the paparazzi dependencies via their plugin

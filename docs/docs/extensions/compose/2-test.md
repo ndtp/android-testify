@@ -1,6 +1,6 @@
 # Test a Composable
 
-In order to test a `@Composable` function, you must first declare an instance variable of the [`ComposableScreenshotRule`](https://github.com/ndtp/android-testify/blob/main/Ext/Compose/src/main/java/dev/testify/ComposableScreenshotRule.kt) class. You will be using this rule instead of the default `ScreenshotTestRule`.
+In order to test a `@Composable` function, you must first declare an instance variable of the [`ComposableScreenshotRule`](https://github.com/ndtp/android-testify/blob/main/Ext/Compose/src/main/java/dev/testify/ExperimentalScreenshotRule.kt) class. You will be using this rule instead of the default `ScreenshotTestRule`.
 
 `ComposableScreenshotRule` provides a `setCompose()` method which accepts a composable function in which you can specify your own custom compositions. You can invoke the `setCompose()` method on the `rule` instance and declare any Compose UI functions you wish to test.
 
