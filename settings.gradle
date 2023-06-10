@@ -24,11 +24,15 @@ include ':Library'
 include ':ComposeExtensions'
 include ':FullscreenCaptureMethod'
 include ':Accessibility'
+include ':Paparazzi'
+include ':ModuleSample'
 
 project(':Plugin').projectDir = new File("./Plugins/Gradle")
 project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
+project(':Paparazzi').projectDir = new File("./Ext/Paparazzi")
 project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':Accessibility').projectDir = new File("./Ext/Accessibility")
 project(':LegacySample').projectDir = new File("./Samples/Legacy")
 project(':FlixSample').projectDir = new File("./Samples/Flix")
+project(':ModuleSample').projectDir = new File("./Samples/Module")
 

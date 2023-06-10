@@ -23,6 +23,7 @@ group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
 android {
+    namespace "dev.testify.compose"
     compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
@@ -88,10 +89,10 @@ android {
     }
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
+//task sourcesJar(type: Jar) {
+//    from android.sourceSets.main.java.srcDirs
+//    classifier = 'sources'
+//}
 
 afterEvaluate {
     apply from: "../../publish.build.gradle"

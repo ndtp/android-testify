@@ -46,7 +46,7 @@ publishing {
             }
 
             artifact javadocJar
-            artifact sourcesJar
+//            artifact sourcesJar
 
             pom {
                 name = project.ext.pom.libraryName

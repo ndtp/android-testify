@@ -79,11 +79,11 @@ task assembleLocal(description: 'Assembles the outputs of this project for use l
     build.mustRunAfter configureLocal
     copyLocal.mustRunAfter build
 }
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.groovy.srcDirs
-    classifier = 'sources'
-}
+//
+//task sourcesJar(type: Jar) {
+//    from sourceSets.main.groovy.srcDirs
+//    classifier = 'sources'
+//}
 
 apply from: "../../publish.build.gradle"
 apply from: '../../ktlint.gradle'

@@ -7,9 +7,9 @@ plugins {
 ext {
     pom = [
             publishedGroupId  : 'dev.testify',
-            artifact          : 'testify-fullscreen',
-            libraryName       : 'testify-fullscreen',
-            libraryDescription: 'Fullscreen capture method for Android Testify',
+            artifact          : 'testify-paparazzi',
+            libraryName       : 'testify-paparazzi',
+            libraryDescription: 'Paparazzi extensions for Android Testify',
             siteUrl           : 'https://github.com/ndtp/android-testify',
             gitUrl            : 'https://github.com/ndtp/android-testify.git',
             licenseName       : 'The MIT License',
@@ -23,7 +23,7 @@ group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
 android {
-    namespace "dev.testify.fullscreen"
+    namespace "dev.testify.paparazzi"
     compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
@@ -61,17 +61,33 @@ android {
         }
     }
 
+    buildFeatures {
+        viewBinding true
+        compose true
+    }
+
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
     }
 
     dependencies {
         implementation project(":Library")
 
-        implementation "androidx.core:core-ktx:${versions.androidx.core}"
-        implementation "androidx.test.uiautomator:uiautomator:${versions.androidx.test.uiautomator}"
-        implementation "androidx.test:monitor:${versions.androidx.test.monitor}"
+        implementation "androidx.activity:activity-compose:${versions.androidx.activityCompose}"
+        implementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
+        implementation "androidx.compose.material:material:${versions.compose.material}"
+        implementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
+        implementation "androidx.compose.ui:ui-tooling-preview:${versions.compose.ui}"
+        implementation "androidx.compose.ui:ui:${versions.compose.ui}"
+        implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidx.lifecycleKtx}"
+        implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
         implementation "androidx.test:rules:${versions.androidx.test.rules}"
+        implementation "androidx.test:runner:${versions.androidx.test.runner}"
+
+        implementation "app.cash.paparazzi:paparazzi:1.3.0"
     }
 }
 
