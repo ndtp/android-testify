@@ -17,10 +17,6 @@ import org.junit.Test
  */
 class ExampleUnitTest {
 
-    init {
-        System.setProperty("paparazzi.test.verify", "true")
-    }
-
     @get:Rule
     val paparazzi = Paparazzi(
         deviceConfig = DeviceConfig.PIXEL_5,

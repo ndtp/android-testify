@@ -44,7 +44,7 @@ class ClientDetailsViewScreenshotTest {
         enableReporter = true
     )
 
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun default() {

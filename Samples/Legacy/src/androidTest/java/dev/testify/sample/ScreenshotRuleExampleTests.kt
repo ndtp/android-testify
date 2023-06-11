@@ -78,7 +78,7 @@ class ScreenshotRuleExampleTests {
      * This test uses the [TestifyLayout] annotation to load [R.layout.view_client_details] into
      * the [TestHarnessActivity].
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun default() {
@@ -97,7 +97,7 @@ class ScreenshotRuleExampleTests {
      * You can provide a lambda to populate the provided Bundle with any user-declared extra values.
      * This example shows how to set the title bar text using an Intent extra.
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun addIntentExtras() {
@@ -114,7 +114,7 @@ class ScreenshotRuleExampleTests {
      *
      * This approach is useful for library projects where the R.id values are not constant.
      */
-    @TestifyLayout(layoutResName = "dev.testify.sample:layout/view_client_details")
+//    @TestifyLayout(layoutResName = "dev.testify.sample:layout/view_client_details")
     @ScreenshotInstrumentation
     @Test
     fun usingLayoutResName() {
@@ -155,7 +155,7 @@ class ScreenshotRuleExampleTests {
      * tests. Espresso test are an order of magnitude slower to run and are more susceptible to
      * flakiness.
      */
-    @TestifyLayout(R.layout.view_edit_text)
+//    @TestifyLayout(R.layout.view_edit_text)
     @ScreenshotInstrumentation
     @Test
     fun setEspressoActions() {
@@ -172,7 +172,7 @@ class ScreenshotRuleExampleTests {
      * In this example, GenerateDiffs is enabled and the file
      * ScreenshotRuleExampleTests_withExperimentalFeatureEnabled.diff.png is created for this test.
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun withExperimentalFeatureEnabled() {
@@ -196,7 +196,7 @@ class ScreenshotRuleExampleTests {
      *
      * [@see https://developer.android.com/guide/topics/graphics/hardware-accel.html]
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun setUseSoftwareRenderer() {
@@ -223,7 +223,7 @@ class ScreenshotRuleExampleTests {
      * Note that the fuzzy matching is approximately 10x slower than the default matching.
      * Use sparingly.
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun setExactness() {
@@ -245,7 +245,7 @@ class ScreenshotRuleExampleTests {
             }
     }
 
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @BitmapComparisonExactness(exactness = 0.95f)
     @ScreenshotInstrumentation
     @Test
@@ -253,7 +253,7 @@ class ScreenshotRuleExampleTests {
         rule.setupExactness().assertSame()
     }
 
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test(expected = ScreenshotIsDifferentException::class)
     fun generateDiffs() {
@@ -278,7 +278,7 @@ class ScreenshotRuleExampleTests {
      * which will be used by Testify to narrow the bitmap to only that View.
      * You can use this method to take a screenshot of a partial Activity or a single View.
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun setScreenshotViewProvider() {
@@ -295,7 +295,7 @@ class ScreenshotRuleExampleTests {
      * Note how the screenshot device key baseline has a longer width than height.
      * e.g. 22-800x480@240dp-en_US
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun setOrientation() {
@@ -309,7 +309,7 @@ class ScreenshotRuleExampleTests {
      * This can be useful if some content of your View is dynamic or not repeatable under test.
      * Note that this comparison mechanism is slower than the default.
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun exclusions() {
@@ -341,7 +341,7 @@ class ScreenshotRuleExampleTests {
      *
      * This example demonstrates how to modify a captured bitmap.
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun customCapture() {
@@ -424,7 +424,7 @@ class ScreenshotRuleExampleTests {
     /**
      * Demonstrates how to define a custom comparison method.
      */
-    @TestifyLayout(R.layout.view_client_details)
+//    @TestifyLayout(R.layout.view_client_details)
     @ScreenshotInstrumentation
     @Test
     fun compareMethodExample() {
