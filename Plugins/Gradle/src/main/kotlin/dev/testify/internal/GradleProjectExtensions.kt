@@ -40,6 +40,9 @@ val Project.isVerbose: Boolean
 val Project.useLocale: Boolean
     get() = (this.properties["useLocale"] as? String)?.toBoolean() ?: false
 
+val Project.user: Int?
+    get() = (this.properties["user"] as? String)?.toInt()
+
 val Project.inferredInstallTask: String?
     get() {
         val pattern = "^install.*Debug$".toRegex()

@@ -2,19 +2,20 @@ plugins {
     id 'groovy'
     id 'kotlin'
     id 'org.jetbrains.dokka'
+    id 'jacoco'
 }
 
 ext {
     pom = [
-        publishedGroupId  : 'dev.testify',
-        artifact          : 'plugin',
-        libraryName       : 'testify-plugin',
-        libraryDescription: 'Android screenshot instrumentation tests plugin.',
-        siteUrl           : 'https://github.com/ndtp/android-testify',
-        gitUrl            : 'https://github.com/ndtp/android-testify.git',
-        licenseName       : 'The MIT License',
-        licenseUrl        : 'https://opensource.org/licenses/MIT',
-        author            : 'ndtp'
+            publishedGroupId  : 'dev.testify',
+            artifact          : 'plugin',
+            libraryName       : 'testify-plugin',
+            libraryDescription: 'Android screenshot instrumentation tests plugin.',
+            siteUrl           : 'https://github.com/ndtp/android-testify',
+            gitUrl            : 'https://github.com/ndtp/android-testify.git',
+            licenseName       : 'The MIT License',
+            licenseUrl        : 'https://opensource.org/licenses/MIT',
+            author            : 'ndtp'
     ]
 }
 
@@ -26,6 +27,10 @@ archivesBaseName = pom.artifact
 sourceCompatibility = JavaVersion.VERSION_11
 
 test {
+    jacoco {
+        enabled = true
+    }
+    finalizedBy jacocoTestReport
     testLogging {
         events "passed", "skipped", "failed", "standardOut", "standardError"
         outputs.upToDateWhen { false }
@@ -37,6 +42,10 @@ dependencies {
     implementation "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
     implementation gradleApi()
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "com.google.truth:truth:1.1.3"
+    testImplementation "io.mockk:mockk:1.13.5"
 }
 
 compileKotlin {
@@ -87,3 +96,17 @@ task sourcesJar(type: Jar) {
 
 apply from: "../../publish.build.gradle"
 apply from: '../../ktlint.gradle'
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}

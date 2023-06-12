@@ -28,6 +28,7 @@ package dev.testify.internal
 import dev.testify.internal.StreamData.BufferedStream
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting
 
 class Adb {
 
@@ -59,6 +60,20 @@ class Adb {
 
         arguments.add("run-as")
         arguments.add(packageId)
+
+        user()
+
+        return this
+    }
+
+    private fun user(): Adb {
+        if (forcedUser != null) {
+            arguments("--user", "$forcedUser")
+        } else {
+            val user = Device.user
+            if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0)
+                arguments("--user", user)
+        }
         return this
     }
 
@@ -104,8 +119,9 @@ class Adb {
 
     companion object {
         private lateinit var adbPath: String
-        private var deviceTarget: String? = null
+        @VisibleForTesting var deviceTarget: String? = null
         private var verbose: Boolean = false
+        var forcedUser: Int? = null
 
         fun init(project: Project) {
             adbPath = project.android.adbExecutable.absolutePath
@@ -113,6 +129,7 @@ class Adb {
             val index = (project.properties["device"] as? String)?.toInt() ?: 0
             deviceTarget = Devices.targets[index]
             verbose = project.isVerbose
+            forcedUser = project.user
         }
     }
 }
