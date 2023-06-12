@@ -90,6 +90,18 @@ object Device {
             return sizeLine.substring("Physical size: ".length).trim()
         }
 
+    internal val user: String
+        get() {
+            val user = Adb()
+                .shell()
+                .arguments(
+                    "am",
+                    "get-current-user"
+                )
+                .execute().trim()
+            return user.ifEmpty { "0" }
+        }
+
     internal fun deviceKey(): String {
         return "$version-$displaySize@${displayDensity}dp-$locale"
     }

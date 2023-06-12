@@ -67,10 +67,12 @@ class AdbTest {
 
         mockkStatic(Project::android)
         mockkStatic(Project::isVerbose)
+        mockkStatic(Project::user)
         mockkObject(Device)
 
         every { any<Project>().android } returns extension
         every { any<Project>().isVerbose } returns false
+        every { any<Project>().user } returns null
 
         mockkStatic(::runProcess)
 
@@ -136,5 +138,43 @@ class AdbTest {
         subject.shell().execute()
         assertThat(processLog[0]).contains("devices")
         assertThat(processLog[1]).contains("-s emulator-5554")
+    }
+
+    @Test
+    fun `WHEN no user defined THEN do not specify a user`() {
+        println("WHEN no user defined THEN do not specify a user")
+        configureRunProcessCapture(mapOf("get-current-user" to ""))
+        subject.shell().runAs("dev.testify").execute()
+        processLog.forEach {
+            assertThat(it).doesNotContain("--user")
+        }
+    }
+
+    @Test
+    fun `WHEN user is 0 THEN do not specify a user`() {
+        println("WHEN user is 0 THEN do not specify a user")
+        subject.shell().runAs("dev.testify").execute()
+        processLog.forEach {
+            assertThat(it).doesNotContain("--user")
+        }
+    }
+
+    @Test
+    fun `WHEN user is 10 THEN specify user 10`() {
+        println("WHEN user is 10 THEN specify user 10")
+        configureRunProcessCapture(mapOf("get-current-user" to "10"))
+        subject.shell().runAs("dev.testify").execute()
+        assertThat(processLog.last()).contains("--user 10")
+    }
+
+    @Test
+    fun `WHEN forced user is 99 THEN specify user 99`() {
+        println("WHEN forced user is 99 THEN specify user 99")
+        configureRunProcessCapture(mapOf("get-current-user" to "10"))
+        every { any<Project>().user } returns 99
+
+        Adb.init(project)
+        subject.shell().runAs("dev.testify").execute()
+        assertThat(processLog.last()).contains("--user 99")
     }
 }

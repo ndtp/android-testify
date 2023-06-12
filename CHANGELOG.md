@@ -45,6 +45,8 @@
 
 #### Added
 
+- Add multi-user support to the Gradle Plugin.
+- Use `-Puser=<number>` to override the default user.
 - Added unit tests to the `:Plugin` project.
 
 ---

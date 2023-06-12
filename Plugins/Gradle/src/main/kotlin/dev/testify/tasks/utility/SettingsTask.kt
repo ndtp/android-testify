@@ -25,6 +25,8 @@
 
 package dev.testify.tasks.utility
 
+import dev.testify.internal.Adb
+import dev.testify.internal.Device
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 import dev.testify.testifySettings
@@ -34,6 +36,7 @@ open class SettingsTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the Testify gradle extension settings"
 
     override fun taskAction() {
+        val userId = Adb.forcedUser?.toString() ?: Device.user
         with(project.testifySettings) {
             println("  baselineSourceDir      = $baselineSourceDir")
             println("  installAndroidTestTask = $installAndroidTestTask")
@@ -46,6 +49,7 @@ open class SettingsTask : TestifyUtilityTask() {
             println("  testPackageId          = $testPackageId")
             println("  testRunner             = $testRunner")
             println("  useSdCard              = $useSdCard")
+            println("  user                   = $userId")
         }
     }
 

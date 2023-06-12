@@ -60,6 +60,20 @@ class Adb {
 
         arguments.add("run-as")
         arguments.add(packageId)
+
+        user()
+
+        return this
+    }
+
+    private fun user(): Adb {
+        if (forcedUser != null) {
+            arguments("--user", "$forcedUser")
+        } else {
+            val user = Device.user
+            if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0)
+                arguments("--user", user)
+        }
         return this
     }
 
@@ -107,6 +121,7 @@ class Adb {
         private lateinit var adbPath: String
         @VisibleForTesting var deviceTarget: String? = null
         private var verbose: Boolean = false
+        var forcedUser: Int? = null
 
         fun init(project: Project) {
             adbPath = project.android.adbExecutable.absolutePath
@@ -114,6 +129,7 @@ class Adb {
             val index = (project.properties["device"] as? String)?.toInt() ?: 0
             deviceTarget = Devices.targets[index]
             verbose = project.isVerbose
+            forcedUser = project.user
         }
     }
 }
