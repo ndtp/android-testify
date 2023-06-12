@@ -27,7 +27,6 @@ package dev.testify.internal
 
 import android.content.Context
 import android.util.DisplayMetrics
-import android.util.Pair
 import android.view.WindowManager
 import dev.testify.internal.extensions.languageTag
 import java.util.Locale
@@ -47,7 +46,7 @@ fun getDeviceDimensions(context: Context): Pair<Int, Int> {
     val realWidth = metrics.widthPixels
     val realHeight = metrics.heightPixels
 
-    return Pair(realWidth, realHeight)
+    return realWidth to realHeight
 }
 
 fun getDeviceDescription(context: Context): String {
@@ -110,9 +109,9 @@ open class DeviceStringFormatter(private val context: Context, private val testN
         get() = Locale.getDefault().languageTag
 
     internal open val testClass: String
-        get() = if (testName == null) "" else testName.first
+        get() = testName?.first.orEmpty()
 
     internal open fun getTestName(): String {
-        return if (testName == null) "" else testName.second
+        return testName?.second.orEmpty()
     }
 }

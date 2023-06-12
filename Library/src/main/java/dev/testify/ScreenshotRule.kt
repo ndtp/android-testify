@@ -134,7 +134,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     internal val testContext = getInstrumentation().context
     private var assertSameInvoked = false
-    private var espressoHelper = EspressoHelper(configuration)
+    internal val espressoHelper: EspressoHelper by lazy { EspressoHelper(configuration) }
     private var screenshotViewProvider: ViewProvider? = null
     private var throwable: Throwable? = null
     private var viewModification: ViewModification? = null
@@ -368,8 +368,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return intent
     }
 
-    @Suppress("MemberVisibilityCanBePrivate")
-    protected fun getIntent(): Intent {
+    @VisibleForTesting
+    internal fun getIntent(): Intent {
         var intent = super.getActivityIntent()
         if (intent == null) {
             intent = Intent()
@@ -596,7 +596,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         configuration.applyViewModificationsMainThread(parentView)
     }
 
-    private fun initializeView(activity: Activity) {
+    @VisibleForTesting
+    internal fun initializeView(activity: Activity) {
         val parentView = getRootView(activity)
         val latch = CountDownLatch(1)
 
