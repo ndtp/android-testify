@@ -28,6 +28,8 @@ package dev.testify.internal
 import android.app.Activity
 import android.view.View
 import androidx.annotation.IdRes
+import dev.testify.CaptureMethod
+import dev.testify.CompareMethod
 import dev.testify.ScreenshotRule
 import dev.testify.TestifyFeatures
 import java.util.Locale
@@ -110,6 +112,23 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
 
     fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ConfigurationBuilder<T> {
         feature.setEnabled(true)
+        return this
+    }
+
+    /**
+     * Allow the test to define a custom bitmap capture method.
+     * The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
+     */
+    fun setCaptureMethod(captureMethod: CaptureMethod?): ConfigurationBuilder<T> {
+        innerConfiguration.captureMethod = captureMethod
+        return this
+    }
+
+    /**
+     * Allow the test to define a custom bitmap comparison method.
+     */
+    fun setCompareMethod(compareMethod: CompareMethod?): ConfigurationBuilder<T> {
+        innerConfiguration.compareMethod = compareMethod
         return this
     }
 

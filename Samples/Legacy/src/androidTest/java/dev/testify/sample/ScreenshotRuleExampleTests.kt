@@ -183,7 +183,9 @@ class ScreenshotRuleExampleTests {
                     rule.activity.title = it.name
                 }
             }
-            .withExperimentalFeatureEnabled(TestifyFeatures.GenerateDiffs)
+            .configure {
+                TestifyFeatures.GenerateDiffs.setEnabled(true)
+            }
             .assertSame()
     }
 
@@ -352,44 +354,46 @@ class ScreenshotRuleExampleTests {
                     rule.activity.title = it.name
                 }
             }
-            .setCaptureMethod { activity, targetView ->
-                val bitmap = createBitmapFromDrawingCache(
-                    activity,
-                    targetView
-                )
-                val obfuscatedColor = Paint().apply {
-                    color = Color.BLACK
-                }
-                Canvas(bitmap).apply {
-                    // Obfuscate name
-                    drawRect(40f, 100f, 400f, 200f, obfuscatedColor)
+            .configure {
+                captureMethod = { activity, targetView ->
+                    val bitmap = createBitmapFromDrawingCache(
+                        activity,
+                        targetView
+                    )
+                    val obfuscatedColor = Paint().apply {
+                        color = Color.BLACK
+                    }
+                    Canvas(bitmap).apply {
+                        // Obfuscate name
+                        drawRect(40f, 100f, 400f, 200f, obfuscatedColor)
 
-                    // Obfuscate address
-                    activity.findViewById<View>(R.id.address).let {
-                        val position = Rect()
-                        it.getGlobalVisibleRect(position)
-                        drawRect(
-                            position.left.toFloat(),
-                            position.top.toFloat(),
-                            position.right.toFloat(),
-                            position.bottom.toFloat(),
-                            obfuscatedColor
-                        )
+                        // Obfuscate address
+                        activity.findViewById<View>(R.id.address).let {
+                            val position = Rect()
+                            it.getGlobalVisibleRect(position)
+                            drawRect(
+                                position.left.toFloat(),
+                                position.top.toFloat(),
+                                position.right.toFloat(),
+                                position.bottom.toFloat(),
+                                obfuscatedColor
+                            )
+                        }
+                        // Obfuscate phone numbers
+                        activity.findViewById<View>(R.id.phone).let {
+                            val position = Rect()
+                            it.getGlobalVisibleRect(position)
+                            drawRect(
+                                position.left.toFloat(),
+                                position.top.toFloat(),
+                                position.right.toFloat(),
+                                position.bottom.toFloat(),
+                                obfuscatedColor
+                            )
+                        }
                     }
-                    // Obfuscate phone numbers
-                    activity.findViewById<View>(R.id.phone).let {
-                        val position = Rect()
-                        it.getGlobalVisibleRect(position)
-                        drawRect(
-                            position.left.toFloat(),
-                            position.top.toFloat(),
-                            position.right.toFloat(),
-                            position.bottom.toFloat(),
-                            obfuscatedColor
-                        )
-                    }
+                    bitmap
                 }
-                bitmap
             }
             .assertSame()
     }
@@ -398,23 +402,25 @@ class ScreenshotRuleExampleTests {
     @Test
     fun captureMethodExample() {
         rule
-            .setCaptureMethod { activity, targetView ->
-                /* Return a Bitmap */
-                createBitmapFromDrawingCache(activity, targetView).apply {
-                    /* Wrap the Bitmap in a Canvas so we can draw on it */
-                    Canvas(this).apply {
-                        /* Add a wordmark to the captured image */
-                        val textPaint = Paint().apply {
-                            color = Color.BLACK
-                            textSize = 50f
-                            isAntiAlias = true
+            .configure {
+                captureMethod = { activity, targetView ->
+                    /* Return a Bitmap */
+                    createBitmapFromDrawingCache(activity, targetView).apply {
+                        /* Wrap the Bitmap in a Canvas so we can draw on it */
+                        Canvas(this).apply {
+                            /* Add a wordmark to the captured image */
+                            val textPaint = Paint().apply {
+                                color = Color.BLACK
+                                textSize = 50f
+                                isAntiAlias = true
+                            }
+                            this.drawText(
+                                "<<Testify ${getInstrumentation().testDescription.methodName}>>",
+                                50f,
+                                2000f,
+                                textPaint
+                            )
                         }
-                        this.drawText(
-                            "<<Testify ${getInstrumentation().testDescription.methodName}>>",
-                            50f,
-                            2000f,
-                            textPaint
-                        )
                     }
                 }
             }
@@ -443,7 +449,7 @@ class ScreenshotRuleExampleTests {
                 val c = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')
                 it.findViewById<View>(R.id.info_card).setBackgroundColor(Color.parseColor("#$c$c$c"))
             }
-            .setCompareMethod(::ignoreDifferences)
+            .configure { compareMethod = ::ignoreDifferences }
             .assertSame()
     }
 

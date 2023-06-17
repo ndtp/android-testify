@@ -26,13 +26,10 @@
 
 package dev.testify
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.os.Debug
-import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
@@ -44,61 +41,33 @@ import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
-import dev.testify.internal.DEFAULT_FOLDER_FORMAT
-import dev.testify.internal.DEFAULT_NAME_FORMAT
-import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.ScreenshotRuleCompatibilityMethods
 import dev.testify.internal.TestifyConfiguration
-import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
-import dev.testify.internal.exception.FailedToCaptureBitmapException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
-import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
-import dev.testify.internal.exception.RootViewNotFoundException
-import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
-import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
-import dev.testify.internal.exception.ViewModificationException
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.getModuleName
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
-import dev.testify.internal.extensions.cyan
 import dev.testify.internal.extensions.getScreenshotAnnotationName
 import dev.testify.internal.extensions.isInvokedFromPlugin
-import dev.testify.internal.formatDeviceString
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.EspressoActions
 import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
-import dev.testify.internal.output.doesOutputFileExist
-import dev.testify.internal.processor.capture.canvasCapture
-import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
-import dev.testify.internal.processor.capture.pixelCopyCapture
-import dev.testify.internal.processor.compare.FuzzyCompare
-import dev.testify.internal.processor.compare.sameAsCompare
-import dev.testify.internal.processor.diff.HighContrastDiff
+import dev.testify.internal.logic.InternalState
+import dev.testify.internal.logic.assertSameInternal
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
-import org.junit.Assert.assertTrue
-import org.junit.Assume.assumeTrue
 import org.junit.AssumptionViolatedException
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
-typealias ViewModification = (rootView: ViewGroup) -> Unit
-typealias ViewProvider = (rootView: ViewGroup) -> View
-typealias ExtrasProvider = (bundle: Bundle) -> Unit
-
-@Suppress("unused", "MemberVisibilityCanBePrivate")
+//@Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected val activityClass: Class<T>,
-    @IdRes rootViewId: Int = android.R.id.content,
+    @IdRes override var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     protected val configuration: TestifyConfiguration = TestifyConfiguration()
@@ -106,6 +75,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     TestRule,
     ActivityProvider<T>,
     ScreenshotLifecycle,
+    InternalState,
     CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods() {
 
     @Deprecated(
@@ -126,39 +96,28 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         configuration = TestifyConfiguration()
     )
 
-    @IdRes
-    protected var rootViewId = rootViewId
-        @JvmName("rootViewIdResource") set
-
-    @LayoutRes private var targetLayoutId: Int = NO_ID
+    @LayoutRes override var targetLayoutId: Int = NO_ID
 
     internal val testContext = getInstrumentation().context
-    private var assertSameInvoked = false
+
+    // InternalState
+    override var assertSameInvoked = false
+    override val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
+    override var throwable: Throwable? = null
+    override var screenshotViewProvider: ViewProvider? = null
+    override var viewModification: ViewModification? = null
+
     internal val espressoHelper: EspressoHelper by lazy { EspressoHelper(configuration) }
-    private var screenshotViewProvider: ViewProvider? = null
-    private var throwable: Throwable? = null
-    private var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
-    private var captureMethod: CaptureMethod? = null
-    private var compareMethod: CompareMethod? = null
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
         private set
-    private lateinit var outputFileName: String
-    private val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
 
     init {
         if (enableReporter || TestifyFeatures.Reporter.isEnabled(getInstrumentation().context)) {
             reporter = Reporter(getInstrumentation().targetContext, ReportSession())
         }
-    }
-
-    val outputFileExists: Boolean
-        get() = doesOutputFileExist(activity, outputFileName)
-
-    private fun isRunningOnUiThread(): Boolean {
-        return Looper.getMainLooper().thread == Thread.currentThread()
     }
 
     fun setRootViewId(@IdRes rootViewId: Int): ScreenshotRule<T> {
@@ -192,6 +151,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
+    // TODO: Make backwards compatible
+    // Migration: use configure { TestifyFeature.Foo.setEnabled(true) }
     fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ScreenshotRule<T> {
         feature.setEnabled(true)
         return this
@@ -205,23 +166,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @CallSuper
     open fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
         configureRule.invoke(configuration)
-        return this
-    }
-
-    /**
-     * Allow the test to define a custom bitmap capture method.
-     * The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
-     */
-    open fun setCaptureMethod(captureMethod: CaptureMethod?): ScreenshotRule<T> {
-        this.captureMethod = captureMethod
-        return this
-    }
-
-    /**
-     * Allow the test to define a custom bitmap comparison method.
-     */
-    fun setCompareMethod(compareMethod: CompareMethod?): ScreenshotRule<T> {
-        this.compareMethod = compareMethod
         return this
     }
 
@@ -298,6 +242,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @get:LayoutRes
     private val TestifyLayout.resolvedLayoutId: Int
+        @SuppressLint("DiscouragedApi")
         get() {
             if (this.layoutResName.isNotEmpty()) {
                 return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null)
@@ -388,11 +333,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    fun addScreenshotObserver(observer: ScreenshotLifecycle) {
+    override fun addScreenshotObserver(observer: ScreenshotLifecycle) {
         this.screenshotLifecycleObservers.add(observer)
     }
 
-    fun removeScreenshotObserver(observer: ScreenshotLifecycle) {
+    override fun removeScreenshotObserver(observer: ScreenshotLifecycle) {
         this.screenshotLifecycleObservers.remove(observer)
     }
 
@@ -405,236 +350,22 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         getInstrumentation().registerActivityProvider(this)
     }
 
-    fun getCaptureMethod(context: Context): CaptureMethod {
-        return when {
-            captureMethod != null -> captureMethod!!
-            TestifyFeatures.PixelCopyCapture.isEnabled(context) -> ::pixelCopyCapture
-            TestifyFeatures.CanvasCapture.isEnabled(context) -> ::canvasCapture
-            else -> ::createBitmapFromDrawingCache
-        }
-    }
-
-    /**
-     * Capture a bitmap from the given Activity and save it to the screenshot directory.
-     *
-     * @param activity The [Activity] instance to capture.
-     * @param fileName The name to use when writing the captured image to disk.
-     * @param screenshotView A [View] found in the [activity]'s view hierarchy.
-     *          If screenshotView is null, defaults to activity.window.decorView.
-     * @param captureMethod The [CaptureMethod] used to take the screenshot from the
-     *          provided activity.
-     * @return A [Bitmap] representing the captured [screenshotView] in [activity]
-     *          Will return [null] if there is an error capturing the bitmap.
-     */
-    open fun takeScreenshot(
-        activity: Activity,
-        fileName: String,
-        screenshotView: View?,
-        captureMethod: CaptureMethod = getCaptureMethod(activity)
-    ): Bitmap? {
-        return createBitmapFromActivity(
-            activity,
-            fileName,
-            captureMethod,
-            screenshotView
-        )
-    }
-
-    /**
-     * Given [baselineBitmap] and [currentBitmap], use [HighContrastDiff] to write a companion .diff image for the
-     * current test.
-     *
-     * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
-     * against a black background.
-     */
-    open fun generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap) {
-        HighContrastDiff(configuration.exclusionRects)
-            .name(outputFileName)
-            .baseline(baselineBitmap)
-            .current(currentBitmap)
-            .exactness(configuration.exactness)
-            .generate(context = activity)
-    }
-
-    fun getBitmapCompare(): CompareMethod {
-        return when {
-            compareMethod != null -> compareMethod!!
-            configuration.hasExclusionRect() || configuration.hasExactness -> FuzzyCompare(
-                configuration
-            )::compareBitmaps
-
-            else -> ::sameAsCompare
-        }
-    }
-
-    /**
-     * Compare [baselineBitmap] to [currentBitmap] using the provided [bitmapCompare] bitmap comparison method.
-     *
-     * The definition of "same" depends on the comparison method. The default implementation requires the bitmaps
-     * to be identical at a binary level to be considered "the same".
-     *
-     * @return true if the bitmaps are considered the same.
-     */
-    open fun compareBitmaps(
-        baselineBitmap: Bitmap,
-        currentBitmap: Bitmap,
-        bitmapCompare: CompareMethod = getBitmapCompare()
-    ): Boolean {
-        return bitmapCompare(baselineBitmap, currentBitmap)
-    }
-
     fun assertSame() {
-        assertSameInvoked = true
-        addScreenshotObserver(this)
-        screenshotLifecycleObservers.forEach { it.beforeAssertSame() }
-
-        if (isRunningOnUiThread()) {
-            throw NoScreenshotsOnUiThreadException()
-        }
-
-        try {
-            launchActivity(activityIntent)
-        } catch (e: ScreenshotTestIgnoredException) {
-            // Exit gracefully; mark test as ignored
-            assumeTrue(false)
-            return
-        }
-
-        try {
-            try {
-                val description = getInstrumentation().testDescription
-                reporter?.captureOutput(this)
-                outputFileName = formatDeviceString(
-                    DeviceStringFormatter(
-                        testContext,
-                        description.nameComponents
-                    ),
-                    DEFAULT_NAME_FORMAT
-                )
-
-                screenshotLifecycleObservers.forEach { it.beforeInitializeView(activity) }
-                initializeView(activity)
-                screenshotLifecycleObservers.forEach { it.afterInitializeView(activity) }
-
-                espressoHelper.beforeScreenshot()
-
-                val screenshotView: View? = screenshotViewProvider?.invoke(getRootView(activity))
-
-                configuration.beforeScreenshot(getRootView(activity))
-
-                screenshotLifecycleObservers.forEach { it.beforeScreenshot(activity) }
-
-                val currentBitmap = takeScreenshot(
-                    activity,
-                    outputFileName,
-                    screenshotView
-                ) ?: throw FailedToCaptureBitmapException()
-
-                screenshotLifecycleObservers.forEach { it.afterScreenshot(activity, currentBitmap) }
-
-                if (configuration.pauseForInspection) {
-                    Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
-                }
-
-                assertExpectedDevice(testContext, description.name)
-
-                val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
-                    ?: if (isRecordMode) {
-                        instrumentationPrintln(
-                            "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
-                        )
-                        return
-                    } else {
-                        throw ScreenshotBaselineNotDefinedException(
-                            moduleName = getModuleName(),
-                            testName = description.name,
-                            testClass = description.fullyQualifiedTestName,
-                            deviceKey = formatDeviceString(
-                                DeviceStringFormatter(
-                                    testContext,
-                                    null
-                                ),
-                                DEFAULT_FOLDER_FORMAT
-                            )
-                        )
-                    }
-
-                if (compareBitmaps(baselineBitmap, currentBitmap)) {
-                    assertTrue(
-                        "Could not delete cached bitmap ${description.name}",
-                        deleteBitmap(activity, outputFileName)
-                    )
-                } else {
-                    if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                        generateHighContrastDiff(baselineBitmap, currentBitmap)
-                    }
-                    if (isRecordMode) {
-                        instrumentationPrintln(
-                            "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
-                        )
-                    } else {
-                        throw ScreenshotIsDifferentException(getModuleName(), description.fullyQualifiedTestName)
-                    }
-                }
-            } finally {
-            }
-        } finally {
-            ResourceWrapper.afterTestFinished(activity)
-            configuration.afterTestFinished()
-            TestifyFeatures.reset()
-            removeScreenshotObserver(this)
-            if (throwable != null) {
-                //noinspection ThrowFromfinallyBlock
-                throw RuntimeException(throwable)
-            }
-        }
+        assertSameInternal(
+            testContext = testContext,
+            state = this,
+            assureActivity = { launchActivity(activityIntent) },
+            configuration = configuration,
+            screenshotLifecycleObserver = this,
+            reporter = reporter,
+            applyViewModifications = ::applyViewModifications
+        )
     }
 
     @UiThread
     @CallSuper
     open fun applyViewModifications(parentView: ViewGroup) {
         configuration.applyViewModificationsMainThread(parentView)
-    }
-
-    @VisibleForTesting
-    internal fun initializeView(activity: Activity) {
-        val parentView = getRootView(activity)
-        val latch = CountDownLatch(1)
-
-        var viewModificationException: Throwable? = null
-        activity.runOnUiThread {
-            if (targetLayoutId != NO_ID) {
-                activity.layoutInflater.inflate(targetLayoutId, parentView, true)
-            }
-
-            viewModification?.let { viewModification ->
-                try {
-                    viewModification(parentView)
-                } catch (exception: Throwable) {
-                    viewModificationException = exception
-                }
-            }
-
-            applyViewModifications(parentView)
-
-            latch.countDown()
-        }
-        configuration.applyViewModificationsTestThread(activity)
-
-        if (Debug.isDebuggerConnected()) {
-            latch.await()
-        } else {
-            assertTrue(latch.await(INFLATE_TIMEOUT_SECONDS, TimeUnit.SECONDS))
-        }
-
-        viewModificationException?.let {
-            throw ViewModificationException(it)
-        }
-    }
-
-    fun getRootView(activity: Activity): ViewGroup {
-        return activity.findViewById(rootViewId)
-            ?: throw RootViewNotFoundException(activity, rootViewId)
     }
 
     private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
@@ -688,7 +419,5 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     companion object {
         const val NO_ID = -1
-        private const val LAYOUT_INSPECTION_TIME_MS = 60000
-        private const val INFLATE_TIMEOUT_SECONDS: Long = 5
     }
 }

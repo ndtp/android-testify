@@ -49,9 +49,8 @@ public class JavaExampleTest {
     @ScreenshotInstrumentation
     @Test
     public void testConfiguration() {
-        Configurable.makeConfigurable(
-                        rule.setCaptureMethod(PixelCopyCaptureKt::pixelCopyCapture)
-                )
+        Configurable.makeConfigurable(rule)
+                .setCaptureMethod(PixelCopyCaptureKt::pixelCopyCapture)
                 .setExactness(0.95f)
                 .setHideCursor(true)
                 .setHidePasswords(true)

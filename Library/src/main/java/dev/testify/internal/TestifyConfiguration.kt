@@ -34,6 +34,8 @@ import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import dev.testify.CaptureMethod
+import dev.testify.CompareMethod
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.IgnoreScreenshot
 import dev.testify.annotation.getAnnotation
@@ -49,16 +51,22 @@ import dev.testify.internal.modification.HidePasswordViewModification
 import dev.testify.internal.modification.HideScrollbarsViewModification
 import dev.testify.internal.modification.HideTextSuggestionsViewModification
 import dev.testify.internal.modification.SoftwareRenderViewModification
+import dev.testify.internal.processor.compare.FuzzyCompare
+import dev.testify.internal.processor.compare.sameAsCompare
 import java.util.Locale
 
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 /**
  *
- * @param orientation - Install an activity monitor and set the requested orientation.
- *                      Blocks and waits for the orientation change to complete before returning.
- *                      SCREEN_ORIENTATION_LANDSCAPE or SCREEN_ORIENTATION_PORTRAIT
- * @param focusTargetId - Allows Testify to deliberately set the keyboard focus to the specified view ID
+ * @param orientation:   Install an activity monitor and set the requested orientation.
+ *                       Blocks and waits for the orientation change to complete before returning.
+ *                       SCREEN_ORIENTATION_LANDSCAPE or SCREEN_ORIENTATION_PORTRAIT
+ * @param focusTargetId: Allows Testify to deliberately set the keyboard focus to the specified view ID
+ * @param captureMethod: Allow the test to define a custom bitmap capture method.
+ *                       The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View
+ *                       under test.
+ * @param compareMethod: Allow the test to define a custom bitmap comparison method.
  */
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
@@ -75,6 +83,8 @@ data class TestifyConfiguration(
     @IdRes var focusTargetId: Int = View.NO_ID,
     var pauseForInspection: Boolean = false,
     var hideSoftKeyboard: Boolean = true,
+    var captureMethod: CaptureMethod? = null,
+    var compareMethod: CompareMethod? = null
 ) {
 
     init {
@@ -177,4 +187,12 @@ data class TestifyConfiguration(
     }
 
     internal fun hasExclusionRect() = exclusionRects.isNotEmpty()
+
+    fun getBitmapCompare(): CompareMethod {
+        return when {
+            this.compareMethod != null -> this.compareMethod!!
+            this.hasExclusionRect() || this.hasExactness -> FuzzyCompare(this)::compareBitmaps
+            else -> ::sameAsCompare
+        }
+    }
 }

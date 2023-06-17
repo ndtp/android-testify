@@ -40,6 +40,8 @@ import dev.testify.internal.formatDeviceString
 import dev.testify.internal.output.getOutputDirectoryPath
 import dev.testify.internal.output.getOutputFilePath
 import dev.testify.internal.output.useSdCard
+import dev.testify.loadBitmapFromFile
+import dev.testify.preferredBitmapOptions
 import dev.testify.testDescription
 import java.io.File
 import dev.testify.assureScreenshotDirectory
@@ -120,6 +122,6 @@ private fun getFileName(testContext: Context): String {
  * Helper method to invoke [ScreenshotRule.setCaptureMethod] with the fullscreen capture method.
  */
 fun ScreenshotRule<*>.captureFullscreen(): ScreenshotRule<*> {
-    setCaptureMethod(::fullscreenCapture)
+    configure { captureMethod = ::fullscreenCapture }
     return this
 }

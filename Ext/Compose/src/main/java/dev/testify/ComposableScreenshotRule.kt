@@ -33,6 +33,7 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import dev.testify.compose.R
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.disposeComposition
+import dev.testify.internal.helpers.findRootView
 import dev.testify.internal.processor.capture.pixelCopyCapture
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -79,7 +80,7 @@ open class ComposableScreenshotRule(
      */
     override fun beforeAssertSame() {
         super.beforeAssertSame()
-        super.setCaptureMethod(captureMethod)
+        super.setCaptureMethod(captureMethod) // TODO: Verify https://github.com/ndtp/android-testify/pull/161 configure { captureMethod = ::pixelCopyCapture }
         setScreenshotViewProvider {
             it.getChildAt(0)
         }
@@ -149,7 +150,7 @@ open class ComposableScreenshotRule(
      * Invoked immediately before the screenshot is taken.
      */
     override fun beforeScreenshot(activity: Activity) {
-        val targetView = getRootView(activity).getChildAt(0)
+        val targetView = activity.findRootView(rootViewId).getChildAt(0)
         if (targetView.width == 0 && targetView.height == 0)
             throw IllegalStateException(
                 "Target view has 0 size. " +

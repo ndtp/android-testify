@@ -81,13 +81,13 @@ class ComposeActivityScreenshotTest {
     fun dropDownExpanded() {
         rule
             .configure {
+                captureMethod = ::fullscreenCapture
                 exactness = 0.9f
                 excludeSystemUi()
             }
             .addIntentExtras {
                 it.putBoolean(ComposeActivity.EXTRA_DROPDOWN, true)
             }
-            .setCaptureMethod(::fullscreenCapture)
             .assertSame()
     }
 }

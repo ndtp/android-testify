@@ -25,6 +25,7 @@ package dev.testify
 
 import android.app.Activity
 import androidx.annotation.IdRes
+import dev.testify.internal.ConfigurationBuilder
 import dev.testify.internal.ExclusionRectProvider
 import java.util.Locale
 
@@ -112,4 +113,17 @@ interface CompatibilityMethods<TRule : ScreenshotRule<TActivity>, TActivity : Ac
         replaceWith = ReplaceWith("configure { this@configure.locale = locale }")
     )
     fun setLocale(locale: Locale): TRule
+
+
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.captureMethod = captureMethod }")
+    )
+    fun setCaptureMethod(captureMethod: CaptureMethod?): TRule
+
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.compareMethod = compareMethod }")
+    )
+    fun setCompareMethod(compareMethod: CompareMethod?): TRule
 }

@@ -17,11 +17,11 @@ fun ParallelPixelProcessor.TransformResult.createBitmap(): Bitmap {
 
 private val numberOfAvailableCores = Runtime.getRuntime().availableProcessors()
 
-@VisibleForTesting
 var maxNumberOfChunkThreads = numberOfAvailableCores
+    @VisibleForTesting internal set
 
-@VisibleForTesting
 var _executorDispatcher: CoroutineDispatcher? = null
+    @VisibleForTesting internal set
 
 val executorDispatcher by lazy {
     if (_executorDispatcher == null) {

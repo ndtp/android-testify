@@ -25,6 +25,7 @@ package dev.testify.internal.extensions
 
 import android.app.Instrumentation
 import android.os.Bundle
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.annotation.ScreenshotInstrumentation
 
@@ -48,6 +49,7 @@ class TestInstrumentationRegistry {
          * @param str - A string to print to the instrumentation stream.
          */
         fun instrumentationPrintln(str: String) {
+            Log.d("JETTE", str)
             InstrumentationRegistry.getInstrumentation().sendStatus(
                 0,
                 Bundle().apply {
