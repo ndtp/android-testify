@@ -27,14 +27,14 @@ package dev.testify.samples.flix.domain.usecase
 
 import android.util.Log
 import dev.testify.samples.flix.domain.model.HomeScreenDomainModel
+import dev.testify.samples.flix.domain.model.MovieDomainModel
 import dev.testify.samples.flix.domain.repository.MovieRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
 interface LoadHomeScreenUseCase {
-    fun execute(): Flow<Result<HomeScreenDomainModel>>
+    fun asFlow(): Flow<Result<HomeScreenDomainModel>>
 }
 
 internal class LoadHomeScreenUseCaseImpl(
@@ -45,41 +45,38 @@ internal class LoadHomeScreenUseCaseImpl(
         private val LOG_TAG = LoadHomeScreenUseCaseImpl::class.simpleName
     }
 
-    override fun execute(): Flow<Result<HomeScreenDomainModel>> = flow {
-        var domainModel = HomeScreenDomainModel()
+    override fun asFlow(): Flow<Result<HomeScreenDomainModel>> {
 
-        movieRepository.getMostTrendingMovie().fold(
-            onSuccess = {
-                domainModel = domainModel.copy(headlineTrendingMovie = it)
-                emit(Result.success(domainModel))
-            },
-            onFailure = { domainException ->
-                Log.d(LOG_TAG, "Failed to load most trending movie ${domainException.message}")
-                emit(Result.failure(domainException))
+        val mostTrendingMovieFlow: Flow<Result<MovieDomainModel>?> = flow {
+            emit(movieRepository.getMostTrendingMovie())
+        }
+
+        val moviesNowPlayingFlow = flow {
+            emit(movieRepository.getMoviesNowPlaying())
+        }
+
+        val upcomingMoviesFlow = flow {
+            emit(movieRepository.getUpcomingMovies())
+        }
+
+        return combine(
+            mostTrendingMovieFlow,
+            moviesNowPlayingFlow,
+            upcomingMoviesFlow) { mostTrendingResult, nowPlayingResult, upcomingResult ->
+            val failures = listOf(mostTrendingResult, nowPlayingResult, upcomingResult)
+                .mapNotNull { it?.exceptionOrNull() }
+            if (failures.isNotEmpty()) {
+                // TODO emit all failures, not just the first one
+                Log.d(LOG_TAG, "${failures.size} failures collected ${failures.joinToString()}")
+                Result.failure(failures.first())
+            } else {
+                val domainModel = HomeScreenDomainModel(
+                    headlineTrendingMovie = mostTrendingResult?.getOrNull(),
+                    moviesNowPlaying = nowPlayingResult.getOrDefault(emptyList()),
+                    upcomingMovies = upcomingResult.getOrDefault(emptyList())
+                )
+                Result.success(domainModel)
             }
-        )
-
-        coroutineScope {
-            val moviesNowPlayingDeferred = async { movieRepository.getMoviesNowPlaying() }
-            val upcomingMoviesDeferred = async { movieRepository.getUpcomingMovies() }
-            moviesNowPlayingDeferred.await().fold(
-                onSuccess = {
-                    domainModel = domainModel.copy(moviesNowPlaying = it)
-                    emit(Result.success(domainModel))
-                },
-                onFailure = { domainException ->
-                    Log.d(LOG_TAG, "Failed to load movies now playing: ${domainException.message}")
-                }
-            )
-            upcomingMoviesDeferred.await().fold(
-                onSuccess = {
-                    domainModel = domainModel.copy(upcomingMovies = it)
-                    emit(Result.success(domainModel))
-                },
-                onFailure = {
-                    Log.d(LOG_TAG, "Failed to load upcoming movies")
-                }
-            )
         }
     }
 }

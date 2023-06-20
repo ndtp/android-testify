@@ -81,17 +81,13 @@ class HomeScreenViewModel(
 
     private fun start() {
         viewModelScope.launch {
-            loadHomeScreenUseCase.execute()
+            loadHomeScreenUseCase.asFlow()
                 .onStart {
                     Log.d(LOG_TAG, "Began collecting from HomeScreenUseCase")
                     updateScreenState(BasicScreenState(
                         errors = emptyList(),
                         viewState = HomeScreenViewState.LoadedHomeScreenViewState(
-                            HomeScreenPresentationModel(
-                                headliningMovie = null,
-                                moviesNowPlaying = emptyList(),
-                                upcomingMovies = emptyList()
-                            )
+                            HomeScreenPresentationModel()
                         ))
                     )
                 }
