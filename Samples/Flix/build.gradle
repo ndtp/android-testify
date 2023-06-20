@@ -1,4 +1,7 @@
 buildscript {
+    dependencies {
+        classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
+    }
     ext {
         versions = [
                 'compose': [
@@ -17,6 +20,8 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
+
+apply plugin: 'dev.testify'
 
 secrets {
     defaultPropertiesFileName = 'local.defaults.properties'
@@ -95,6 +100,13 @@ dependencies {
 
     // Test Support
     testImplementation 'junit:junit:4.13.2'
+
+    androidTestImplementation project(":Library")
+    androidTestImplementation project(":ComposeExtensions")
+    androidTestImplementation project(":FullscreenCaptureMethod")
+    androidTestImplementation project(":Accessibility")
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
 }

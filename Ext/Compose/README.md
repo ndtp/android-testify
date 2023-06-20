@@ -24,7 +24,33 @@ buildscript {
 ```groovy
 dependencies {
     androidTestImplementation "dev.testify:testify-compose:2.0.0-beta01"
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.4.3"
 }
+```
+
+### Manifest
+
+The Testify Compose Extension comes with a preconfigured test harness `Activity` that is used to host your composables.
+To use the `ComposableTestActivity` in your test, you must declare it in your `AndroidManifest.xml`.
+
+The `ComposableTestActivity` is only referenced from Debug builds, so you can create a new file in the Debug source set (`/src/debug/AndroidManifest.xml`) with the following:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!--suppress AndroidDomInspection -->
+        <activity android:name="dev.testify.ComposableTestActivity" />
+    </application>
+</manifest>
+
+```
+
+📔 You need to use a `Theme.AppCompat` theme (or descendant) with `ComposableTestActivity`. `Theme.AppCompat.NoActionBar` is a suitable choice.
+
+```xml
+android:theme="@style/Theme.AppCompat.NoActionBar"
 ```
 
 # Write a test

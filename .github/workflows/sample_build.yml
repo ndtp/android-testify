@@ -20,6 +20,9 @@ jobs:
     - name: Validate build
       run: ./gradlew LegacySample:assemble
 
+    - name: Validate build
+      run: ./gradlew FlixSample:assemble
+
     - name: Run Screenshot Tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
