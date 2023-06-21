@@ -74,7 +74,7 @@ class MovieDetailsViewModel(
 
     private fun start() {
         viewModelScope.launch {
-            loadMovieDetailsUseCase.execute(args.movieId)
+            loadMovieDetailsUseCase.asFlow(args.movieId)
                 .onStart {
                     Log.d(LOG_TAG, "Began collecting from LoadMovieDetailsUseCase")
                     updateScreenState(FullscreenLoadingState)
@@ -90,8 +90,8 @@ class MovieDetailsViewModel(
         }
     }
 
-    private fun processMovieDetailResult(result: Result<MovieDetailsDomainModel>) {
-        result.fold(
+    private fun processMovieDetailResult(result: Result<MovieDetailsDomainModel>?) {
+        result?.fold(
             onSuccess = {
                 updateScreenState(BasicScreenState(
                     errors = emptyList(),
@@ -103,7 +103,7 @@ class MovieDetailsViewModel(
             onFailure = {
                 updateScreenState(UnsetScreenState)
             }
-        )
+        ) ?: updateScreenState(UnsetScreenState)
     }
 
     private fun updateScreenState(newScreenState: ScreenState) {
