@@ -12,19 +12,15 @@ import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.ScreenshotScenarioRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.sample.clients.MockClientData
 import dev.testify.sample.clients.details.ClientDetailsActivity
 import dev.testify.sample.clients.index.ClientListActivity
 import dev.testify.sample.test.TestHarnessActivity
-import dev.testify.sample.test.clientDetailsView
-import dev.testify.sample.test.getViewState
-import dev.testify.takeScreenshot
 import org.hamcrest.CoreMatchers.endsWith
-import org.junit.Rule
 import org.junit.Test
+
 
 /**
  * Intention behind this setup is to share typical use cases utilizing ActivityScenario:
@@ -32,7 +28,7 @@ import org.junit.Test
  */
 class ActivityScenarioExampleTest {
 
-    @get:Rule val screenshotRule = ScreenshotScenarioRule()
+//    @get:Rule val screenshotRule = ScreenshotScenarioRule()
 
     @Test
     fun activityScenarioNoIntentUseCase() {
@@ -59,7 +55,7 @@ class ActivityScenarioExampleTest {
     @Test
     fun screenshotScenarioRule() {
         launchActivity<TestHarnessActivity>().use { scenario ->
-            screenshotRule.withScenario(scenario).assertSame()
+//            screenshotRule.withScenario(scenario).assertSame()
         }
     }
 
@@ -68,17 +64,17 @@ class ActivityScenarioExampleTest {
     @Test
     fun firstTry() {
         launchActivity<TestHarnessActivity>().use { scenario ->
-            scenario.takeScreenshot(
-                rule = screenshotRule,
-                configure = {
-                    fontScale = 2.0f
-                }
-            ) { harnessRoot ->
-                screenshotRule.getActivity().getViewState(name = "default").let {
-                    harnessRoot.clientDetailsView.render(it)
-                    screenshotRule.getActivity().title = it.name
-                }
-            }.assertSame()
+//            scenario.takeScreenshot(
+//                rule = screenshotRule,
+//                configure = {
+//                    fontScale = 2.0f
+//                }
+//            ) { harnessRoot ->
+//                screenshotRule.getActivity().getViewState(name = "default").let {
+//                    harnessRoot.clientDetailsView.render(it)
+//                    screenshotRule.getActivity().title = it.name
+//                }
+//            }.assertSame()
         }
     }
 

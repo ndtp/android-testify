@@ -72,7 +72,7 @@ import org.junit.runners.model.Statement
 // Also add Junit5 extension: https://github.com/ndtp/android-testify/compare/244-test-extension-junit5
 
 /**
- * TODO: Perhaps I can make this a non-rule entity
+ * TODO: Make this a non-rule entity
  * Do I need the rule lifecycle?
  */
 open class ScreenshotScenarioRule @JvmOverloads constructor(

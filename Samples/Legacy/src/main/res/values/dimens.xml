@@ -6,4 +6,6 @@
     <dimen name="heading">72sp</dimen>
     <dimen name="subheading">16sp</dimen>
     <dimen name="icon_padding">12dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="header_margin">32dp</dimen>
 </resources>
