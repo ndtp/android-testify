@@ -32,6 +32,8 @@ import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
 import dev.testify.samples.flix.domain.model.MovieDomainModel
 import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
 import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
+import dev.testify.samples.flix.ui.common.util.ImagePromise
+import dev.testify.samples.flix.ui.common.util.imagePromise
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -81,9 +83,13 @@ class MovieDetailsDomainModelToPresentationMapperImpl(
                 CreditPresentationModel(
                     name = personDomainModel.name,
                     characterName = personDomainModel.characterName,
-                    imagePath = personDomainModel.imageUrl
+                    image = personDomainModel.imageUrl.toImagePromise()
                 )
             }
         } ?: emptyList()
+    }
+
+    private fun String?.toImagePromise(): ImagePromise? {
+        return this?.let { imagePromise(it) }
     }
 }

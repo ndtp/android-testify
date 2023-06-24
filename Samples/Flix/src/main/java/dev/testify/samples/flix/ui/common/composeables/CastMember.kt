@@ -35,7 +35,7 @@ fun CastMember(
     ) {
         Column {
             AsyncImage(
-                model = model.imagePath,
+                model = model.image?.resolve(),
                 contentDescription = viewAction?.describe(),
                 modifier = Modifier
                     .clickable(

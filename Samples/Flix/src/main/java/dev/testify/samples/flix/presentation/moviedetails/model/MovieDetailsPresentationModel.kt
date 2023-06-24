@@ -25,6 +25,8 @@
 
 package dev.testify.samples.flix.presentation.moviedetails.model
 
+import dev.testify.samples.flix.ui.common.util.ImagePromise
+
 data class MovieDetailsPresentationModel(
     val id: Int,
     val title: String,
@@ -42,5 +44,5 @@ data class MovieDetailsPresentationModel(
 data class CreditPresentationModel(
     val name: String,
     val characterName: String,
-    val imagePath: String?
+    val image: ImagePromise?
 )
