@@ -20,4 +20,12 @@ class MoviePosterScreenshotTest {
             )
         }.assertSame()
     }
+
+    @Test
+    @ScreenshotInstrumentation
+    fun nullPosterUrlImpliesLoading() {
+        rule.setCompose {
+            MoviePoster(posterUrl = null)
+        }.assertSame()
+    }
 }
