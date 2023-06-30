@@ -83,14 +83,13 @@ fun LoadedHomeScreen(
     systemActions: SharedFlow<HomeScreenSystemAction>?,
     homeScreenViewActionHandler: HomeScreenViewActionHandler?
 ) {
-    HomeScreenContent(viewState, systemActions, homeScreenViewActionHandler)
+    HomeScreenContent(viewState, homeScreenViewActionHandler)
     HomeScreenBottomSheet(systemActions)
 }
 
 @Composable
 fun HomeScreenContent(
     viewState: HomeScreenViewState.LoadedHomeScreenViewState,
-    systemActions: SharedFlow<HomeScreenSystemAction>?,
     homeScreenViewActionHandler: HomeScreenViewActionHandler?
 ) = with(viewState) {
     Column(

@@ -37,7 +37,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import dev.testify.samples.flix.R
 
 @Composable
@@ -69,7 +68,7 @@ fun MoviePoster(
             modifier
                 .weight(1.0f)
                 .fillMaxWidth()) {
-            AsyncImage(
+            AsynchronousImage(
                 model = posterUrl,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),

@@ -17,7 +17,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import dev.testify.samples.flix.R
 import dev.testify.samples.flix.application.foundation.ui.action.ViewAction
 import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
@@ -38,7 +37,7 @@ fun CastMember(
         tonalElevation = 1.dp
     ) {
         Column() {
-            AsyncImage(
+            AsynchronousImage(
                 modifier = Modifier
                     .weight(0.66f)
                     .clickable(
