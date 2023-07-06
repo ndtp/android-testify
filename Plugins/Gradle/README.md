@@ -42,10 +42,6 @@ Disables the soft keyboard on the device
 
 ```
 
-### generateDiffImages
-
-Create high-contrast images highlighting differences between the current screenshot and the baseline.
-
 ### hidePasswords
 
 Hides passwords fully on the device.
@@ -58,10 +54,6 @@ Hides passwords fully on the device
 ------------------------------------------------------------
   Success
 ```
-
-### removeDiffImages
-
-Delete all generated diff images from your local machine.
 
 ### reportPull
 
@@ -170,17 +162,4 @@ Displays the Testify plugin version
   Vendor               = ndtp
   Title                = Testify
   Version              = 1.0.0-beta3
-```
-
-### verifyImageMagick
-
-Verify that the ImageMagick tools required for diff images are installed. The `generateDiffImages` command can create high-contrast images to make subtle image differences easier to spot. To do this, Testify uses the [ImageMagick](https://www.imagemagick.org/) command.
-
-```
-~/: ./gradlew Sample:verifyImageMagick
-> Task :Sample:verifyImageMagick
-------------------------------------------------------------
-Verify that the ImageMagick tools required for diff images are installed
-------------------------------------------------------------
-  Compare               = true
 ```
