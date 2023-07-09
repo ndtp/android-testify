@@ -81,7 +81,7 @@ open class ComposableScreenshotRule(
     override fun beforeAssertSame() {
         super.beforeAssertSame()
         super.setCaptureMethod(captureMethod) // TODO: Verify https://github.com/ndtp/android-testify/pull/161 configure { captureMethod = ::pixelCopyCapture }
-        setScreenshotViewProvider {
+        setScreenshotViewProvider<ComposableScreenshotRule> {
             it.getChildAt(0)
         }
     }

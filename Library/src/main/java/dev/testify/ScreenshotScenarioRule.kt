@@ -40,7 +40,6 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.exception.AssertSameMustBeLastException
@@ -49,6 +48,8 @@ import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotation
 import dev.testify.internal.exception.ScenarioRequiredException
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
 import dev.testify.internal.extensions.getScreenshotAnnotationName
+import dev.testify.internal.extensions.getScreenshotInstrumentationAnnotation
+import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.outputFileName
 import dev.testify.internal.helpers.registerActivityProvider
@@ -142,10 +143,10 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         this.viewModification = viewModification
     }
 
-//    fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotScenarioEx<T> {
-//        this.screenshotViewProvider = viewProvider
-//        return this
-//    }
+    override fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotScenarioRule {
+        this.screenshotViewProvider = viewProvider
+        return this
+    }
 
     /**
      * Set the configuration for the ScreenshotRule
@@ -201,13 +202,10 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     ) {
         instrumentationPrintln("apply")
         val classAnnotations = testClass.annotations.asList()
-        val classScreenshotInstrumentation = classAnnotations.getAnnotation<ScreenshotInstrumentation>()
-        val methodScreenshotInstrumentation = methodAnnotations?.getAnnotation<ScreenshotInstrumentation>()
-
-        checkForScreenshotInstrumentationAnnotation(
+        assertForScreenshotInstrumentationAnnotation(
             methodName,
-            classScreenshotInstrumentation,
-            methodScreenshotInstrumentation
+            classAnnotations,
+            methodAnnotations
         )
         configuration.applyAnnotations(methodAnnotations)
 
@@ -236,17 +234,32 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
             return layoutId
         }
 
-    private fun checkForScreenshotInstrumentationAnnotation(
+    /**
+     * Assert that the @ScreenshotInstrumentation is defined on the test method.
+     *
+     * The Gradle plugin requires the @ScreenshotInstrumentation annotation and so this
+     * check applies only when run via the Gradle plugin commands. e.g. screenshotTest
+     *
+     * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
+     * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+     */
+    open fun assertForScreenshotInstrumentationAnnotation(
         methodName: String,
-        classAnnotation: ScreenshotInstrumentation?,
-        methodAnnotation: ScreenshotInstrumentation?
+        classAnnotations: List<Annotation>,
+        methodAnnotations: Collection<Annotation>?
     ) {
-        if (classAnnotation == null) {
-            if (methodAnnotation == null) {
-                this.throwable =
-                    MissingScreenshotInstrumentationAnnotationException(getScreenshotAnnotationName(), methodName)
-            }
-        }
+        if (isInvokedFromPlugin().not()) return
+
+        val annotation = getScreenshotInstrumentationAnnotation(
+            classAnnotations,
+            methodAnnotations
+        )
+
+        if (annotation == null)
+            this.throwable = MissingScreenshotInstrumentationAnnotationException(
+                annotationName = getScreenshotAnnotationName(),
+                methodName = methodName
+            )
     }
 
     override fun addScreenshotObserver(observer: ScreenshotLifecycle) {

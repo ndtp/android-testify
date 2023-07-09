@@ -85,6 +85,28 @@ fun isInvokedFromPlugin(): Boolean =
 fun getScreenshotAnnotationName(): String =
     InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
 
+inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
+    return this.find { it is T } as? T
+}
+
+inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(name: String): T? {
+    return this.find { it.annotationClass.qualifiedName == name } as? T
+}
+
+/**
+ * Get the [ScreenshotInstrumentation] instance associated with the test method
+ *
+ * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
+ * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+ */
+fun getScreenshotInstrumentationAnnotation(
+    classAnnotations: List<Annotation>,
+    methodAnnotations: Collection<Annotation>?
+): Annotation? {
+    val annotationName = getScreenshotAnnotationName()
+    return classAnnotations.getAnnotation(annotationName) ?: methodAnnotations?.getAnnotation(annotationName)
+}
+
 private const val ESC_YELLOW = "${27.toChar()}[33m"
 private const val ESC_CYAN = "${27.toChar()}[36m"
 private const val ESC_RESET = "${27.toChar()}[0m"

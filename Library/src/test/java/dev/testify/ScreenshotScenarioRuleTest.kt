@@ -26,14 +26,15 @@ package dev.testify
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
+import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.common.truth.Truth.assertThat
 import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
@@ -61,12 +62,11 @@ import org.junit.runners.model.Statement
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
-class ScreenshotRuleTest {
+class ScreenshotScenarioRuleTest {
 
-    private lateinit var subject: ScreenshotRule<Activity>
+    private lateinit var subject: ScreenshotScenarioRule
     private var observer: ScreenshotLifecycle? = null
     private val mockActivity = mockk<Activity>(relaxed = true)
-    private val mockIntent = mockk<Intent>(relaxed = true)
     private val mockViewGroup = mockk<ViewGroup>(relaxed = true)
     private val mockCapturedBitmap = mockk<Bitmap>(relaxed = true)
     private val mockCurrentBitmap = mockk<Bitmap>(relaxed = true)
@@ -74,8 +74,9 @@ class ScreenshotRuleTest {
     private val mockStatement = mockk<Statement>(relaxed = true)
     private val mockDescription = mockk<Description>(relaxed = true) {
         every { methodName } returns "default"
-        every { testClass } returns ScreenshotRuleTest::class.java
+        every { testClass } returns ScreenshotScenarioRuleTest::class.java
     }
+    private val mockScenario = mockk<ActivityScenario<Activity>>(relaxed = true)
 
     private fun setStaticFieldViaReflection(field: Field, value: Any) {
         field.isAccessible = true
@@ -122,13 +123,9 @@ class ScreenshotRuleTest {
         setStaticFieldViaReflection(Build.VERSION::class.java.getField("SDK_INT"), 31)
         every { getDeviceDimensions(any()) } returns (1024 to 2048)
 
-        subject = spyk(ScreenshotRule(Activity::class.java))
-        every { subject.launchActivity(any()) } returns mockActivity
-        every { subject.activity } returns mockActivity
-        every { subject.getIntent() } returns mockIntent
+        subject = spyk(ScreenshotScenarioRule())
+        every { subject.getActivity() } returns mockActivity
         every { any<Activity>().findRootView(any()) } returns mockViewGroup
-
-        every { subject.espressoHelper } returns mockk(relaxed = true)
 
         val slot = slot<Runnable>()
         every { mockActivity.runOnUiThread(capture(slot)) } answers {
@@ -144,6 +141,13 @@ class ScreenshotRuleTest {
         every { sameAsCompare(any(), any()) } returns true
         every { saveBitmapToFile(any(), any(), any()) } returns true
 
+        val onActivitySlot = slot<ActivityScenario.ActivityAction<Activity>>()
+        every { mockScenario.onActivity(capture(onActivitySlot)) } answers {
+            onActivitySlot.captured.perform(mockActivity)
+            mockScenario
+        }
+
+        subject.withScenario(mockScenario)
         subject.apply(base = mockStatement, description = mockDescription)
     }
 
@@ -170,7 +174,8 @@ class ScreenshotRuleTest {
     fun `WHEN baseline matches current THEN pass`() {
         subject.assertSame()
 
-        verify { subject.launchActivity(any()) }
+        assertThat(subject.getActivity()).isNotNull()
+        assertThat(subject.getActivity()).isEqualTo(mockActivity)
 
         verify { initializeView(any(), any(), any(), any(), any(), any()) }
 

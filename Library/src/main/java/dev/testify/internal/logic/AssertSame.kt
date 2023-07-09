@@ -45,6 +45,7 @@ interface InternalState {
 
     fun addScreenshotObserver(observer: ScreenshotLifecycle)
     fun removeScreenshotObserver(observer: ScreenshotLifecycle)
+    fun setScreenshotViewProvider(viewProvider: ViewProvider): InternalState
 }
 
 internal fun assertSameInternal(

@@ -48,6 +48,7 @@ import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
+import dev.testify.internal.extensions.getAnnotation
 import dev.testify.internal.extensions.getScreenshotAnnotationName
 import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.helpers.ActivityProvider
@@ -146,7 +147,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
-    fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotRule<T> {
+    override fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotRule<T> {
         this.screenshotViewProvider = viewProvider
         return this
     }
@@ -230,14 +231,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
-    }
-
-    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
-        return this.find { it is T } as? T
-    }
-
-    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(name: String): T? {
-        return this.find { it.annotationClass.qualifiedName == name } as? T
     }
 
     @get:LayoutRes
