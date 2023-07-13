@@ -34,6 +34,7 @@
 #### Added
 
 - Reporter now supports skipped or ignored tests.
+- Added `enableReporter` parameter to `ComposableScreenshotRule` constructor
 
 ### Sample
 
