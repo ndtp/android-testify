@@ -42,13 +42,16 @@ import org.junit.runners.model.Statement
  *
  * @param exactness: The tolerance used when comparing the current image to the baseline. A value of 1f requires
  *      a perfect binary match. 0f will ignore all differences.
+ * @param enableReporter Whether the reporter is run for this test rule.
  * @param composeTestRule: A TestRule that allows you to test and control composables and applications using Compose.
  */
 open class ComposableScreenshotRule(
     exactness: Float = 0.9f,
+    enableReporter: Boolean = false,
     private val composeTestRule: ComposeTestRule = createEmptyComposeRule()
 ) : ScreenshotRule<ComposableTestActivity>(
     activityClass = ComposableTestActivity::class.java,
+    enableReporter = enableReporter,
     configuration = TestifyConfiguration(exactness = exactness)
 ) {
     lateinit var composeFunction: @Composable () -> Unit
