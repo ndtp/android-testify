@@ -92,6 +92,8 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
+    implementation "androidx.test.espresso.idling:idling-concurrent:3.6.0-alpha01"
+
     // Network Stack
     implementation 'io.ktor:ktor-client-android:1.5.0'
     implementation 'io.ktor:ktor-client-serialization:1.5.0'

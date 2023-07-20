@@ -25,6 +25,7 @@
 
 package dev.testify.samples.flix.application.di
 
+import dev.testify.samples.flix.application.foundation.coil.coilImageLoaderModule
 import dev.testify.samples.flix.application.foundation.secret.secretModule
 import dev.testify.samples.flix.application.navigation.di.navigationModule
 import dev.testify.samples.flix.data.di.dataModule
@@ -34,6 +35,7 @@ import org.koin.dsl.module
 
 val applicationModule = module {
     includes(secretModule)
+    includes(coilImageLoaderModule)
     includes(dataModule)
     includes(domainModule)
     includes(presentationModule)
