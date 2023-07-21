@@ -9,14 +9,9 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
-import coil.compose.LocalImageLoader
-import coil.imageLoader
-import org.koin.core.context.GlobalContext
-import org.koin.mp.KoinPlatformTools
+import dev.testify.samples.flix.application.foundation.coil.ImageLoaderProvider
 
 @Composable
 fun AsynchronousImage(
@@ -35,12 +30,10 @@ fun AsynchronousImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DrawScope.DefaultFilterQuality,
 ) {
-    // This is not the way. Just a prototype.
-    val imageLoader: ImageLoader = KoinPlatformTools.defaultContext().get().get()
     AsyncImage(
         model = model,
         contentDescription = contentDescription,
-        imageLoader = imageLoader,
+        imageLoader = ImageLoaderProvider().provide(),
         modifier = modifier,
         placeholder = placeholder,
         error = error,
