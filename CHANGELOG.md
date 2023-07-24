@@ -50,6 +50,10 @@
 - Use `-Puser=<number>` to override the default user.
 - Added unit tests to the `:Plugin` project.
 
+### Compose Extension
+
+- Fixed #120 - can set a custom capture method when using ComposableScreenshotRule
+
 ---
 
 ## 2.0.0-beta01

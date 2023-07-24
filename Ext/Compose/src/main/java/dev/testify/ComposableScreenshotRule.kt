@@ -56,9 +56,22 @@ open class ComposableScreenshotRule(
 ) {
     lateinit var composeFunction: @Composable () -> Unit
     private var composeActions: ((ComposeTestRule) -> Unit)? = null
+    private var captureMethod: CaptureMethod = ::pixelCopyCapture
 
     open fun onCleanUp(activity: Activity) {
         activity.disposeComposition()
+    }
+
+    /**
+     * Allow the test to define a custom bitmap capture method.
+     * The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
+     */
+    override fun setCaptureMethod(captureMethod: CaptureMethod?): ComposableScreenshotRule {
+        if (captureMethod != null)
+            this.captureMethod = captureMethod
+        else
+            this.captureMethod = ::pixelCopyCapture
+        return this
     }
 
     /**
@@ -66,7 +79,7 @@ open class ComposableScreenshotRule(
      */
     override fun beforeAssertSame() {
         super.beforeAssertSame()
-        setCaptureMethod(::pixelCopyCapture)
+        super.setCaptureMethod(captureMethod)
         setScreenshotViewProvider {
             it.getChildAt(0)
         }

@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.capture.fullscreen.captureFullscreen
+import dev.testify.capture.fullscreen.provider.excludeSystemUi
 import dev.testify.sample.ClientListItem
 import dev.testify.sample.DropdownDemo
 import dev.testify.sample.R
@@ -147,6 +149,10 @@ class ComposableScreenshotTest {
                 ) {
                     DropdownDemo(true)
                 }
+            }
+            .captureFullscreen()
+            .configure {
+                excludeSystemUi()
             }
             .assertSame()
     }
