@@ -63,6 +63,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import dev.testify.sample.clients.MockClientData
@@ -171,7 +172,7 @@ fun ClientListItem(name: String, @DrawableRes avatar: Int, since: String, modifi
  */
 
 @Composable
-fun DropdownDemo(expand: Boolean) {
+fun DropdownDemo(expand: Boolean = false) {
     var expanded by remember { mutableStateOf(expand) }
     val items = listOf("Selection 1", "Selection 2", "Selection 3")
     var selectedIndex: Int? by remember { mutableStateOf(null) }
@@ -187,6 +188,7 @@ fun DropdownDemo(expand: Boolean) {
                 .clickable(onClick = { expanded = true })
                 .border(width = 1.dp, color = Color.Black)
                 .padding(horizontal = 4.dp, vertical = 2.dp)
+                .testTag("Dropdown")
         ) {
             Text(
                 selectedIndex?.let { items[it] } ?: "Placeholder Text",
