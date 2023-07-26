@@ -97,6 +97,10 @@
 
 - Added `screenshotAnnotation` setting to the Testify gradle extension, allowing customization of the instrumentation annotation used to identify screenshot tests. This makes the @ScreenshotInstrumentation annotation optional.
 
+#### Removed
+
+- Removed `verifyImageMagick` and `removeDiffImages` tasks
+  
 ### All Projects
 
 #### Updates
