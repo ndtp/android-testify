@@ -212,7 +212,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Allow the test to define a custom bitmap capture method.
      * The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
      */
-    fun setCaptureMethod(captureMethod: CaptureMethod?): ScreenshotRule<T> {
+    open fun setCaptureMethod(captureMethod: CaptureMethod?): ScreenshotRule<T> {
         this.captureMethod = captureMethod
         return this
     }
