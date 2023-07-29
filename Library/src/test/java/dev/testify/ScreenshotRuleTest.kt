@@ -38,7 +38,7 @@ import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.getDeviceDimensions
-import dev.testify.internal.output.getOutputFilePath
+import dev.testify.output.getOutputFilePath
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.compare.sameAsCompare
 import io.mockk.every
@@ -85,7 +85,7 @@ class ScreenshotRuleTest {
     @Before
     fun setUp() {
         mockkStatic(::assertExpectedDevice)
-        mockkStatic(::assureScreenshotDirectory)
+//        mockkStatic(::assureScreenshotDirectory)
         mockkStatic(::createBitmapFromDrawingCache)
         mockkStatic(::deleteBitmap)
         mockkStatic(::getDeviceDimensions)
@@ -93,7 +93,7 @@ class ScreenshotRuleTest {
         mockkStatic(::loadBaselineBitmapForComparison)
         mockkStatic(::loadBitmapFromFile)
         mockkStatic(::sameAsCompare)
-        mockkStatic(::saveBitmapToFile)
+//        mockkStatic(::saveBitmapToFile)
         mockkStatic(InstrumentationRegistry::class)
         mockkStatic(Looper::class)
 
@@ -126,14 +126,14 @@ class ScreenshotRuleTest {
             slot.captured.run()
         }
 
-        every { assureScreenshotDirectory(any()) } returns true
+//        every { assureScreenshotDirectory(any()) } returns true
         every { createBitmapFromDrawingCache(any(), any()) } returns mockCapturedBitmap
-        every { deleteBitmap(any(), any()) } returns true
+//        every { deleteBitmap(any(), any()) } returns true
         every { getOutputFilePath(any(), any()) } returns "file.path"
         every { loadBaselineBitmapForComparison(any(), any()) } returns mockBaselineBitmap
         every { loadBitmapFromFile(any(), any()) } returns mockCurrentBitmap
         every { sameAsCompare(any(), any()) } returns true
-        every { saveBitmapToFile(any(), any(), any()) } returns true
+//        every { saveBitmapToFile(any(), any(), any()) } returns true
 
         subject.apply(base = mockStatement, description = mockDescription)
     }

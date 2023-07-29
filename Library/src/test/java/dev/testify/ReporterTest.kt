@@ -27,7 +27,6 @@ package dev.testify
 import android.app.Instrumentation
 import android.content.Context
 import android.os.Bundle
-import dev.testify.internal.output.useSdCard
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import io.mockk.every
@@ -38,6 +37,7 @@ import io.mockk.runs
 import io.mockk.spyk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -77,8 +77,9 @@ internal open class ReporterTest {
         reporter = spyk(Reporter(mockContext, mockSession))
         reporter.configureMocks(BODY_LINES)
 
-        mockkStatic(::useSdCard)
-        every { useSdCard(any()) } returns false
+        // TODO: ?
+//        mockkStatic(::useSdCard)
+//        every { useSdCard(any()) } returns false
         every { mockInstrumentation.context } returns mockContext
         every { mockFile.exists() } returns true
     }
@@ -187,7 +188,10 @@ internal open class ReporterTest {
     fun `output file path when using sdcard`() {
         val reporter = spyk(Reporter(mockContext, mockSession))
         every { reporter.getEnvironmentArguments() } returns mockk()
-        every { useSdCard(any()) } returns true
+//        every { useSdCard(any()) } returns true
+
+        fail()
+
         val file = reporter.getReportFile()
         assertEquals("/sdcard/testify/report.yml", file.path)
     }

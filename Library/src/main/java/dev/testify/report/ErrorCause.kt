@@ -33,7 +33,6 @@ import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotation
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
 import dev.testify.internal.exception.RootViewNotFoundException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
-import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.TestMustWrapContextException
@@ -55,7 +54,7 @@ enum class ErrorCause(val klass: KClass<*>) {
     NO_ANNOTATION(MissingScreenshotInstrumentationAnnotationException::class),
     NO_ASSERT(MissingAssertSameException::class),
     NO_BASELINE(ScreenshotBaselineNotDefinedException::class),
-    NO_DIRECTORY(ScreenshotDirectoryNotFoundException::class),
+    //    NO_DIRECTORY(ScreenshotDirectoryNotFoundException::class), TODO: Refactor this to not be an enum so it can be extensible
     NO_ROOT_VIEW(RootViewNotFoundException::class),
     UI_THREAD(NoScreenshotsOnUiThreadException::class),
     UNEXPECTED_ORIENTATION(UnexpectedOrientationException::class),

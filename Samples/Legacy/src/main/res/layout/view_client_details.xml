@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:textColor="#ff212b36"
+        android:textColor="@android:color/holo_red_dark"
         tools:text="Client since January 1, 1970" />
 
     <de.hdodenhof.circleimageview.CircleImageView

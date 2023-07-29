@@ -32,8 +32,8 @@ import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.formatDeviceString
 import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
-import dev.testify.internal.output.getFileRelativeToRoot
-import dev.testify.internal.output.getOutputFilePath
+import dev.testify.output.getDestination
+import dev.testify.output.getFileRelativeToRoot
 import dev.testify.testDescription
 import java.io.File
 import java.io.InputStreamReader
@@ -74,8 +74,12 @@ private fun getOutputFile(context: Context, description: TestDescription): File 
         ),
         DEFAULT_NAME_FORMAT
     )
-    val outputPath = getOutputFilePath(context, fileName, JSON_EXTENSION)
-    return File(outputPath)
+    val destination = getDestination(
+        context = context,
+        fileName = fileName,
+        extension = JSON_EXTENSION
+    )
+    return destination.file
 }
 
 private const val JSON_EXTENSION = ".a11y.json"

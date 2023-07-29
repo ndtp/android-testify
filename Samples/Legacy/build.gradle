@@ -5,10 +5,10 @@ buildscript {
     ext {
         versions = [
                 'compose': [
-                        'compilerExt'   : '1.4.7',
-                        'core'          : '1.4.3',
-                        'material'      : '1.4.3',
-                        'ui'            : '1.4.3',
+                        'compilerExt': '1.4.7',
+                        'core'       : '1.4.3',
+                        'material'   : '1.4.3',
+                        'ui'         : '1.4.3',
                 ]
         ]
     }
@@ -76,6 +76,10 @@ android {
         disable 'GradleDependency'
     }
     namespace 'dev.testify.sample'
+}
+
+testify {
+    useSdCard true
 }
 
 dependencies {

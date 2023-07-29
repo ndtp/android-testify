@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2019 Shopify Inc.
+ * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package dev.testify.output
 
-package dev.testify.internal.exception
+internal const val SCREENSHOT_DIR = "screenshots"
+internal const val PNG_EXTENSION = ".png"
 
-class ScreenshotDirectoryNotFoundException(useSdCard: Boolean, path: String) :
-    Exception(
-        "\n\n* Could not find or create path {$path}.\n" +
-            if (useSdCard) "* Check that your emulator has an SD card image and try again.\n" else ""
-    )
+/**
+ * Get path to baseline image in assets
+ */
+fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
+    return "$SCREENSHOT_DIR/$subpath/$fileName$extension"
+}

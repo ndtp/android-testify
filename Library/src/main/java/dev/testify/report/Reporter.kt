@@ -35,10 +35,10 @@ import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.formatDeviceString
 import dev.testify.internal.getDeviceDescription
-import dev.testify.internal.output.PNG_EXTENSION
-import dev.testify.internal.output.getFileRelativeToRoot
-import dev.testify.internal.output.getOutputFilePath
-import dev.testify.internal.output.useSdCard
+import dev.testify.output.PNG_EXTENSION
+import dev.testify.output.getDestination
+import dev.testify.output.getFileRelativeToRoot
+import org.junit.Assert.assertTrue
 import java.io.File
 
 /**
@@ -156,7 +156,7 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal open fun getOutputPath(rule: ScreenshotRule<*>): String {
-        return getOutputFilePath(context, rule.fileName)
+        return getDestination(context, rule.fileName).description
     }
 
     @VisibleForTesting
@@ -166,14 +166,18 @@ internal open class Reporter(
 
     @VisibleForTesting
     internal open fun getReportFile(): File {
-        val path = if (useSdCard(getEnvironmentArguments())) {
-            val sdCard = context.getExternalFilesDir(null)
-            File(sdCard, "testify")
-        } else {
-            context.getDir("testify", Context.MODE_PRIVATE)
-        }
-
-        return File(path, "report.yml")
+        val destination = getDestination(
+            context = context,
+            fileName = "report",
+            extension = ".yml",
+            root = "testify",
+            customKey = ""
+        )
+        assertTrue(
+            "Could not create reporter destination ${destination.description}",
+            destination.assureDestination(context)
+        )
+        return destination.file
     }
 
     private val headerLineCount: Int

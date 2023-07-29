@@ -9,7 +9,7 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.formatDeviceString
-import dev.testify.internal.output.doesOutputFileExist
+import dev.testify.output.DataDirectoryDestination
 import dev.testify.sample.clients.details.ClientDetailsView
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.getViewState
@@ -69,7 +69,8 @@ class OrientationTest {
             ),
             DEFAULT_NAME_FORMAT
         )
-        assertFalse(doesOutputFileExist(rule.activity, outputFileName))
+
+        assertFalse(DataDirectoryDestination(rule.activity, outputFileName).exists)
     }
 
     private fun testOrientation(title: String, orientation: Int) {

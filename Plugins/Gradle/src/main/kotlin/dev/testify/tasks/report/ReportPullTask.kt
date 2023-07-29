@@ -56,6 +56,13 @@ open class ReportPullTask : ReportTask() {
             .listFiles(reportFilePath)
 
         val file = files.find { it.endsWith(DEFAULT_REPORT_FILE_NAME) }
+
+        val destinationFile = File(destinationPath, reportName)
+        println()
+        println("  Source               = $file")
+        println("  Destination          = ${destinationFile.absolutePath}")
+        println()
+
         if (file.isNullOrEmpty()) {
             println(AnsiFormat.Red, "  No report found")
             return
@@ -72,11 +79,6 @@ open class ReportPullTask : ReportTask() {
         File(destinationPath).assurePath()
 
         val destinationFile = File(destinationPath, reportName)
-
-        println()
-        println("  Source               = $sourceFilePath")
-        println("  Destination          = ${destinationFile.absolutePath}")
-        println()
 
         if (project.isVerbose) {
             println(AnsiFormat.Purple, "Copying $sourceFilePath to ${destinationFile.absolutePath}")

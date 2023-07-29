@@ -27,7 +27,7 @@ import android.content.Context
 import android.content.res.AssetManager
 import dev.testify.internal.exception.UnexpectedDeviceException
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
-import dev.testify.internal.output.ROOT_DIR
+import dev.testify.output.SCREENSHOT_DIR
 import java.io.File
 
 /**
@@ -46,7 +46,7 @@ fun assertExpectedDevice(context: Context, testName: String) {
 
     val expectedDevice = getDeviceDescription(context)
     val assetManager: AssetManager = context.assets
-    val root: String = ROOT_DIR
+    val root: String = SCREENSHOT_DIR
 
     assetManager.list(root)?.forEach { configuration ->
         val baselines = assetManager.list("$root/$configuration")
