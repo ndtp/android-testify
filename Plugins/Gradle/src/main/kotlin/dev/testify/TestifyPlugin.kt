@@ -62,7 +62,7 @@ class TestifyPlugin : Plugin<Project> {
             settings.validate()
             project.extensions.add(EVALUATED_SETTINGS, settings)
 
-            project.setDestination(settings)
+            project.addManifestPlaceholders(settings)
             project.addDependencies()
 
             if (settings.autoImplementLibrary) {
@@ -73,10 +73,12 @@ class TestifyPlugin : Plugin<Project> {
             Adb.init(project)
         }
 
-        private fun Project.setDestination(settings: TestifySettings) {
+        private fun Project.addManifestPlaceholders(settings: TestifySettings) {
             val destination = if (settings.useSdCard) "sdcard" else "default"
+            val module = settings.moduleName
             android.defaultConfig {
                 it.resValue("string", "testifyDestination", destination)
+                it.resValue("string", "testifyModule", module)
             }
         }
 

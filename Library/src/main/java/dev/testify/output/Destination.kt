@@ -29,7 +29,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.getMetaDataBundle
+import dev.testify.internal.helpers.ManifestPlaceholder
+import dev.testify.internal.helpers.getMetaDataValue
 import java.io.File
 import java.io.FileOutputStream
 
@@ -82,12 +83,8 @@ fun getDestination(
     root: String? = null
 ): Destination {
 
-    fun manifestValue(): String? {
-        val metaData = getMetaDataBundle(InstrumentationRegistry.getInstrumentation().context)
-        return if (metaData?.containsKey(MANIFEST_DESTINATION_KEY) == true)
-            metaData.getString("dev.testify.destination")
-        else null
-    }
+    fun manifestValue(): String? =
+        ManifestPlaceholder.Destination.getMetaDataValue()
 
     fun useSdCard(): Boolean {
         val arguments: Bundle = InstrumentationRegistry.getArguments()

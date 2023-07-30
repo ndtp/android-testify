@@ -27,6 +27,8 @@ import android.app.Instrumentation
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.internal.helpers.ManifestPlaceholder
+import dev.testify.internal.helpers.getMetaDataValue
 
 class TestInstrumentationRegistry {
     companion object {
@@ -66,7 +68,8 @@ class TestInstrumentationRegistry {
          */
         fun getModuleName(): String {
             val extras = InstrumentationRegistry.getArguments()
-            return if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
+            val name = if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
+            return name.ifEmpty { ManifestPlaceholder.Module.getMetaDataValue() ?: "" }
         }
     }
 }
