@@ -29,6 +29,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.testify.getMetaDataBundle
 import java.io.File
 import java.io.FileOutputStream
 
@@ -49,14 +50,12 @@ interface Destination {
     val file: File
 
     /**
-     * Called from saveBitmapToDestination
-     *      val outputStream = FileOutputStream(outputFilePath)
+     * TODO: remove this -- replace with FileOutputStream(destination.file)
      */
     fun getFileOutputStream(): FileOutputStream
 
     /**
-     * TODO: called from createBitmapFromActivity
-     *      return loadBitmapFromFile(outputPath, preferredBitmapOptions)
+     * Load the destination file as a [Bitmap]
      */
     fun loadBitmap(preferredBitmapOptions: BitmapFactory.Options): Bitmap?
 
@@ -73,10 +72,8 @@ interface Destination {
 
 // TODO: class MediaStoreDestination : Destination
 
-/**
- * val outputPath = getOutputFilePath(activity, fileName)
- * saveBitmapToFile(activity, currentActivityBitmap[0], outputPath)
- */
+private const val MANIFEST_DESTINATION_KEY = "dev.testify.destination"
+
 fun getDestination(
     context: Context,
     fileName: String,
@@ -85,12 +82,22 @@ fun getDestination(
     root: String? = null
 ): Destination {
 
-    fun useSdCard(arguments: Bundle): Boolean {
-        return arguments.getString("useSdCard") == "true"
+    fun manifestValue(): String? {
+        val metaData = getMetaDataBundle(InstrumentationRegistry.getInstrumentation().context)
+        return if (metaData?.containsKey(MANIFEST_DESTINATION_KEY) == true)
+            metaData.getString("dev.testify.destination")
+        else null
+    }
+
+    fun useSdCard(): Boolean {
+        val arguments: Bundle = InstrumentationRegistry.getArguments()
+        val destination = manifestValue()
+        return (destination?.contentEquals("sdcard", ignoreCase = true) == true) ||
+            arguments.getString("useSdCard") == "true"
     }
 
     return when {
-        useSdCard(InstrumentationRegistry.getArguments()) -> SdCardDestination(
+        useSdCard() -> SdCardDestination(
             context = context,
             fileName = fileName,
             extension = extension,
