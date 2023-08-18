@@ -38,6 +38,8 @@
 
 ### Sample
 
+- FlixSample now using Espresso IdlingResource to eliminate screenshot test race condition.
+
 #### Changed
 
 - `Sample` has been renamed to `LegacySample` and moved to the `Samples/Legacy` directory.

@@ -11,9 +11,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
-import coil.compose.LocalImageLoader
+import dev.testify.samples.flix.application.foundation.coil.ImageLoaderProvider
 
-@Suppress("DEPRECATION")
 @Composable
 fun AsynchronousImage(
     model: Any?,
@@ -30,20 +29,22 @@ fun AsynchronousImage(
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DrawScope.DefaultFilterQuality,
-) = AsyncImage(
-    model = model,
-    contentDescription = contentDescription,
-    imageLoader = LocalImageLoader.current,
-    modifier = modifier,
-    placeholder = placeholder,
-    error = error,
-    fallback = fallback,
-    onLoading = onLoading,
-    onSuccess = onSuccess,
-    onError = onError,
-    alignment = alignment,
-    contentScale = contentScale,
-    alpha = alpha,
-    colorFilter = colorFilter,
-    filterQuality = filterQuality
-)
+) {
+    AsyncImage(
+        model = model,
+        contentDescription = contentDescription,
+        imageLoader = ImageLoaderProvider().provide(),
+        modifier = modifier,
+        placeholder = placeholder,
+        error = error,
+        fallback = fallback,
+        onLoading = onLoading,
+        onSuccess = onSuccess,
+        onError = onError,
+        alignment = alignment,
+        contentScale = contentScale,
+        alpha = alpha,
+        colorFilter = colorFilter,
+        filterQuality = filterQuality
+    )
+}
