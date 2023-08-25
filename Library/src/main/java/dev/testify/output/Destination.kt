@@ -51,7 +51,7 @@ interface Destination {
     val file: File
 
     /**
-     * TODO: remove this -- replace with FileOutputStream(destination.file)
+     * Get a [FileOutputStream] for this destination
      */
     fun getFileOutputStream(): FileOutputStream
 
@@ -70,10 +70,6 @@ interface Destination {
      */
     fun assureDestination(context: Context): Boolean
 }
-
-// TODO: class MediaStoreDestination : Destination
-
-private const val MANIFEST_DESTINATION_KEY = "dev.testify.destination"
 
 fun getDestination(
     context: Context,

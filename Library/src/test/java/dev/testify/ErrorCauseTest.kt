@@ -68,7 +68,7 @@ class ErrorCauseTest {
         )
         assertEquals(ErrorCause.NO_ASSERT, ErrorCause.match(MissingAssertSameException()))
         assertEquals(ErrorCause.NO_BASELINE, ErrorCause.match(ScreenshotBaselineNotDefinedException("", "", "", "")))
-//        assertEquals(ErrorCause.NO_DIRECTORY, ErrorCause.match(ScreenshotDirectoryNotFoundException(false, "")))
+// TODO       assertEquals(ErrorCause.NO_DIRECTORY, ErrorCause.match(ScreenshotDirectoryNotFoundException(false, "")))
         assertEquals(
             ErrorCause.NO_ROOT_VIEW,
             ErrorCause.match(
