@@ -18,9 +18,6 @@ jobs:
         java-version: 11
 
     - name: Validate build
-      run: ./gradlew LegacySample:assemble
-
-    - name: Validate build
       run: ./gradlew FlixSample:assemble
 
     - name: Run Screenshot Tests
