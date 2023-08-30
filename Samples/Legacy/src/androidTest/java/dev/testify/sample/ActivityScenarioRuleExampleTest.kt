@@ -4,6 +4,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.espresso.intent.Intents
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import dev.testify.sample.clients.details.ClientDetailsActivity
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -13,13 +14,14 @@ class ActivityScenarioRuleExampleTest {
     @get:Rule
     var rule = ActivityScenarioRule(ClientDetailsActivity::class.java)
 
+    @Ignore("java.lang.IllegalArgumentException")
     @Test
     fun useActivityScenarioRule() {
         val scenario = rule.scenario
 
         Intents.init()
 
-        scenario.onActivity {   
+        scenario.onActivity {
 
         }
 

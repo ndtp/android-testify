@@ -138,6 +138,7 @@ class ComposableScreenshotTest {
             .assertSame()
     }
 
+    // TODO: This is failing due to bad merge with PR#161
     @ScreenshotInstrumentation
     @Test
     fun dropdownMenu() {

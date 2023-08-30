@@ -67,6 +67,10 @@ open class ComposableScreenshotRule(
      * Allow the test to define a custom bitmap capture method.
      * The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
      */
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.captureMethod = captureMethod }")
+    ) // TODO: Figure this out PR #161
     override fun setCaptureMethod(captureMethod: CaptureMethod?): ComposableScreenshotRule {
         if (captureMethod != null)
             this.captureMethod = captureMethod
@@ -80,8 +84,9 @@ open class ComposableScreenshotRule(
      */
     override fun beforeAssertSame() {
         super.beforeAssertSame()
-        super.setCaptureMethod(captureMethod) // TODO: Verify https://github.com/ndtp/android-testify/pull/161 configure { captureMethod = ::pixelCopyCapture }
-        setScreenshotViewProvider<ComposableScreenshotRule> {
+        @Suppress("DEPRECATION") // TODO: Verify https://github.com/ndtp/android-testify/pull/161
+        super.setCaptureMethod(captureMethod) //  configure { captureMethod = ::pixelCopyCapture }
+        setScreenshotViewProvider {
             it.getChildAt(0)
         }
     }
