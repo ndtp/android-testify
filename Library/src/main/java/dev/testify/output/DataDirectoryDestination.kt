@@ -44,7 +44,7 @@ open class DataDirectoryDestination(
 
     companion object {
         private const val DATA_DESTINATION_DIR = "images"
-        private const val LOG_TAG = "DataDirectory"
+        private const val LOG_TAG = "DataDestination"
     }
 
     private val outputPath: String by lazy { getOutputFilePath(context, fileName, extension) }

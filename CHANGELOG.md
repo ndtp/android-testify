@@ -27,9 +27,16 @@
 
 ### Library
 
+#### Changed
+
+- Internal file management is now abstracted through the new `Destination` interface.
+    This interface allows for extensibility and customization of the file handling. It is backwards compatible with
+    the existing SDCard and app data/data directory options.
+
 #### Bug fixes
 
 - Fix https://github.com/ndtp/android-testify/issues/81: `reportShow` and `reportPull` now support Gradle 7+.
+- Exceptions now correctly report the gradle module name of the source of the error.
 
 #### Added
 
