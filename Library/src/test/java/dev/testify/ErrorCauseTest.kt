@@ -40,7 +40,9 @@ import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.TestMustWrapContextException
 import dev.testify.internal.exception.UnexpectedDeviceException
 import dev.testify.internal.exception.ViewModificationException
-import dev.testify.report.ErrorCause
+import dev.testify.output.DataDirectoryDestinationNotFoundException
+import dev.testify.output.SdCardDestinationNotFoundException
+import dev.testify.report.describeErrorCause
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.Assert.assertEquals
@@ -58,30 +60,26 @@ class ErrorCauseTest {
 
     @Test
     fun `all exceptions match their cause`() {
-        assertEquals(ErrorCause.ACTIVITY_OVERRIDE, ErrorCause.match(ActivityMustImplementResourceOverrideException("")))
-        assertEquals(ErrorCause.ASSERT_LAST, ErrorCause.match(AssertSameMustBeLastException()))
-        assertEquals(ErrorCause.DIFFERENT, ErrorCause.match(ScreenshotIsDifferentException("", "")))
-        assertEquals(ErrorCause.NO_ACTIVITY, ErrorCause.match(ActivityNotRegisteredException(Activity::class.java)))
+        assertEquals("ACTIVITY_OVERRIDE", describeErrorCause(ActivityMustImplementResourceOverrideException("")).name)
+        assertEquals("ASSERT_LAST", describeErrorCause(AssertSameMustBeLastException()).name)
+        assertEquals("DIFFERENT", describeErrorCause(ScreenshotIsDifferentException("", "")).name)
+        assertEquals("NO_ACTIVITY", describeErrorCause(ActivityNotRegisteredException(Activity::class.java)).name)
         assertEquals(
-            ErrorCause.NO_ANNOTATION,
-            ErrorCause.match(MissingScreenshotInstrumentationAnnotationException("", ""))
+            "NO_ANNOTATION",
+            describeErrorCause(MissingScreenshotInstrumentationAnnotationException("", "")).name
         )
-        assertEquals(ErrorCause.NO_ASSERT, ErrorCause.match(MissingAssertSameException()))
-        assertEquals(ErrorCause.NO_BASELINE, ErrorCause.match(ScreenshotBaselineNotDefinedException("", "", "", "")))
-// TODO       assertEquals(ErrorCause.NO_DIRECTORY, ErrorCause.match(ScreenshotDirectoryNotFoundException(false, "")))
-        assertEquals(
-            ErrorCause.NO_ROOT_VIEW,
-            ErrorCause.match(
-                RootViewNotFoundException(mockContext, 0)
-            )
-        )
-        assertEquals(ErrorCause.UI_THREAD, ErrorCause.match(NoScreenshotsOnUiThreadException()))
-        assertEquals(ErrorCause.VIEW_MODIFICATION, ErrorCause.match(ViewModificationException(Throwable())))
-        assertEquals(ErrorCause.WRAP_CONTEXT, ErrorCause.match(TestMustWrapContextException("")))
-        assertEquals(ErrorCause.FAILED_BITMAP_CAPTURE, ErrorCause.match(FailedToCaptureBitmapException()))
-        assertEquals(ErrorCause.SKIPPED, ErrorCause.match(AssumptionViolatedException("")))
-        assertEquals(ErrorCause.IGNORED, ErrorCause.match(ScreenshotTestIgnoredException()))
-        assertEquals(ErrorCause.DEVICE_MISMATCH, ErrorCause.match(UnexpectedDeviceException("", "")))
-        assertEquals(ErrorCause.UNKNOWN, ErrorCause.match(Throwable()))
+        assertEquals("NO_ASSERT", describeErrorCause(MissingAssertSameException()).name)
+        assertEquals("NO_BASELINE", describeErrorCause(ScreenshotBaselineNotDefinedException("", "", "", "")).name)
+        assertEquals("NO_DIRECTORY", describeErrorCause(DataDirectoryDestinationNotFoundException("")).name)
+        assertEquals("NO_SD_CARD", describeErrorCause(SdCardDestinationNotFoundException("")).name)
+        assertEquals("NO_ROOT_VIEW", describeErrorCause(RootViewNotFoundException(mockContext, 0)).name)
+        assertEquals("UI_THREAD", describeErrorCause(NoScreenshotsOnUiThreadException()).name)
+        assertEquals("VIEW_MODIFICATION", describeErrorCause(ViewModificationException(Throwable())).name)
+        assertEquals("WRAP_CONTEXT", describeErrorCause(TestMustWrapContextException("")).name)
+        assertEquals("FAILED_BITMAP_CAPTURE", describeErrorCause(FailedToCaptureBitmapException()).name)
+        assertEquals("SKIPPED", describeErrorCause(AssumptionViolatedException("")).name)
+        assertEquals("IGNORED", describeErrorCause(ScreenshotTestIgnoredException()).name)
+        assertEquals("DEVICE_MISMATCH", describeErrorCause(UnexpectedDeviceException("", "")).name)
+        assertEquals("UNKNOWN", describeErrorCause(Throwable()).name)
     }
 }

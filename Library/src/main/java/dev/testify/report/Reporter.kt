@@ -111,7 +111,7 @@ internal open class Reporter(
     fun fail(throwable: Throwable) {
         session.fail()
         builder.appendLine("status: ${TestStatus.FAIL.name}", indent = 8)
-        val cause = ErrorCause.match(throwable)
+        val cause = describeErrorCause(throwable)
         builder.appendLine("cause: ${cause.name}", indent = 8)
         builder.appendLine("description: \"${cause.description}\"", indent = 8)
     }

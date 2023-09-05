@@ -28,7 +28,8 @@ package dev.testify.internal.exception
  * Throws by assertExpectedDevice() when a baseline exists for a different device description
  */
 class UnexpectedDeviceException(currentDevice: String, expectedDevice: String) :
-    Exception(
+    TestifyException(
+        "DEVICE_MISMATCH",
         """
 
 *  The currently running device '$currentDevice' does not match the expected device '$expectedDevice'.

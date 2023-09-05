@@ -25,7 +25,8 @@
 package dev.testify.internal.exception
 
 class ActivityMustImplementResourceOverrideException(activityName: String) :
-    RuntimeException(
+    TestifyException(
+        "ACTIVITY_OVERRIDE",
         "\n\n* You must implement TestifyResourcesOverride when using setLocale or setFontScale to test " +
             "$activityName *\n"
     )

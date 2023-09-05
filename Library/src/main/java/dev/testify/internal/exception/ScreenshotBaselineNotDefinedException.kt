@@ -31,7 +31,8 @@ class ScreenshotBaselineNotDefinedException(
     testClass: String,
     deviceKey: String
 ) :
-    Exception(
+    TestifyException(
+        "NO_BASELINE",
         """
 
 *  A baseline screenshot could not be found for '$testName'.

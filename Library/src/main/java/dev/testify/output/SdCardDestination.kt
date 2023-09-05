@@ -29,6 +29,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import dev.testify.internal.DEFAULT_FOLDER_FORMAT
 import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.exception.TestifyException
 import dev.testify.internal.formatDeviceString
 import java.io.File
 import java.io.FileOutputStream
@@ -97,8 +98,9 @@ open class SdCardDestination(
     }
 }
 
-private class SdCardDestinationNotFoundException(path: String) :
-    Exception(
+internal class SdCardDestinationNotFoundException(path: String) :
+    TestifyException(
+        "NO_SD_CARD",
         """
     * Could not find or create path {$path}.
     * Check that your emulator has an SD card image and try again.

@@ -29,6 +29,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import dev.testify.internal.DEFAULT_FOLDER_FORMAT
 import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.exception.TestifyException
 import dev.testify.internal.formatDeviceString
 import java.io.File
 import java.io.FileOutputStream
@@ -95,4 +96,4 @@ open class DataDirectoryDestination(
 }
 
 internal class DataDirectoryDestinationNotFoundException(path: String) :
-    Exception("\n\n* Could not find or create path {$path}")
+    TestifyException("NO_DIRECTORY", "\n\n* Could not find or create path {$path}")

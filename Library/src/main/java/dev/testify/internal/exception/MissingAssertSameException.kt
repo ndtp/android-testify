@@ -25,4 +25,4 @@
 package dev.testify.internal.exception
 
 class MissingAssertSameException :
-    RuntimeException("\n\n* You must call assertSame on the ScreenshotRule *\n")
+    TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the ScreenshotRule *\n")

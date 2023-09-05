@@ -24,7 +24,8 @@
  */
 package dev.testify.internal.exception
 
-class AssertSameMustBeLastException : RuntimeException(
+class AssertSameMustBeLastException : TestifyException(
+    "ASSERT_LAST",
     "\n\n*  assertSame must be called after setViewModifications " +
         "and setEspressoActions\n"
 )

@@ -1,6 +1,7 @@
 package dev.testify.internal.exception
 
-class ViewModificationException(throwable: Throwable) : Exception(
+class ViewModificationException(throwable: Throwable) : TestifyException(
+    "VIEW_MODIFICATION",
     """
 
 * Test failed due to ${throwable::class.java.simpleName} in the ViewModifications
