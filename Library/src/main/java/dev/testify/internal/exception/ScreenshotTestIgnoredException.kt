@@ -25,4 +25,4 @@
 package dev.testify.internal.exception
 
 class ScreenshotTestIgnoredException :
-    RuntimeException("\n\n* Test is ignored and will not run. *\n")
+    TestifyException("IGNORED", "\n\n* Test is ignored and will not run. *\n")

@@ -24,7 +24,8 @@
  */
 package dev.testify.internal.exception
 
-class ActivityNotRegisteredException(activityClass: Class<*>) : Exception(
+class ActivityNotRegisteredException(activityClass: Class<*>) : TestifyException(
+    "NO_ACTIVITY",
     """
 
 * Failed to launch Activity `${activityClass.name}`. Please verify it has been added to the AndroidManifest.xml

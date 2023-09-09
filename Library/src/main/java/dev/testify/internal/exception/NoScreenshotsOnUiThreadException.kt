@@ -29,7 +29,8 @@ package dev.testify.internal.exception
  * This is necessary to ensure that the View layout completes correctly.
  * If you run your test on the UI thread, Testify can not synchronize correctly.
  */
-class NoScreenshotsOnUiThreadException : Exception(
+class NoScreenshotsOnUiThreadException : TestifyException(
+    "UI_THREAD",
     "\n\n*  You can not use Testify on the UI thread.\n*  Remove the " +
         "@UiThreadTest annotation.\n"
 )

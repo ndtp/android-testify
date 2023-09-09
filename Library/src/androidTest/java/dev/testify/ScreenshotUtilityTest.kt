@@ -29,15 +29,14 @@ package dev.testify
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import dev.testify.internal.output.getOutputFilePath
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
+import dev.testify.output.getDestination
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.File
 
 @RunWith(AndroidJUnit4::class)
 class ScreenshotUtilityTest {
@@ -57,8 +56,8 @@ class ScreenshotUtilityTest {
     fun createBitmapFromActivity() {
         val activity = testActivityRule.activity
         val rootView = activity.findViewById<View>(R.id.test_root_view)
-        val outputFilePath = getOutputFilePath(activity, "testing")
-        val bitmapFile = File(outputFilePath)
+        val destination = getDestination(context = activity, fileName = "testing")
+        val bitmapFile = destination.file
 
         val capturedBitmap = createBitmapFromActivity(
             activity = activity,
@@ -77,10 +76,10 @@ class ScreenshotUtilityTest {
         createBitmapFromActivity()
 
         val fileName = "testing"
-        val outputFilePath = getOutputFilePath(activity, fileName)
+        val destination = getDestination(context = activity, fileName = fileName)
 
-        deleteBitmap(activity, fileName)
-        val fileThatShouldBeDeleted = File(outputFilePath)
+        deleteBitmap(destination)
+        val fileThatShouldBeDeleted = destination.file
         assertFalse(fileThatShouldBeDeleted.exists())
     }
 }

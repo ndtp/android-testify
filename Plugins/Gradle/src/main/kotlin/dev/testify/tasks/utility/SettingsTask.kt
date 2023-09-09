@@ -27,6 +27,8 @@ package dev.testify.tasks.utility
 
 import dev.testify.internal.Adb
 import dev.testify.internal.Device
+import dev.testify.internal.reportFilePath
+import dev.testify.internal.screenshotDirectory
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 import dev.testify.testifySettings
@@ -44,7 +46,9 @@ open class SettingsTask : TestifyUtilityTask() {
             println("  moduleName             = $moduleName")
             println("  outputFileNameFormat   = $outputFileNameFormat")
             println("  pullWaitTime           = $pullWaitTime")
+            println("  reportFilePath         = ${project.reportFilePath}")
             println("  screenshotAnnotation   = $screenshotAnnotation")
+            println("  screenshotDirectory    = ${project.screenshotDirectory}")
             println("  targetPackageId        = $targetPackageId")
             println("  testPackageId          = $testPackageId")
             println("  testRunner             = $testRunner")

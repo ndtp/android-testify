@@ -4,6 +4,14 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <application />
+    <application>
+        <meta-data
+            android:name="dev.testify.destination"
+            android:value="@string/testifyDestination" />
+
+        <meta-data
+            android:name="dev.testify.module"
+            android:value="@string/testifyModule" />
+    </application>
 
 </manifest>

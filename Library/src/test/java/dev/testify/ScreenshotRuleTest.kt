@@ -28,6 +28,7 @@ import android.app.Instrumentation
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
@@ -38,14 +39,17 @@ import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.getDeviceDimensions
-import dev.testify.internal.output.getOutputFilePath
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.compare.sameAsCompare
+import dev.testify.output.DataDirectoryDestination
+import dev.testify.output.DataDirectoryDestinationNotFoundException
+import dev.testify.output.getDestination
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.spyk
+import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
 import org.junit.Assert.assertNotNull
@@ -54,6 +58,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import java.io.File
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
@@ -72,6 +77,13 @@ class ScreenshotRuleTest {
         every { methodName } returns "default"
         every { testClass } returns ScreenshotRuleTest::class.java
     }
+    private val mockDestination = spyk(
+        DataDirectoryDestination(
+            context = mockActivity,
+            fileName = "file",
+            extension = ".path"
+        )
+    )
 
     private fun setStaticFieldViaReflection(field: Field, value: Any) {
         field.isAccessible = true
@@ -85,23 +97,22 @@ class ScreenshotRuleTest {
     @Before
     fun setUp() {
         mockkStatic(::assertExpectedDevice)
-        mockkStatic(::assureScreenshotDirectory)
         mockkStatic(::createBitmapFromDrawingCache)
         mockkStatic(::deleteBitmap)
         mockkStatic(::getDeviceDimensions)
-        mockkStatic(::getOutputFilePath)
         mockkStatic(::loadBaselineBitmapForComparison)
         mockkStatic(::loadBitmapFromFile)
         mockkStatic(::sameAsCompare)
-        mockkStatic(::saveBitmapToFile)
+        mockkStatic(::getDestination)
         mockkStatic(InstrumentationRegistry::class)
         mockkStatic(Looper::class)
+        mockkStatic(BitmapFactory::class)
 
         val arguments = mockk<Bundle>(relaxed = true)
         val currentThread = mockk<Thread>()
         val instrumentation = mockk<Instrumentation>(relaxed = true)
         val mainLooper = mockk<Looper>(relaxed = true)
-        val targetContext = mockk<Context>(relaxed = true)
+        val targetContext = mockActivity
         val testContext = mockk<Context>(relaxed = true)
 
         every { instrumentation.targetContext } returns targetContext
@@ -126,20 +137,27 @@ class ScreenshotRuleTest {
             slot.captured.run()
         }
 
-        every { assureScreenshotDirectory(any()) } returns true
+        val getDirSlot = slot<String>()
+        every { mockActivity.getDir(capture(getDirSlot), Context.MODE_PRIVATE) } answers {
+            File("/data/user/0/dev.testify.sample/app_images/" + getDirSlot.captured)
+        }
+
+        every { getDestination(any(), any(), any(), any(), any()) } returns mockDestination
+        every { mockDestination.assureDestination(any()) } returns true
+        every { mockDestination.getFileOutputStream() } returns mockk(relaxed = true)
+        every { BitmapFactory.decodeFile(any(), any()) } returns mockCapturedBitmap
         every { createBitmapFromDrawingCache(any(), any()) } returns mockCapturedBitmap
-        every { deleteBitmap(any(), any()) } returns true
-        every { getOutputFilePath(any(), any()) } returns "file.path"
+        every { deleteBitmap(any()) } returns true
         every { loadBaselineBitmapForComparison(any(), any()) } returns mockBaselineBitmap
         every { loadBitmapFromFile(any(), any()) } returns mockCurrentBitmap
         every { sameAsCompare(any(), any()) } returns true
-        every { saveBitmapToFile(any(), any(), any()) } returns true
 
         subject.apply(base = mockStatement, description = mockDescription)
     }
 
     @After
     fun tearDown() {
+        unmockkAll()
         observer?.let {
             subject.removeScreenshotObserver(it)
         }
@@ -151,9 +169,22 @@ class ScreenshotRuleTest {
         subject.assertSame()
     }
 
+    @Test(expected = DataDirectoryDestinationNotFoundException::class)
+    fun `WHEN invalid destination THEN throw DataDirectoryDestinationNotFoundException`() {
+        every { mockDestination.assureDestination(any()) } returns false
+        every { loadBaselineBitmapForComparison(any(), any()) } returns null
+        subject.assertSame()
+    }
+
     @Test(expected = ScreenshotIsDifferentException::class)
     fun `WHEN baseline is different than current THEN ScreenshotIsDifferentException`() {
         every { sameAsCompare(any(), any()) } returns false
+        subject.assertSame()
+    }
+
+    @Test(expected = AssertionError::class)
+    fun `WHEN could not delete cached bitmap THEN assertion failed`() {
+        every { deleteBitmap(any()) } returns false
         subject.assertSame()
     }
 

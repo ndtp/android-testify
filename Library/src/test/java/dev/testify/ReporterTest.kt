@@ -26,8 +26,7 @@ package dev.testify
 
 import android.app.Instrumentation
 import android.content.Context
-import android.os.Bundle
-import dev.testify.internal.output.useSdCard
+import dev.testify.output.getDestination
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import io.mockk.every
@@ -36,6 +35,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.spyk
+import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -77,8 +77,8 @@ internal open class ReporterTest {
         reporter = spyk(Reporter(mockContext, mockSession))
         reporter.configureMocks(BODY_LINES)
 
-        mockkStatic(::useSdCard)
-        every { useSdCard(any()) } returns false
+        mockkStatic(::getDestination)
+
         every { mockInstrumentation.context } returns mockContext
         every { mockFile.exists() } returns true
     }
@@ -176,20 +176,28 @@ internal open class ReporterTest {
     }
 
     @Test
-    fun `output file path when not using sdcard`() {
-        val reporter = spyk(Reporter(mockContext, mockSession))
-        every { reporter.getEnvironmentArguments() } returns mockk<Bundle>()
-        val file = reporter.getReportFile()
-        assertEquals("/data/data/com.app.example/app_testify/report.yml", file.path)
-    }
-
-    @Test
-    fun `output file path when using sdcard`() {
+    fun `output file destination`() {
         val reporter = spyk(Reporter(mockContext, mockSession))
         every { reporter.getEnvironmentArguments() } returns mockk()
-        every { useSdCard(any()) } returns true
-        val file = reporter.getReportFile()
-        assertEquals("/sdcard/testify/report.yml", file.path)
+        every {
+            getDestination(
+                any(), any(), any(), any(), any()
+            )
+        } returns mockk(relaxed = true) {
+            every { assureDestination(any()) } returns true
+        }
+
+        reporter.getReportFile()
+
+        verify {
+            getDestination(
+                context = any(),
+                fileName = "report",
+                extension = ".yml",
+                customKey = "",
+                root = "testify"
+            )
+        }
     }
 
     @Test

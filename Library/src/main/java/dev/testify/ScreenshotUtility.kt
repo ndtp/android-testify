@@ -32,17 +32,12 @@ import android.graphics.BitmapFactory
 import android.os.Debug
 import android.util.Log
 import android.view.View
-import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.internal.exception.ScreenshotDirectoryNotFoundException
 import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
-import dev.testify.internal.output.PNG_EXTENSION
-import dev.testify.internal.output.getFileRelativeToRoot
-import dev.testify.internal.output.getOutputDirectoryPath
-import dev.testify.internal.output.getOutputFilePath
-import dev.testify.internal.output.useSdCard
-import java.io.File
-import java.io.FileOutputStream
+import dev.testify.output.Destination
+import dev.testify.output.PNG_EXTENSION
+import dev.testify.output.getDestination
+import dev.testify.output.getFileRelativeToRoot
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -53,33 +48,20 @@ val preferredBitmapOptions: BitmapFactory.Options
         return options
     }
 
-fun saveBitmapToFile(context: Context, bitmap: Bitmap?, outputFilePath: String): Boolean {
+fun saveBitmapToDestination(context: Context, bitmap: Bitmap?, destination: Destination): Boolean {
     if (bitmap == null) {
         return false
     }
-    if (assureScreenshotDirectory(context)) {
-        Log.d(LOG_TAG, "Writing screenshot to {$outputFilePath}")
-        val outputStream = FileOutputStream(outputFilePath)
+    if (destination.assureDestination(context)) {
+        Log.d(LOG_TAG, "Writing screenshot to {${destination.description}}")
+        val outputStream = destination.getFileOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
         outputStream.flush()
         outputStream.close()
         return true
     } else {
-        throw ScreenshotDirectoryNotFoundException(
-            useSdCard(InstrumentationRegistry.getArguments()),
-            getOutputDirectoryPath(context).absolutePath
-        )
+        throw destination.getScreenshotDestinationNotFoundException()
     }
-}
-
-fun assureScreenshotDirectory(context: Context): Boolean {
-    var created = true
-    val outputDirectory = getOutputDirectoryPath(context)
-    if (!outputDirectory.exists()) {
-        Log.d(LOG_TAG, "Trying to make the directory")
-        created = outputDirectory.mkdirs()
-    }
-    return created
 }
 
 @Throws(Exception::class)
@@ -104,7 +86,7 @@ fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap?
 /**
  * Capture a bitmap from the given Activity and save it to the screenshots directory.
  *
- * Calls [captureMethod] then [saveBitmapToFile] and returns the result of [loadBitmapFromFile]
+ * Calls [captureMethod] then [saveBitmapToDestination] and returns the result of [loadBitmapFromFile]
  *
  * @param activity The [Activity] instance to capture.
  * @param fileName The name to use when writing the captured image to disk.
@@ -139,10 +121,10 @@ fun createBitmapFromActivity(
         return null
     }
 
-    val outputPath = getOutputFilePath(activity, fileName)
-    saveBitmapToFile(activity, currentActivityBitmap[0], outputPath)
+    val destination = getDestination(activity, fileName)
+    saveBitmapToDestination(activity, currentActivityBitmap[0], destination)
 
-    return loadBitmapFromFile(outputPath, preferredBitmapOptions)
+    return destination.loadBitmap(preferredBitmapOptions)
 }
 
 /**
@@ -153,9 +135,8 @@ fun loadBitmapFromFile(outputPath: String, preferredBitmapOptions: BitmapFactory
     return BitmapFactory.decodeFile(outputPath, preferredBitmapOptions)
 }
 
-fun deleteBitmap(context: Context, fileName: String): Boolean {
-    val file = File(getOutputFilePath(context, fileName))
-    return file.delete()
+fun deleteBitmap(destination: Destination): Boolean {
+    return destination.file.delete()
 }
 
 private const val LOG_TAG = "ScreenshotUtility"

@@ -26,6 +26,7 @@
 
 package dev.testify
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -73,13 +74,13 @@ import dev.testify.internal.helpers.EspressoActions
 import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
-import dev.testify.internal.output.doesOutputFileExist
 import dev.testify.internal.processor.capture.canvasCapture
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.internal.processor.compare.FuzzyCompare
 import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.internal.processor.diff.HighContrastDiff
+import dev.testify.output.getDestination
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import org.junit.Assert.assertTrue
@@ -153,9 +154,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             reporter = Reporter(getInstrumentation().targetContext, ReportSession())
         }
     }
-
-    val outputFileExists: Boolean
-        get() = doesOutputFileExist(activity, outputFileName)
 
     private fun isRunningOnUiThread(): Boolean {
         return Looper.getMainLooper().thread == Thread.currentThread()
@@ -298,6 +296,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     @get:LayoutRes
     private val TestifyLayout.resolvedLayoutId: Int
+        @SuppressLint("DiscouragedApi")
         get() {
             if (this.layoutResName.isNotEmpty()) {
                 return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null)
@@ -562,7 +561,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 if (compareBitmaps(baselineBitmap, currentBitmap)) {
                     assertTrue(
                         "Could not delete cached bitmap ${description.name}",
-                        deleteBitmap(activity, outputFileName)
+                        deleteBitmap(getDestination(activity, outputFileName))
                     )
                 } else {
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {

@@ -48,6 +48,11 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
     override fun taskAction() {
         println("  Pulling screenshots:")
 
+        println()
+        println("  Source               = ${project.screenshotDirectory}")
+        println("  Destination          = ${project.destinationImageDirectory}")
+        println()
+
         val failedScreenshots = project.listFailedScreenshots()
         if (failedScreenshots.isEmpty()) {
             println(AnsiFormat.Green, "  No failed screenshots found")
@@ -70,14 +75,8 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
     }
 
     private fun pullScreenshots() {
-        val src = project.screenshotDirectory
         val dst = project.destinationImageDirectory
         File(dst).assurePath()
-
-        println()
-        println("  Source               = $src")
-        println("  Destination          = $dst")
-        println()
 
         val failedScreenshots = project.listFailedScreenshotsWithPath()
 

@@ -27,6 +27,7 @@ package dev.testify
 
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
 import dev.testify.internal.Adb
+import dev.testify.internal.android
 import dev.testify.tasks.main.ScreenshotClearTask
 import dev.testify.tasks.main.ScreenshotPullTask
 import dev.testify.tasks.main.ScreenshotRecordTask
@@ -48,7 +49,6 @@ import org.gradle.api.Project
 class TestifyPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-
         with(project) {
             extensions.create(TestifyExtension.NAME, TestifyExtension::class.java)
             createTasks()
@@ -58,11 +58,11 @@ class TestifyPlugin : Plugin<Project> {
 
     private object AfterEvaluate : Action<Project> {
         override fun execute(project: Project) {
-            project.validateExtension()
             val settings = TestifySettings.create(project)
             settings.validate()
             project.extensions.add(EVALUATED_SETTINGS, settings)
 
+            project.addManifestPlaceholders(settings)
             project.addDependencies()
 
             if (settings.autoImplementLibrary) {
@@ -71,6 +71,15 @@ class TestifyPlugin : Plugin<Project> {
             }
 
             Adb.init(project)
+        }
+
+        private fun Project.addManifestPlaceholders(settings: TestifySettings) {
+            val destination = if (settings.useSdCard) "sdcard" else "default"
+            val module = settings.moduleName
+            android.defaultConfig {
+                it.resValue("string", "testifyDestination", destination)
+                it.resValue("string", "testifyModule", module)
+            }
         }
 
         private fun Project.addDependencies() {

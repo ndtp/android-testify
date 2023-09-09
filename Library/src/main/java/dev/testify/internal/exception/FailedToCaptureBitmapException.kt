@@ -23,4 +23,5 @@
  */
 package dev.testify.internal.exception
 
-class FailedToCaptureBitmapException : RuntimeException("Failed to capture bitmap from activity")
+class FailedToCaptureBitmapException :
+    TestifyException("FAILED_BITMAP_CAPTURE", "Failed to capture bitmap from activity")
