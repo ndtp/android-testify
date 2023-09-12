@@ -114,6 +114,6 @@ private fun getFileName(testContext: Context): String {
  * Helper method to invoke [ScreenshotRule.setCaptureMethod] with the fullscreen capture method.
  */
 fun ScreenshotRule<*>.captureFullscreen(): ScreenshotRule<*> {
-    setCaptureMethod(::fullscreenCapture)
+    configure { captureMethod = ::fullscreenCapture }
     return this
 }

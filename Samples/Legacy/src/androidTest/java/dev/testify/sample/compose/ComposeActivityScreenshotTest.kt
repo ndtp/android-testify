@@ -25,10 +25,10 @@
 package dev.testify.sample.compose
 
 import dev.testify.ScreenshotRule
-import dev.testify.TestifyFeatures
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.capture.fullscreen.fullscreenCapture
 import dev.testify.capture.fullscreen.provider.excludeSystemUi
+import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.sample.ComposeActivity
 import org.junit.Before
 import org.junit.Rule
@@ -45,7 +45,7 @@ class ComposeActivityScreenshotTest {
          * It is important to enable PixelCopy as your capture method for Jetpack Compose-based UI.
          * PixelCopy will accurately capture elevation, shadows and any GPU-accelerated features.
          */
-        TestifyFeatures.PixelCopyCapture.setEnabled(true)
+        rule.configure { captureMethod = ::pixelCopyCapture }
     }
 
     /**
@@ -81,13 +81,13 @@ class ComposeActivityScreenshotTest {
     fun dropDownExpanded() {
         rule
             .configure {
+                captureMethod = ::fullscreenCapture
                 exactness = 0.9f
                 excludeSystemUi()
             }
             .addIntentExtras {
                 it.putBoolean(ComposeActivity.EXTRA_DROPDOWN, true)
             }
-            .setCaptureMethod(::fullscreenCapture)
             .assertSame()
     }
 }

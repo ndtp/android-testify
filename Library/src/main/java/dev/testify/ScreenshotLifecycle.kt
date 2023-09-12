@@ -25,6 +25,7 @@ package dev.testify
 
 import android.app.Activity
 import android.graphics.Bitmap
+import dev.testify.internal.TestifyConfiguration
 
 interface ScreenshotLifecycle {
 
@@ -61,4 +62,13 @@ interface ScreenshotLifecycle {
      * @param currentBitmap - The captured [Bitmap]
      */
     fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {}
+
+    /**
+     * Invoked after the Activity has launched.
+     * Allows for custom modifications to the configuration.
+     *
+     * @param activity - The instance of the [Activity] under test
+     * @param configuration -The instance of [TestifyConfiguration] for the current test
+     */
+    fun applyConfiguration(activity: Activity, configuration: TestifyConfiguration) {}
 }

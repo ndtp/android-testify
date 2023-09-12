@@ -26,6 +26,7 @@ package dev.testify
 import android.app.Activity
 import android.graphics.Bitmap
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -47,6 +48,7 @@ class ScreenshotLifecycleTest {
         override fun afterInitializeView(activity: Activity) = logMethod()
         override fun beforeScreenshot(activity: Activity) = logMethod()
         override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) = logMethod()
+        override fun applyConfiguration(activity: Activity, configuration: TestifyConfiguration) = logMethod()
     }
 
     @ScreenshotInstrumentation
@@ -60,11 +62,12 @@ class ScreenshotLifecycleTest {
         } catch (e: ScreenshotBaselineNotDefinedException) {
         }
 
-        assertEquals(5, observer.log.size)
+        assertEquals(6, observer.log.size)
         assertEquals("beforeAssertSame", observer.log[0])
-        assertEquals("beforeInitializeView", observer.log[1])
-        assertEquals("afterInitializeView", observer.log[2])
-        assertEquals("beforeScreenshot", observer.log[3])
-        assertEquals("afterScreenshot", observer.log[4])
+        assertEquals("applyConfiguration", observer.log[1])
+        assertEquals("beforeInitializeView", observer.log[2])
+        assertEquals("afterInitializeView", observer.log[3])
+        assertEquals("beforeScreenshot", observer.log[4])
+        assertEquals("afterScreenshot", observer.log[5])
     }
 }

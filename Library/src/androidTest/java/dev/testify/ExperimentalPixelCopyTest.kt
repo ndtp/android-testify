@@ -52,8 +52,8 @@ class ExperimentalPixelCopyTest {
     @Test
     fun withPixelCopy() {
         rule
-            .setCaptureMethod(::pixelCopyCapture)
             .configure {
+                captureMethod = ::pixelCopyCapture
                 exactness = 0.99f // Required due to difference with CI GPU architecture
             }
             .assertSame()

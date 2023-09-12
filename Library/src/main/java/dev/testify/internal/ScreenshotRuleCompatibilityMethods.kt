@@ -27,6 +27,8 @@ import android.app.Activity
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import androidx.annotation.IdRes
+import dev.testify.CaptureMethod
+import dev.testify.CompareMethod
 import dev.testify.CompatibilityMethods
 import dev.testify.ScreenshotRule
 import java.util.Locale
@@ -189,6 +191,28 @@ internal class ScreenshotRuleCompatibilityMethods<TRule : ScreenshotRule<TActivi
     override fun setLocale(locale: Locale): TRule {
         rule.configure {
             this@configure.locale = locale
+        }
+        return rule
+    }
+
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.captureMethod = captureMethod }")
+    )
+    override fun setCaptureMethod(captureMethod: CaptureMethod?): TRule {
+        rule.configure {
+            this@configure.captureMethod = captureMethod
+        }
+        return rule
+    }
+
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.compareMethod = compareMethod }")
+    )
+    override fun setCompareMethod(compareMethod: CompareMethod?): TRule {
+        rule.configure {
+            this@configure.compareMethod = compareMethod
         }
         return rule
     }
