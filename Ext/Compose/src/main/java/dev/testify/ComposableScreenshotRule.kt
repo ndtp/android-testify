@@ -33,6 +33,7 @@ import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import dev.testify.compose.R
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.disposeComposition
+import dev.testify.internal.helpers.findRootView
 import dev.testify.internal.processor.capture.pixelCopyCapture
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -63,23 +64,13 @@ open class ComposableScreenshotRule(
     }
 
     /**
-     * Allow the test to define a custom bitmap capture method.
-     * The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
-     */
-    override fun setCaptureMethod(captureMethod: CaptureMethod?): ComposableScreenshotRule {
-        if (captureMethod != null)
-            this.captureMethod = captureMethod
-        else
-            this.captureMethod = ::pixelCopyCapture
-        return this
-    }
-
-    /**
      * Set a screenshot view provider to capture only the @Composable bounds
      */
     override fun beforeAssertSame() {
         super.beforeAssertSame()
-        super.setCaptureMethod(captureMethod)
+        super.configure {
+            captureMethod = this@ComposableScreenshotRule.captureMethod
+        }
         setScreenshotViewProvider {
             it.getChildAt(0)
         }
@@ -149,7 +140,7 @@ open class ComposableScreenshotRule(
      * Invoked immediately before the screenshot is taken.
      */
     override fun beforeScreenshot(activity: Activity) {
-        val targetView = getRootView(activity).getChildAt(0)
+        val targetView = activity.findRootView(rootViewId).getChildAt(0)
         if (targetView.width == 0 && targetView.height == 0)
             throw IllegalStateException(
                 "Target view has 0 size. " +
@@ -173,6 +164,10 @@ open class ComposableScreenshotRule(
      * @param configureRule - [TestifyConfiguration]
      */
     override fun configure(configureRule: TestifyConfiguration.() -> Unit): ComposableScreenshotRule {
-        return super.configure(configureRule) as ComposableScreenshotRule
+        super.configure(configureRule)
+
+        this.captureMethod = configuration.captureMethod ?: ::pixelCopyCapture
+
+        return this
     }
 }

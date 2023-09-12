@@ -38,6 +38,9 @@ import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.getDeviceDimensions
+import dev.testify.internal.helpers.findRootView
+import dev.testify.internal.logic.compareBitmaps
+import dev.testify.internal.logic.takeScreenshot
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.output.DataDirectoryDestination
@@ -91,9 +94,12 @@ class ScreenshotRuleTest {
         mockkStatic(::loadBaselineBitmapForComparison)
         mockkStatic(::loadBitmapFromFile)
         mockkStatic(::sameAsCompare)
+        mockkStatic(::takeScreenshot)
+        mockkStatic(::compareBitmaps)
         mockkStatic(::getDestination)
         mockkStatic(InstrumentationRegistry::class)
         mockkStatic(Looper::class)
+        mockkStatic("dev.testify.internal.helpers.FindRootViewKt")
         mockkStatic(BitmapFactory::class)
 
         val arguments = mockk<Bundle>(relaxed = true)
@@ -116,7 +122,8 @@ class ScreenshotRuleTest {
         every { subject.launchActivity(any()) } returns mockActivity
         every { subject.activity } returns mockActivity
         every { subject.getIntent() } returns mockIntent
-        every { subject.getRootView(any()) } returns mockViewGroup
+        every { any<Activity>().findRootView(any()) } returns mockViewGroup
+
         every { subject.espressoHelper } returns mockk(relaxed = true)
 
         val slot = slot<Runnable>()
@@ -180,11 +187,11 @@ class ScreenshotRuleTest {
         subject.assertSame()
 
         verify { subject.launchActivity(any()) }
-        verify { subject.initializeView(any()) }
-        verify { subject.takeScreenshot(any(), any(), any(), any()) }
+
+        verify { takeScreenshot(any(), any(), any(), any()) }
         verify { assertExpectedDevice(any(), any(), any()) }
         verify { loadBaselineBitmapForComparison(any(), any()) }
-        verify { subject.compareBitmaps(any(), any(), any()) }
+        verify { compareBitmaps(any(), any(), any()) }
     }
 
     @Test
@@ -195,7 +202,7 @@ class ScreenshotRuleTest {
         subject.setScreenshotViewProvider(::dummyProvider)
         subject.assertSame()
         assertNotNull(providedView)
-        verify { subject.takeScreenshot(any(), any(), providedView, any()) }
+        verify { takeScreenshot(any(), any(), providedView, any()) }
     }
 
     @Test
