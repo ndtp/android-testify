@@ -3,7 +3,6 @@ package dev.testify.internal.logic
 import android.app.Activity
 import android.graphics.Bitmap
 import android.view.View
-import androidx.test.annotation.ExperimentalTestApi
 import dev.testify.CaptureMethod
 import dev.testify.createBitmapFromActivity
 
@@ -18,7 +17,6 @@ import dev.testify.createBitmapFromActivity
  * @return A [Bitmap] representing the captured [screenshotView] in [activity]
  *          Will return [null] if there is an error capturing the bitmap.
  */
-@ExperimentalTestApi
 fun takeScreenshot(
     activity: Activity,
     fileName: String,
