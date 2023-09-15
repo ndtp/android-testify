@@ -12,6 +12,15 @@
 - `ScreenshotRule.compareBitmaps()` is now a top-level function.
 - `ScreenshotRule.takeScreenshot()` is now a top-level function.
 
+#### Added
+
+- `isRunningOnUiThread()` added as a top-level function.
+- `outputFileName()` added as an extension method for `Context`.
+
+#### Removed
+
+- `open fun  ScreenshotRule.generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap)` has been removed. Use 
+
 #### Fixed
 
 - [#175](https://github.com/ndtp/android-testify/issues/175): Output from Gradle Managed Devices now named according to Testify naming strategy

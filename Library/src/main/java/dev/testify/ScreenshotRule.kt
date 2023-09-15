@@ -29,7 +29,6 @@ package dev.testify
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
 import android.view.View
@@ -493,7 +492,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         throw FinalizeDestinationException(destination.description)
 
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                        generateHighContrastDiff(baselineBitmap, currentBitmap)
+                        HighContrastDiff(configuration.exclusionRects)
+                            .name(outputFileName)
+                            .baseline(baselineBitmap)
+                            .current(currentBitmap)
+                            .exactness(configuration.exactness)
+                            .generate(context = activity)
                     }
                     if (isRecordMode || recordMode) {
                         instrumentationPrintln(

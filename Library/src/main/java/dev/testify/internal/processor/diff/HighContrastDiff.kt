@@ -34,6 +34,13 @@ import dev.testify.internal.processor.createBitmap
 import dev.testify.output.getDestination
 import dev.testify.saveBitmapToDestination
 
+/**
+ * Given [baselineBitmap] and [currentBitmap], use [HighContrastDiff] to write a companion .diff image for the
+ * current test.
+ *
+ * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
+ * against a black background.
+ */
 class HighContrastDiff(private val exclusionRects: Set<Rect>) {
 
     private lateinit var fileName: String
