@@ -41,8 +41,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
-import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
+import dev.testify.annotation.findAnnotation
+import dev.testify.annotation.getScreenshotAnnotationName
+import dev.testify.annotation.getScreenshotInstrumentationAnnotation
 import dev.testify.internal.DEFAULT_FOLDER_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.ScreenshotRuleCompatibilityMethods
@@ -62,7 +64,6 @@ import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.getModuleName
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
 import dev.testify.internal.extensions.cyan
-import dev.testify.internal.extensions.getScreenshotAnnotationName
 import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.formatDeviceString
 import dev.testify.internal.helpers.ActivityProvider
@@ -264,16 +265,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         )
         reporter?.startTest(getInstrumentation().testDescription)
 
-        val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
+        val testifyLayout = methodAnnotations?.findAnnotation<TestifyLayout>()
         targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
-    }
-
-    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
-        return this.find { it is T } as? T
-    }
-
-    private inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(name: String): T? {
-        return this.find { it.annotationClass.qualifiedName == name } as? T
     }
 
     @get:LayoutRes
@@ -286,20 +279,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             }
             return layoutId
         }
-
-    /**
-     * Get the [ScreenshotInstrumentation] instance associated with the test method
-     *
-     * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
-     * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
-     */
-    internal fun getScreenshotInstrumentationAnnotation(
-        classAnnotations: List<Annotation>,
-        methodAnnotations: Collection<Annotation>?
-    ): Annotation? {
-        val annotationName = getScreenshotAnnotationName()
-        return classAnnotations.getAnnotation(annotationName) ?: methodAnnotations?.getAnnotation(annotationName)
-    }
 
     /**
      * Assert that the @ScreenshotInstrumentation is defined on the test method.

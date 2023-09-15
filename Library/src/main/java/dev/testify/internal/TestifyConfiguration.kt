@@ -38,7 +38,7 @@ import dev.testify.CaptureMethod
 import dev.testify.CompareMethod
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.IgnoreScreenshot
-import dev.testify.annotation.getAnnotation
+import dev.testify.annotation.findAnnotation
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
@@ -106,12 +106,12 @@ data class TestifyConfiguration(
      * Update the internal configuration values based on any annotations that may be present on the test method
      */
     internal fun applyAnnotations(methodAnnotations: Collection<Annotation>?) {
-        val bitmapComparison = methodAnnotations?.getAnnotation<BitmapComparisonExactness>()
+        val bitmapComparison = methodAnnotations?.findAnnotation<BitmapComparisonExactness>()
         if (exactness == null) {
             exactness = bitmapComparison?.exactness
         }
 
-        ignoreAnnotation = methodAnnotations?.getAnnotation()
+        ignoreAnnotation = methodAnnotations?.findAnnotation()
     }
 
     private fun IgnoreScreenshot?.isIgnored(activity: Activity): Boolean {

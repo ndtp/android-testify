@@ -24,6 +24,42 @@
 
 package dev.testify.annotation
 
-inline fun <reified T : Annotation> Collection<Annotation>.getAnnotation(): T? {
-    return this.find { it is T } as? T
+import androidx.test.platform.app.InstrumentationRegistry
+
+/**
+ * Returns the fully qualified dot-separated name of the annotation required by the Gradle plugin.
+ */
+fun getScreenshotAnnotationName(): String =
+    InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
+
+/**
+ * Find the first [Annotation] in the given [Collection] which is of type [T]
+ *
+ * @return Annotation of type T
+ */
+inline fun <reified T : Annotation> Collection<Annotation>.findAnnotation(): T? =
+    this.find { it is T } as? T
+
+/**
+ * Find the first [Annotation] in the given [Collection] which has the given [name]
+ *
+ * @param name - The qualified class name of the requested annotation
+ *
+ * @return Annotation of type T
+ */
+inline fun <reified T : Annotation> Collection<Annotation>.findAnnotation(name: String): T? =
+    this.find { it.annotationClass.qualifiedName == name } as? T
+
+/**
+ * Get the [ScreenshotInstrumentation] instance associated with the test method
+ *
+ * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
+ * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+ */
+fun getScreenshotInstrumentationAnnotation(
+    classAnnotations: List<Annotation>,
+    methodAnnotations: Collection<Annotation>?
+): Annotation? {
+    val annotationName = getScreenshotAnnotationName()
+    return classAnnotations.findAnnotation(annotationName) ?: methodAnnotations?.findAnnotation(annotationName)
 }
