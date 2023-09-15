@@ -19,6 +19,8 @@
 
 - `isRunningOnUiThread()` added as a top-level function.
 - `outputFileName()` added as an extension method for `Context`.
+- Interface `AssertionState`
+- Interface `ScreenshotLifecycleHost`
 
 #### Removed
 

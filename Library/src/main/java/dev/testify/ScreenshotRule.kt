@@ -74,6 +74,9 @@ import dev.testify.internal.helpers.findRootView
 import dev.testify.internal.helpers.isRunningOnUiThread
 import dev.testify.internal.helpers.outputFileName
 import dev.testify.internal.helpers.registerActivityProvider
+import dev.testify.internal.logic.AssertionState
+import dev.testify.internal.logic.ScreenshotLifecycleHost
+import dev.testify.internal.logic.ScreenshotLifecycleObserver
 import dev.testify.internal.logic.compareBitmaps
 import dev.testify.internal.logic.takeScreenshot
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
@@ -91,11 +94,10 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
 
-
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected val activityClass: Class<T>,
-    @IdRes var rootViewId: Int = android.R.id.content,
+    @IdRes override var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     protected val configuration: TestifyConfiguration = TestifyConfiguration()
@@ -103,6 +105,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     TestRule,
     ActivityProvider<T>,
     ScreenshotLifecycle,
+    AssertionState,
+    ScreenshotLifecycleHost by ScreenshotLifecycleObserver(),
     CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods() {
 
     @Deprecated(
@@ -123,14 +127,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         configuration = TestifyConfiguration()
     )
 
-    @LayoutRes private var targetLayoutId: Int = NO_ID
+    @LayoutRes override var targetLayoutId: Int = NO_ID
 
     internal val testContext = getInstrumentation().context
-    private var assertSameInvoked = false
+    override var assertSameInvoked = false
     internal val espressoHelper: EspressoHelper by lazy { EspressoHelper(configuration) }
-    private var screenshotViewProvider: ViewProvider? = null
-    private var throwable: Throwable? = null
-    private var viewModification: ViewModification? = null
+    override var screenshotViewProvider: ViewProvider? = null
+    override var throwable: Throwable? = null
+    override var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
     private var isRecordMode: Boolean = false
 
@@ -138,13 +142,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     internal var reporter: Reporter? = null
         private set
     private lateinit var outputFileName: String
-    private val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
 
     init {
         if (enableReporter || TestifyFeatures.Reporter.isEnabled(getInstrumentation().context)) {
             reporter = Reporter.create(getInstrumentation().targetContext, ReportSession())
         }
-        addScreenshotObserver(TestifyFeatures)
     }
 
     fun setRootViewId(@IdRes rootViewId: Int): ScreenshotRule<T> {
@@ -173,7 +175,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
-    fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotRule<T> {
+    override fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotRule<T> {
         this.screenshotViewProvider = viewProvider
         return this
     }
@@ -207,7 +209,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         super.afterActivityLaunched()
         ResourceWrapper.afterActivityLaunched(activity)
         configuration.afterActivityLaunched(activity)
-        screenshotLifecycleObservers.forEach { it.applyConfiguration(activity, configuration) }
+        notifyObservers { it.applyConfiguration(activity, configuration) }
     }
 
     @CallSuper
@@ -227,6 +229,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @return a new statement, which may be the same as base, a wrapper around base, or a completely new [Statement].
      */
     override fun apply(base: Statement, description: Description): Statement {
+        addScreenshotObserver(TestifyFeatures)
+
         withRule(this)
 
         val methodAnnotations = description.annotations
@@ -348,14 +352,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    fun addScreenshotObserver(observer: ScreenshotLifecycle) {
-        this.screenshotLifecycleObservers.add(observer)
-    }
-
-    fun removeScreenshotObserver(observer: ScreenshotLifecycle) {
-        this.screenshotLifecycleObservers.remove(observer)
-    }
-
     /**
      * Test lifecycle method.
      * Invoked immediately before assertSame and before the activity is launched.
@@ -386,7 +382,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     fun assertSame() {
         assertSameInvoked = true
         addScreenshotObserver(this)
-        screenshotLifecycleObservers.forEach { it.beforeAssertSame() }
+
+        notifyObservers { it.beforeAssertSame() }
 
         if (isRunningOnUiThread()) {
             throw NoScreenshotsOnUiThreadException()
@@ -406,9 +403,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 reporter?.captureOutput(this)
                 outputFileName = testContext.outputFileName(description)
 
-                screenshotLifecycleObservers.forEach { it.beforeInitializeView(activity) }
+                notifyObservers { it.beforeInitializeView(activity) }
                 initializeView(activity)
-                screenshotLifecycleObservers.forEach { it.afterInitializeView(activity) }
+                notifyObservers { it.afterInitializeView(activity) }
 
                 espressoHelper.beforeScreenshot()
 
@@ -417,7 +414,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 configuration.beforeScreenshot(rootView)
 
-                screenshotLifecycleObservers.forEach { it.beforeScreenshot(activity) }
+                notifyObservers { it.beforeScreenshot(activity) }
 
                 val currentBitmap = takeScreenshot(
                     activity,
@@ -426,7 +423,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     configuration.captureMethod ?: ::createBitmapFromDrawingCache
                 ) ?: throw FailedToCaptureBitmapException()
 
-                screenshotLifecycleObservers.forEach { it.afterScreenshot(activity, currentBitmap) }
+                notifyObservers { it.afterScreenshot(activity, currentBitmap) }
 
                 if (configuration.pauseForInspection) {
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
