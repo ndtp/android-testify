@@ -26,8 +26,10 @@ package dev.testify
 
 import android.app.Activity
 import android.graphics.Bitmap
-import android.view.ViewGroup
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.internal.TestifyConfiguration
+import io.mockk.every
+import io.mockk.spyk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Rule
@@ -35,10 +37,14 @@ import org.junit.Test
 
 class ScreenshotRuleLifecycleTest {
 
-    inner class TestScreenshotRule : ScreenshotRule<TestActivity>(TestActivity::class.java) {
-        override fun applyViewModifications(parentView: ViewGroup) {
-            methodOrder.add("applyViewModifications")
-        }
+    private val configuration = spyk(TestifyConfiguration()) {
+        every { applyViewModificationsMainThread(any()) } answers { methodOrder.add("applyViewModifications") }
+    }
+
+    inner class TestScreenshotRule : ScreenshotRule<TestActivity>(
+        activityClass = TestActivity::class.java,
+        configuration = configuration
+    ) {
 
         override fun beforeActivityLaunched() {
             methodOrder.add("beforeActivityLaunched")
@@ -79,18 +85,14 @@ class ScreenshotRuleLifecycleTest {
     @Test
     fun default() {
         rule.assertSame()
-        assertEquals(
-            listOf(
-                "beforeAssertSame",
-                "beforeActivityLaunched",
-                "afterActivityLaunched",
-                "beforeInitializeView",
-                "applyViewModifications",
-                "afterInitializeView",
-                "beforeScreenshot",
-                "afterScreenshot"
-            ),
-            methodOrder
-        )
+
+        assertEquals("beforeAssertSame", methodOrder[0])
+        assertEquals("beforeActivityLaunched", methodOrder[1])
+        assertEquals("afterActivityLaunched", methodOrder[2])
+        assertEquals("beforeInitializeView", methodOrder[3])
+        assertEquals("applyViewModifications", methodOrder[4])
+        assertEquals("afterInitializeView", methodOrder[5])
+        assertEquals("beforeScreenshot", methodOrder[6])
+        assertEquals("afterScreenshot", methodOrder[7])
     }
 }

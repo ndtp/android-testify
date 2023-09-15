@@ -30,13 +30,10 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.os.Debug
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
-import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -60,7 +57,6 @@ import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
-import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.getModuleName
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
 import dev.testify.internal.extensions.cyan
@@ -78,6 +74,7 @@ import dev.testify.internal.logic.AssertionState
 import dev.testify.internal.logic.ScreenshotLifecycleHost
 import dev.testify.internal.logic.ScreenshotLifecycleObserver
 import dev.testify.internal.logic.compareBitmaps
+import dev.testify.internal.logic.initializeView
 import dev.testify.internal.logic.takeScreenshot
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
 import dev.testify.internal.processor.diff.HighContrastDiff
@@ -90,8 +87,6 @@ import org.junit.AssumptionViolatedException
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -404,7 +399,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 outputFileName = testContext.outputFileName(description)
 
                 notifyObservers { it.beforeInitializeView(activity) }
-                initializeView(activity)
+                initializeView(activityProvider = this, assertionState = this, configuration = configuration)
                 notifyObservers { it.afterInitializeView(activity) }
 
                 espressoHelper.beforeScreenshot()
@@ -497,48 +492,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         }
     }
 
-    @UiThread
-    @CallSuper
-    open fun applyViewModifications(parentView: ViewGroup) {
-        configuration.applyViewModificationsMainThread(parentView)
-    }
-
-    @VisibleForTesting
-    internal fun initializeView(activity: Activity) {
-        val parentView = activity.findRootView(rootViewId)
-        val latch = CountDownLatch(1)
-
-        var viewModificationException: Throwable? = null
-        activity.runOnUiThread {
-            if (targetLayoutId != NO_ID) {
-                activity.layoutInflater.inflate(targetLayoutId, parentView, true)
-            }
-
-            viewModification?.let { viewModification ->
-                try {
-                    viewModification(parentView)
-                } catch (exception: Throwable) {
-                    viewModificationException = exception
-                }
-            }
-
-            applyViewModifications(parentView)
-
-            latch.countDown()
-        }
-        configuration.applyViewModificationsTestThread(activity)
-
-        if (Debug.isDebuggerConnected()) {
-            latch.await()
-        } else {
-            assertTrue(latch.await(INFLATE_TIMEOUT_SECONDS, TimeUnit.SECONDS))
-        }
-
-        viewModificationException?.let {
-            throw ViewModificationException(it)
-        }
-    }
-
     private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
 
         override fun evaluate() {
@@ -592,6 +545,5 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     companion object {
         const val NO_ID = -1
         private const val LAYOUT_INSPECTION_TIME_MS = 60000
-        private const val INFLATE_TIMEOUT_SECONDS: Long = 5
     }
 }

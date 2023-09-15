@@ -14,6 +14,7 @@
 - `ScreenshotRule.getScreenshotInstrumentationAnnotation()` is now a top-level function.
 - `Collection<Annotation>.getAnnotation()` renamed to `Collection<Annotation>.findAnnotation()`.
 - Package for `getScreenshotAnnotationName()` changed from `dev.testify.internal.extensions` to `dev.testify.annotation`.
+- `ScreenshotRule.initializeView()` is now a top-level function.
 
 #### Added
 
@@ -25,6 +26,7 @@
 #### Removed
 
 - `open fun  ScreenshotRule.generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap)` has been removed. Use `class HighContrastDiff` directly.
+- `ScreenshotRule.applyViewModifications()` has been removed. Use `TestifyConfiguration.applyViewModificationsMainThread()` instead.
 
 #### Fixed
 
