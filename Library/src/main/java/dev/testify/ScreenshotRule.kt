@@ -91,7 +91,6 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
 
-typealias ViewProvider = (rootView: ViewGroup) -> View
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
