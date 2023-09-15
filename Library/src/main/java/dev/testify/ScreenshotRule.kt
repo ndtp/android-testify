@@ -32,7 +32,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Debug
-import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
@@ -46,7 +45,6 @@ import androidx.test.rule.ActivityTestRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.internal.DEFAULT_FOLDER_FORMAT
-import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.ScreenshotRuleCompatibilityMethods
 import dev.testify.internal.TestifyConfiguration
@@ -74,6 +72,7 @@ import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.findRootView
 import dev.testify.internal.helpers.isRunningOnUiThread
+import dev.testify.internal.helpers.outputFileName
 import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.logic.compareBitmaps
 import dev.testify.internal.logic.takeScreenshot
@@ -427,13 +426,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             try {
                 val description = getInstrumentation().testDescription
                 reporter?.captureOutput(this)
-                outputFileName = formatDeviceString(
-                    DeviceStringFormatter(
-                        testContext,
-                        description.nameComponents
-                    ),
-                    DEFAULT_NAME_FORMAT
-                )
+                outputFileName = testContext.outputFileName(description)
 
                 screenshotLifecycleObservers.forEach { it.beforeInitializeView(activity) }
                 initializeView(activity)
