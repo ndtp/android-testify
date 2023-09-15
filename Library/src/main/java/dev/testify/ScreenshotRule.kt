@@ -73,6 +73,7 @@ import dev.testify.internal.helpers.EspressoActions
 import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.findRootView
+import dev.testify.internal.helpers.isRunningOnUiThread
 import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.internal.logic.compareBitmaps
 import dev.testify.internal.logic.takeScreenshot
@@ -145,10 +146,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             reporter = Reporter.create(getInstrumentation().targetContext, ReportSession())
         }
         addScreenshotObserver(TestifyFeatures)
-    }
-
-    private fun isRunningOnUiThread(): Boolean {
-        return Looper.getMainLooper().thread == Thread.currentThread()
     }
 
     fun setRootViewId(@IdRes rootViewId: Int): ScreenshotRule<T> {
