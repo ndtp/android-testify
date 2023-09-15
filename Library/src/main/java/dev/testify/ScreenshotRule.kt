@@ -93,7 +93,6 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isR
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
-typealias ExtrasProvider = (bundle: Bundle) -> Unit
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
