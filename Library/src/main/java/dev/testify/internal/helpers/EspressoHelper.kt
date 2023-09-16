@@ -23,12 +23,14 @@
  */
 package dev.testify.internal.helpers
 
+import android.app.Activity
 import androidx.test.espresso.Espresso
+import dev.testify.ScreenshotLifecycle
 import dev.testify.internal.TestifyConfiguration
 
 typealias EspressoActions = () -> Unit
 
-class EspressoHelper(private val configuration: TestifyConfiguration) {
+class EspressoHelper(private val configuration: TestifyConfiguration) : ScreenshotLifecycle {
 
     var actions: EspressoActions? = null
 
@@ -36,7 +38,7 @@ class EspressoHelper(private val configuration: TestifyConfiguration) {
         actions = null
     }
 
-    fun beforeScreenshot() {
+    override fun afterInitializeView(activity: Activity) {
         actions?.invoke()
 
         Espresso.onIdle()

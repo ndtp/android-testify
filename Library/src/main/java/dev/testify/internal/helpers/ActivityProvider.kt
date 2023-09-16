@@ -26,9 +26,11 @@ package dev.testify.internal.helpers
 
 import android.app.Activity
 import android.app.Instrumentation
+import android.content.Intent
 
 interface ActivityProvider<T : Activity> {
     fun getActivity(): T
+    fun assureActivity(intent: Intent?)
 }
 
 private object ActivityProviderRegistry {

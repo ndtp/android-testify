@@ -25,7 +25,7 @@ package dev.testify.internal.logic
 
 import android.app.Activity
 import android.os.Debug
-import dev.testify.ScreenshotRule
+import android.view.View.NO_ID
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.helpers.ActivityProvider
@@ -57,7 +57,7 @@ fun <TActivity : Activity> initializeView(
 
     var viewModificationException: Throwable? = null
     activity.runOnUiThread {
-        if (assertionState.targetLayoutId != ScreenshotRule.NO_ID) {
+        if (assertionState.targetLayoutId != NO_ID) {
             activity.layoutInflater.inflate(assertionState.targetLayoutId, parentView, true)
         }
 

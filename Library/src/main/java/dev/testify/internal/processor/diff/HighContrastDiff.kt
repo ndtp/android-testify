@@ -40,6 +40,13 @@ import dev.testify.saveBitmapToDestination
  *
  * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
  * against a black background.
+ *
+ * Legend:
+ * - Black:   Identical
+ * - Gray:    Excluded from diff
+ * - Yellow:  Different, but within allowable tolerances
+ * - Red:     Different in excess of allowable tolerances
+ *
  */
 class HighContrastDiff(private val exclusionRects: Set<Rect>) {
 

@@ -132,6 +132,7 @@ open class ComposableScreenshotRule(
      */
     override fun afterInitializeView(activity: Activity) {
         composeActions?.invoke(composeTestRule)
+        composeTestRule.waitForIdle()
         super.afterInitializeView(activity)
     }
 

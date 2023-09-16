@@ -15,6 +15,7 @@
 - `Collection<Annotation>.getAnnotation()` renamed to `Collection<Annotation>.findAnnotation()`.
 - Package for `getScreenshotAnnotationName()` changed from `dev.testify.internal.extensions` to `dev.testify.annotation`.
 - `ScreenshotRule.initializeView()` is now a top-level function.
+- `EspressoHelper` now extends `ScreenshotLifecycle` and `beforeScreenshot()` has been replaced with `afterInitializeView()`
 
 #### Added
 
@@ -22,6 +23,7 @@
 - `outputFileName()` added as an extension method for `Context`.
 - Interface `AssertionState`
 - Interface `ScreenshotLifecycleHost`
+- `assertSame()` is now available as a top-level function, decoupled from `ScreenshotRule`
 
 #### Removed
 

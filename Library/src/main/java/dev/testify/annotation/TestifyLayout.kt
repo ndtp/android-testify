@@ -25,8 +25,8 @@
 
 package dev.testify.annotation
 
+import android.view.View.NO_ID
 import androidx.annotation.LayoutRes
-import dev.testify.ScreenshotRule.Companion.NO_ID
 
 /**
  * The [TestifyLayout] annotation allows you to specify a layout resource to be automatically
