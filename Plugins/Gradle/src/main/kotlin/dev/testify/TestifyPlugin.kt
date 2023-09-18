@@ -74,7 +74,11 @@ class TestifyPlugin : Plugin<Project> {
         }
 
         private fun Project.addManifestPlaceholders(settings: TestifySettings) {
-            val destination = if (settings.useSdCard) "sdcard" else "default"
+            val destination = when {
+                settings.useSdCard -> "sdcard"
+                settings.useTestStorage -> "teststorage"
+                else -> "default"
+            }
             val module = settings.moduleName
             android.defaultConfig {
                 it.resValue("string", "testifyDestination", destination)

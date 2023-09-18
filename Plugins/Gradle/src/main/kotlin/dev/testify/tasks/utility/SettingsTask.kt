@@ -53,6 +53,7 @@ open class SettingsTask : TestifyUtilityTask() {
             println("  testPackageId          = $testPackageId")
             println("  testRunner             = $testRunner")
             println("  useSdCard              = $useSdCard")
+            println("  useTestStorage         = $useTestStorage")
             println("  user                   = $userId")
         }
     }

@@ -40,7 +40,20 @@ internal data class TestifySettings(
     val outputFileNameFormat: String?,
     val pullWaitTime: Long = 0L,
     val testRunner: String,
+
+    /**
+     * Allows Testify to write screenshots to the SDCARD directory.
+     *
+     * @see [https://ndtp.github.io/android-testify/docs/recipes/sdcard#configuring-the-gradle-plugin-to-write-to-the-sdcard]
+     */
     val useSdCard: Boolean,
+
+    /**
+     * Instructs Testify to save screenshots to the Test Storage.
+     *
+     * @see [https://developer.android.com/reference/androidx/test/services/storage/TestStorage]
+     */
+    val useTestStorage: Boolean,
 
     /**
      * The package ID for the test APK
@@ -96,6 +109,7 @@ internal data class TestifySettings(
             val autoImplementLibrary = extension.autoImplementLibrary
                 ?: version?.contains("local", ignoreCase = true) == false
             val useSdCard = extension.useSdCard ?: false
+            val useTestStorage = extension.useTestStorage ?: false
             val installTask = extension.installTask ?: project.inferredInstallTask
             val outputFileNameFormat = extension.outputFileNameFormat
             val installAndroidTestTask = extension.installAndroidTestTask ?: project.inferredAndroidTestInstallTask
@@ -110,6 +124,7 @@ internal data class TestifySettings(
                 pullWaitTime = pullWaitTime,
                 testRunner = testRunner,
                 useSdCard = useSdCard,
+                useTestStorage = useTestStorage,
                 testPackageId = testPackageId,
                 targetPackageId = targetPackageId,
                 installTask = installTask,
@@ -171,6 +186,7 @@ open class TestifyExtension {
     var pullWaitTime: Long? = null
     var testRunner: String? = null
     var useSdCard: Boolean? = null
+    var useTestStorage: Boolean? = null
     var applicationPackageId: String? = null
     var testPackageId: String? = null
     var installTask: String? = null
