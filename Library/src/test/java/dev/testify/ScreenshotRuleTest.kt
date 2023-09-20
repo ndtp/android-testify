@@ -195,7 +195,7 @@ class ScreenshotRuleTest {
         verify { subject.launchActivity(any()) }
         verify { subject.initializeView(any()) }
         verify { subject.takeScreenshot(any(), any(), any(), any()) }
-        verify { assertExpectedDevice(any(), any()) }
+        verify { assertExpectedDevice(any(), any(), any()) }
         verify { loadBaselineBitmapForComparison(any(), any()) }
         verify { subject.compareBitmaps(any(), any(), any()) }
     }
