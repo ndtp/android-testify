@@ -29,7 +29,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
@@ -59,8 +58,6 @@ import org.junit.Test
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import java.io.File
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 class ScreenshotRuleTest {
 
@@ -84,15 +81,6 @@ class ScreenshotRuleTest {
             extension = ".path"
         )
     )
-
-    private fun setStaticFieldViaReflection(field: Field, value: Any) {
-        field.isAccessible = true
-        Field::class.java.getDeclaredField("modifiers").apply {
-            isAccessible = true
-            setInt(field, field.modifiers and Modifier.FINAL.inv())
-        }
-        field.set(null, value)
-    }
 
     @Before
     fun setUp() {
@@ -122,7 +110,6 @@ class ScreenshotRuleTest {
         every { mainLooper.thread } returns currentThread
         every { Looper.getMainLooper() } returns mainLooper
 
-        setStaticFieldViaReflection(Build.VERSION::class.java.getField("SDK_INT"), 31)
         every { getDeviceDimensions(any()) } returns (1024 to 2048)
 
         subject = spyk(ScreenshotRule(Activity::class.java))

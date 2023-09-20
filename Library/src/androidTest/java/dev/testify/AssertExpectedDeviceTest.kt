@@ -65,6 +65,13 @@ class AssertExpectedDeviceTest {
         assertThrows(ScreenshotBaselineNotDefinedException::class.java, rule::assertSame)
     }
 
+    @ScreenshotInstrumentation
+    @Test
+    fun testMissingBaselineRecordMode() {
+        rule.setRecordModeEnabled(true)
+            .assertSame()
+    }
+
     /**
      * WHEN the baseline image does not match the current device settings THEN throw UnexpectedDeviceException
      *
