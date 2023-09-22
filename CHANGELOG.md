@@ -1,5 +1,13 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+#### Added
+
+- Added initial support of Gradle managed devices
+
 ## 2.0.0-beta03
 
 ### All Projects
