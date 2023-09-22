@@ -91,6 +91,7 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
@@ -453,6 +454,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
      * against a black background.
      */
+    @ExperimentalTestApi
     open fun generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap) {
         HighContrastDiff(configuration.exclusionRects)
             .name(outputFileName)
@@ -546,7 +548,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 assertExpectedDevice(testContext, description.name, isRecordMode)
 
                 val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
-                    ?: if (isRecordMode) {
+                    ?: if (isRecordMode || recordMode) {
                         instrumentationPrintln(
                             "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                         )
@@ -575,7 +577,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
                         generateHighContrastDiff(baselineBitmap, currentBitmap)
                     }
-                    if (isRecordMode) {
+                    if (isRecordMode || recordMode) {
                         instrumentationPrintln(
                             "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                         )

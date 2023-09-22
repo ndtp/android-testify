@@ -91,7 +91,12 @@ internal data class TestifySettings(
     /**
      * Allows you to override the root directory used when pulling files from the device
      */
-    val rootDestinationDirectory: String? = null
+    val rootDestinationDirectory: String? = null,
+
+    /**
+     * Allows to record new baseline images.
+     */
+    val isRecordMode: Boolean
 ) {
 
     internal companion object {
@@ -116,6 +121,7 @@ internal data class TestifySettings(
             val moduleName = extension.moduleName ?: project.name
             val screenshotAnnotation = extension.screenshotAnnotation
             val rootDestinationDirectory = extension.rootDestinationDirectory
+            val isRecordMode = extension.isRecordMode ?: false
 
             return TestifySettings(
                 baselineSourceDir = baselineSourceDir,
@@ -131,7 +137,8 @@ internal data class TestifySettings(
                 installAndroidTestTask = installAndroidTestTask,
                 autoImplementLibrary = autoImplementLibrary,
                 screenshotAnnotation = screenshotAnnotation,
-                rootDestinationDirectory = rootDestinationDirectory
+                rootDestinationDirectory = rootDestinationDirectory,
+                isRecordMode = isRecordMode
             )
         }
     }
@@ -194,6 +201,7 @@ open class TestifyExtension {
     var autoImplementLibrary: Boolean? = null
     var screenshotAnnotation: String? = null
     var rootDestinationDirectory: String? = null
+    var isRecordMode: Boolean? = null
 
     companion object {
         const val NAME = "testify"

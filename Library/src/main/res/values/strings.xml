@@ -2,4 +2,5 @@
 <resources>
     <string name="testifyDestination" translatable="false">default</string>
     <string name="testifyModule" translatable="false" />
+    <string name="isRecordMode" translatable="false">false</string>
 </resources>

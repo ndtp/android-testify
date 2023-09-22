@@ -80,9 +80,11 @@ class TestifyPlugin : Plugin<Project> {
                 else -> "default"
             }
             val module = settings.moduleName
+            val isRecordMode = settings.isRecordMode.toString()
             android.defaultConfig {
                 it.resValue("string", "testifyDestination", destination)
                 it.resValue("string", "testifyModule", module)
+                it.resValue("string", "isRecordMode", isRecordMode)
             }
         }
 

@@ -30,10 +30,12 @@ import androidx.test.platform.app.InstrumentationRegistry
 
 private const val MANIFEST_DESTINATION_KEY = "dev.testify.destination"
 private const val MANIFEST_MODULE_KEY = "dev.testify.module"
+private const val MANIFEST_IS_RECORD_MODE = "dev.testify.recordMode"
 
 sealed class ManifestPlaceholder(val key: String) {
     object Module : ManifestPlaceholder(MANIFEST_MODULE_KEY)
     object Destination : ManifestPlaceholder(MANIFEST_DESTINATION_KEY)
+    object RecordMode : ManifestPlaceholder(MANIFEST_IS_RECORD_MODE)
 }
 
 internal fun getMetaDataBundle(context: Context): Bundle? {

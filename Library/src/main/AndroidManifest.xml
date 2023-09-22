@@ -12,6 +12,10 @@
         <meta-data
             android:name="dev.testify.module"
             android:value="@string/testifyModule" />
+
+        <meta-data
+            android:name="dev.testify.recordMode"
+            android:value="@string/isRecordMode" />
     </application>
 
 </manifest>
