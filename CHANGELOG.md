@@ -4,6 +4,10 @@
 
 ### Library
 
+#### Fixed
+
+- [#163](https://github.com/ndtp/android-testify/issues/163): Do not throw UnexpectedDeviceException if an expected baseline exists
+
 #### Added
 
 - Added initial support of Gradle managed devices
