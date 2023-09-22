@@ -77,8 +77,9 @@ screenshots or diffs.
 ### Updating baselines
 
 Because we need to run specific Gradle task to execute our tests using Gradle managed device, we
-cannot use `screenshotRecord` task. In order to generate new baseline apply necessary setting to
-the `ScreenshotRule`:
+cannot use `screenshotRecord` task. To generate new baseline there are two options:
+
+- apply necessary setting to the `ScreenshotRule`:
 
 ```kotlin
 @get:Rule
@@ -90,6 +91,14 @@ fun testMissingBaseline() {
     rule
         .setRecordModeEnabled(true)
         .assertSame()
+}
+```
+
+- or enable record mode in the `build.gradle` file:
+
+```groovy
+testify {
+    recordMode = true
 }
 ```
 
