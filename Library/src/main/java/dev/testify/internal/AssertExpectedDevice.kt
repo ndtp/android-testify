@@ -36,7 +36,8 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isR
  *
  * Assert does not run when recording a new baseline
  *
- * @throws UnexpectedDeviceException when a baseline exists for a different device description
+ * @throws UnexpectedDeviceException when no baseline exists for the current target device, but a baseline exists for a
+ * different device description.
  *
  * @param context - [Context] of the test instrumentation's package
  * @param testName - The name of the currently running test
@@ -48,13 +49,20 @@ fun assertExpectedDevice(context: Context, testName: String, isRecordMode: Boole
     val assetManager: AssetManager = context.assets
     val root: String = SCREENSHOT_DIR
 
+    var badConfiguration: String? = null
     assetManager.list(root)?.forEach { configuration ->
         val baselines = assetManager.list("$root/$configuration")
         baselines?.forEach { baseline ->
             if (File(baseline).nameWithoutExtension == testName) {
-                if (configuration != expectedDevice)
-                    throw UnexpectedDeviceException(currentDevice = configuration, expectedDevice = expectedDevice)
+                if (configuration != expectedDevice) {
+                    badConfiguration = configuration
+                } else {
+                    return
+                }
             }
         }
+    }
+    badConfiguration?.let {
+        throw UnexpectedDeviceException(currentDevice = it, expectedDevice = expectedDevice)
     }
 }
