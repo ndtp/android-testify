@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[772],{2804:t=>{t.exports=JSON.parse('[{"label":"annotations","permalink":"/android-testify/blog/tags/annotations","count":1},{"label":"customization","permalink":"/android-testify/blog/tags/customization","count":2},{"label":"differences","permalink":"/android-testify/blog/tags/differences","count":1}]')}}]);

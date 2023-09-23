@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[2207],{8635:e=>{e.exports=JSON.parse('{"label":"gradle managed device","permalink":"/android-testify/blog/tags/gradle-managed-device","allTagsPath":"/android-testify/blog/tags","count":1}')}}]);
