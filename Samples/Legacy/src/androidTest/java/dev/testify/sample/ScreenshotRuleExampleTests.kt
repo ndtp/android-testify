@@ -47,6 +47,7 @@ import dev.testify.annotation.TestifyLayout
 import dev.testify.extensions.boundingBox
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
+import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
@@ -313,9 +314,11 @@ class ScreenshotRuleExampleTests {
     @ScreenshotInstrumentation
     @Test
     fun exclusions() {
-        TestifyFeatures.PixelCopyCapture.setEnabled(true)
         TestifyFeatures.GenerateDiffs.setEnabled(true)
         rule
+            .configure {
+                captureMethod = ::pixelCopyCapture
+            }
             .setExactness(0.9f)
             .setViewModifications {
                 val r = Integer.toHexString(Random.nextInt(0, 255)).padStart(2, '0')

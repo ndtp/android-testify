@@ -22,10 +22,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+@file:Suppress("DEPRECATION")
+
 package dev.testify
 
+import android.app.Activity
 import android.content.Context
+import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.helpers.getMetaDataBundle
+import dev.testify.internal.processor.capture.canvasCapture
+import dev.testify.internal.processor.capture.pixelCopyCapture
 
 enum class TestifyFeatures(internal val tags: List<String>, private val defaultValue: Boolean = false) {
 
@@ -79,10 +85,19 @@ enum class TestifyFeatures(internal val tags: List<String>, private val defaultV
             }
         }
 
-    companion object {
+    companion object : ScreenshotLifecycle {
         internal fun reset() {
             enumValues<TestifyFeatures>().forEach {
                 it.reset()
+            }
+        }
+
+        override fun applyConfiguration(activity: Activity, configuration: TestifyConfiguration) {
+            if (CanvasCapture.isEnabled(activity)) {
+                configuration.captureMethod = ::canvasCapture
+            }
+            if (PixelCopyCapture.isEnabled(activity)) {
+                configuration.captureMethod = ::pixelCopyCapture
             }
         }
     }
