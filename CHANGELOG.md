@@ -1,6 +1,6 @@
 # Testify Change Log
 
-## Unreleased
+## 2.0.0-beta04
 
 ### Library
 
