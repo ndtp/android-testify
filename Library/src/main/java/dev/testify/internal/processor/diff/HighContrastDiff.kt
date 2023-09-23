@@ -27,6 +27,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
+import androidx.test.annotation.ExperimentalTestApi
 import dev.testify.internal.processor.ParallelPixelProcessor
 import dev.testify.internal.processor.compare.colorspace.calculateDeltaE
 import dev.testify.internal.processor.createBitmap
@@ -39,6 +40,7 @@ class HighContrastDiff(private val exclusionRects: Set<Rect>) {
     private lateinit var baselineBitmap: Bitmap
     private lateinit var currentBitmap: Bitmap
 
+    @ExperimentalTestApi
     fun generate(context: Context) {
         val transformResult = ParallelPixelProcessor
             .create()

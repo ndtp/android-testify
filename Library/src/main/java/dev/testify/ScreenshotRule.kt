@@ -41,6 +41,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
+import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import dev.testify.annotation.ScreenshotInstrumentation
@@ -64,7 +65,6 @@ import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.getModuleName
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
 import dev.testify.internal.extensions.cyan
 import dev.testify.internal.extensions.getScreenshotAnnotationName
 import dev.testify.internal.extensions.isInvokedFromPlugin
@@ -91,6 +91,7 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
 
 typealias ViewModification = (rootView: ViewGroup) -> Unit
 typealias ViewProvider = (rootView: ViewGroup) -> View
@@ -142,6 +143,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     private var extrasProvider: ExtrasProvider? = null
     private var captureMethod: CaptureMethod? = null
     private var compareMethod: CompareMethod? = null
+    private var isRecordMode: Boolean = false
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
@@ -192,6 +194,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ScreenshotRule<T> {
         feature.setEnabled(true)
+        return this
+    }
+
+    fun setRecordModeEnabled(isRecordMode: Boolean): ScreenshotRule<T> {
+        this.isRecordMode = isRecordMode
         return this
     }
 
@@ -425,6 +432,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @return A [Bitmap] representing the captured [screenshotView] in [activity]
      *          Will return [null] if there is an error capturing the bitmap.
      */
+    @ExperimentalTestApi
     open fun takeScreenshot(
         activity: Activity,
         fileName: String,
@@ -446,6 +454,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
      * against a black background.
      */
+    @ExperimentalTestApi
     open fun generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap) {
         HighContrastDiff(configuration.exclusionRects)
             .name(outputFileName)
@@ -482,6 +491,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return bitmapCompare(baselineBitmap, currentBitmap)
     }
 
+    @ExperimentalTestApi
     fun assertSame() {
         assertSameInvoked = true
         addScreenshotObserver(this)
@@ -535,10 +545,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     Thread.sleep(LAYOUT_INSPECTION_TIME_MS.toLong())
                 }
 
-                assertExpectedDevice(testContext, description.name)
+                assertExpectedDevice(testContext, description.name, isRecordMode)
 
                 val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
-                    ?: if (isRecordMode) {
+                    ?: if (isRecordMode || recordMode) {
                         instrumentationPrintln(
                             "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                         )
@@ -567,7 +577,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
                         generateHighContrastDiff(baselineBitmap, currentBitmap)
                     }
-                    if (isRecordMode) {
+                    if (isRecordMode || recordMode) {
                         instrumentationPrintln(
                             "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                         )

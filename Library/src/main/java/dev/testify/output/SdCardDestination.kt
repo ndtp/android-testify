@@ -36,7 +36,7 @@ import java.io.FileOutputStream
 
 open class SdCardDestination(
     context: Context,
-    fileName: String,
+    override val fileName: String,
     extension: String,
     val key: String?,
     val root: String? = null

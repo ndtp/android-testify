@@ -32,10 +32,13 @@ import android.graphics.BitmapFactory
 import android.os.Debug
 import android.util.Log
 import android.view.View
+import androidx.test.annotation.ExperimentalTestApi
+import androidx.test.core.graphics.writeToTestStorage
 import dev.testify.internal.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
 import dev.testify.output.Destination
 import dev.testify.output.PNG_EXTENSION
+import dev.testify.output.TestStorageDestination
 import dev.testify.output.getDestination
 import dev.testify.output.getFileRelativeToRoot
 import java.util.concurrent.CountDownLatch
@@ -48,17 +51,24 @@ val preferredBitmapOptions: BitmapFactory.Options
         return options
     }
 
-fun saveBitmapToDestination(context: Context, bitmap: Bitmap?, destination: Destination): Boolean {
+@ExperimentalTestApi
+fun saveBitmapToDestination(context: Context, bitmap: Bitmap?, destination: Destination): Bitmap? {
     if (bitmap == null) {
-        return false
+        return null
     }
     if (destination.assureDestination(context)) {
         Log.d(LOG_TAG, "Writing screenshot to {${destination.description}}")
-        val outputStream = destination.getFileOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-        outputStream.flush()
-        outputStream.close()
-        return true
+
+        return if (destination is TestStorageDestination) {
+            bitmap.writeToTestStorage(destination.fileName)
+            bitmap
+        } else {
+            val outputStream = destination.getFileOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            destination.loadBitmap(preferredBitmapOptions)
+        }
     } else {
         throw destination.getScreenshotDestinationNotFoundException()
     }
@@ -97,6 +107,7 @@ fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap?
  * @return A [Bitmap] representing the captured [screenshotView] in [activity]
  *          Will return [null] if there is an error capturing the bitmap.
  */
+@ExperimentalTestApi
 fun createBitmapFromActivity(
     activity: Activity,
     fileName: String,
@@ -122,9 +133,8 @@ fun createBitmapFromActivity(
     }
 
     val destination = getDestination(activity, fileName)
-    saveBitmapToDestination(activity, currentActivityBitmap[0], destination)
 
-    return destination.loadBitmap(preferredBitmapOptions)
+    return saveBitmapToDestination(activity, currentActivityBitmap[0], destination)
 }
 
 /**
@@ -136,7 +146,7 @@ fun loadBitmapFromFile(outputPath: String, preferredBitmapOptions: BitmapFactory
 }
 
 fun deleteBitmap(destination: Destination): Boolean {
-    return destination.file.delete()
+    return destination is TestStorageDestination || destination.file.delete()
 }
 
 private const val LOG_TAG = "ScreenshotUtility"

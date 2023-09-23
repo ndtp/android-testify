@@ -41,7 +41,8 @@ class TestInstrumentationRegistry {
         val isRecordMode: Boolean
             get() {
                 val extras = InstrumentationRegistry.getArguments()
-                return extras.getString("isRecordMode") == "true"
+                return extras.getString("isRecordMode") == "true" || ManifestPlaceholder.RecordMode.getMetaDataValue()
+                    .contentEquals("true", true)
             }
 
         /**

@@ -40,7 +40,20 @@ internal data class TestifySettings(
     val outputFileNameFormat: String?,
     val pullWaitTime: Long = 0L,
     val testRunner: String,
+
+    /**
+     * Allows Testify to write screenshots to the SDCARD directory.
+     *
+     * @see [https://ndtp.github.io/android-testify/docs/recipes/sdcard#configuring-the-gradle-plugin-to-write-to-the-sdcard]
+     */
     val useSdCard: Boolean,
+
+    /**
+     * Instructs Testify to save screenshots to the Test Storage.
+     *
+     * @see [https://developer.android.com/reference/androidx/test/services/storage/TestStorage]
+     */
+    val useTestStorage: Boolean,
 
     /**
      * The package ID for the test APK
@@ -78,7 +91,12 @@ internal data class TestifySettings(
     /**
      * Allows you to override the root directory used when pulling files from the device
      */
-    val rootDestinationDirectory: String? = null
+    val rootDestinationDirectory: String? = null,
+
+    /**
+     * Allows to record new baseline images.
+     */
+    val isRecordMode: Boolean
 ) {
 
     internal companion object {
@@ -96,12 +114,14 @@ internal data class TestifySettings(
             val autoImplementLibrary = extension.autoImplementLibrary
                 ?: version?.contains("local", ignoreCase = true) == false
             val useSdCard = extension.useSdCard ?: false
+            val useTestStorage = extension.useTestStorage ?: false
             val installTask = extension.installTask ?: project.inferredInstallTask
             val outputFileNameFormat = extension.outputFileNameFormat
             val installAndroidTestTask = extension.installAndroidTestTask ?: project.inferredAndroidTestInstallTask
             val moduleName = extension.moduleName ?: project.name
             val screenshotAnnotation = extension.screenshotAnnotation
             val rootDestinationDirectory = extension.rootDestinationDirectory
+            val isRecordMode = extension.isRecordMode ?: false
 
             return TestifySettings(
                 baselineSourceDir = baselineSourceDir,
@@ -110,13 +130,15 @@ internal data class TestifySettings(
                 pullWaitTime = pullWaitTime,
                 testRunner = testRunner,
                 useSdCard = useSdCard,
+                useTestStorage = useTestStorage,
                 testPackageId = testPackageId,
                 targetPackageId = targetPackageId,
                 installTask = installTask,
                 installAndroidTestTask = installAndroidTestTask,
                 autoImplementLibrary = autoImplementLibrary,
                 screenshotAnnotation = screenshotAnnotation,
-                rootDestinationDirectory = rootDestinationDirectory
+                rootDestinationDirectory = rootDestinationDirectory,
+                isRecordMode = isRecordMode
             )
         }
     }
@@ -171,6 +193,7 @@ open class TestifyExtension {
     var pullWaitTime: Long? = null
     var testRunner: String? = null
     var useSdCard: Boolean? = null
+    var useTestStorage: Boolean? = null
     var applicationPackageId: String? = null
     var testPackageId: String? = null
     var installTask: String? = null
@@ -178,6 +201,7 @@ open class TestifyExtension {
     var autoImplementLibrary: Boolean? = null
     var screenshotAnnotation: String? = null
     var rootDestinationDirectory: String? = null
+    var isRecordMode: Boolean? = null
 
     companion object {
         const val NAME = "testify"

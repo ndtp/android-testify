@@ -19,6 +19,7 @@ dependencyResolutionManagement {
 
 include ':LegacySample'
 include ':FlixSample'
+include ':GmdSample'
 include ':Plugin'
 include ':Library'
 include ':ComposeExtensions'
@@ -31,4 +32,4 @@ project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':Accessibility').projectDir = new File("./Ext/Accessibility")
 project(':LegacySample').projectDir = new File("./Samples/Legacy")
 project(':FlixSample').projectDir = new File("./Samples/Flix")
-
+project(':GmdSample').projectDir = new File("./Samples/Gmd")

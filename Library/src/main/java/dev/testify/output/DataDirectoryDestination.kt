@@ -36,7 +36,7 @@ import java.io.FileOutputStream
 
 open class DataDirectoryDestination(
     context: Context,
-    fileName: String,
+    override val fileName: String,
     extension: String = PNG_EXTENSION,
     val key: String? = null,
     val root: String? = null
@@ -44,8 +44,9 @@ open class DataDirectoryDestination(
 
     companion object {
         private const val DATA_DESTINATION_DIR = "images"
-        private const val LOG_TAG = "DataDestination"
     }
+
+    open val LOG_TAG = "DataDirectory"
 
     private val outputPath: String by lazy { getOutputFilePath(context, fileName, extension) }
 

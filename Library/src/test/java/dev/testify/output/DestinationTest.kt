@@ -123,4 +123,21 @@ class DestinationTest {
             destination.description
         )
     }
+
+    @Test
+    fun `WHEN testStorage THEN data directory`() {
+        every { mockArguments.getString("useTestStorage") } returns "true"
+
+        val destination = getDestination(
+            mockContext,
+            "fileName",
+            extension = ".ext",
+            customKey = null,
+            root = "root"
+        )
+        assertEquals(
+            "/data/user/0/dev.testify.sample/app_images/root/screenshots/33-1080x2200@420dp-en_CA/fileName.ext",
+            destination.description
+        )
+    }
 }

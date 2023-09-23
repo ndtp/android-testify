@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <!--    <dimen name="text_margin">16dp</dimen>-->
+    <dimen name="card_spacing">8dp</dimen>
+    <!--    <dimen name="padding_large">8dp</dimen>-->
+    <!--    <dimen name="heading">72sp</dimen>-->
+    <!--    <dimen name="subheading">16sp</dimen>-->
+    <!--    <dimen name="icon_padding">12dp</dimen>-->
+</resources>

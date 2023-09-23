@@ -46,6 +46,11 @@ interface Destination {
     val exists: Boolean
 
     /**
+     * Name of the file.
+     */
+    val fileName: String
+
+    /**
      * Get [File] for the destination file
      */
     val file: File
@@ -89,8 +94,23 @@ fun getDestination(
             arguments.getString("useSdCard") == "true"
     }
 
+    fun useTestStorage(): Boolean {
+        val arguments: Bundle = InstrumentationRegistry.getArguments()
+        val destination = manifestValue()
+        return (destination?.contentEquals("teststorage", ignoreCase = true) == true) ||
+            arguments.getString("testStorage") == "true"
+    }
+
     return when {
         useSdCard() -> SdCardDestination(
+            context = context,
+            fileName = fileName,
+            extension = extension,
+            key = customKey,
+            root = root
+        )
+
+        useTestStorage() -> TestStorageDestination(
             context = context,
             fileName = fileName,
             extension = extension,
