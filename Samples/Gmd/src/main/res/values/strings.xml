@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Testify GMD sample</string>
+    <string name="app_name">GMD Testify</string>
     <string name="title_activity_client" />
     <string name="client_since">Client since %1s</string>
     <string name="client_list_title">Clients</string>

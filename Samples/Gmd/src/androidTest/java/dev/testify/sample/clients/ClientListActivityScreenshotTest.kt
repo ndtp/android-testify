@@ -2,7 +2,6 @@ package dev.testify.sample.clients
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule
-import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.clients.index.ClientListActivity
 import org.junit.Rule
 import org.junit.Test
@@ -14,10 +13,19 @@ class ClientListActivityScreenshotTest {
     @get:Rule
     var rule = ScreenshotRule(ClientListActivity::class.java)
 
+
+    /**
+     * Demonstrates normal usage of Gradle Managed Devices with Testify
+     *
+     */
+    @Test
+    fun default() {
+        rule.assertSame()
+    }
+
     /**
      * Demonstrates how works screenshot verification with Gradle managed device
      */
-    @ScreenshotInstrumentation
     @Test
     fun testRecorded() {
         rule
@@ -28,7 +36,6 @@ class ClientListActivityScreenshotTest {
     /**
      * Demonstrates how to record new baseline with Gradle managed device
      */
-    @ScreenshotInstrumentation
     @Test
     fun testMissingBaseline() {
         rule
