@@ -36,6 +36,7 @@ import io.mockk.slot
 import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -135,6 +136,7 @@ class DestinationTest {
             customKey = null,
             root = "root"
         )
+        assertTrue("destination is $destination", destination is TestStorageDestination)
         assertEquals(
             "/data/user/0/dev.testify.sample/app_images/root/screenshots/33-1080x2200@420dp-en_CA/fileName.ext",
             destination.description

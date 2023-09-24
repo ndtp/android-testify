@@ -98,7 +98,7 @@ fun getDestination(
         val arguments: Bundle = InstrumentationRegistry.getArguments()
         val destination = manifestValue()
         return (destination?.contentEquals("teststorage", ignoreCase = true) == true) ||
-            arguments.getString("testStorage") == "true"
+            arguments.getString("useTestStorage") == "true"
     }
 
     return when {
