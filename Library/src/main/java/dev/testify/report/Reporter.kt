@@ -50,7 +50,7 @@ import java.io.File
  * To enable, set enableReporter to true when initializing [ScreenshotRule]
  * Or, <meta-data android:name="testify-reporter" android:value="true" /> in the AndroidManifest
  */
-internal open class Reporter(
+internal open class Reporter protected constructor(
     private val context: Context,
     private val session: ReportSession
 ) {
@@ -239,5 +239,8 @@ internal open class Reporter(
 
     companion object {
         private const val HEADER = "---"
+
+        fun create(context: Context, session: ReportSession = ReportSession()): Reporter =
+            Reporter(context, session)
     }
 }

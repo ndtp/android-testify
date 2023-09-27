@@ -30,6 +30,7 @@ import dev.testify.internal.exception.ActivityMustImplementResourceOverrideExcep
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.FailedToCaptureBitmapException
+import dev.testify.internal.exception.FinalizeDestinationException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
@@ -83,5 +84,6 @@ class ErrorCauseTest {
         assertEquals("DEVICE_MISMATCH", describeErrorCause(UnexpectedDeviceException("", "")).name)
         assertEquals("UNKNOWN", describeErrorCause(Throwable()).name)
         assertEquals("NO_TEST_STORAGE", describeErrorCause(TestStorageNotFoundException()).name)
+        assertEquals("FINALIZE_DESTINATION", describeErrorCause(FinalizeDestinationException("")).name)
     }
 }

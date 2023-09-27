@@ -35,6 +35,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.assertExpectedDevice
+import dev.testify.internal.exception.FinalizeDestinationException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
 import dev.testify.internal.getDeviceDimensions
@@ -46,8 +47,10 @@ import dev.testify.internal.processor.compare.sameAsCompare
 import dev.testify.output.DataDirectoryDestination
 import dev.testify.output.DataDirectoryDestinationNotFoundException
 import dev.testify.output.getDestination
+import dev.testify.report.Reporter
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.spyk
@@ -84,6 +87,17 @@ class ScreenshotRuleTest {
             extension = ".path"
         )
     )
+    private val mockReporter = mockk<Reporter>(relaxed = true)
+
+    /**
+     * Simulate the TestRule evaluation
+     */
+    private fun ScreenshotRule<*>.test() {
+        every { mockStatement.evaluate() } answers {
+            this@test.assertSame()
+        }
+        this.statement?.evaluate()
+    }
 
     @Before
     fun setUp() {
@@ -101,6 +115,7 @@ class ScreenshotRuleTest {
         mockkStatic(Looper::class)
         mockkStatic("dev.testify.internal.helpers.FindRootViewKt")
         mockkStatic(BitmapFactory::class)
+        mockkObject(Reporter.Companion)
 
         val arguments = mockk<Bundle>(relaxed = true)
         val currentThread = mockk<Thread>()
@@ -118,7 +133,9 @@ class ScreenshotRuleTest {
 
         every { getDeviceDimensions(any()) } returns (1024 to 2048)
 
-        subject = spyk(ScreenshotRule(Activity::class.java))
+        every { Reporter.create(any(), any()) } returns mockReporter
+
+        subject = spyk(ScreenshotRule(Activity::class.java, enableReporter = true))
         every { subject.launchActivity(any()) } returns mockActivity
         every { subject.activity } returns mockActivity
         every { subject.getIntent() } returns mockIntent
@@ -149,6 +166,13 @@ class ScreenshotRuleTest {
         subject.apply(base = mockStatement, description = mockDescription)
     }
 
+    private fun verifyReporter() {
+        verify { mockReporter.identifySession(any()) }
+        verify { mockReporter.startTest(any()) }
+        verify { mockReporter.endTest() }
+        verify { mockReporter.finalize() }
+    }
+
     @After
     fun tearDown() {
         unmockkAll()
@@ -160,31 +184,37 @@ class ScreenshotRuleTest {
     @Test(expected = ScreenshotBaselineNotDefinedException::class)
     fun `WHEN no baseline bitmap THEN throw ScreenshotBaselineNotDefinedException`() {
         every { loadBaselineBitmapForComparison(any(), any()) } returns null
-        subject.assertSame()
+        subject.test()
+        verify { mockDestination.finalize() }
+        verifyReporter()
     }
 
     @Test(expected = DataDirectoryDestinationNotFoundException::class)
     fun `WHEN invalid destination THEN throw DataDirectoryDestinationNotFoundException`() {
         every { mockDestination.assureDestination(any()) } returns false
         every { loadBaselineBitmapForComparison(any(), any()) } returns null
-        subject.assertSame()
+        subject.test()
+        verifyReporter()
     }
 
     @Test(expected = ScreenshotIsDifferentException::class)
     fun `WHEN baseline is different than current THEN ScreenshotIsDifferentException`() {
         every { sameAsCompare(any(), any()) } returns false
-        subject.assertSame()
+        subject.test()
+        verify { mockDestination.finalize() }
+        verifyReporter()
     }
 
     @Test(expected = AssertionError::class)
     fun `WHEN could not delete cached bitmap THEN assertion failed`() {
         every { deleteBitmap(any()) } returns false
-        subject.assertSame()
+        subject.test()
+        verifyReporter()
     }
 
     @Test
     fun `WHEN baseline matches current THEN pass`() {
-        subject.assertSame()
+        subject.test()
 
         verify { subject.launchActivity(any()) }
 
@@ -192,6 +222,9 @@ class ScreenshotRuleTest {
         verify { assertExpectedDevice(any(), any(), any()) }
         verify { loadBaselineBitmapForComparison(any(), any()) }
         verify { compareBitmaps(any(), any(), any()) }
+        verify(exactly = 0) { mockDestination.finalize() }
+
+        verifyReporter()
     }
 
     @Test
@@ -200,9 +233,10 @@ class ScreenshotRuleTest {
         fun dummyProvider(rootView: ViewGroup): View = rootView.also { providedView = rootView }
 
         subject.setScreenshotViewProvider(::dummyProvider)
-        subject.assertSame()
+        subject.test()
         assertNotNull(providedView)
         verify { takeScreenshot(any(), any(), providedView, any()) }
+        verifyReporter()
     }
 
     @Test
@@ -239,7 +273,19 @@ class ScreenshotRuleTest {
             subject.addScreenshotObserver(it)
         }
 
-        subject.assertSame()
+        subject.test()
         assertTrue(expectedCalls.isEmpty())
+    }
+
+    @Test(expected = FinalizeDestinationException::class)
+    fun `WHEN finalize fails THEN throw FinalizeDestinationException`() {
+        every { mockDestination.finalize() } returns false
+        every { loadBaselineBitmapForComparison(any(), any()) } returns null
+
+        subject
+            .setRecordModeEnabled(true)
+            .assertSame()
+
+        verifyReporter()
     }
 }

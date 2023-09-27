@@ -74,7 +74,7 @@ internal open class ReporterTest {
             every { getExternalFilesDir(any()) } returns File("/sdcard")
         }
 
-        reporter = spyk(Reporter(mockContext, mockSession))
+        reporter = spyk(Reporter.create(mockContext, mockSession))
         reporter.configureMocks(BODY_LINES)
 
         mockkStatic(::getDestination)
@@ -177,7 +177,7 @@ internal open class ReporterTest {
 
     @Test
     fun `output file destination`() {
-        val reporter = spyk(Reporter(mockContext, mockSession))
+        val reporter = spyk(Reporter.create(mockContext, mockSession))
         every { reporter.getEnvironmentArguments() } returns mockk()
         every {
             getDestination(
@@ -295,7 +295,7 @@ internal open class ReporterTest {
         }
 
     private fun setUpForFirstTest(session: ReportSession): Reporter {
-        val reporter = spyk(Reporter(mockContext, session))
+        val reporter = spyk(Reporter.create(mockContext, session))
         reporter.configureMocks()
         every { mockFile.exists() } returns false
         return reporter
