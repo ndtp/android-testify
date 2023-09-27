@@ -35,6 +35,7 @@ import dev.testify.internal.DEFAULT_NAME_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.formatDeviceString
 import dev.testify.internal.getDeviceDescription
+import dev.testify.output.Destination
 import dev.testify.output.PNG_EXTENSION
 import dev.testify.output.getDestination
 import dev.testify.output.getFileRelativeToRoot
@@ -125,6 +126,13 @@ internal open class Reporter(
         writeToFile(builder, outputFile)
     }
 
+    /**
+     * Finalize the report.yml file
+     */
+    fun finalize() {
+        getDestination().finalize()
+    }
+
     @VisibleForTesting
     open fun writeToFile(builder: StringBuilder, file: File) {
         file.appendText(builder.toString())
@@ -164,15 +172,17 @@ internal open class Reporter(
         return InstrumentationRegistry.getArguments()
     }
 
+    private fun getDestination(): Destination = getDestination(
+        context = context,
+        fileName = "report",
+        extension = ".yml",
+        root = "testify",
+        customKey = ""
+    )
+
     @VisibleForTesting
     internal open fun getReportFile(): File {
-        val destination = getDestination(
-            context = context,
-            fileName = "report",
-            extension = ".yml",
-            root = "testify",
-            customKey = ""
-        )
+        val destination = getDestination()
         assertTrue(
             "Could not create reporter destination ${destination.description}",
             destination.assureDestination(context)

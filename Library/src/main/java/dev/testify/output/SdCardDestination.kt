@@ -65,9 +65,6 @@ open class SdCardDestination(
     override fun getScreenshotDestinationNotFoundException(): Exception =
         SdCardDestinationNotFoundException(outputPath)
 
-    override val exists: Boolean
-        get() = File(outputPath).exists()
-
     open fun getOutputFilePath(
         context: Context,
         fileName: String,
@@ -96,6 +93,8 @@ open class SdCardDestination(
         }
         return created
     }
+
+    override fun delete(): Boolean = file.delete()
 }
 
 internal class SdCardDestinationNotFoundException(path: String) :

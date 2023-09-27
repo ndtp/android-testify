@@ -42,6 +42,7 @@ import dev.testify.internal.exception.UnexpectedDeviceException
 import dev.testify.internal.exception.ViewModificationException
 import dev.testify.output.DataDirectoryDestinationNotFoundException
 import dev.testify.output.SdCardDestinationNotFoundException
+import dev.testify.output.TestStorageNotFoundException
 import dev.testify.report.describeErrorCause
 import io.mockk.MockKAnnotations
 import io.mockk.impl.annotations.RelaxedMockK
@@ -81,5 +82,6 @@ class ErrorCauseTest {
         assertEquals("IGNORED", describeErrorCause(ScreenshotTestIgnoredException()).name)
         assertEquals("DEVICE_MISMATCH", describeErrorCause(UnexpectedDeviceException("", "")).name)
         assertEquals("UNKNOWN", describeErrorCause(Throwable()).name)
+        assertEquals("NO_TEST_STORAGE", describeErrorCause(TestStorageNotFoundException()).name)
     }
 }

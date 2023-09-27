@@ -11,8 +11,7 @@ import org.junit.runner.RunWith
 class ClientListActivityScreenshotTest {
 
     @get:Rule
-    var rule = ScreenshotRule(ClientListActivity::class.java)
-
+    var rule = ScreenshotRule(ClientListActivity::class.java, enableReporter = true)
 
     /**
      * Demonstrates normal usage of Gradle Managed Devices with Testify

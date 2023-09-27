@@ -28,9 +28,11 @@ import android.content.Context
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.formatDeviceString
+import dev.testify.saveBitmapToDestination
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.unmockkAll
@@ -123,6 +125,19 @@ class DestinationTest {
             "/storage/emulated/0/Android/data/dev.testify.sample/files/root/33-1080x2200@420dp-en_CA/fileName.ext",
             destination.description
         )
+    }
+
+    @Test(expected = TestStorageNotFoundException::class)
+    fun `WHEN test storage is not configured THEN throw TestStorageNotFoundException`() {
+        every { mockArguments.getString("useTestStorage") } returns "true"
+        val destination = TestStorageDestination(
+            mockContext,
+            "fileName",
+            extension = ".ext",
+            key = null,
+            root = "root"
+        )
+        saveBitmapToDestination(mockk(), mockk(), destination)
     }
 
     @Test

@@ -470,6 +470,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                         instrumentationPrintln(
                             "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                         )
+
+                        // TODO: Write tests for finalize() being called properly
+                        if (!getDestination(activity, outputFileName).finalize())
+                            throw Exception("Failed to archive $outputFileName")
+
                         return
                     } else {
                         throw ScreenshotBaselineNotDefinedException(
@@ -489,9 +494,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 if (compareBitmaps(baselineBitmap, currentBitmap, configuration.getBitmapCompare())) {
                     assertTrue(
                         "Could not delete cached bitmap ${description.name}",
+                        // TODO: I don't like the duplicated calls to getDestination()
                         deleteBitmap(getDestination(activity, outputFileName))
                     )
                 } else {
+                    // TODO: I don't like this duplication
+                    if (!getDestination(activity, outputFileName).finalize())
+                        throw Exception("Failed to archive $outputFileName")
+
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
                         generateHighContrastDiff(baselineBitmap, currentBitmap)
                     }
@@ -591,6 +601,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     protected fun evaluateAfterTestExecution() {
         reporter?.endTest()
+        reporter?.finalize()
     }
 
     protected fun handleTestException(throwable: Throwable) {

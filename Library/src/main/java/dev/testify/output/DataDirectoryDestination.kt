@@ -27,6 +27,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import dev.testify.internal.DEFAULT_FOLDER_FORMAT
 import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.exception.TestifyException
@@ -48,7 +49,8 @@ open class DataDirectoryDestination(
 
     open val LOG_TAG = "DataDirectory"
 
-    private val outputPath: String by lazy { getOutputFilePath(context, fileName, extension) }
+    @VisibleForTesting
+    val outputPath: String by lazy { getOutputFilePath(context, fileName, extension) }
 
     override val description: String
         get() = outputPath
@@ -65,9 +67,6 @@ open class DataDirectoryDestination(
 
     override fun getScreenshotDestinationNotFoundException(): Exception =
         DataDirectoryDestinationNotFoundException(outputPath)
-
-    override val exists: Boolean
-        get() = File(outputPath).exists()
 
     protected open fun getOutputFilePath(
         context: Context,
@@ -94,6 +93,8 @@ open class DataDirectoryDestination(
         }
         return created
     }
+
+    override fun delete(): Boolean = file.delete()
 }
 
 internal class DataDirectoryDestinationNotFoundException(path: String) :
