@@ -1,5 +1,13 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+#### Fixed
+
+- [#175](https://github.com/ndtp/android-testify/issues/175): Output from Gradle Managed Devices now named according to Testify naming strategy
+
 ## 2.0.0-beta04
 
 ### Library

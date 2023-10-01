@@ -104,8 +104,7 @@ testify {
 
 Again we cannot use `screenshotPull` task. When execution completed go to the
 module's `build/outputs/managed_device_android_test_additional_output/tester` and copy recorded
-baseline into folder named after your device configuration inside `androidTest/assets/screenshots/`
-directory, for example: `androidTest/assets/screenshots/30-1080x1920@420dp-en_US`
+baseline into the `androidTest/assets/screenshots/` directory, for example: `androidTest/assets/screenshots/30-1080x1920@420dp-en_US`
 
 ### Sample
 
