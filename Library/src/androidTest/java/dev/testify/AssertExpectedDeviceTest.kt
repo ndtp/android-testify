@@ -84,8 +84,8 @@ class AssertExpectedDeviceTest {
         val e = assertThrows(UnexpectedDeviceException::class.java, rule::assertSame)
         assertTrue(
             e.message!!.contains(
-                "The currently running device '33-1080x1920@395dp-en_CA'" +
-                    " does not match the expected device '29-1080x2220@440dp-en_US'"
+                "The currently running device '29-1080x2220@440dp-en_US'" +
+                    " does not match the expected device '33-1080x1920@395dp-en_CA'"
             )
         )
     }

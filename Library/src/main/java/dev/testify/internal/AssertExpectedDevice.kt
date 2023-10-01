@@ -45,24 +45,24 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isR
 fun assertExpectedDevice(context: Context, testName: String, isRecordMode: Boolean) {
     if (isRecordMode || recordMode) return
 
-    val expectedDevice = getDeviceDescription(context)
+    val currentDeviceDescription = getDeviceDescription(context)
     val assetManager: AssetManager = context.assets
     val root: String = SCREENSHOT_DIR
 
-    var badConfiguration: String? = null
+    var expectedDevice: String? = null
     assetManager.list(root)?.forEach { configuration ->
         val baselines = assetManager.list("$root/$configuration")
         baselines?.forEach { baseline ->
             if (File(baseline).nameWithoutExtension == testName) {
-                if (configuration != expectedDevice) {
-                    badConfiguration = configuration
+                if (configuration != currentDeviceDescription) {
+                    expectedDevice = configuration
                 } else {
                     return
                 }
             }
         }
     }
-    badConfiguration?.let {
-        throw UnexpectedDeviceException(currentDevice = it, expectedDevice = expectedDevice)
+    expectedDevice?.let {
+        throw UnexpectedDeviceException(currentDevice = currentDeviceDescription, expectedDevice = it)
     }
 }

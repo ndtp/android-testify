@@ -34,7 +34,6 @@ import dev.testify.internal.formatDeviceString
 import java.io.File
 import java.io.FileInputStream
 
-
 class TestStorageDestination(
     private val context: Context,
     override val fileName: String,
@@ -104,7 +103,6 @@ class TestStorageDestination(
     companion object {
         private const val ROOT_DESTINATION_DIR = "images"
     }
-
 }
 
 internal class TestStorageNotFoundException :
