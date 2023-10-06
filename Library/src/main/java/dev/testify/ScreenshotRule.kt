@@ -54,6 +54,7 @@ import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
 import dev.testify.internal.exception.FailedToCaptureBitmapException
+import dev.testify.internal.exception.FinalizeDestinationException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
@@ -144,7 +145,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     init {
         if (enableReporter || TestifyFeatures.Reporter.isEnabled(getInstrumentation().context)) {
-            reporter = Reporter(getInstrumentation().targetContext, ReportSession())
+            reporter = Reporter.create(getInstrumentation().targetContext, ReportSession())
         }
         addScreenshotObserver(TestifyFeatures)
     }
@@ -223,6 +224,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         ResourceWrapper.beforeActivityLaunched()
     }
 
+    internal var statement: Statement? = null
+
     /**
      * Modifies the method-running [Statement] to implement this test-running rule.
      * @param base – The [Statement] to be modified
@@ -235,7 +238,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         val methodAnnotations = description.annotations
         apply(description.methodName, description.testClass, methodAnnotations)
-        return super.apply(ScreenshotStatement(base), description)
+        statement = ScreenshotStatement(base)
+        return super.apply(statement, description)
     }
 
     /**
@@ -465,11 +469,17 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
                 assertExpectedDevice(testContext, description.name, isRecordMode)
 
+                val destination = getDestination(activity, outputFileName)
+
                 val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
                     ?: if (isRecordMode || recordMode) {
                         instrumentationPrintln(
                             "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                         )
+
+                        if (!destination.finalize())
+                            throw FinalizeDestinationException(destination.description)
+
                         return
                     } else {
                         throw ScreenshotBaselineNotDefinedException(
@@ -489,9 +499,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
                 if (compareBitmaps(baselineBitmap, currentBitmap, configuration.getBitmapCompare())) {
                     assertTrue(
                         "Could not delete cached bitmap ${description.name}",
-                        deleteBitmap(getDestination(activity, outputFileName))
+                        deleteBitmap(destination)
                     )
                 } else {
+                    if (!destination.finalize())
+                        throw FinalizeDestinationException(destination.description)
+
                     if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
                         generateHighContrastDiff(baselineBitmap, currentBitmap)
                     }
@@ -591,6 +604,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     protected fun evaluateAfterTestExecution() {
         reporter?.endTest()
+        reporter?.finalize()
     }
 
     protected fun handleTestException(throwable: Throwable) {

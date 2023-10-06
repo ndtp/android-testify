@@ -40,6 +40,7 @@ import dev.testify.testDescription
 import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
+import java.io.File
 
 /**
  * These tests validate that multiple orientation changes can be performed in a single
@@ -95,6 +96,9 @@ class OrientationTest {
 
         assertFalse(DataDirectoryDestination(rule.activity, outputFileName).exists)
     }
+
+    private val DataDirectoryDestination.exists: Boolean
+        get() = File(outputPath).exists()
 
     private fun testOrientation(title: String, orientation: Int) {
         rule

@@ -32,18 +32,13 @@ import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
 import java.io.File
-import java.io.FileOutputStream
+import java.io.OutputStream
 
 interface Destination {
     /**
      * A user-facing string describing the destination
      */
     val description: String
-
-    /**
-     * true if the output filename exists on disk
-     */
-    val exists: Boolean
 
     /**
      * Name of the file.
@@ -56,9 +51,9 @@ interface Destination {
     val file: File
 
     /**
-     * Get a [FileOutputStream] for this destination
+     * Get an [OutputStream] for this destination
      */
-    fun getFileOutputStream(): FileOutputStream
+    fun getFileOutputStream(): OutputStream
 
     /**
      * Load the destination file as a [Bitmap]
@@ -74,6 +69,18 @@ interface Destination {
      * Ensure the output destination directory exists, create if necessary
      */
     fun assureDestination(context: Context): Boolean
+
+    /**
+     * Remove the file at this Destination
+     */
+    fun delete(): Boolean
+
+    /**
+     * Perform any necessary finalization on the Destination.
+     * Can be used to perform any archiving or copying of files, cleanup of internal state, or releasing any held
+     * resources.
+     */
+    fun finalize(): Boolean = true
 }
 
 fun getDestination(
@@ -98,7 +105,7 @@ fun getDestination(
         val arguments: Bundle = InstrumentationRegistry.getArguments()
         val destination = manifestValue()
         return (destination?.contentEquals("teststorage", ignoreCase = true) == true) ||
-            arguments.getString("testStorage") == "true"
+            arguments.getString("useTestStorage") == "true"
     }
 
     return when {

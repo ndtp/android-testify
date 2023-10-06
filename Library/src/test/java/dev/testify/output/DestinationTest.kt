@@ -28,14 +28,17 @@ import android.content.Context
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.formatDeviceString
+import dev.testify.saveBitmapToDestination
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.unmockkAll
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.File
@@ -124,6 +127,19 @@ class DestinationTest {
         )
     }
 
+    @Test(expected = TestStorageNotFoundException::class)
+    fun `WHEN test storage is not configured THEN throw TestStorageNotFoundException`() {
+        every { mockArguments.getString("useTestStorage") } returns "true"
+        val destination = TestStorageDestination(
+            mockContext,
+            "fileName",
+            extension = ".ext",
+            key = null,
+            root = "root"
+        )
+        saveBitmapToDestination(mockk(), mockk(), destination)
+    }
+
     @Test
     fun `WHEN testStorage THEN data directory`() {
         every { mockArguments.getString("useTestStorage") } returns "true"
@@ -135,6 +151,7 @@ class DestinationTest {
             customKey = null,
             root = "root"
         )
+        assertTrue("destination is $destination", destination is TestStorageDestination)
         assertEquals(
             "/data/user/0/dev.testify.sample/app_images/root/screenshots/33-1080x2200@420dp-en_CA/fileName.ext",
             destination.description
