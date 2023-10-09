@@ -68,7 +68,10 @@ class AssertExpectedDeviceTest {
     @ScreenshotInstrumentation
     @Test
     fun testMissingBaselineRecordMode() {
-        rule.setRecordModeEnabled(true)
+        rule
+            .configure {
+                isRecordMode = true
+            }
             .assertSame()
     }
 

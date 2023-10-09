@@ -6,11 +6,6 @@
 
 #### Changed
 
-- `ScreenshotRule.getRootView()` is now an extension function `fun Activity.findRootView(@IdRes rootViewId: Int): ViewGroup`.
-- `ScreenshotRule.setCaptureMethod()` is deprecated. Use `var captureMethod: CaptureMethod?` on `TestifyConfiguration` to set the capture method.
-- `ScreenshotRule.setCompareMethod()` is deprecated. Use `var compareMethod: CompareMethod?` on `TestifyConfiguration` to set the compare method.
-- `ScreenshotRule.compareBitmaps()` is now a top-level function.
-- `ScreenshotRule.takeScreenshot()` is now a top-level function.
 - `ScreenshotRule.getScreenshotInstrumentationAnnotation()` is now a top-level function.
 - `Collection<Annotation>.getAnnotation()` renamed to `Collection<Annotation>.findAnnotation()`.
 - Package for `getScreenshotAnnotationName()` changed from `dev.testify.internal.extensions` to `dev.testify.annotation`.

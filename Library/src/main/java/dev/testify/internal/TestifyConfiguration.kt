@@ -67,6 +67,8 @@ typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableS
  *                       The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View
  *                       under test.
  * @param compareMethod: Allow the test to define a custom bitmap comparison method.
+ *
+ * @param isRecordMode: Record a new baseline when running the test
  */
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
@@ -84,7 +86,8 @@ data class TestifyConfiguration(
     var pauseForInspection: Boolean = false,
     var hideSoftKeyboard: Boolean = true,
     var captureMethod: CaptureMethod? = null,
-    var compareMethod: CompareMethod? = null
+    var compareMethod: CompareMethod? = null,
+    var isRecordMode: Boolean = false
 ) {
 
     init {
@@ -120,6 +123,7 @@ data class TestifyConfiguration(
             (this != null) &&
                 (orientationToIgnore != SCREEN_ORIENTATION_UNSPECIFIED) &&
                 (activity.isRequestedOrientation(orientationToIgnore)) -> true
+
             else -> false
         }
     }

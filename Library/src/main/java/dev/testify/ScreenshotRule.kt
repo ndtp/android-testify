@@ -35,7 +35,6 @@ import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.VisibleForTesting
-import androidx.test.annotation.ExperimentalTestApi
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import dev.testify.annotation.TestifyLayout
@@ -46,14 +45,9 @@ import dev.testify.internal.ScreenshotRuleCompatibilityMethods
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.exception.ActivityNotRegisteredException
 import dev.testify.internal.exception.AssertSameMustBeLastException
-import dev.testify.internal.exception.FinalizeDestinationException
 import dev.testify.internal.exception.MissingAssertSameException
 import dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.getModuleName
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
-import dev.testify.internal.extensions.cyan
 import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.EspressoActions
@@ -70,7 +64,6 @@ import org.junit.AssumptionViolatedException
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
@@ -114,7 +107,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override var throwable: Throwable? = null
     override var viewModification: ViewModification? = null
     private var extrasProvider: ExtrasProvider? = null
-    private var isRecordMode: Boolean = false
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
@@ -164,14 +156,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
-     * Record a new baseline when running the test
-     */
-    fun setRecordModeEnabled(isRecordMode: Boolean): ScreenshotRule<T> {
-        this.isRecordMode = isRecordMode
-        return this
-    }
-
-    /**
      * Set the configuration for the ScreenshotRule
      *
      * @param configureRule - [TestifyConfiguration]
@@ -213,7 +197,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
         val methodAnnotations = description.annotations
         apply(description.methodName, description.testClass, methodAnnotations)
-        statement = ScreenshotStatement(base)
+        val statement = ScreenshotStatement(base)
+        this.statement = statement
         return super.apply(statement, description)
     }
 
@@ -344,24 +329,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         getInstrumentation().registerActivityProvider(this)
     }
 
-    /**
-     * Given [baselineBitmap] and [currentBitmap], use [HighContrastDiff] to write a companion .diff image for the
-     * current test.
-     *
-     * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
-     * against a black background.
-     */
-    @ExperimentalTestApi
-    open fun generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap) {
-        HighContrastDiff(configuration.exclusionRects)
-            .name(outputFileName)
-            .baseline(baselineBitmap)
-            .current(currentBitmap)
-            .exactness(configuration.exactness)
-            .generate(context = activity)
-    }
-
-    @ExperimentalTestApi
     fun assertSame() {
         addScreenshotObserver(this)
         try {

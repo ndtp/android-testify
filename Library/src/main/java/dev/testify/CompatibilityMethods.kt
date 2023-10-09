@@ -124,4 +124,10 @@ interface CompatibilityMethods<TRule : ScreenshotRule<TActivity>, TActivity : Ac
         replaceWith = ReplaceWith("configure { this@configure.compareMethod = compareMethod }")
     )
     fun setCompareMethod(compareMethod: CompareMethod?): TRule
+
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.isRecordMode = isRecordMode }")
+    )
+    fun setRecordModeEnabled(isRecordMode: Boolean): TRule
 }

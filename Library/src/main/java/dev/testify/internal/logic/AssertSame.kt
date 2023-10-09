@@ -35,6 +35,7 @@ import dev.testify.internal.DeviceStringFormatter
 import dev.testify.internal.TestifyConfiguration
 import dev.testify.internal.assertExpectedDevice
 import dev.testify.internal.exception.FailedToCaptureBitmapException
+import dev.testify.internal.exception.FinalizeDestinationException
 import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
 import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.internal.exception.ScreenshotIsDifferentException
@@ -82,6 +83,9 @@ internal fun <TActivity : Activity> assertSame(
     activityIntent: Intent?,
     reporter: Reporter?
 ) {
+    fun isRecordMode(): Boolean =
+        TestInstrumentationRegistry.isRecordMode || configuration.isRecordMode
+
     state.assertSameInvoked = true
 
     screenshotLifecycleHost.notifyObservers { it.beforeAssertSame() }
@@ -129,13 +133,19 @@ internal fun <TActivity : Activity> assertSame(
             Thread.sleep(LAYOUT_INSPECTION_TIME_MS)
         }
 
-        assertExpectedDevice(testContext, description.name)
+        val isRecordMode = isRecordMode()
+
+        assertExpectedDevice(testContext, description.name, isRecordMode)
+
+        val destination = getDestination(activity, outputFileName)
 
         val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
-            ?: if (TestInstrumentationRegistry.isRecordMode) {
+            ?: if (isRecordMode()) {
                 TestInstrumentationRegistry.instrumentationPrintln(
                     "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                 )
+                if (!destination.finalize())
+                    throw FinalizeDestinationException(destination.description)
                 return
             } else {
                 throw ScreenshotBaselineNotDefinedException(
@@ -155,9 +165,12 @@ internal fun <TActivity : Activity> assertSame(
         if (compareBitmaps(baselineBitmap, currentBitmap, configuration.getBitmapCompare())) {
             Assert.assertTrue(
                 "Could not delete cached bitmap ${description.name}",
-                deleteBitmap(getDestination(activity, outputFileName))
+                deleteBitmap(destination)
             )
         } else {
+            if (!destination.finalize())
+                throw FinalizeDestinationException(destination.description)
+
             if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
                 HighContrastDiff(configuration.exclusionRects)
                     .name(outputFileName)
