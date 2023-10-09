@@ -85,9 +85,9 @@ internal open class Reporter protected constructor(
      * At this point in the execution, Testify can correctly identify the baseline path as all
      * modifications have been applied
      */
-    fun captureOutput(rule: ScreenshotRule<*>) {
-        builder.appendLine("baseline_image: assets/${getBaselinePath(rule)}", indent = 8)
-        builder.appendLine("test_image: ${getOutputPath(rule)}", indent = 8)
+    fun captureOutput() {
+        builder.appendLine("baseline_image: assets/${getBaselinePath()}", indent = 8)
+        builder.appendLine("test_image: ${getOutputPath()}", indent = 8)
     }
 
     /**
@@ -134,43 +134,36 @@ internal open class Reporter protected constructor(
     }
 
     @VisibleForTesting
-    open fun writeToFile(builder: StringBuilder, file: File) {
+    open fun writeToFile(builder: StringBuilder, file: File) =
         file.appendText(builder.toString())
-    }
 
-    private fun StringBuilder.appendLine(value: String, indent: Int): StringBuilder {
-        return append("".padStart(indent)).appendLine(value)
-    }
+    private fun StringBuilder.appendLine(value: String, indent: Int): StringBuilder =
+        append("".padStart(indent)).appendLine(value)
 
     @VisibleForTesting
-    internal open fun getBaselinePath(rule: ScreenshotRule<*>): String {
-        return getFileRelativeToRoot(
+    internal open fun getBaselinePath(): String =
+        getFileRelativeToRoot(
             subpath = getDeviceDescription(context),
             fileName = testDescription.methodName,
             extension = PNG_EXTENSION
         )
-    }
 
-    private val ScreenshotRule<*>.fileName: String
-        get() {
-            return formatDeviceString(
-                DeviceStringFormatter(
-                    this.testContext,
-                    testDescription.nameComponents
-                ),
-                DEFAULT_NAME_FORMAT
-            )
-        }
+    private val Context.fileName: String
+        get() = formatDeviceString(
+            DeviceStringFormatter(
+                this,
+                testDescription.nameComponents
+            ),
+            DEFAULT_NAME_FORMAT
+        )
 
     @VisibleForTesting
-    internal open fun getOutputPath(rule: ScreenshotRule<*>): String {
-        return getDestination(context, rule.fileName).description
-    }
+    internal open fun getOutputPath(): String =
+        getDestination(context, context.fileName).description
 
     @VisibleForTesting
-    internal open fun getEnvironmentArguments(): Bundle {
-        return InstrumentationRegistry.getArguments()
-    }
+    internal open fun getEnvironmentArguments(): Bundle =
+        InstrumentationRegistry.getArguments()
 
     private fun getDestination(): Destination = getDestination(
         context = context,

@@ -54,6 +54,9 @@ class DestinationTest {
     @RelaxedMockK
     lateinit var mockInstrumentation: Instrumentation
 
+    private fun String.normalizePath() =
+        this.replace("\\", "/").replace(this.substring(0, this.indexOf(":") + 1), "")
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxUnitFun = true)
@@ -91,7 +94,7 @@ class DestinationTest {
         )
         assertEquals(
             "/data/user/0/dev.testify.sample/app_images/root/screenshots/33-1080x2200@420dp-en_CA/fileName.ext",
-            destination.description
+            destination.description.normalizePath()
         )
     }
 
@@ -106,7 +109,7 @@ class DestinationTest {
         )
         assertEquals(
             "/data/user/0/dev.testify.sample/app_images/root/custom_key/fileName.ext",
-            destination.description
+            destination.description.normalizePath()
         )
     }
 
@@ -123,7 +126,7 @@ class DestinationTest {
         )
         assertEquals(
             "/storage/emulated/0/Android/data/dev.testify.sample/files/root/33-1080x2200@420dp-en_CA/fileName.ext",
-            destination.description
+            destination.description.normalizePath()
         )
     }
 
@@ -154,7 +157,7 @@ class DestinationTest {
         assertTrue("destination is $destination", destination is TestStorageDestination)
         assertEquals(
             "/data/user/0/dev.testify.sample/app_images/root/screenshots/33-1080x2200@420dp-en_CA/fileName.ext",
-            destination.description
+            destination.description.normalizePath()
         )
     }
 }

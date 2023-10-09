@@ -49,7 +49,6 @@ val preferredBitmapOptions: BitmapFactory.Options
         return options
     }
 
-@ExperimentalTestApi
 fun saveBitmapToDestination(context: Context, bitmap: Bitmap?, destination: Destination): Boolean {
     if (bitmap == null) {
         return false

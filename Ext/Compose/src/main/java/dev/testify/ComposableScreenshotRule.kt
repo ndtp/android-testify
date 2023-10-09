@@ -63,6 +63,15 @@ open class ComposableScreenshotRule(
         activity.disposeComposition()
     }
 
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.captureMethod = captureMethod }")
+    )
+    override fun setCaptureMethod(captureMethod: CaptureMethod?): ComposableScreenshotRule {
+        this.captureMethod = configuration.captureMethod ?: ::pixelCopyCapture
+        return this
+    }
+
     /**
      * Set a screenshot view provider to capture only the @Composable bounds
      */
@@ -132,6 +141,7 @@ open class ComposableScreenshotRule(
      */
     override fun afterInitializeView(activity: Activity) {
         composeActions?.invoke(composeTestRule)
+        composeTestRule.waitForIdle()
         super.afterInitializeView(activity)
     }
 

@@ -38,7 +38,7 @@ import dev.testify.CaptureMethod
 import dev.testify.CompareMethod
 import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.IgnoreScreenshot
-import dev.testify.annotation.getAnnotation
+import dev.testify.annotation.findAnnotation
 import dev.testify.internal.exception.ScreenshotTestIgnoredException
 import dev.testify.internal.helpers.OrientationHelper
 import dev.testify.internal.helpers.ResourceWrapper
@@ -67,6 +67,8 @@ typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableS
  *                       The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View
  *                       under test.
  * @param compareMethod: Allow the test to define a custom bitmap comparison method.
+ *
+ * @param isRecordMode: Record a new baseline when running the test
  */
 data class TestifyConfiguration(
     var exclusionRectProvider: ExclusionRectProvider? = null,
@@ -84,7 +86,8 @@ data class TestifyConfiguration(
     var pauseForInspection: Boolean = false,
     var hideSoftKeyboard: Boolean = true,
     var captureMethod: CaptureMethod? = null,
-    var compareMethod: CompareMethod? = null
+    var compareMethod: CompareMethod? = null,
+    var isRecordMode: Boolean = false
 ) {
 
     init {
@@ -106,12 +109,12 @@ data class TestifyConfiguration(
      * Update the internal configuration values based on any annotations that may be present on the test method
      */
     internal fun applyAnnotations(methodAnnotations: Collection<Annotation>?) {
-        val bitmapComparison = methodAnnotations?.getAnnotation<BitmapComparisonExactness>()
+        val bitmapComparison = methodAnnotations?.findAnnotation<BitmapComparisonExactness>()
         if (exactness == null) {
             exactness = bitmapComparison?.exactness
         }
 
-        ignoreAnnotation = methodAnnotations?.getAnnotation()
+        ignoreAnnotation = methodAnnotations?.findAnnotation()
     }
 
     private fun IgnoreScreenshot?.isIgnored(activity: Activity): Boolean {
@@ -120,6 +123,7 @@ data class TestifyConfiguration(
             (this != null) &&
                 (orientationToIgnore != SCREEN_ORIENTATION_UNSPECIFIED) &&
                 (activity.isRequestedOrientation(orientationToIgnore)) -> true
+
             else -> false
         }
     }

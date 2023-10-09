@@ -1,8 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
- *
+ * Copyright (c) 2023 ndtp
+  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,28 +23,21 @@
  */
 package dev.testify.internal.helpers
 
-import android.app.Activity
-import androidx.test.espresso.Espresso
-import dev.testify.ScreenshotLifecycle
-import dev.testify.internal.TestifyConfiguration
+import android.content.Context
+import androidx.test.platform.app.InstrumentationRegistry
+import dev.testify.TestDescription
+import dev.testify.internal.DEFAULT_NAME_FORMAT
+import dev.testify.internal.DeviceStringFormatter
+import dev.testify.internal.formatDeviceString
+import dev.testify.testDescription
 
-typealias EspressoActions = () -> Unit
-
-class EspressoHelper(private val configuration: TestifyConfiguration) : ScreenshotLifecycle {
-
-    var actions: EspressoActions? = null
-
-    fun reset() {
-        actions = null
-    }
-
-    override fun afterInitializeView(activity: Activity) {
-        actions?.invoke()
-
-        Espresso.onIdle()
-
-        if (configuration.hideSoftKeyboard) {
-            Espresso.closeSoftKeyboard()
-        }
-    }
-}
+fun Context.outputFileName(
+    description: TestDescription = InstrumentationRegistry.getInstrumentation().testDescription,
+    format: String = DEFAULT_NAME_FORMAT
+) = formatDeviceString(
+    formatter = DeviceStringFormatter(
+        context = this,
+        testName = description.nameComponents
+    ),
+    format = format
+)

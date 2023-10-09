@@ -47,7 +47,6 @@ internal open class ReporterTest {
     private lateinit var mockContext: Context
     private lateinit var mockSession: ReportSession
     private val mockInstrumentation: Instrumentation = mockk()
-    private val mockRule: ScreenshotRule<*> = mockk()
     private val mockTestClass: Class<*> = ReporterTest::class.java
     private var mockDescription = TestDescription("startTest", mockTestClass)
     private val mockFile: File = mockk()
@@ -84,8 +83,8 @@ internal open class ReporterTest {
     }
 
     private fun Reporter.configureMocks(body: List<String>? = null) {
-        every { getBaselinePath(any()) } returns "foo"
-        every { getOutputPath(any()) } returns "bar"
+        every { getBaselinePath() } returns "foo"
+        every { getOutputPath() } returns "bar"
         every { getReportFile() } returns mockFile
         every { writeToFile(any(), any()) } just runs
         every { clearFile(mockFile) } just runs
@@ -113,7 +112,7 @@ internal open class ReporterTest {
 
     @Test
     fun `captureOutput() produces the expected yaml`() {
-        reporter.captureOutput(mockRule)
+        reporter.captureOutput()
         assertEquals(
             "        baseline_image: assets/foo\n" +
                 "        test_image: bar\n",
@@ -206,7 +205,7 @@ internal open class ReporterTest {
 
         reporter.startTest(mockDescription)
         reporter.identifySession(mockInstrumentation)
-        reporter.captureOutput(mockRule)
+        reporter.captureOutput()
         reporter.pass()
         reporter.endTest()
 
@@ -237,21 +236,21 @@ internal open class ReporterTest {
         var reporter = setUpForFirstTest(spyk(ReportSession()))
         reporter.startTest(mockDescription)
         reporter.identifySession(mockInstrumentation)
-        reporter.captureOutput(mockRule)
+        reporter.captureOutput()
         reporter.pass()
         reporter.endTest()
 
         reporter = setUpForSecondTest()
         reporter.startTest(mockDescription)
         reporter.identifySession(mockInstrumentation)
-        reporter.captureOutput(mockRule)
+        reporter.captureOutput()
         reporter.fail(Exception("This is a failure"))
         reporter.endTest()
 
         reporter = setUpForThirdTest()
         reporter.startTest(mockDescription)
         reporter.identifySession(mockInstrumentation)
-        reporter.captureOutput(mockRule)
+        reporter.captureOutput()
         reporter.skip()
         reporter.endTest()
 

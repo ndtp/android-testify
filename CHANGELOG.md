@@ -4,6 +4,27 @@
 
 ### Library
 
+#### Changed
+
+- `ScreenshotRule.getScreenshotInstrumentationAnnotation()` is now a top-level function.
+- `Collection<Annotation>.getAnnotation()` renamed to `Collection<Annotation>.findAnnotation()`.
+- Package for `getScreenshotAnnotationName()` changed from `dev.testify.internal.extensions` to `dev.testify.annotation`.
+- `ScreenshotRule.initializeView()` is now a top-level function.
+- `EspressoHelper` now extends `ScreenshotLifecycle` and `beforeScreenshot()` has been replaced with `afterInitializeView()`
+
+#### Added
+
+- `isRunningOnUiThread()` added as a top-level function.
+- `outputFileName()` added as an extension method for `Context`.
+- Interface `AssertionState`
+- Interface `ScreenshotLifecycleHost`
+- `assertSame()` is now available as a top-level function, decoupled from `ScreenshotRule`
+
+#### Removed
+
+- `open fun  ScreenshotRule.generateHighContrastDiff(baselineBitmap: Bitmap, currentBitmap: Bitmap)` has been removed. Use `class HighContrastDiff` directly.
+- `ScreenshotRule.applyViewModifications()` has been removed. Use `TestifyConfiguration.applyViewModificationsMainThread()` instead.
+
 #### Fixed
 
 - [#175](https://github.com/ndtp/android-testify/issues/175): Output from Gradle Managed Devices now named according to Testify naming strategy

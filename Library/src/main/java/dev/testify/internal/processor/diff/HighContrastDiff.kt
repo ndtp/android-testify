@@ -27,20 +27,32 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
-import androidx.test.annotation.ExperimentalTestApi
 import dev.testify.internal.processor.ParallelPixelProcessor
 import dev.testify.internal.processor.compare.colorspace.calculateDeltaE
 import dev.testify.internal.processor.createBitmap
 import dev.testify.output.getDestination
 import dev.testify.saveBitmapToDestination
 
+/**
+ * Given [baselineBitmap] and [currentBitmap], use [HighContrastDiff] to write a companion .diff image for the
+ * current test.
+ *
+ * This diff image is a high-contrast image where each difference, regardless of how minor, is indicated in red
+ * against a black background.
+ *
+ * Legend:
+ * - Black:   Identical
+ * - Gray:    Excluded from diff
+ * - Yellow:  Different, but within allowable tolerances
+ * - Red:     Different in excess of allowable tolerances
+ *
+ */
 class HighContrastDiff(private val exclusionRects: Set<Rect>) {
 
     private lateinit var fileName: String
     private lateinit var baselineBitmap: Bitmap
     private lateinit var currentBitmap: Bitmap
 
-    @ExperimentalTestApi
     fun generate(context: Context) {
         val transformResult = ParallelPixelProcessor
             .create()

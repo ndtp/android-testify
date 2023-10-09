@@ -283,7 +283,9 @@ class ScreenshotRuleTest {
         every { loadBaselineBitmapForComparison(any(), any()) } returns null
 
         subject
-            .setRecordModeEnabled(true)
+            .configure {
+                isRecordMode = true
+            }
             .assertSame()
 
         verifyReporter()

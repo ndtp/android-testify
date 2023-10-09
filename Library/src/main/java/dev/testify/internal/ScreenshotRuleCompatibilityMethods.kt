@@ -216,4 +216,15 @@ internal class ScreenshotRuleCompatibilityMethods<TRule : ScreenshotRule<TActivi
         }
         return rule
     }
+
+    @Deprecated(
+        message = "Please use configure()",
+        replaceWith = ReplaceWith("configure { this@configure.isRecordMode = isRecordMode }")
+    )
+    override fun setRecordModeEnabled(isRecordMode: Boolean): TRule {
+        rule.configure {
+            this@configure.isRecordMode = isRecordMode
+        }
+        return rule
+    }
 }

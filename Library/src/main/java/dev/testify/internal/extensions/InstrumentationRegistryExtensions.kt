@@ -26,7 +26,6 @@ package dev.testify.internal.extensions
 import android.app.Instrumentation
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
 
@@ -80,12 +79,6 @@ class TestInstrumentationRegistry {
  */
 fun isInvokedFromPlugin(): Boolean =
     InstrumentationRegistry.getArguments().containsKey("annotation")
-
-/**
- * Returns the fully qualified dot-separated name of the annotation required by the Gradle plugin.
- */
-fun getScreenshotAnnotationName(): String =
-    InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
 
 private const val ESC_YELLOW = "${27.toChar()}[33m"
 private const val ESC_CYAN = "${27.toChar()}[36m"
