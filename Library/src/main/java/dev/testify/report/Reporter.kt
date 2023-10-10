@@ -31,10 +31,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.ScreenshotRule
 import dev.testify.TestDescription
-import dev.testify.internal.DEFAULT_NAME_FORMAT
-import dev.testify.internal.DeviceStringFormatter
-import dev.testify.internal.formatDeviceString
-import dev.testify.internal.getDeviceDescription
+import dev.testify.core.DEFAULT_NAME_FORMAT
+import dev.testify.core.DeviceStringFormatter
+import dev.testify.core.formatDeviceString
+import dev.testify.core.getDeviceDescription
 import dev.testify.output.Destination
 import dev.testify.output.PNG_EXTENSION
 import dev.testify.output.getDestination

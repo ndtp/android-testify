@@ -24,8 +24,8 @@
 package dev.testify
 
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
-import dev.testify.internal.exception.UnexpectedDeviceException
+import dev.testify.core.exception.ScreenshotBaselineNotDefinedException
+import dev.testify.core.exception.UnexpectedDeviceException
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Rule

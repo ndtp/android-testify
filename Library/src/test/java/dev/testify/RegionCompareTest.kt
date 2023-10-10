@@ -26,9 +26,9 @@ package dev.testify
 
 import android.graphics.Bitmap
 import android.graphics.Rect
-import dev.testify.internal.TestifyConfiguration
-import dev.testify.internal.processor._executorDispatcher
-import dev.testify.internal.processor.compare.FuzzyCompare
+import dev.testify.core.TestifyConfiguration
+import dev.testify.core.processor._executorDispatcher
+import dev.testify.core.processor.compare.FuzzyCompare
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.DelicateCoroutinesApi

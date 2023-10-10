@@ -26,7 +26,7 @@ package dev.testify
 
 import android.view.View
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.exception.ViewModificationException
+import dev.testify.core.exception.ViewModificationException
 import org.junit.Rule
 import org.junit.Test
 

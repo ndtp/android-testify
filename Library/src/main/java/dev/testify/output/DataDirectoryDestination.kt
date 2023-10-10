@@ -28,10 +28,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.annotation.VisibleForTesting
-import dev.testify.internal.DEFAULT_FOLDER_FORMAT
-import dev.testify.internal.DeviceStringFormatter
-import dev.testify.internal.exception.TestifyException
-import dev.testify.internal.formatDeviceString
+import dev.testify.core.DEFAULT_FOLDER_FORMAT
+import dev.testify.core.DeviceStringFormatter
+import dev.testify.core.exception.TestifyException
+import dev.testify.core.formatDeviceString
 import java.io.File
 import java.io.FileOutputStream
 

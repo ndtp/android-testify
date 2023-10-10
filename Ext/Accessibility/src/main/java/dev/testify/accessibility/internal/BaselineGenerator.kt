@@ -27,10 +27,10 @@ import android.content.Context
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.TestDescription
 import dev.testify.accessibility.exception.MalformedBaselineException
-import dev.testify.internal.DEFAULT_NAME_FORMAT
-import dev.testify.internal.DeviceStringFormatter
-import dev.testify.internal.formatDeviceString
-import dev.testify.internal.getDeviceDescription
+import dev.testify.core.DEFAULT_NAME_FORMAT
+import dev.testify.core.DeviceStringFormatter
+import dev.testify.core.formatDeviceString
+import dev.testify.core.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
 import dev.testify.output.getDestination
 import dev.testify.output.getFileRelativeToRoot

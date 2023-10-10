@@ -33,7 +33,7 @@ import android.os.Debug
 import android.util.Log
 import android.view.View
 import androidx.test.annotation.ExperimentalTestApi
-import dev.testify.internal.getDeviceDescription
+import dev.testify.core.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
 import dev.testify.output.Destination
 import dev.testify.output.PNG_EXTENSION

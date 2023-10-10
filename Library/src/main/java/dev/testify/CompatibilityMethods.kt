@@ -25,7 +25,7 @@ package dev.testify
 
 import android.app.Activity
 import androidx.annotation.IdRes
-import dev.testify.internal.ExclusionRectProvider
+import dev.testify.core.ExclusionRectProvider
 import java.util.Locale
 
 /**

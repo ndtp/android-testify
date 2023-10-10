@@ -26,7 +26,7 @@ package dev.testify
 
 import com.github.ajalt.colormath.LAB
 import com.github.ajalt.colormath.RGB
-import dev.testify.internal.processor.compare.colorspace.calculateDeltaE
+import dev.testify.core.processor.compare.colorspace.calculateDeltaE
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail

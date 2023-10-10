@@ -28,7 +28,7 @@ import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.capture.fullscreen.fullscreenCapture
 import dev.testify.capture.fullscreen.provider.excludeSystemUi
-import dev.testify.internal.processor.capture.pixelCopyCapture
+import dev.testify.core.processor.capture.pixelCopyCapture
 import dev.testify.sample.ComposeActivity
 import org.junit.Before
 import org.junit.Rule

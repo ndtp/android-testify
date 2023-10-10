@@ -11,7 +11,54 @@
 - Package for `getScreenshotAnnotationName()` changed from `dev.testify.internal.extensions` to `dev.testify.annotation`.
 - `ScreenshotRule.initializeView()` is now a top-level function.
 - `EspressoHelper` now extends `ScreenshotLifecycle` and `beforeScreenshot()` has been replaced with `afterInitializeView()`
-
+- Moved `dev.testify.internal.assertExpectedDevice` to `dev.testify.core.assertExpectedDevice`
+- Moved `dev.testify.internal.Configurable` to `dev.testify.core.Configurable`
+- Moved `dev.testify.internal.DEFAULT_FOLDER_FORMAT` to `dev.testify.core.DEFAULT_FOLDER_FORMAT`
+- Moved `dev.testify.internal.DEFAULT_NAME_FORMAT` to `dev.testify.core.DEFAULT_NAME_FORMAT`
+- Moved `dev.testify.internal.DeviceStringFormatter` to `dev.testify.core.DeviceStringFormatter`
+- Moved `dev.testify.internal.exception.ActivityMustImplementResourceOverrideException` to `dev.testify.core.exception.ActivityMustImplementResourceOverrideException`
+- Moved `dev.testify.internal.exception.ActivityNotRegisteredException` to `dev.testify.core.exception.ActivityNotRegisteredException`
+- Moved `dev.testify.internal.exception.AssertSameMustBeLastException` to `dev.testify.core.exception.AssertSameMustBeLastException`
+- Moved `dev.testify.internal.exception.FailedToCaptureBitmapException` to `dev.testify.core.exception.FailedToCaptureBitmapException`
+- Moved `dev.testify.internal.exception.FinalizeDestinationException` to `dev.testify.core.exception.FinalizeDestinationException`
+- Moved `dev.testify.internal.exception.MissingAssertSameException` to `dev.testify.core.exception.MissingAssertSameException`
+- Moved `dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException` to `dev.testify.core.exception.MissingScreenshotInstrumentationAnnotationException`
+- Moved `dev.testify.internal.exception.NoScreenshotsOnUiThreadException` to `dev.testify.core.exception.NoScreenshotsOnUiThreadException`
+- Moved `dev.testify.internal.exception.RootViewNotFoundException` to `dev.testify.core.exception.RootViewNotFoundException`
+- Moved `dev.testify.internal.exception.ScreenshotBaselineNotDefinedException` to `dev.testify.core.exception.ScreenshotBaselineNotDefinedException`
+- Moved `dev.testify.internal.exception.ScreenshotIsDifferentException` to `dev.testify.core.exception.ScreenshotIsDifferentException`
+- Moved `dev.testify.internal.exception.ScreenshotTestIgnoredException` to `dev.testify.core.exception.ScreenshotTestIgnoredException`
+- Moved `dev.testify.internal.exception.TestifyException` to `dev.testify.core.exception.TestifyException`
+- Moved `dev.testify.internal.exception.TestMustWrapContextException` to `dev.testify.core.exception.TestMustWrapContextException`
+- Moved `dev.testify.internal.exception.UnexpectedDeviceException` to `dev.testify.core.exception.UnexpectedDeviceException`
+- Moved `dev.testify.internal.exception.UnexpectedOrientationException` to `dev.testify.core.exception.UnexpectedOrientationException`
+- Moved `dev.testify.internal.exception.ViewModificationException` to `dev.testify.core.exception.ViewModificationException`
+- Moved `dev.testify.internal.ExclusionRectProvider` to `dev.testify.core.ExclusionRectProvider`
+- Moved `dev.testify.internal.formatDeviceString` to `dev.testify.core.formatDeviceString`
+- Moved `dev.testify.internal.getDeviceDescription` to `dev.testify.core.getDeviceDescription`
+- Moved `dev.testify.internal.getDeviceDimensions` to `dev.testify.core.getDeviceDimensions`
+- Moved `dev.testify.internal.logic.AssertionState` to `dev.testify.core.logic.AssertionState`
+- Moved `dev.testify.internal.logic.assertSame` to `dev.testify.core.logic.assertSame`
+- Moved `dev.testify.internal.logic.compareBitmaps` to `dev.testify.core.logic.compareBitmaps`
+- Moved `dev.testify.internal.logic.ScreenshotLifecycleHost` to `dev.testify.core.logic.ScreenshotLifecycleHost`
+- Moved `dev.testify.internal.logic.ScreenshotLifecycleObserver` to `dev.testify.core.logic.ScreenshotLifecycleObserver`
+- Moved `dev.testify.internal.logic.takeScreenshot` to `dev.testify.core.logic.takeScreenshot`
+- Moved `dev.testify.internal.processor._executorDispatcher` to `dev.testify.core.processor._executorDispatcher`
+- Moved `dev.testify.internal.processor.capture.canvasCapture` to `dev.testify.core.processor.capture.canvasCapture`
+- Moved `dev.testify.internal.processor.capture.createBitmapFromDrawingCache` to `dev.testify.core.processor.capture.createBitmapFromDrawingCache`
+- Moved `dev.testify.internal.processor.capture.pixelCopyCapture` to `dev.testify.core.processor.capture.pixelCopyCapture`
+- Moved `dev.testify.internal.processor.capture.PixelCopyCaptureKt;` to `dev.testify.core.processor.capture.PixelCopyCaptureKt;`
+- Moved `dev.testify.internal.processor.compare.colorspace.calculateDeltaE` to `dev.testify.core.processor.compare.colorspace.calculateDeltaE`
+- Moved `dev.testify.internal.processor.compare.FuzzyCompare` to `dev.testify.core.processor.compare.FuzzyCompare`
+- Moved `dev.testify.internal.processor.compare.sameAsCompare` to `dev.testify.core.processor.compare.sameAsCompare`
+- Moved `dev.testify.internal.processor.createBitmap` to `dev.testify.core.processor.createBitmap`
+- Moved `dev.testify.internal.processor.diff.HighContrastDiff` to `dev.testify.core.processor.diff.HighContrastDiff`
+- Moved `dev.testify.internal.processor.maxNumberOfChunkThreads` to `dev.testify.core.processor.maxNumberOfChunkThreads`
+- Moved `dev.testify.internal.processor.ParallelPixelProcessor` to `dev.testify.core.processor.ParallelPixelProcessor`
+- Moved `dev.testify.internal.ScreenshotRuleCompatibilityMethods` to `dev.testify.core.ScreenshotRuleCompatibilityMethods`
+- Moved `dev.testify.internal.TestifyConfiguration` to `dev.testify.core.TestifyConfiguration`
+- Moved `dev.testify.internal.TestName` to `dev.testify.core.TestName`
+- 
 #### Added
 
 - `isRunningOnUiThread()` added as a top-level function.

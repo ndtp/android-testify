@@ -27,7 +27,7 @@ import android.app.Instrumentation
 import android.content.Context
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
-import dev.testify.internal.formatDeviceString
+import dev.testify.core.formatDeviceString
 import dev.testify.saveBitmapToDestination
 import io.mockk.MockKAnnotations
 import io.mockk.every

@@ -28,8 +28,8 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.statusBars
-import dev.testify.internal.ExclusionRectProvider
-import dev.testify.internal.TestifyConfiguration
+import dev.testify.core.ExclusionRectProvider
+import dev.testify.core.TestifyConfiguration
 
 /**
  * This file provides extension methods that will add the rectangle covering the system status bar to the

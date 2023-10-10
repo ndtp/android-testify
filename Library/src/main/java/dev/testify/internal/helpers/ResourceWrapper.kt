@@ -29,8 +29,8 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import androidx.annotation.VisibleForTesting
-import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
-import dev.testify.internal.exception.TestMustWrapContextException
+import dev.testify.core.exception.ActivityMustImplementResourceOverrideException
+import dev.testify.core.exception.TestMustWrapContextException
 import dev.testify.resources.TestifyResourcesOverride
 
 interface WrappedResource<T> {

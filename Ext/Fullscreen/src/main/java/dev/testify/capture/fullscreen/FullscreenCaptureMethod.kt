@@ -32,9 +32,9 @@ import androidx.test.uiautomator.UiDevice
 import dev.testify.ScreenshotRule
 import dev.testify.exception.FailedToCaptureFullscreenBitmapException
 import dev.testify.exception.FailedToLoadCapturedBitmapException
-import dev.testify.internal.DEFAULT_NAME_FORMAT
-import dev.testify.internal.DeviceStringFormatter
-import dev.testify.internal.formatDeviceString
+import dev.testify.core.DEFAULT_NAME_FORMAT
+import dev.testify.core.DeviceStringFormatter
+import dev.testify.core.formatDeviceString
 import dev.testify.loadBitmapFromFile
 import dev.testify.output.Destination
 import dev.testify.output.getDestination

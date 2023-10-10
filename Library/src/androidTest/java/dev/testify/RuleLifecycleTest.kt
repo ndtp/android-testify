@@ -27,8 +27,8 @@ package dev.testify
 import androidx.test.annotation.UiThreadTest
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.exception.AssertSameMustBeLastException
-import dev.testify.internal.exception.NoScreenshotsOnUiThreadException
+import dev.testify.core.exception.AssertSameMustBeLastException
+import dev.testify.core.exception.NoScreenshotsOnUiThreadException
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert.assertThrows

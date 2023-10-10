@@ -30,8 +30,8 @@ import org.junit.Test;
 import dev.testify.ScreenshotRule;
 import dev.testify.TestifyFeatures;
 import dev.testify.annotation.ScreenshotInstrumentation;
-import dev.testify.internal.Configurable;
-import dev.testify.internal.processor.capture.PixelCopyCaptureKt;
+import dev.testify.core.Configurable;
+import dev.testify.core.processor.capture.PixelCopyCaptureKt;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 

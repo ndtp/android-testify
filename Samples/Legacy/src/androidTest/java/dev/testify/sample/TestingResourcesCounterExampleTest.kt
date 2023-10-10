@@ -32,8 +32,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.exception.ActivityMustImplementResourceOverrideException
-import dev.testify.internal.exception.TestMustWrapContextException
+import dev.testify.core.exception.ActivityMustImplementResourceOverrideException
+import dev.testify.core.exception.TestMustWrapContextException
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.WrappedLocale
 import dev.testify.resources.TestifyResourcesOverride

@@ -26,7 +26,7 @@ package dev.testify
 
 import android.app.Activity
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.exception.ActivityNotRegisteredException
+import dev.testify.core.exception.ActivityNotRegisteredException
 import org.junit.Assert.assertThrows
 import org.junit.Rule
 import org.junit.Test

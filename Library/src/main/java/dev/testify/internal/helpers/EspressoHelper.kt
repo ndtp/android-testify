@@ -26,7 +26,7 @@ package dev.testify.internal.helpers
 import android.app.Activity
 import androidx.test.espresso.Espresso
 import dev.testify.ScreenshotLifecycle
-import dev.testify.internal.TestifyConfiguration
+import dev.testify.core.TestifyConfiguration
 
 typealias EspressoActions = () -> Unit
 

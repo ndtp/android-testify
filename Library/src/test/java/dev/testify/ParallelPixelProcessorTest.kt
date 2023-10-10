@@ -1,9 +1,9 @@
 package dev.testify
 
 import android.graphics.Bitmap
-import dev.testify.internal.processor.ParallelPixelProcessor
-import dev.testify.internal.processor._executorDispatcher
-import dev.testify.internal.processor.maxNumberOfChunkThreads
+import dev.testify.core.processor.ParallelPixelProcessor
+import dev.testify.core.processor._executorDispatcher
+import dev.testify.core.processor.maxNumberOfChunkThreads
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk

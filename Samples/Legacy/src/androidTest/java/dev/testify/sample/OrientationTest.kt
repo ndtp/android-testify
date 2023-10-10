@@ -29,9 +29,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.IgnoreScreenshot
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.DEFAULT_NAME_FORMAT
-import dev.testify.internal.DeviceStringFormatter
-import dev.testify.internal.formatDeviceString
+import dev.testify.core.DEFAULT_NAME_FORMAT
+import dev.testify.core.DeviceStringFormatter
+import dev.testify.core.formatDeviceString
 import dev.testify.output.DataDirectoryDestination
 import dev.testify.sample.clients.details.ClientDetailsView
 import dev.testify.sample.test.TestHarnessActivity
