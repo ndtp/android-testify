@@ -23,8 +23,8 @@
  */
 package dev.testify.capture.fullscreen.provider
 
-import dev.testify.internal.ExclusionRectProvider
-import dev.testify.internal.TestifyConfiguration
+import dev.testify.core.ExclusionRectProvider
+import dev.testify.core.TestifyConfiguration
 
 /**
  * This file provides extension methods that will add rectangles covering both the status bar and the navigation

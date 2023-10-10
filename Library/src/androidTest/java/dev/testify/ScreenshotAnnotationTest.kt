@@ -49,7 +49,7 @@ class ScreenshotAnnotationTest {
     fun testAnnotationRequired() {
         val e = assertThrows(RuntimeException::class.java, rule::assertSame)
         assertEquals(
-            "dev.testify.internal.exception.MissingScreenshotInstrumentationAnnotationException: " +
+            "dev.testify.core.exception.MissingScreenshotInstrumentationAnnotationException: " +
                 "Please add annotation com.example.Annotation to the test 'testAnnotationRequired'",
             e.message
         )

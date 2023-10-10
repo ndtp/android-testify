@@ -29,7 +29,7 @@ package dev.testify
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
+import dev.testify.core.processor.capture.createBitmapFromDrawingCache
 import dev.testify.output.getDestination
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull

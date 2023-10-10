@@ -26,8 +26,8 @@ package dev.testify
 import android.app.Activity
 import android.graphics.Bitmap
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.internal.TestifyConfiguration
-import dev.testify.internal.exception.ScreenshotBaselineNotDefinedException
+import dev.testify.core.TestifyConfiguration
+import dev.testify.core.exception.ScreenshotBaselineNotDefinedException
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test

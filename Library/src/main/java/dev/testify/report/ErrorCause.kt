@@ -24,7 +24,7 @@
  */
 package dev.testify.report
 
-import dev.testify.internal.exception.TestifyException
+import dev.testify.core.exception.TestifyException
 import org.junit.AssumptionViolatedException
 
 /**

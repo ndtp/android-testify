@@ -29,8 +29,8 @@ package dev.testify
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import dev.testify.internal.TestifyConfiguration
-import dev.testify.internal.processor.compare.FuzzyCompare
+import dev.testify.core.TestifyConfiguration
+import dev.testify.core.processor.compare.FuzzyCompare
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule

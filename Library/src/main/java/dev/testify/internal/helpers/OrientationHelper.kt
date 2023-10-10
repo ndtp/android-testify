@@ -33,7 +33,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
-import dev.testify.internal.exception.UnexpectedOrientationException
+import dev.testify.core.exception.UnexpectedOrientationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 

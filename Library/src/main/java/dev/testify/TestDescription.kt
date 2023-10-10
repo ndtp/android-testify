@@ -24,7 +24,7 @@
 package dev.testify
 
 import android.app.Instrumentation
-import dev.testify.internal.TestName
+import dev.testify.core.TestName
 
 data class TestDescription(
     val methodName: String,

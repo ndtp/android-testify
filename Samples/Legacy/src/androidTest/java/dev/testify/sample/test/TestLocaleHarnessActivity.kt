@@ -29,7 +29,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import dev.testify.resources.TestifyResourcesOverride
 import dev.testify.sample.TestingResourceConfigurationsExampleTest
-import java.util.*
+import java.util.Locale
 
 /**
  * This Activity is used to demonstrate the use of [TestifyResourcesOverride].

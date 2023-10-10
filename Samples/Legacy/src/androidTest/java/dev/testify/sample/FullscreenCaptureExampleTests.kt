@@ -30,7 +30,7 @@ import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.capture.fullscreen.captureFullscreen
 import dev.testify.capture.fullscreen.provider.excludeSystemUi
-import dev.testify.internal.TestifyConfiguration
+import dev.testify.core.TestifyConfiguration
 import org.junit.Rule
 import org.junit.Test
 

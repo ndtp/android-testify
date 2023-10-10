@@ -29,7 +29,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
-import dev.testify.internal.processor.capture.pixelCopyCapture
+import dev.testify.core.processor.capture.pixelCopyCapture
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

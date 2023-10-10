@@ -28,10 +28,10 @@ package dev.testify
 
 import android.app.Activity
 import android.content.Context
-import dev.testify.internal.TestifyConfiguration
+import dev.testify.core.TestifyConfiguration
+import dev.testify.core.processor.capture.canvasCapture
+import dev.testify.core.processor.capture.pixelCopyCapture
 import dev.testify.internal.helpers.getMetaDataBundle
-import dev.testify.internal.processor.capture.canvasCapture
-import dev.testify.internal.processor.capture.pixelCopyCapture
 
 enum class TestifyFeatures(internal val tags: List<String>, private val defaultValue: Boolean = false) {
 

@@ -31,7 +31,6 @@ import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import dev.testify.sample.R
 import dev.testify.sample.clients.MockClientData
-import dev.testify.sample.clients.details.ClientDetailsActivity
 
 class ClientDetailsEditActivity : AppCompatActivity() {
 

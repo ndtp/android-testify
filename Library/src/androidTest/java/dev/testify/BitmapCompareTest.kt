@@ -31,10 +31,10 @@ import android.graphics.Bitmap
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import dev.testify.internal.TestifyConfiguration
-import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
-import dev.testify.internal.processor.compare.FuzzyCompare
-import dev.testify.internal.processor.compare.sameAsCompare
+import dev.testify.core.TestifyConfiguration
+import dev.testify.core.processor.capture.createBitmapFromDrawingCache
+import dev.testify.core.processor.compare.FuzzyCompare
+import dev.testify.core.processor.compare.sameAsCompare
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue

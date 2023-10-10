@@ -31,10 +31,10 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import dev.testify.compose.R
-import dev.testify.internal.TestifyConfiguration
+import dev.testify.core.TestifyConfiguration
 import dev.testify.internal.disposeComposition
 import dev.testify.internal.helpers.findRootView
-import dev.testify.internal.processor.capture.pixelCopyCapture
+import dev.testify.core.processor.capture.pixelCopyCapture
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 

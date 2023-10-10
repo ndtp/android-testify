@@ -25,7 +25,7 @@ package dev.testify
 
 import android.app.Activity
 import android.graphics.Bitmap
-import dev.testify.internal.TestifyConfiguration
+import dev.testify.core.TestifyConfiguration
 
 interface ScreenshotLifecycle {
 

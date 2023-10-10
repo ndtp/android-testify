@@ -44,10 +44,10 @@ import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.IgnoreScreenshot
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
+import dev.testify.core.exception.ScreenshotIsDifferentException
+import dev.testify.core.processor.capture.createBitmapFromDrawingCache
+import dev.testify.core.processor.capture.pixelCopyCapture
 import dev.testify.extensions.boundingBox
-import dev.testify.internal.exception.ScreenshotIsDifferentException
-import dev.testify.internal.processor.capture.createBitmapFromDrawingCache
-import dev.testify.internal.processor.capture.pixelCopyCapture
 import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
