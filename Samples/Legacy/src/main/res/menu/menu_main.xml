@@ -18,9 +18,9 @@
         android:title="@string/action_counter"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_help"
+        android:id="@+id/action_espresso"
         android:orderInCategory="100"
-        android:title="@string/action_help"
+        android:title="@string/action_espresso"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_about"
