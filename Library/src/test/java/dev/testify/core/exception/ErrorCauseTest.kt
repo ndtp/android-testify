@@ -22,25 +22,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.core.exception
 
 import android.app.Activity
 import android.content.Context
-import dev.testify.core.exception.ActivityMustImplementResourceOverrideException
-import dev.testify.core.exception.ActivityNotRegisteredException
-import dev.testify.core.exception.AssertSameMustBeLastException
-import dev.testify.core.exception.FailedToCaptureBitmapException
-import dev.testify.core.exception.FinalizeDestinationException
-import dev.testify.core.exception.MissingAssertSameException
-import dev.testify.core.exception.MissingScreenshotInstrumentationAnnotationException
-import dev.testify.core.exception.NoScreenshotsOnUiThreadException
-import dev.testify.core.exception.RootViewNotFoundException
-import dev.testify.core.exception.ScreenshotBaselineNotDefinedException
-import dev.testify.core.exception.ScreenshotIsDifferentException
-import dev.testify.core.exception.ScreenshotTestIgnoredException
-import dev.testify.core.exception.TestMustWrapContextException
-import dev.testify.core.exception.UnexpectedDeviceException
-import dev.testify.core.exception.ViewModificationException
 import dev.testify.output.DataDirectoryDestinationNotFoundException
 import dev.testify.output.SdCardDestinationNotFoundException
 import dev.testify.output.TestStorageNotFoundException

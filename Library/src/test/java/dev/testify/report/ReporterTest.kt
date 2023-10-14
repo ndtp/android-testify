@@ -22,13 +22,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.report
 
 import android.app.Instrumentation
 import android.content.Context
+import dev.testify.TestDescription
 import dev.testify.output.getDestination
-import dev.testify.report.ReportSession
-import dev.testify.report.Reporter
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk

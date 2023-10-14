@@ -22,7 +22,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.core
 
 import dev.testify.core.DEFAULT_FOLDER_FORMAT
 import dev.testify.core.DEFAULT_NAME_FORMAT

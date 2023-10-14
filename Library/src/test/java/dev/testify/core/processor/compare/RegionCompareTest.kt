@@ -22,13 +22,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.core.processor.compare
 
 import android.graphics.Bitmap
 import android.graphics.Rect
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor._executorDispatcher
-import dev.testify.core.processor.compare.FuzzyCompare
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.DelicateCoroutinesApi
