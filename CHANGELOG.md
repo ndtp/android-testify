@@ -1,6 +1,16 @@
 # Testify Change Log
 
-## Unreleased
+## 2.0.0-rc01
+
+### Library
+
+#### Fixed
+
+- Fixed a bug in ComposableScreenshotRule.setCaptureMethod() where it was incorrectly ignoring the passed in captureMethod argument.
+
+---
+
+## 2.0.0-rc01
 
 ### Library
 
@@ -75,7 +85,8 @@
 #### Fixed
 
 - [#175](https://github.com/ndtp/android-testify/issues/175): Output from Gradle Managed Devices now named according to Testify naming strategy
-- Fixed a bug in ComposableScreenshotRule.setCaptureMethod() where it was incorrectly ignoring the passed in captureMethod argument.
+
+---
 
 ## 2.0.0-beta04
 
