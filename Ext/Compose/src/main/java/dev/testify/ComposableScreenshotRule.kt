@@ -32,9 +32,9 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import dev.testify.compose.R
 import dev.testify.core.TestifyConfiguration
+import dev.testify.core.processor.capture.pixelCopyCapture
 import dev.testify.internal.disposeComposition
 import dev.testify.internal.helpers.findRootView
-import dev.testify.core.processor.capture.pixelCopyCapture
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
@@ -68,7 +68,7 @@ open class ComposableScreenshotRule(
         replaceWith = ReplaceWith("configure { this@configure.captureMethod = captureMethod }")
     )
     override fun setCaptureMethod(captureMethod: CaptureMethod?): ComposableScreenshotRule {
-        this.captureMethod = configuration.captureMethod ?: ::pixelCopyCapture
+        this.captureMethod = captureMethod ?: configuration.captureMethod ?: ::pixelCopyCapture
         return this
     }
 
