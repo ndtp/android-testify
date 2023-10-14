@@ -69,6 +69,7 @@ android {
         testImplementation "io.mockk:mockk:${versions.mockk}"
         testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinx}"
         testImplementation "org.slf4j:slf4j-jdk14:${versions.slf4j}"
+        testImplementation "com.google.truth:truth:${versions.truth}"
 
         androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"
         androidTestImplementation "androidx.test:runner:${versions.androidx.test.runner}"
