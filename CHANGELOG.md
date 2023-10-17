@@ -1,6 +1,22 @@
 # Testify Change Log
 
-## 2.0.0-rc01
+## 2.0.0-rc03
+
+### Library
+
+#### Fixed
+
+- Refactor ComposableScreenshotRule.setCaptureMethod() to call the configure() method.
+
+### Legacy Sample
+
+#### Added
+
+- Added a Dialog sample to test as a demonstration of how to capture dialog boxes and also as a regression test for the bug with `setCaptureMethod()`
+
+---
+
+## 2.0.0-rc02
 
 ### Library
 

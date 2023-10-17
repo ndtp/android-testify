@@ -68,7 +68,9 @@ open class ComposableScreenshotRule(
         replaceWith = ReplaceWith("configure { this@configure.captureMethod = captureMethod }")
     )
     override fun setCaptureMethod(captureMethod: CaptureMethod?): ComposableScreenshotRule {
-        this.captureMethod = captureMethod ?: configuration.captureMethod ?: ::pixelCopyCapture
+        configure {
+            this@configure.captureMethod = captureMethod
+        }
         return this
     }
 

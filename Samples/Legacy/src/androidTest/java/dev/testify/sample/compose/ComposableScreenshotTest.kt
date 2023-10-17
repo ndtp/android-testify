@@ -32,9 +32,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.onNodeWithTag
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.capture.fullscreen.captureFullscreen
+import dev.testify.capture.fullscreen.fullscreenCapture
 import dev.testify.capture.fullscreen.provider.excludeSystemUi
 import dev.testify.sample.ClientListItem
 import dev.testify.sample.DropdownDemo
@@ -91,7 +94,7 @@ class ComposableScreenshotTest {
                 PaddedBox(Color.Gray) {
                     PaddedBox(Color.LightGray) {
                         Text(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.align(Center),
                             text = "Hello, Testify!",
                             color = Color.Blue,
                             fontSize = 32.sp
@@ -176,6 +179,36 @@ class ComposableScreenshotTest {
             }
             .setLocale(locale)
             .setFontScale(fontScale)
+            .assertSame()
+    }
+
+    /**
+     * Demonstrate how to capture a Dialog using the Fullscreen capture method
+     */
+    @ScreenshotInstrumentation
+    @Test
+    fun dialog() {
+        rule
+            // Use the deprecated method as a regression test
+            .setCaptureMethod(::fullscreenCapture)
+            // We can't use captureFullscreen() here since that hides the ComposableScreenshotRule
+            .configure {
+                // The recommended approach would be to configure the captureMethod to ::fullscreenCapture
+                // captureMethod = ::fullscreenCapture
+                excludeSystemUi()
+            }
+            .setCompose {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AlertDialog(
+                        onDismissRequest = {},
+                        title = {},
+                        text = {
+                            Text(modifier = Modifier.align(Center), text = "Hello, Testify!")
+                        },
+                        confirmButton = { Button(onClick = {}) { Text("OK") } }
+                    )
+                }
+            }
             .assertSame()
     }
 }
