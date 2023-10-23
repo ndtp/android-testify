@@ -30,6 +30,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
+import androidx.annotation.VisibleForTesting
 
 class WrappedFontScale(override var overrideValue: Float) : WrappedResource<Float> {
     override var defaultValue: Float = 1.0f
@@ -43,12 +44,13 @@ class WrappedFontScale(override var overrideValue: Float) : WrappedResource<Floa
     }
 
     override fun afterTestFinished(activity: Activity) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M) {
+        if (buildVersionSdkInt() <= Build.VERSION_CODES.M) {
             activity.updateFontScale(defaultValue)
         }
     }
 
     override fun updateContext(context: Context): Context {
+        defaultValue = context.resources.configuration.fontScale
         return context.updateFontScale(overrideValue)
     }
 }
@@ -56,23 +58,25 @@ class WrappedFontScale(override var overrideValue: Float) : WrappedResource<Floa
 internal fun Context.updateFontScale(fontScale: Float?): Context {
     if (fontScale == null) return this
 
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    return if (buildVersionSdkInt() >= Build.VERSION_CODES.N) {
         this.updateResources(fontScale)
     } else {
         this.updateResourcesLegacy(fontScale)
     }
 }
 
+@VisibleForTesting
 @TargetApi(Build.VERSION_CODES.N)
-private fun Context.updateResources(fontScale: Float): Context {
+internal fun Context.updateResources(fontScale: Float): Context {
     val configuration = Configuration(this.resources.configuration)
     configuration.fontScale = fontScale
     val x = this.createConfigurationContext(configuration)
     return x
 }
 
+@VisibleForTesting
 @Suppress("DEPRECATION")
-private fun Context.updateResourcesLegacy(fontScale: Float): Context {
+internal fun Context.updateResourcesLegacy(fontScale: Float): Context {
     val configuration = Configuration(this.resources.configuration)
     configuration.fontScale = fontScale
     this.resources.updateConfiguration(configuration, this.resources.displayMetrics)

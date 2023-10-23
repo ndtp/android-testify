@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2023 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -21,11 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.internal.helpers
+package dev.testify.internal.modification
 
-import android.os.Looper
-import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
+import com.google.common.truth.Truth.assertThat
+import io.mockk.mockk
+import org.junit.Test
 
-@ExcludeFromJacocoGeneratedReport
-fun isRunningOnUiThread(): Boolean =
-    Looper.getMainLooper().thread == Thread.currentThread()
+class StaticPasswordTransformationMethodTest {
+
+    private val subject = StaticPasswordTransformationMethod()
+
+    @Test
+    fun default() {
+        val replacement = subject.getTransformation("abcdef", mockk())
+        assertThat(replacement.subSequence(0, 6)).isEqualTo("••••••")
+    }
+}

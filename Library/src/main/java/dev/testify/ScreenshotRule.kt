@@ -52,6 +52,7 @@ import dev.testify.core.logic.AssertionState
 import dev.testify.core.logic.ScreenshotLifecycleHost
 import dev.testify.core.logic.ScreenshotLifecycleObserver
 import dev.testify.core.logic.assertSame
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.EspressoActions
@@ -76,10 +77,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     TestRule,
     ActivityProvider<T>,
     ScreenshotLifecycle,
+    ActivityLaunchCycle,
     AssertionState,
     ScreenshotLifecycleHost by ScreenshotLifecycleObserver(),
     CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods() {
 
+    @ExcludeFromJacocoGeneratedReport
     @Deprecated(
         message = "Parameter launchActivity is deprecated and no longer required",
         replaceWith = ReplaceWith("ScreenshotRule(activityClass = activityClass, rootViewId = rootViewId, initialTouchMode = initialTouchMode, enableReporter = enableReporter, configuration = TestifyConfiguration())") // ktlint-disable max-line-length
@@ -106,7 +109,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override var screenshotViewProvider: ViewProvider? = null
     override var throwable: Throwable? = null
     override var viewModification: ViewModification? = null
-    private var extrasProvider: ExtrasProvider? = null
+    @VisibleForTesting internal var extrasProvider: ExtrasProvider? = null
 
     @VisibleForTesting
     internal var reporter: Reporter? = null
@@ -281,21 +284,26 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         return this
     }
 
-    public final override fun getActivityIntent(): Intent {
+    public final override fun getActivityIntent(): Intent? {
         var intent: Intent? = super.getActivityIntent()
         if (intent == null) {
             intent = getIntent()
         }
 
         extrasProvider?.let {
-            val bundle = Bundle()
-            it(bundle)
+            val bundle = invokeExtrasProvider()
             intent.extras?.putAll(bundle) ?: intent.replaceExtras(bundle)
         }
 
         return intent
     }
 
+    @ExcludeFromJacocoGeneratedReport
+    @VisibleForTesting
+    internal fun invokeExtrasProvider(): Bundle =
+        Bundle().apply { extrasProvider?.invoke(this) }
+
+    @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal fun getIntent(): Intent {
         var intent = super.getActivityIntent()
@@ -309,6 +317,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         launchActivity(intent)
     }
 
+    @ExcludeFromJacocoGeneratedReport
     override fun launchActivity(startIntent: Intent?): T {
         try {
             return super.launchActivity(startIntent)
@@ -389,11 +398,4 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             reporter?.fail(throwable)
         throw throwable
     }
-
-    @VisibleForTesting
-    var isDebugMode: Boolean = false
-        set(value) {
-            field = value
-            assertSameInvoked = value
-        }
 }

@@ -23,10 +23,12 @@
  */
 package dev.testify.internal.helpers
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
 private const val MANIFEST_DESTINATION_KEY = "dev.testify.destination"
 private const val MANIFEST_MODULE_KEY = "dev.testify.module"
@@ -38,8 +40,10 @@ sealed class ManifestPlaceholder(val key: String) {
     object RecordMode : ManifestPlaceholder(MANIFEST_IS_RECORD_MODE)
 }
 
+@ExcludeFromJacocoGeneratedReport
+@SuppressLint("NewApi")
 internal fun getMetaDataBundle(context: Context): Bundle? {
-    val applicationInfo = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+    val applicationInfo = if (buildVersionSdkInt() >= android.os.Build.VERSION_CODES.TIRAMISU) {
         context.packageManager?.getApplicationInfo(context.packageName, PackageManager.ApplicationInfoFlags.of(0))
     } else {
         @Suppress("DEPRECATION")
@@ -48,6 +52,7 @@ internal fun getMetaDataBundle(context: Context): Bundle? {
     return applicationInfo?.metaData
 }
 
+@ExcludeFromJacocoGeneratedReport
 fun ManifestPlaceholder.getMetaDataValue(): String? {
     val metaData = getMetaDataBundle(InstrumentationRegistry.getInstrumentation().context)
     return if (metaData?.containsKey(this.key) == true)

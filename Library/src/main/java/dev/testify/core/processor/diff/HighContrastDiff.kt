@@ -47,13 +47,18 @@ import dev.testify.saveBitmapToDestination
  * - Red:     Different in excess of allowable tolerances
  *
  */
-class HighContrastDiff(private val exclusionRects: Set<Rect>) {
+class HighContrastDiff private constructor(private val exclusionRects: Set<Rect>) {
 
-    private lateinit var fileName: String
-    private lateinit var baselineBitmap: Bitmap
-    private lateinit var currentBitmap: Bitmap
+    private var fileName: String? = null
+    private var baselineBitmap: Bitmap? = null
+    private var currentBitmap: Bitmap? = null
 
     fun generate(context: Context) {
+        val fileName = this.fileName ?: throw IllegalArgumentException("call name() to set fileName")
+        val baselineBitmap =
+            this.baselineBitmap ?: throw IllegalArgumentException("call baseline() to set baselineBitmap")
+        val currentBitmap = this.currentBitmap ?: throw IllegalArgumentException("call current() to set currentBitmap")
+
         val transformResult = ParallelPixelProcessor
             .create()
             .baseline(baselineBitmap)
@@ -111,5 +116,12 @@ class HighContrastDiff(private val exclusionRects: Set<Rect>) {
     fun current(currentBitmap: Bitmap): HighContrastDiff {
         this.currentBitmap = currentBitmap
         return this
+    }
+
+    companion object {
+        fun create(exclusionRects: Set<Rect>) =
+            HighContrastDiff(
+                exclusionRects
+            )
     }
 }

@@ -43,6 +43,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito.spy
 import java.util.Locale
 
 /**
@@ -63,7 +64,7 @@ class TestingResourcesCounterExampleTest {
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
     @Test(expected = ActivityMustImplementResourceOverrideException::class)
     fun usingSetLocaleRequiresActivityToImplementResourceOverride() {
-        rule.isDebugMode = true
+        rule.assertSameInvoked = true
         val activity = mock<TestHarnessActivity>().apply {
             doReturn("TestHarnessActivity").whenever(this).localClassName
         }

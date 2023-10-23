@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2023 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -21,11 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.internal.helpers
+package dev.testify
 
-import android.os.Looper
-import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
+import android.app.Instrumentation
+import com.google.common.truth.Truth.assertThat
+import io.mockk.mockk
+import org.junit.Test
 
-@ExcludeFromJacocoGeneratedReport
-fun isRunningOnUiThread(): Boolean =
-    Looper.getMainLooper().thread == Thread.currentThread()
+class TestDescriptionTest {
+
+    @Test
+    fun `WHEN test description is set THEN get test description`() {
+        val description1 = TestDescription("methodName1", TestDescriptionTest::class.java)
+        val description2 = TestDescription("methodName2", TestDescriptionTest::class.java)
+        val instrumentation = mockk<Instrumentation>(relaxed = true)
+
+        instrumentation.testDescription = description1
+        assertThat(instrumentation.testDescription).isEqualTo(description1)
+        instrumentation.testDescription = description2
+        assertThat(instrumentation.testDescription).isEqualTo(description2)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `WHEN test description is not set THEN throw exception`() {
+        val instrumentation = mockk<Instrumentation>(relaxed = true)
+        instrumentation.testDescription
+    }
+}

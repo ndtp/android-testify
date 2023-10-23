@@ -26,8 +26,11 @@
 package dev.testify.core
 
 import android.app.Activity
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.view.View
 import androidx.annotation.IdRes
+import androidx.annotation.VisibleForTesting
 import dev.testify.CaptureMethod
 import dev.testify.CompareMethod
 import dev.testify.ScreenshotRule
@@ -101,6 +104,9 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
     }
 
     fun setOrientation(requestedOrientation: Int): ConfigurationBuilder<T> {
+        require(
+            requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT
+        )
         innerConfiguration.orientation = requestedOrientation
         return this
     }
@@ -132,7 +138,16 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
         return this
     }
 
-    private fun build(): TestifyConfiguration.() -> Unit = {
+    /**
+     * Record a new baseline when running the test
+     */
+    fun setRecordModeEnabled(isRecordMode: Boolean): ConfigurationBuilder<T> {
+        innerConfiguration.isRecordMode = isRecordMode
+        return this
+    }
+
+    @VisibleForTesting
+    internal fun build(): TestifyConfiguration.() -> Unit = {
         this.exactness = innerConfiguration.exactness
         this.exclusionRectProvider = innerConfiguration.exclusionRectProvider
         this.exclusionRects.addAll(innerConfiguration.exclusionRects)
@@ -149,6 +164,7 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
         this.useSoftwareRenderer = innerConfiguration.useSoftwareRenderer
         this.captureMethod = innerConfiguration.captureMethod
         this.compareMethod = innerConfiguration.compareMethod
+        this.isRecordMode = innerConfiguration.isRecordMode
     }
 
     fun assertSame() {

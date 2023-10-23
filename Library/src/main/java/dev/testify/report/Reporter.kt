@@ -35,6 +35,7 @@ import dev.testify.core.DEFAULT_NAME_FORMAT
 import dev.testify.core.DeviceStringFormatter
 import dev.testify.core.formatDeviceString
 import dev.testify.core.getDeviceDescription
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import dev.testify.output.Destination
 import dev.testify.output.PNG_EXTENSION
 import dev.testify.output.getDestination
@@ -129,10 +130,11 @@ internal open class Reporter protected constructor(
     /**
      * Finalize the report.yml file
      */
-    fun finalize() {
+    @ExcludeFromJacocoGeneratedReport
+    fun finalize() =
         getDestination().finalize()
-    }
 
+    @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     open fun writeToFile(builder: StringBuilder, file: File) =
         file.appendText(builder.toString())
@@ -148,6 +150,7 @@ internal open class Reporter protected constructor(
             extension = PNG_EXTENSION
         )
 
+    @get:ExcludeFromJacocoGeneratedReport
     private val Context.fileName: String
         get() = formatDeviceString(
             DeviceStringFormatter(
@@ -157,10 +160,12 @@ internal open class Reporter protected constructor(
             DEFAULT_NAME_FORMAT
         )
 
+    @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun getOutputPath(): String =
         getDestination(context, context.fileName).description
 
+    @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun getEnvironmentArguments(): Bundle =
         InstrumentationRegistry.getArguments()
@@ -183,7 +188,8 @@ internal open class Reporter protected constructor(
         return destination.file
     }
 
-    private val headerLineCount: Int
+    @VisibleForTesting
+    internal val headerLineCount: Int
         get() = listOf(HEADER, "tests").size + session.sessionLineCount
 
     @VisibleForTesting
@@ -208,6 +214,7 @@ internal open class Reporter protected constructor(
         }
     }
 
+    @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun clearFile(file: File) {
         file.writeText("")
@@ -225,6 +232,7 @@ internal open class Reporter protected constructor(
         }
     }
 
+    @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun readBodyLines(file: File): List<String> {
         return file.readLines().drop(headerLineCount)

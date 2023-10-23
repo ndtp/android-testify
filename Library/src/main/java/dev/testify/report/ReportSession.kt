@@ -26,6 +26,7 @@ package dev.testify.report
 
 import android.app.Instrumentation
 import androidx.annotation.VisibleForTesting
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import java.io.BufferedReader
 import java.io.File
 import java.text.SimpleDateFormat
@@ -57,6 +58,7 @@ internal open class ReportSession {
         failCount++
     }
 
+    @ExcludeFromJacocoGeneratedReport
     open fun initFromFile(file: File) {
         initFromLines(file.readLines())
     }
@@ -91,6 +93,7 @@ internal open class ReportSession {
         sessionId = getSessionId(instrumentation, Thread.currentThread())
     }
 
+    @ExcludeFromJacocoGeneratedReport
     open fun isEqual(file: File): Boolean {
         return (getSessionIdFromFile(file.bufferedReader())?.endsWith(sessionId) == true)
     }

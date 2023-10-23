@@ -24,10 +24,6 @@
  */
 package dev.testify.core
 
-import dev.testify.core.DEFAULT_FOLDER_FORMAT
-import dev.testify.core.DEFAULT_NAME_FORMAT
-import dev.testify.core.DeviceStringFormatter
-import dev.testify.core.formatDeviceString
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals

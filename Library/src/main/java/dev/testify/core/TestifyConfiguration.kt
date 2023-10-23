@@ -33,6 +33,7 @@ import android.view.ViewGroup
 import androidx.annotation.FloatRange
 import androidx.annotation.IdRes
 import androidx.annotation.UiThread
+import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import dev.testify.CaptureMethod
 import dev.testify.CompareMethod
@@ -100,10 +101,12 @@ data class TestifyConfiguration(
     val hasExactness: Boolean
         get() = exactness != null
 
-    private val orientationHelper: OrientationHelper?
+    @VisibleForTesting
+    internal val orientationHelper: OrientationHelper?
         get() = orientation?.let { OrientationHelper(it) }
 
-    private var ignoreAnnotation: IgnoreScreenshot? = null
+    @VisibleForTesting
+    internal var ignoreAnnotation: IgnoreScreenshot? = null
 
     /**
      * Update the internal configuration values based on any annotations that may be present on the test method

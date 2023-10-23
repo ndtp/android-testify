@@ -27,6 +27,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.View
+import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.TestifyFeatures
 import dev.testify.core.DEFAULT_FOLDER_FORMAT
@@ -99,7 +100,6 @@ internal fun <TActivity : Activity> assertSame(
     } catch (e: ScreenshotTestIgnoredException) {
         // Exit gracefully; mark test as ignored
         Assume.assumeTrue(false)
-        return
     }
 
     var activity: TActivity? = null
@@ -129,9 +129,8 @@ internal fun <TActivity : Activity> assertSame(
 
         screenshotLifecycleHost.notifyObservers { it.afterScreenshot(activity, currentBitmap) }
 
-        if (configuration.pauseForInspection) {
-            Thread.sleep(LAYOUT_INSPECTION_TIME_MS)
-        }
+        if (configuration.pauseForInspection)
+            pauseForInspection()
 
         val isRecordMode = isRecordMode()
 
@@ -140,7 +139,7 @@ internal fun <TActivity : Activity> assertSame(
         val destination = getDestination(activity, outputFileName)
 
         val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
-            ?: if (isRecordMode()) {
+            ?: if (isRecordMode) {
                 TestInstrumentationRegistry.instrumentationPrintln(
                     "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                 )
@@ -172,15 +171,16 @@ internal fun <TActivity : Activity> assertSame(
                 throw FinalizeDestinationException(destination.description)
 
             if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
-                HighContrastDiff(configuration.exclusionRects)
+                HighContrastDiff
+                    .create(configuration.exclusionRects) // TODO: Test me
                     .name(outputFileName)
                     .baseline(baselineBitmap)
                     .current(currentBitmap)
                     .exactness(configuration.exactness)
                     .generate(context = activity)
             }
-            if (TestInstrumentationRegistry.isRecordMode) {
-                TestInstrumentationRegistry.instrumentationPrintln(
+            if (isRecordMode) {
+                TestInstrumentationRegistry.instrumentationPrintln( // TODO: Test me
                     "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                 )
             } else {
@@ -202,3 +202,7 @@ internal fun <TActivity : Activity> assertSame(
 }
 
 private const val LAYOUT_INSPECTION_TIME_MS = 60000L
+
+@VisibleForTesting
+internal fun pauseForInspection() =
+    Thread.sleep(LAYOUT_INSPECTION_TIME_MS)

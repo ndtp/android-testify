@@ -26,7 +26,10 @@ package dev.testify.report
 
 import android.app.Instrumentation
 import android.content.Context
+import com.google.common.truth.Truth.assertThat
 import dev.testify.TestDescription
+import dev.testify.core.getDeviceDescription
+import dev.testify.output.Destination
 import dev.testify.output.getDestination
 import io.mockk.every
 import io.mockk.just
@@ -67,23 +70,30 @@ internal open class ReporterTest {
         }
 
         mockContext = mockk(relaxed = true) {
-            every { getExternalFilesDir(any()) } returns File("foo")
+            every { getExternalFilesDir(any()) } returns File("ext")
             every { getDir("testify", any()) } returns File("/data/data/com.app.example/app_testify")
             every { getExternalFilesDir(any()) } returns File("/sdcard")
+        }
+
+        val mockDestination = mockk<Destination>(relaxed = true) {
+            every { assureDestination(any()) } returns true
         }
 
         reporter = spyk(Reporter.create(mockContext, mockSession))
         reporter.configureMocks(BODY_LINES)
 
         mockkStatic(::getDestination)
+        mockkStatic(::getDeviceDescription)
 
         every { mockInstrumentation.context } returns mockContext
         every { mockFile.exists() } returns true
+        every { getDeviceDescription(any()) } returns "device"
+        every { getDestination(any(), any(), any(), any(), any()) } returns mockDestination
+        every { reporter.finalize() } returns true
     }
 
     private fun Reporter.configureMocks(body: List<String>? = null) {
-        every { getBaselinePath() } returns "foo"
-        every { getOutputPath() } returns "bar"
+        every { getOutputPath() } returns "path"
         every { getReportFile() } returns mockFile
         every { writeToFile(any(), any()) } just runs
         every { clearFile(mockFile) } just runs
@@ -99,22 +109,24 @@ internal open class ReporterTest {
     @Test
     fun `startTest() produces the expected yaml`() {
         reporter.startTest(mockDescription)
+        reporter.finalize()
 
         assertEquals(
             "    - test:\n" +
                 "        name: startTest\n" +
                 "        class: ReporterTest\n" +
-                "        package: dev.testify\n",
+                "        package: dev.testify.report\n",
             reporter.yaml
         )
     }
 
     @Test
     fun `captureOutput() produces the expected yaml`() {
+        every { reporter.getBaselinePath() } returns "path"
         reporter.captureOutput()
         assertEquals(
-            "        baseline_image: assets/foo\n" +
-                "        test_image: bar\n",
+            "        baseline_image: assets/path\n" +
+                "        test_image: path\n",
             reporter.yaml
         )
     }
@@ -177,13 +189,6 @@ internal open class ReporterTest {
     fun `output file destination`() {
         val reporter = spyk(Reporter.create(mockContext, mockSession))
         every { reporter.getEnvironmentArguments() } returns mockk()
-        every {
-            getDestination(
-                any(), any(), any(), any(), any()
-            )
-        } returns mockk(relaxed = true) {
-            every { assureDestination(any()) } returns true
-        }
 
         reporter.getReportFile()
 
@@ -222,9 +227,9 @@ internal open class ReporterTest {
                 "    - test:\n" +
                 "        name: startTest\n" +
                 "        class: ReporterTest\n" +
-                "        package: dev.testify\n" +
-                "        baseline_image: assets/foo\n" +
-                "        test_image: bar\n" +
+                "        package: dev.testify.report\n" +
+                "        baseline_image: assets/screenshots/device/startTest.png\n" +
+                "        test_image: path\n" +
                 "        status: PASS\n",
             yaml
         )
@@ -265,16 +270,16 @@ internal open class ReporterTest {
         assertEquals("    - test:", lines[8])
         assertEquals("        name: skipTest", lines[9])
         assertEquals("        class: ReporterTest", lines[10])
-        assertEquals("        package: dev.testify", lines[11])
-        assertEquals("        baseline_image: assets/foo", lines[12])
-        assertEquals("        test_image: bar", lines[13])
+        assertEquals("        package: dev.testify.report", lines[11])
+        assertEquals("        baseline_image: assets/screenshots/device/skipTest.png", lines[12])
+        assertEquals("        test_image: path", lines[13])
         assertEquals("        status: SKIP", lines[14])
         assertEquals("    - test:", lines[15])
         assertEquals("        name: failingTest", lines[16])
         assertEquals("        class: ReporterTest", lines[17])
         assertEquals("        package: dev.testify", lines[18])
-        assertEquals("        baseline_image: assets/foo", lines[19])
-        assertEquals("        test_image: bar", lines[20])
+        assertEquals("        baseline_image: assets/device", lines[19])
+        assertEquals("        test_image: path", lines[20])
         assertEquals("        status: FAIL", lines[21])
         assertEquals("        cause: UNKNOWN", lines[22])
         assertEquals("        description: \"This is a failure\"", lines[23])
@@ -282,8 +287,8 @@ internal open class ReporterTest {
         assertEquals("        name: passingTest", lines[25])
         assertEquals("        class: ReporterTest", lines[26])
         assertEquals("        package: dev.testify", lines[27])
-        assertEquals("        baseline_image: assets/foo", lines[28])
-        assertEquals("        test_image: bar", lines[29])
+        assertEquals("        baseline_image: assets/device", lines[28])
+        assertEquals("        test_image: path", lines[29])
         assertEquals("        status: PASS", lines[30])
     }
 
@@ -307,8 +312,8 @@ internal open class ReporterTest {
             "        name: passingTest",
             "        class: ReporterTest",
             "        package: dev.testify",
-            "        baseline_image: assets/foo",
-            "        test_image: bar",
+            "        baseline_image: assets/device",
+            "        test_image: path",
             "        status: PASS"
         )
 
@@ -341,8 +346,8 @@ internal open class ReporterTest {
             "        name: failingTest",
             "        class: ReporterTest",
             "        package: dev.testify",
-            "        baseline_image: assets/foo",
-            "        test_image: bar",
+            "        baseline_image: assets/device",
+            "        test_image: path",
             "        status: FAIL",
             "        cause: UNKNOWN",
             "        description: \"This is a failure\"",
@@ -350,8 +355,8 @@ internal open class ReporterTest {
             "        name: passingTest",
             "        class: ReporterTest",
             "        package: dev.testify",
-            "        baseline_image: assets/foo",
-            "        test_image: bar",
+            "        baseline_image: assets/device",
+            "        test_image: path",
             "        status: PASS"
         )
 
@@ -407,5 +412,10 @@ internal open class ReporterTest {
                 "ClientDetailsViewScreenshotTest_default.png",
             "    status: PASS"
         )
+    }
+
+    @Test
+    fun `verify headerLineCount`() {
+        assertThat(reporter.headerLineCount).isEqualTo(8)
     }
 }

@@ -70,5 +70,6 @@ class ErrorCauseTest {
         assertEquals("UNKNOWN", describeErrorCause(Throwable()).name)
         assertEquals("NO_TEST_STORAGE", describeErrorCause(TestStorageNotFoundException()).name)
         assertEquals("FINALIZE_DESTINATION", describeErrorCause(FinalizeDestinationException("")).name)
+        assertEquals("UNEXPECTED_ORIENTATION", describeErrorCause(UnexpectedOrientationException("")).name)
     }
 }
