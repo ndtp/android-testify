@@ -2,6 +2,7 @@ package dev.testify.core.processor
 
 import android.graphics.Bitmap
 import androidx.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting.PACKAGE_PRIVATE
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
@@ -17,11 +18,12 @@ fun ParallelPixelProcessor.TransformResult.createBitmap(): Bitmap {
 
 private val numberOfAvailableCores = Runtime.getRuntime().availableProcessors()
 
-@VisibleForTesting
-var maxNumberOfChunkThreads = numberOfAvailableCores
+@VisibleForTesting(otherwise = PACKAGE_PRIVATE)
+internal var maxNumberOfChunkThreads = numberOfAvailableCores
 
+@Suppress("ObjectPropertyName")
 @VisibleForTesting
-var _executorDispatcher: CoroutineDispatcher? = null
+internal var _executorDispatcher: CoroutineDispatcher? = null
 
 val executorDispatcher by lazy {
     if (_executorDispatcher == null) {

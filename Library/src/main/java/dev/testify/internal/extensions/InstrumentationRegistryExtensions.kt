@@ -26,6 +26,7 @@ package dev.testify.internal.extensions
 import android.app.Instrumentation
 import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
 
@@ -66,6 +67,7 @@ class TestInstrumentationRegistry {
          * @return Gradle module name if available.  e.g. :Sample
          *      Empty string otherwise.
          */
+        @ExcludeFromJacocoGeneratedReport
         fun getModuleName(): String {
             val extras = InstrumentationRegistry.getArguments()
             val name = if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
@@ -80,9 +82,7 @@ class TestInstrumentationRegistry {
 fun isInvokedFromPlugin(): Boolean =
     InstrumentationRegistry.getArguments().containsKey("annotation")
 
-private const val ESC_YELLOW = "${27.toChar()}[33m"
 private const val ESC_CYAN = "${27.toChar()}[36m"
 private const val ESC_RESET = "${27.toChar()}[0m"
 
-fun String.yellow() = "$ESC_YELLOW$this$ESC_RESET"
 fun String.cyan() = "$ESC_CYAN$this$ESC_RESET"

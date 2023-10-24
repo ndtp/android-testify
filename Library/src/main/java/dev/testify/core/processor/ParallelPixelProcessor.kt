@@ -45,7 +45,7 @@ class ParallelPixelProcessor private constructor() {
 
     private fun getChunkData(width: Int, height: Int): ChunkData {
         val size = width * height
-        val chunkSize = size / maxNumberOfChunkThreads
+        val chunkSize = (size / maxNumberOfChunkThreads).coerceAtLeast(1)
         val chunks = ceil(size.toFloat() / chunkSize.toFloat()).toInt()
         return ChunkData(size, chunks, chunkSize)
     }

@@ -22,11 +22,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.core.processor.compare.colorspace
 
 import com.github.ajalt.colormath.LAB
 import com.github.ajalt.colormath.RGB
-import dev.testify.core.processor.compare.colorspace.calculateDeltaE
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail

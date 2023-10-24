@@ -1,13 +1,5 @@
-package dev.testify
+package dev.testify.core.processor
 
-import android.graphics.Bitmap
-import dev.testify.core.processor.ParallelPixelProcessor
-import dev.testify.core.processor._executorDispatcher
-import dev.testify.core.processor.maxNumberOfChunkThreads
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.runs
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,20 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger
 class ParallelPixelProcessorTest {
 
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
-
-    companion object {
-        const val WIDTH = 1080
-        const val HEIGHT = 2220
-    }
-
-    private fun mockBitmap(width: Int = WIDTH, height: Int = HEIGHT): Bitmap {
-        return mockk {
-            every { this@mockk.height } returns height
-            every { this@mockk.width } returns width
-            every { this@mockk.getPixel(any(), any()) } returns 0xffffffff.toInt()
-            every { this@mockk.copyPixelsToBuffer(any()) } just runs
-        }
-    }
 
     private lateinit var pixelProcessor: ParallelPixelProcessor
 
@@ -72,7 +50,7 @@ class ParallelPixelProcessorTest {
             index.incrementAndGet()
             true
         }
-        assertEquals(WIDTH * HEIGHT, index.get())
+        assertEquals(DEFAULT_BITMAP_WIDTH * DEFAULT_BITMAP_HEIGHT, index.get())
     }
 
     @Test
@@ -85,7 +63,7 @@ class ParallelPixelProcessorTest {
             true
         }
 
-        assertEquals(WIDTH * HEIGHT, index.get())
+        assertEquals(DEFAULT_BITMAP_WIDTH * DEFAULT_BITMAP_HEIGHT, index.get())
     }
 
     @Test
@@ -98,7 +76,7 @@ class ParallelPixelProcessorTest {
             true
         }
 
-        assertEquals(WIDTH * HEIGHT, index.get())
+        assertEquals(DEFAULT_BITMAP_WIDTH * DEFAULT_BITMAP_HEIGHT, index.get())
     }
 
     @Test
@@ -127,7 +105,7 @@ class ParallelPixelProcessorTest {
     }
 
     private fun assertPosition(index: Int, position: Pair<Int, Int>) {
-        val (x, y) = pixelProcessor.getPosition(index, WIDTH)
+        val (x, y) = pixelProcessor.getPosition(index, DEFAULT_BITMAP_WIDTH)
         assertEquals(position, x to y)
     }
 

@@ -45,8 +45,11 @@ interface WrappedResource<T> {
 
 object ResourceWrapper {
 
-    private var isWrapped: Boolean = false
-    private val wrappedResources = HashSet<WrappedResource<*>>()
+    @VisibleForTesting
+    internal var isWrapped: Boolean = false
+
+    @VisibleForTesting
+    internal val wrappedResources = HashSet<WrappedResource<*>>()
 
     fun wrap(context: Context): Context {
         isWrapped = true
@@ -75,12 +78,13 @@ object ResourceWrapper {
     }
 
     private fun WrappedResource<*>.applyToActivity(activity: Activity) {
-        val version: Int = Build.VERSION.SDK_INT
+        val version: Int = buildVersionSdkInt()
         when {
             version <= Build.VERSION_CODES.M -> {
                 this.afterActivityLaunched(activity)
             }
-            version >= Build.VERSION_CODES.N -> {
+
+            else -> {
                 if (activity !is TestifyResourcesOverride) {
                     throw ActivityMustImplementResourceOverrideException(activity.localClassName)
                 }

@@ -26,6 +26,7 @@ package dev.testify.core
 import android.content.Context
 import android.content.res.AssetManager
 import dev.testify.core.exception.UnexpectedDeviceException
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import dev.testify.output.SCREENSHOT_DIR
 import java.io.File
 import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
@@ -42,6 +43,7 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isR
  * @param context - [Context] of the test instrumentation's package
  * @param testName - The name of the currently running test
  */
+@ExcludeFromJacocoGeneratedReport
 fun assertExpectedDevice(context: Context, testName: String, isRecordMode: Boolean) {
     if (isRecordMode || recordMode) return
 

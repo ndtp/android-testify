@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
+    id 'jacoco'
 }
 
 ext {
@@ -21,6 +22,8 @@ ext {
 version = "$project.versions.testify"
 group = pom.publishedGroupId
 archivesBaseName = pom.artifact
+
+jacoco { toolVersion = "0.8.10" }
 
 android {
     compileSdkVersion coreVersions.compileSdk
@@ -69,6 +72,7 @@ android {
         testImplementation "io.mockk:mockk:${versions.mockk}"
         testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinx}"
         testImplementation "org.slf4j:slf4j-jdk14:${versions.slf4j}"
+        testImplementation "com.google.truth:truth:${versions.truth}"
 
         androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"
         androidTestImplementation "androidx.test:runner:${versions.androidx.test.runner}"
@@ -84,6 +88,7 @@ android {
         abortOnError true
         textOutput file('stdout')
         textReport true
+        htmlReport true
         warningsAsErrors true
         xmlReport false
     }
@@ -109,3 +114,39 @@ afterEvaluate {
 }
 
 apply from: '../ktlint.gradle'
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
+
+project.afterEvaluate {
+    android.buildTypes.each { buildType ->
+        def testTaskName = "test${buildType.name.capitalize()}UnitTest"
+        task "${testTaskName}Coverage"(type: JacocoReport, dependsOn: ["$testTaskName"]) {
+            group = "Reporting"
+            description = "Generate Jacoco coverage reports for the $testTaskName"
+            reports {
+                html.required = true
+                xml.required = true
+            }
+            def excludes = [
+                    '**/dev/testify/core/processor/capture/*',
+                    '**/dev/testify/extensions/ViewExtensionsKt*',
+                    '**/dev/testify/internal/extensions/LocaleExtensionsKt*',
+                    '**/dev/testify/internal/helpers/AssetLoaderKt*',
+                    '**/dev/testify/internal/helpers/OrientationHelperKt*',
+                    '**/dev/testify/internal/helpers/WrappedFontScaleKt*',
+                    '**/dev/testify/core/processor/compare/SameAsCompare*',
+                    '**/dev/testify/output/*',
+                    '**/dev/testify/resources/TestifyResourcesOverride*',
+                    '**/dev/testify/ScreenshotUtilityKt*',
+            ]
+            def javaClasses = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: excludes)
+            def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: excludes)
+            classDirectories.setFrom(files([javaClasses, kotlinClasses]))
+            sourceDirectories.setFrom(files(["$project.projectDir/src/main/java"]))
+            executionData(files("${project.buildDir}/jacoco/${testTaskName}.exec"))
+        }
+    }
+}

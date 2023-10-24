@@ -27,36 +27,37 @@
 package dev.testify.internal.helpers
 
 import android.app.Activity
-import android.content.pm.ActivityInfo
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.graphics.Point
+import androidx.annotation.VisibleForTesting
 import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import dev.testify.core.exception.UnexpectedOrientationException
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 class OrientationHelper(
     private var requestedOrientation: Int?
 ) {
-    var deviceOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     private lateinit var lifecycleLatch: CountDownLatch
     private lateinit var activityClass: Class<*>
 
+    init {
+        require(
+            requestedOrientation == null ||
+                requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
+
     fun afterActivityLaunched() {
         // Set the orientation based on how the activity was launched
-        deviceOrientation = if (activity.isLandscape)
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        else
-            ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-
-        this.requestedOrientation?.let {
-            if (!activity.isRequestedOrientation(it)) {
-                activity.changeOrientation(it)
-
-                // Re-capture the orientation based on user requested value
-                deviceOrientation = it
+        this.requestedOrientation?.let { requestedOrientation ->
+            if (!activity.isRequestedOrientation(requestedOrientation)) {
+                changeOrientation(activity, requestedOrientation)
             }
         }
     }
@@ -84,7 +85,8 @@ class OrientationHelper(
     /**
      * Lifecycle callback. Wait for the activity under test to completely resume after configuration change.
      */
-    private fun lifecycleCallback(activity: Activity, stage: Stage) {
+    @VisibleForTesting
+    internal fun lifecycleCallback(activity: Activity, stage: Stage) {
         if (activity::class.java == activityClass) {
             if (stage == Stage.RESUMED) {
                 lifecycleLatch.countDown()
@@ -92,17 +94,25 @@ class OrientationHelper(
         }
     }
 
-    private fun Activity.changeOrientation(requestedOrientation: Int) {
-        activityClass = this@changeOrientation.javaClass
+    @ExcludeFromJacocoGeneratedReport
+    @VisibleForTesting
+    internal fun syncUiThread() {
+        Espresso.onIdle()
+    }
+
+    @ExcludeFromJacocoGeneratedReport
+    @VisibleForTesting
+    internal fun changeOrientation(activity: Activity, requestedOrientation: Int) {
+        activityClass = activity.javaClass
         ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(::lifecycleCallback)
 
-        Espresso.onIdle()
+        syncUiThread()
 
         val rotationLatch = CountDownLatch(1)
         lifecycleLatch = CountDownLatch(1)
 
-        this.runOnUiThread {
-            this.requestedOrientation = requestedOrientation
+        activity.runOnUiThread {
+            activity.requestedOrientation = requestedOrientation
             rotationLatch.countDown()
         }
 
@@ -133,6 +143,6 @@ private val Activity.isLandscape: Boolean
  * Check if the activity's current orientation matches what was requested
  */
 internal fun Activity.isRequestedOrientation(requestedOrientation: Int?): Boolean {
-    return (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && this.isLandscape) ||
-        (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE && !this.isLandscape)
+    return (requestedOrientation == SCREEN_ORIENTATION_LANDSCAPE && this.isLandscape) ||
+        (requestedOrientation != SCREEN_ORIENTATION_LANDSCAPE && !this.isLandscape)
 }

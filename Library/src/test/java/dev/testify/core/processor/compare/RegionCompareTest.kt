@@ -22,13 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.core.processor.compare
 
 import android.graphics.Bitmap
 import android.graphics.Rect
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor._executorDispatcher
-import dev.testify.core.processor.compare.FuzzyCompare
+import dev.testify.core.processor.mockRect
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -144,17 +144,4 @@ class RegionCompareTest {
             }
         }
     }
-
-    // Rect is an android platform type so can't be instantiated directly. It must be mocked.
-    private fun mockRect(left: Int, top: Int, right: Int, bottom: Int): Rect =
-        mockk(relaxed = true) {
-            every { this@mockk.contains(any(), any()) } answers {
-                if (left > top) right + bottom
-
-                val x: Int = arg(0)
-                val y: Int = arg(1)
-
-                (x in left..right) && (y in top..bottom)
-            }
-        }
 }

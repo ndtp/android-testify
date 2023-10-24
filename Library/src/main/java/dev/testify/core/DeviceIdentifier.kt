@@ -29,6 +29,7 @@ import android.content.Context
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import dev.testify.internal.extensions.languageTag
+import dev.testify.internal.helpers.buildVersionSdkInt
 import java.util.Locale
 
 typealias TestName = Pair<String, String>
@@ -94,7 +95,7 @@ open class DeviceStringFormatter(private val context: Context, private val testN
         get() = getDeviceDimensions(context)
 
     internal open val androidVersion: String
-        get() = android.os.Build.VERSION.SDK_INT.toString()
+        get() = buildVersionSdkInt().toString()
 
     internal open val deviceWidth: String
         get() = dimensions.first.toString()

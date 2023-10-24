@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2023 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -21,11 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.internal.helpers
+package dev.testify
 
-import android.os.Looper
-import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
+interface ActivityLaunchCycle {
 
-@ExcludeFromJacocoGeneratedReport
-fun isRunningOnUiThread(): Boolean =
-    Looper.getMainLooper().thread == Thread.currentThread()
+    /**
+     * Invoked before the Activity under test has been launched.
+     * Invoked after @Before methods.
+     * Invoked after beforeAssertSame()
+     */
+    fun beforeActivityLaunched()
+
+    /**
+     * Invoked after the Activity under test has been launched.
+     * Invoked after @Before methods.
+     * Invoked after beforeAssertSame()
+     */
+    fun afterActivityLaunched()
+}

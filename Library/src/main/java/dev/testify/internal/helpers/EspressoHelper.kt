@@ -24,9 +24,11 @@
 package dev.testify.internal.helpers
 
 import android.app.Activity
+import androidx.annotation.VisibleForTesting
 import androidx.test.espresso.Espresso
 import dev.testify.ScreenshotLifecycle
 import dev.testify.core.TestifyConfiguration
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
 typealias EspressoActions = () -> Unit
 
@@ -41,10 +43,18 @@ class EspressoHelper(private val configuration: TestifyConfiguration) : Screensh
     override fun afterInitializeView(activity: Activity) {
         actions?.invoke()
 
+        syncUiThread()
+
+        if (configuration.hideSoftKeyboard)
+            closeSoftKeyboard()
+    }
+
+    @ExcludeFromJacocoGeneratedReport
+    @VisibleForTesting
+    internal fun syncUiThread() =
         Espresso.onIdle()
 
-        if (configuration.hideSoftKeyboard) {
-            Espresso.closeSoftKeyboard()
-        }
-    }
+    @VisibleForTesting
+    internal fun closeSoftKeyboard() =
+        Espresso.closeSoftKeyboard()
 }

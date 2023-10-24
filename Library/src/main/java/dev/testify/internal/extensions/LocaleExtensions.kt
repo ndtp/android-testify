@@ -25,25 +25,29 @@
 
 package dev.testify.internal.extensions
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
+import androidx.annotation.VisibleForTesting
+import dev.testify.internal.helpers.buildVersionSdkInt
 import java.util.Locale
 
 internal fun Context.updateLocale(locale: Locale?): Context {
     if (locale == null) return this
 
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    return if (buildVersionSdkInt() >= Build.VERSION_CODES.N) {
         this.updateResources(locale)
     } else {
         this.updateResourcesLegacy(locale)
     }
 }
 
+@VisibleForTesting
 @TargetApi(Build.VERSION_CODES.N)
-private fun Context.updateResources(locale: Locale): Context {
+internal fun Context.updateResources(locale: Locale): Context {
     val configuration = Configuration(this.resources.configuration)
     val localeList = LocaleList(locale)
     LocaleList.setDefault(localeList)
@@ -51,8 +55,9 @@ private fun Context.updateResources(locale: Locale): Context {
     return this.createConfigurationContext(configuration)
 }
 
+@VisibleForTesting
 @Suppress("DEPRECATION")
-private fun Context.updateResourcesLegacy(locale: Locale): Context {
+internal fun Context.updateResourcesLegacy(locale: Locale): Context {
     Locale.setDefault(locale)
     val configuration = Configuration(this.resources.configuration)
     configuration.locale = locale
@@ -61,8 +66,9 @@ private fun Context.updateResourcesLegacy(locale: Locale): Context {
 }
 
 internal val Locale.languageTag: String
+    @SuppressLint("NewApi")
     get() {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        return if (buildVersionSdkInt() >= Build.VERSION_CODES.LOLLIPOP) {
             this.toLanguageTag().replace("-", "_")
         } else {
             "${this.language}_${this.country}"

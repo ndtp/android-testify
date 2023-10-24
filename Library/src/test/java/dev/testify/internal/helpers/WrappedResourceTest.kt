@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2023 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -23,9 +23,31 @@
  */
 package dev.testify.internal.helpers
 
-import android.os.Looper
-import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
+import android.app.Activity
+import android.os.Build
+import io.mockk.every
+import io.mockk.mockkStatic
 
-@ExcludeFromJacocoGeneratedReport
-fun isRunningOnUiThread(): Boolean =
-    Looper.getMainLooper().thread == Thread.currentThread()
+/**
+ * Simulate the lifecycle applied to WrappedResource on API >= N
+ */
+fun WrappedResource<*>.test(mockActivity: Activity) {
+    mockkStatic(::buildVersionSdkInt)
+    every { buildVersionSdkInt() } returns Build.VERSION_CODES.N
+
+    beforeActivityLaunched()
+    updateContext(mockActivity)
+    afterTestFinished(mockActivity)
+}
+
+/**
+ * Simulate the lifecycle applied to WrappedResource on API <= N
+ */
+fun WrappedResource<*>.testMaxSdkVersionM(mockActivity: Activity) {
+    mockkStatic(::buildVersionSdkInt)
+    every { buildVersionSdkInt() } returns Build.VERSION_CODES.M
+
+    beforeActivityLaunched()
+    afterActivityLaunched(mockActivity)
+    afterTestFinished(mockActivity)
+}
