@@ -184,6 +184,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         ResourceWrapper.beforeActivityLaunched()
     }
 
+    @VisibleForTesting
     internal var statement: Statement? = null
 
     /**

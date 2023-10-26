@@ -40,6 +40,7 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import dev.testify.ActivityLaunchCycle
 import dev.testify.ScreenshotLifecycle
 import dev.testify.TestDescription
 import dev.testify.TestifyFeatures
@@ -90,7 +91,8 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     ActivityProvider<Activity>,
     ScreenshotLifecycle,
     ScreenshotLifecycleHost by ScreenshotLifecycleObserver(),
-    AssertionState {
+    AssertionState,
+    ActivityLaunchCycle {
 
     private lateinit var activity: Activity
     override fun getActivity() = this.activity
@@ -106,7 +108,9 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     ): ScreenshotScenarioRule {
         this.scenario = scenario
         this.scenario?.onActivity {
+            this.beforeActivityLaunched()
             this.activity = it
+            this.afterActivityLaunched()
         }
         return this
     }
@@ -117,6 +121,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 
     // InternalState
     override var assertSameInvoked = false
+
     // TODO: override val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
     override var throwable: Throwable? = null
     override var screenshotViewProvider: ViewProvider? = null
@@ -145,11 +150,12 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 //        return this
 //    }
 
-    fun setViewModifications(viewModification: ViewModification) {
+    fun setViewModifications(viewModification: ViewModification): ScreenshotScenarioRule {
         if (assertSameInvoked) {
             throw AssertSameMustBeLastException()
         }
         this.viewModification = viewModification
+        return this
     }
 
     override fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotScenarioRule {
@@ -181,6 +187,9 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 //        ResourceWrapper.beforeActivityLaunched()
 //    }
 
+    @VisibleForTesting
+    internal var statement: Statement? = null
+
     /**
      * Modifies the method-running [Statement] to implement this test-running rule.
      * @param base – The [Statement] to be modified
@@ -191,8 +200,9 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     override fun apply(base: Statement, description: Description): Statement {
         val methodAnnotations = description.annotations
         apply(description.methodName, description.testClass, methodAnnotations)
-        return super.apply(ScreenshotStatement(base), description)
-//        return ScreenshotStatement(base)
+        val statement = ScreenshotStatement(base)
+        this.statement = statement
+        return super.apply(statement, description)
     }
 
     /**
@@ -357,19 +367,13 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 
     protected fun evaluateAfterTestExecution() {
         reporter?.endTest()
+        reporter?.finalize()
     }
 
     protected fun handleTestException(throwable: Throwable) {
         reporter?.fail(throwable)
         throw throwable
     }
-
-    @VisibleForTesting
-    var isDebugMode: Boolean = false
-        set(value) {
-            field = value
-            assertSameInvoked = value
-        }
 
     companion object {
         const val NO_ID = -1
@@ -388,6 +392,17 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     // TODO: Maybe?
     fun baseline(): Screenshot {
         return Screenshot()
+    }
+
+    @CallSuper
+    override fun beforeActivityLaunched() {
+        configuration.beforeActivityLaunched()
+    }
+
+    @CallSuper
+    override fun afterActivityLaunched() {
+        configuration.afterActivityLaunched(activity)
+        notifyObservers { it.applyConfiguration(activity, configuration) }
     }
 }
 
