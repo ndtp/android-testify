@@ -94,15 +94,15 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     AssertionState,
     ActivityLaunchCycle {
 
-    private lateinit var activity: Activity
-    override fun getActivity() = this.activity
+    private var activity: Activity? = null
+    override fun getActivity() = this.activity ?: throw ScenarioRequiredException()
     override fun assureActivity(intent: Intent?) {
-        // TODO
+        if (activity == null)
+            throw ScenarioRequiredException()
     }
 
     private var scenario: ActivityScenario<*>? = null
 
-    // TODO: Perhaps this can be a builder to an inner class that can't be accessed otherwise
     fun <TActivity : Activity> withScenario(
         scenario: ActivityScenario<TActivity>
     ): ScreenshotScenarioRule {
@@ -309,20 +309,21 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
             throw ScenarioRequiredException()
         }
 
-        dev.testify.core.logic.assertSame(
-            state = this,
-            configuration = configuration,
-            testContext = testContext,
-            screenshotLifecycleHost = this,
-            activityProvider = this,
-            activityIntent = null, // TODO
-            reporter = reporter,
-//            assureActivity = this::getActivity,
-//            configuration = configuration,
-//            screenshotLifecycleObserver = this,
-//            reporter = reporter,
-//            applyViewModifications = configuration::applyViewModificationsMainThread
-        )
+        addScreenshotObserver(this)
+
+        try {
+            dev.testify.core.logic.assertSame(
+                state = this,
+                configuration = configuration,
+                testContext = testContext,
+                screenshotLifecycleHost = this,
+                activityProvider = this,
+                activityIntent = null,
+                reporter = reporter,
+            )
+        } finally {
+            removeScreenshotObserver(this)
+        }
     }
 
     private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
@@ -380,14 +381,14 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     }
 
     // TODO: Maybe?
-    fun screenshot(configuration: TestifyConfiguration.() -> Unit = {}): Screenshot {
-        println(configuration) // TODO: Warning
-        afterInitializeView(activity)
-        beforeScreenshot(activity)
-        val screenshot = Screenshot()
-        afterScreenshot(activity, screenshot.bitmap)
-        return screenshot
-    }
+//    fun screenshot(configuration: TestifyConfiguration.() -> Unit = {}): Screenshot {
+//        println(configuration) // TODO: Warning
+//        afterInitializeView(activity)
+//        beforeScreenshot(activity)
+//        val screenshot = Screenshot()
+//        afterScreenshot(activity, screenshot.bitmap)
+//        return screenshot
+//    }
 
     // TODO: Maybe?
     fun baseline(): Screenshot {
@@ -401,8 +402,8 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 
     @CallSuper
     override fun afterActivityLaunched() {
-        configuration.afterActivityLaunched(activity)
-        notifyObservers { it.applyConfiguration(activity, configuration) }
+        configuration.afterActivityLaunched(getActivity())
+        notifyObservers { it.applyConfiguration(getActivity(), configuration) }
     }
 }
 
