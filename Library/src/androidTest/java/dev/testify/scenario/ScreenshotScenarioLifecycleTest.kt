@@ -32,10 +32,12 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.exception.ScreenshotBaselineNotDefinedException
 import org.junit.Assert.assertEquals
+import org.junit.Rule
 import org.junit.Test
 
 class ScreenshotScenarioLifecycleTest {
 
+    @get:Rule
     val rule: ScreenshotScenarioRule = ScreenshotScenarioRule()
 
     private class Observer : ScreenshotLifecycle {
@@ -56,11 +58,11 @@ class ScreenshotScenarioLifecycleTest {
     @ScreenshotInstrumentation
     @Test
     fun verifyScreenshotLifecycleObserver() {
+        val observer = Observer()
+        rule.addScreenshotObserver(observer)
+
         launchActivity<TestActivity>().use { scenario ->
             rule.withScenario(scenario)
-
-            val observer = Observer()
-            rule.addScreenshotObserver(observer)
 
             try {
                 rule.assertSame()
@@ -68,8 +70,8 @@ class ScreenshotScenarioLifecycleTest {
             }
 
             assertEquals(6, observer.log.size)
-            assertEquals("beforeAssertSame", observer.log[0])
-            assertEquals("applyConfiguration", observer.log[1])
+            assertEquals("applyConfiguration", observer.log[0])
+            assertEquals("beforeAssertSame", observer.log[1])
             assertEquals("beforeInitializeView", observer.log[2])
             assertEquals("afterInitializeView", observer.log[3])
             assertEquals("beforeScreenshot", observer.log[4])

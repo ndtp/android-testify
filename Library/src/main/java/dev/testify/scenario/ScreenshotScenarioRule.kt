@@ -232,6 +232,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
             methodName = methodName,
             testClass = testClass
         )
+
         reporter?.startTest(getInstrumentation().testDescription)
 
         val testifyLayout = methodAnnotations?.getAnnotation<TestifyLayout>()
