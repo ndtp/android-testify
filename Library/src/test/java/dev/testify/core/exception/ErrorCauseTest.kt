@@ -55,7 +55,7 @@ class ErrorCauseTest {
             "NO_ANNOTATION",
             describeErrorCause(MissingScreenshotInstrumentationAnnotationException("", "")).name
         )
-        assertEquals("NO_ASSERT", describeErrorCause(MissingAssertSameException()).name)
+        assertEquals("NO_ASSERT", describeErrorCause(MissingAssertSameException("")).name)
         assertEquals("NO_BASELINE", describeErrorCause(ScreenshotBaselineNotDefinedException("", "", "", "")).name)
         assertEquals("NO_DIRECTORY", describeErrorCause(DataDirectoryDestinationNotFoundException("")).name)
         assertEquals("NO_SD_CARD", describeErrorCause(SdCardDestinationNotFoundException("")).name)

@@ -382,7 +382,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected fun evaluateAfterEach() {
         // Safeguard against accidentally omitting the call to `assertSame`
         if (!assertSameInvoked) {
-            throw MissingAssertSameException()
+            throw MissingAssertSameException(ScreenshotRule::class.simpleName)
         }
         reporter?.pass()
     }

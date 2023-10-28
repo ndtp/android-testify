@@ -351,7 +351,9 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         assertSameInvoked = false
     }
 
-    private fun isScreenshotTest() = throwable !is MissingScreenshotInstrumentationAnnotationException
+    private fun isScreenshotTest() =
+        throwable !is MissingScreenshotInstrumentationAnnotationException &&
+            scenario != null
 
     protected fun evaluateAfterEach() {
         instrumentationPrintln("evaluateAfterEach")
@@ -359,7 +361,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         if (isScreenshotTest()) {
             // Safeguard against accidentally omitting the call to `assertSame`
             if (!assertSameInvoked) {
-                throw MissingAssertSameException()
+                throw MissingAssertSameException(ScreenshotScenarioRule::class.simpleName)
             }
         }
 
@@ -378,21 +380,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 
     companion object {
         const val NO_ID = -1
-    }
-
-    // TODO: Maybe?
-//    fun screenshot(configuration: TestifyConfiguration.() -> Unit = {}): Screenshot {
-//        println(configuration) // TODO: Warning
-//        afterInitializeView(activity)
-//        beforeScreenshot(activity)
-//        val screenshot = Screenshot()
-//        afterScreenshot(activity, screenshot.bitmap)
-//        return screenshot
-//    }
-
-    // TODO: Maybe?
-    fun baseline(): Screenshot {
-        return Screenshot()
     }
 
     @CallSuper

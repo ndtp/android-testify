@@ -23,24 +23,21 @@
  */
 package dev.testify.scenario
 
-import android.graphics.Bitmap
-import org.hamcrest.BaseMatcher
-import org.hamcrest.Description
+import androidx.test.core.app.launchActivity
+import dev.testify.TestActivity
+import dev.testify.annotation.ScreenshotInstrumentation
+import org.junit.Rule
+import org.junit.Test
 
-class Screenshot {
-    var bitmap: Bitmap? = null
-    fun capture() {
-    }
-}
+class ScreenshotScenarioRuleTest {
 
-class IsSameAs(
-    private val baseline: Screenshot
-) : BaseMatcher<Screenshot>() {
+    @get:Rule val screenshotRule = ScreenshotScenarioRule()
 
-    override fun describeTo(p0: Description?) {
-    }
-
-    override fun matches(p0: Any?): Boolean {
-        return false
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        launchActivity<TestActivity>().use { scenario ->
+            screenshotRule.withScenario(scenario).assertSame()
+        }
     }
 }

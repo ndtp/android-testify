@@ -24,5 +24,5 @@
  */
 package dev.testify.core.exception
 
-class MissingAssertSameException :
-    TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the ScreenshotRule *\n")
+class MissingAssertSameException(parent: String?) :
+    TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the $parent *\n")

@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2021 Shopify Inc.
+ * Copyright (c) 2023 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +36,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 
-class ScreenshotScenarioRuleLifecycleTest {
+class ScenarioRuleLifecycleTest {
 
     private val configuration = spyk(TestifyConfiguration()) {
         every { applyViewModificationsMainThread(any()) } answers { methodOrder.add("applyViewModifications") }
