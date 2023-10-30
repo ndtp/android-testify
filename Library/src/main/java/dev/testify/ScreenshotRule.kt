@@ -41,6 +41,7 @@ import dev.testify.annotation.TestifyLayout
 import dev.testify.annotation.findAnnotation
 import dev.testify.annotation.getScreenshotAnnotationName
 import dev.testify.annotation.getScreenshotInstrumentationAnnotation
+import dev.testify.core.TestifyConfigurable
 import dev.testify.core.ScreenshotRuleCompatibilityMethods
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.exception.ActivityNotRegisteredException
@@ -72,7 +73,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @IdRes override var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
-    protected val configuration: TestifyConfiguration = TestifyConfiguration()
+    override val configuration: TestifyConfiguration = TestifyConfiguration()
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
     TestRule,
     ActivityProvider<T>,
@@ -80,7 +81,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     ActivityLaunchCycle,
     AssertionState,
     ScreenshotLifecycleHost by ScreenshotLifecycleObserver(),
-    CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods() {
+    CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods(),
+    TestifyConfigurable {
 
     @ExcludeFromJacocoGeneratedReport
     @Deprecated(
@@ -164,7 +166,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @param configureRule - [TestifyConfiguration]
      */
     @CallSuper
-    open fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
+    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
         configureRule.invoke(configuration)
         return this
     }

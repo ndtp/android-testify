@@ -504,7 +504,11 @@ class ScreenshotScenarioRuleTest {
 
     @Test(expected = MissingAssertSameException::class)
     fun `WHEN assertSame is not invoked THEN throw exception`() {
-        every { mockStatement.evaluate() } just runs
+        subject.withScenario(mockScenario).statement?.evaluate()
+    }
+
+    @Test
+    fun `WHEN assertSame is not invoked AND is not using a scenario THEN just run`() {
         subject.statement?.evaluate()
     }
 

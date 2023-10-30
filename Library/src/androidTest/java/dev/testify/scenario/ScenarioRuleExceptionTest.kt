@@ -58,16 +58,6 @@ class ScenarioRuleExceptionTest {
     }
 
     @ScreenshotInstrumentation
-    @Test(expected = NoScreenshotsOnUiThreadException::class)
-    fun matchers() {
-        launchActivity<TestActivity>().use { scenario ->
-            Espresso.onView(ViewMatchers.withId(R.id.test_root_view))
-                .perform(screenshotRule.withScenario(scenario).takeScreenshotAction())
-                .check(screenshotRule.isSame())
-        }
-    }
-
-    @ScreenshotInstrumentation
     @Test(expected = ViewModificationException::class)
     fun viewModificationException() {
         launchActivity<TestActivity>().use { scenario ->

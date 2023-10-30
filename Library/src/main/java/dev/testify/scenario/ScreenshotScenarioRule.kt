@@ -34,11 +34,6 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.VisibleForTesting
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
-import androidx.test.espresso.ViewAssertion
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.ActivityLaunchCycle
 import dev.testify.ScreenshotLifecycle
@@ -49,6 +44,7 @@ import dev.testify.ViewProvider
 import dev.testify.annotation.TestifyLayout
 import dev.testify.annotation.getScreenshotAnnotationName
 import dev.testify.annotation.getScreenshotInstrumentationAnnotation
+import dev.testify.core.TestifyConfigurable
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.exception.AssertSameMustBeLastException
 import dev.testify.core.exception.MissingAssertSameException
@@ -64,8 +60,6 @@ import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
 import dev.testify.testDescription
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -85,14 +79,15 @@ import org.junit.runners.model.Statement
 open class ScreenshotScenarioRule @JvmOverloads constructor(
     @IdRes override var rootViewId: Int = android.R.id.content,
     enableReporter: Boolean = false,
-    internal val configuration: TestifyConfiguration = TestifyConfiguration()
+    override val configuration: TestifyConfiguration = TestifyConfiguration()
 ) :
     TestWatcher(),
     ActivityProvider<Activity>,
     ScreenshotLifecycle,
     ScreenshotLifecycleHost by ScreenshotLifecycleObserver(),
     AssertionState,
-    ActivityLaunchCycle {
+    ActivityLaunchCycle,
+    TestifyConfigurable {
 
     private var activity: Activity? = null
     override fun getActivity() = this.activity ?: throw ScenarioRequiredException()
@@ -116,13 +111,8 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     }
 
     @LayoutRes override var targetLayoutId: Int = NO_ID
-
     internal val testContext = getInstrumentation().context
-
-    // InternalState
     override var assertSameInvoked = false
-
-    // TODO: override val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
     override var throwable: Throwable? = null
     override var screenshotViewProvider: ViewProvider? = null
     override var viewModification: ViewModification? = null
@@ -136,19 +126,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
             reporter = Reporter.create(getInstrumentation().targetContext, ReportSession())
         }
     }
-
-//    val outputFileExists: Boolean
-//        get() = doesOutputFileExist(activity, testContext.outputFileName())
-
-//    fun setRootViewId(@IdRes rootViewId: Int): ScreenshotScenarioEx<T> {
-//        this.rootViewId = rootViewId
-//        return this
-//    }
-//
-//    fun setTargetLayoutId(@LayoutRes layoutId: Int): ScreenshotScenarioEx<T> {
-//        this.targetLayoutId = layoutId
-//        return this
-//    }
 
     fun setViewModifications(viewModification: ViewModification): ScreenshotScenarioRule {
         if (assertSameInvoked) {
@@ -168,24 +145,11 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      *
      * @param configureRule - [TestifyConfiguration]
      */
-    fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotScenarioRule {
+    @CallSuper
+    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotScenarioRule {
         configureRule.invoke(configuration)
         return this
     }
-
-//    @CallSuper
-//    override fun afterActivityLaunched() {
-//        super.afterActivityLaunched()
-//        ResourceWrapper.afterActivityLaunched(activity)
-//        configuration.afterActivityLaunched()
-//    }
-//
-//    @CallSuper
-//    override fun beforeActivityLaunched() {
-//        super.beforeActivityLaunched()
-//        configuration.beforeActivityLaunched()
-//        ResourceWrapper.beforeActivityLaunched()
-//    }
 
     @VisibleForTesting
     internal var statement: Statement? = null
@@ -282,15 +246,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
             )
     }
 
-    // TODO:
-//    override fun addScreenshotObserver(observer: ScreenshotLifecycle) {
-//        this.screenshotLifecycleObservers.add(observer)
-//    }
-//
-//    override fun removeScreenshotObserver(observer: ScreenshotLifecycle) {
-//        this.screenshotLifecycleObservers.remove(observer)
-//    }
-
     /**
      * Test lifecycle method.
      * Invoked immediately before assertSame and before the activity is launched.
@@ -300,10 +255,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         instrumentationPrintln("beforeAssertSame")
         getInstrumentation().registerActivityProvider(this)
     }
-
-    fun takeScreenshotAction() = ScreenshotAction(this)
-
-    fun isSame() = VerifyScreenshot(this)
 
     fun assertSame() {
         if (scenario == null) {
@@ -393,36 +344,4 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         configuration.afterActivityLaunched(getActivity())
         notifyObservers { it.applyConfiguration(getActivity(), configuration) }
     }
-}
-
-class ScreenshotAction(
-    private val rule: ScreenshotScenarioRule
-) : ViewAction {
-    override fun getConstraints(): Matcher<View> {
-        return Matchers.allOf(ViewMatchers.isDisplayed())
-    }
-
-    override fun getDescription() = "Take a screenshot"
-
-    override fun perform(uiController: UiController?, view: View?) {
-
-    }
-}
-
-class VerifyScreenshot(
-    private val rule: ScreenshotScenarioRule
-) : ViewAssertion {
-    override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
-        rule.assertSame()
-    }
-}
-
-fun ActivityScenario<*>.takeScreenshot(
-    rule: ScreenshotScenarioRule,
-    configure: (TestifyConfiguration.() -> Unit)? = null,
-    viewModification: ViewModification? = null
-): ScreenshotScenarioRule {
-    configure?.invoke(rule.configuration)
-    viewModification?.let { rule.setViewModifications(it) }
-    return rule.withScenario(this)
 }
