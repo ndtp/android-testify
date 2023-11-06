@@ -25,12 +25,8 @@ package dev.testify.scenario
 
 import android.view.View
 import androidx.test.core.app.launchActivity
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.matcher.ViewMatchers
-import dev.testify.R
 import dev.testify.TestActivity
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.core.exception.NoScreenshotsOnUiThreadException
 import dev.testify.core.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.core.exception.ViewModificationException
 import org.junit.Assert.assertTrue
@@ -42,6 +38,11 @@ class ScenarioRuleExceptionTest {
 
     @get:Rule val screenshotRule = ScreenshotScenarioRule()
 
+    /**
+     * WHEN writing a scenario test AND not attempting a screenshot THEN just run
+     *
+     * You're not required to use Testify for every test that's using a Scenario.
+     */
     @Test
     fun activityScenarioWithNoScreenshot() {
         launchActivity<TestActivity>().use {
@@ -49,6 +50,11 @@ class ScenarioRuleExceptionTest {
         }
     }
 
+    /**
+     * WHEN a baseline doesn't exist THEN throw exception
+     *
+     * If you're interacting with Testify, then it's expected you will have a baseline
+     */
     @ScreenshotInstrumentation
     @Test(expected = ScreenshotBaselineNotDefinedException::class)
     fun activityScenarioNoBaseline() {
@@ -57,6 +63,11 @@ class ScenarioRuleExceptionTest {
         }
     }
 
+    /**
+     * WHEN an exception occurs in setViewModifications THEN this will be reported as an error
+     *
+     * Testify will not swallow errors that happen inside setViewModifications()
+     */
     @ScreenshotInstrumentation
     @Test(expected = ViewModificationException::class)
     fun viewModificationException() {
@@ -64,6 +75,7 @@ class ScenarioRuleExceptionTest {
             screenshotRule
                 .withScenario(scenario)
                 .setViewModifications {
+                    // This is not a valid child, so it will throw an exception
                     it.getChildAt(100).visibility = View.GONE
                 }
                 .assertSame()

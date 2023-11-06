@@ -164,6 +164,10 @@ data class TestifyConfiguration(
     }
 
     internal fun beforeScreenshot(rootView: ViewGroup) {
+
+        // TODO: This can't stay here -- but it's needed for the Scenario
+//        orientationHelper?.afterActivityLaunched()
+
         orientationHelper?.assertOrientation()
         applyExclusionRects(rootView)
     }

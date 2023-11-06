@@ -73,6 +73,9 @@ class ScenarioRuleAssertExpectedDeviceTest {
         }
     }
 
+    /**
+     * WHEN no baseline image exists AND record mode is set THEN run successfully
+     */
     @ScreenshotInstrumentation
     @Test
     fun testMissingBaselineRecordMode() {

@@ -89,8 +89,29 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     ActivityLaunchCycle,
     TestifyConfigurable {
 
-    private var activity: Activity? = null
-    override fun getActivity() = this.activity ?: throw ScenarioRequiredException()
+    @get:JvmName("activity")
+    val activity: Activity?
+        get() {
+            var activity: Activity? = null
+            scenario?.onActivity {
+                activity = it
+            }
+            return activity
+        }
+
+    override fun getActivity(): Activity = activity ?: throw ScenarioRequiredException()
+
+//    private var activity: Activity? = null
+//    override fun getActivity(): Activity {
+//        var activity: Activity? = null
+//        scenario?.onActivity {
+//            activity = it
+//        }
+//        return activity ?: throw ScenarioRequiredException()
+//    }
+
+//    override fun getActivity(): Activity = this.activity ?: throw ScenarioRequiredException()
+
     override fun assureActivity(intent: Intent?) {
         if (activity == null)
             throw ScenarioRequiredException()
@@ -102,11 +123,11 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         scenario: ActivityScenario<TActivity>
     ): ScreenshotScenarioRule {
         this.scenario = scenario
-        this.scenario?.onActivity {
-            this.beforeActivityLaunched()
-            this.activity = it
-            this.afterActivityLaunched()
-        }
+        this.beforeActivityLaunched()
+//        this.scenario?.onActivity {
+//            this.activity = it
+//        }
+//        this.afterActivityLaunched()
         return this
     }
 
@@ -248,12 +269,15 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 
     /**
      * Test lifecycle method.
-     * Invoked immediately before assertSame and before the activity is launched.
+     * Invoked immediately before assertSame and after the scenario has launched the activity.
      */
     @CallSuper
     override fun beforeAssertSame() {
         instrumentationPrintln("beforeAssertSame")
         getInstrumentation().registerActivityProvider(this)
+
+        // Called after configuration has been set
+        this.afterActivityLaunched()
     }
 
     fun assertSame() {

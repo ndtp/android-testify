@@ -23,48 +23,42 @@
  */
 package dev.testify.scenario
 
-/*
-TODO: Orientation cannot be changed via configuration with a ScenarioRule
-This is because the Scenario itself controls the inflation of the Activity
-A different approach is required.
- */
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+import androidx.test.core.app.launchActivity
+import dev.testify.TestActivity
+import dev.testify.annotation.ScreenshotInstrumentation
+import org.junit.Rule
+import org.junit.Test
 
-//import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-//import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-//import androidx.test.core.app.launchActivity
-//import dev.testify.TestActivity
-//import dev.testify.annotation.ScreenshotInstrumentation
-//import org.junit.Rule
-//import org.junit.Test
-//
-//class ScenarioRuleOrientationTest {
-//
-//    @get:Rule
-//    val rule: ScreenshotScenarioRule = ScreenshotScenarioRule()
-//
-//    @ScreenshotInstrumentation
-//    @Test
-//    fun testLandscapeOnly() {
-//        launchActivity<TestActivity>().use { scenario ->
-//            rule
-//                .withScenario(scenario)
-//                .configure {
-//                    orientation = SCREEN_ORIENTATION_LANDSCAPE
-//                }
-//                .assertSame()
-//        }
-//    }
-//
-//    @ScreenshotInstrumentation
-//    @Test
-//    fun testPortraitOnly() {
-//        launchActivity<TestActivity>().use { scenario ->
-//            rule
-//                .withScenario(scenario)
-//                .configure {
-//                    orientation = SCREEN_ORIENTATION_PORTRAIT
-//                }
-//                .assertSame()
-//        }
-//    }
-//}
+class ScenarioRuleOrientationTest {
+
+    @get:Rule
+    val rule: ScreenshotScenarioRule = ScreenshotScenarioRule()
+
+    @ScreenshotInstrumentation
+    @Test
+    fun testLandscape() {
+        launchActivity<TestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .configure {
+                    orientation = SCREEN_ORIENTATION_LANDSCAPE
+                }
+                .assertSame()
+        }
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun testPortrait() {
+        launchActivity<TestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .configure {
+                    orientation = SCREEN_ORIENTATION_PORTRAIT
+                }
+                .assertSame()
+        }
+    }
+}
