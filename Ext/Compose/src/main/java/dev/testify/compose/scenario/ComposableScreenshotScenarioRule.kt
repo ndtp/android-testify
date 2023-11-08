@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.compose.scenario
 
 import android.app.Activity
 import android.graphics.Bitmap
@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
+import dev.testify.CaptureMethod
 import dev.testify.compose.R
 import dev.testify.compose.exception.ComposeContainerNotFoundException
 import dev.testify.core.TestifyConfiguration

@@ -44,12 +44,13 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.test.core.app.launchActivity
-import dev.testify.ComposableScreenshotScenarioRule
 import dev.testify.ComposableTestActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.capture.fullscreen.captureFullscreen
 import dev.testify.capture.fullscreen.fullscreenCapture
 import dev.testify.capture.fullscreen.provider.excludeSystemUi
+import dev.testify.compose.scenario.ComposableScreenshotScenarioRule
+import dev.testify.compose.scenario.launchComposableTestActivity
 import dev.testify.sample.ClientListItem
 import dev.testify.sample.DropdownDemo
 import dev.testify.sample.R
@@ -93,7 +94,7 @@ class ScenarioComposableScreenshotTest {
     @ScreenshotInstrumentation
     @Test
     fun paddedBoxes() {
-        launchActivity<ComposableTestActivity>().use { scenario ->
+        launchComposableTestActivity().use { scenario ->
             rule
                 .withScenario(scenario)
                 .setCompose {
