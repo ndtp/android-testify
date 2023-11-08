@@ -122,7 +122,8 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 
     private var scenario: ActivityScenario<*>? = null
 
-    fun <TActivity : Activity> withScenario(
+    @CallSuper
+    open fun <TActivity : Activity> withScenario(
         scenario: ActivityScenario<TActivity>
     ): ScreenshotScenarioRule {
         this.scenario = scenario

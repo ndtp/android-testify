@@ -29,7 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.test.core.app.ActivityScenario
 import dev.testify.compose.R
+import dev.testify.compose.exception.ComposeContainerNotFoundException
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.capture.pixelCopyCapture
 import dev.testify.internal.disposeComposition
@@ -62,6 +64,13 @@ open class ComposableScreenshotScenarioRule(
         activity.disposeComposition()
     }
 
+    override fun <TActivity : Activity> withScenario(
+        scenario: ActivityScenario<TActivity>
+    ): ComposableScreenshotScenarioRule {
+        super.withScenario(scenario)
+        return this
+    }
+
     /**
      * Set a screenshot view provider to capture only the @Composable bounds
      */
@@ -80,7 +89,9 @@ open class ComposableScreenshotScenarioRule(
      */
     override fun afterActivityLaunched() {
         getActivity().runOnUiThread {
-            val composeView = getActivity().findViewById<ComposeView>(R.id.compose_container)
+            val composeView: ComposeView = getActivity().findViewById(R.id.compose_container)
+                ?: throw ComposeContainerNotFoundException()
+
             composeView.setContent {
                 composeFunction()
             }

@@ -43,7 +43,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.test.core.app.launchActivity
 import dev.testify.ComposableScreenshotScenarioRule
+import dev.testify.ComposableTestActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.capture.fullscreen.captureFullscreen
 import dev.testify.capture.fullscreen.fullscreenCapture
@@ -78,90 +80,105 @@ class ScenarioComposableScreenshotTest {
     @ScreenshotInstrumentation
     @Test
     fun default() {
-        rule
-            .setCompose {
-                Text(text = "Hello, Testify!")
-            }
-            .assertSame()
+        launchActivity<ComposableTestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    Text(text = "Hello, Testify!")
+                }
+                .assertSame()
+        }
     }
 
     @ScreenshotInstrumentation
     @Test
     fun paddedBoxes() {
-        rule
-            .setCompose {
-                PaddedBox(Color.Gray) {
-                    PaddedBox(Color.LightGray) {
-                        Text(
-                            modifier = Modifier.align(Center),
-                            text = "Hello, Testify!",
-                            color = Color.Blue,
-                            fontSize = 32.sp
-                        )
+        launchActivity<ComposableTestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    PaddedBox(Color.Gray) {
+                        PaddedBox(Color.LightGray) {
+                            Text(
+                                modifier = Modifier.align(Center),
+                                text = "Hello, Testify!",
+                                color = Color.Blue,
+                                fontSize = 32.sp
+                            )
+                        }
                     }
                 }
-            }
-            .assertSame()
+                .assertSame()
+        }
     }
 
     @ScreenshotInstrumentation
     @Test
     fun clientListItem() {
-        rule
-            .setCompose {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(112.dp)
-                ) {
-                    ClientListItem(
-                        name = "Android Testify",
-                        avatar = R.drawable.avatar1,
-                        since = "November 10, 2021"
-                    )
+        launchActivity<ComposableTestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(112.dp)
+                    ) {
+                        ClientListItem(
+                            name = "Android Testify",
+                            avatar = R.drawable.avatar1,
+                            since = "November 10, 2021"
+                        )
+                    }
                 }
-            }
-            .assertSame()
+                .assertSame()
+        }
     }
 
     @ScreenshotInstrumentation
     @Test
     fun topAppBar() {
-        rule
-            .setCompose {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                ) {
-                    TopAppBar()
+        launchActivity<ComposableTestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
+                        TopAppBar()
+                    }
                 }
-            }
-            .assertSame()
+                .assertSame()
+        }
     }
 
     @ScreenshotInstrumentation
     @Test
     fun dropdownMenu() {
-        rule
-            .setCompose {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(20.dp)
-                        .padding(top = 20.dp)
-                ) {
-                    DropdownDemo()
+        launchActivity<ComposableTestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp)
+                            .padding(top = 20.dp)
+                    ) {
+                        DropdownDemo()
+                    }
                 }
-            }
-            .setComposeActions { composeTestRule ->
-                composeTestRule.onNodeWithTag("Dropdown").performClick()
-            }
-            .captureFullscreen()
-            .configure {
-                excludeSystemUi()
-            }
-            .assertSame()
+                .setComposeActions { composeTestRule ->
+                    composeTestRule.onNodeWithTag("Dropdown").performClick()
+                }
+                .captureFullscreen()
+                .configure {
+                    excludeSystemUi()
+                }
+                .assertSame()
+        }
     }
 
     /**
@@ -170,23 +187,26 @@ class ScenarioComposableScreenshotTest {
     @ScreenshotInstrumentation
     @Test
     fun dialog() {
-        rule
-            .configure {
-                captureMethod = ::fullscreenCapture
-                excludeSystemUi()
-            }
-            .setCompose {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    AlertDialog(
-                        onDismissRequest = {},
-                        title = {},
-                        text = {
-                            Text(modifier = Modifier.align(Center), text = "Hello, Testify!")
-                        },
-                        confirmButton = { Button(onClick = {}) { Text("OK") } }
-                    )
+        launchActivity<ComposableTestActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .configure {
+                    captureMethod = ::fullscreenCapture
+                    excludeSystemUi()
                 }
-            }
-            .assertSame()
+                .setCompose {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        AlertDialog(
+                            onDismissRequest = {},
+                            title = {},
+                            text = {
+                                Text(modifier = Modifier.align(Center), text = "Hello, Testify!")
+                            },
+                            confirmButton = { Button(onClick = {}) { Text("OK") } }
+                        )
+                    }
+                }
+                .assertSame()
+        }
     }
 }
