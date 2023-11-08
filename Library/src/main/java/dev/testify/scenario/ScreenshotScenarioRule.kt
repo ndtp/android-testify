@@ -28,6 +28,7 @@ package dev.testify.scenario
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
@@ -37,6 +38,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.ActivityLaunchCycle
 import dev.testify.ScreenshotLifecycle
+import dev.testify.ScreenshotRule
 import dev.testify.TestDescription
 import dev.testify.TestifyFeatures
 import dev.testify.ViewModification
@@ -49,6 +51,7 @@ import dev.testify.core.TestifyConfiguration
 import dev.testify.core.exception.AssertSameMustBeLastException
 import dev.testify.core.exception.MissingAssertSameException
 import dev.testify.core.exception.MissingScreenshotInstrumentationAnnotationException
+import dev.testify.core.exception.NoResourceConfigurationOnScenarioException
 import dev.testify.core.logic.AssertionState
 import dev.testify.core.logic.ScreenshotLifecycleHost
 import dev.testify.core.logic.ScreenshotLifecycleObserver
@@ -161,6 +164,11 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         return this
     }
 
+    fun setTargetLayoutId(@LayoutRes layoutId: Int): ScreenshotScenarioRule {
+        this.targetLayoutId = layoutId
+        return this
+    }
+
     /**
      * Set the configuration for the ScreenshotRule
      *
@@ -169,6 +177,28 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     @CallSuper
     override fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotScenarioRule {
         configureRule.invoke(configuration)
+
+        if (scenario != null) {
+            var activity: Activity? = null
+            scenario?.onActivity { activity = it }
+
+            if (activity != null) {
+                if (configuration.fontScale != null)
+                    throw NoResourceConfigurationOnScenarioException(
+                        cause = "fontScale",
+                        value = configuration.fontScale.toString(),
+                        activity = activity?.javaClass?.simpleName.orEmpty()
+                    )
+
+                if (configuration.locale != null)
+                    throw NoResourceConfigurationOnScenarioException(
+                        cause = "locale",
+                        value = configuration.locale.toString(),
+                        activity = activity?.javaClass?.simpleName.orEmpty()
+                    )
+            }
+        }
+
         return this
     }
 

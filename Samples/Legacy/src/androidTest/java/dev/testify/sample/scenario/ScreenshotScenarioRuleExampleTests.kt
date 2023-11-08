@@ -25,16 +25,20 @@
 
 package dev.testify.sample.scenario
 
+import android.widget.TextView
 import androidx.test.core.app.launchActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
+import dev.testify.internal.helpers.overrideResourceConfiguration
 import dev.testify.sample.R
 import dev.testify.sample.test.TestHarnessActivity
+import dev.testify.sample.test.TestLocaleHarnessActivity
 import dev.testify.sample.test.clientDetailsView
 import dev.testify.sample.test.getViewState
 import dev.testify.scenario.ScreenshotScenarioRule
 import org.junit.Rule
 import org.junit.Test
+import java.util.Locale
 
 class ScreenshotScenarioRuleExampleTests {
 
@@ -52,6 +56,42 @@ class ScreenshotScenarioRuleExampleTests {
                     rule.getActivity().getViewState(name = "default").let {
                         harnessRoot.clientDetailsView.render(it)
                         rule.getActivity().title = it.name
+                    }
+                }
+                .assertSame()
+        }
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun fontScale() {
+        overrideResourceConfiguration<TestLocaleHarnessActivity>(fontScale = 2.0f)
+        launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setViewModifications { rootView ->
+                    val textView = TextView(
+                        rootView.context
+                    )
+                    textView.text = "Hello, Testify"
+                    rootView.addView(textView)
+                }
+                .assertSame()
+        }
+    }
+
+    @ScreenshotInstrumentation
+    @Test
+    fun locale() {
+        overrideResourceConfiguration<TestLocaleHarnessActivity>(locale = Locale.JAPAN)
+        launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setTargetLayoutId(R.layout.view_client_details)
+                .setViewModifications { harnessRoot ->
+                    rule.activity?.getViewState(Locale.JAPAN.displayName)?.let {
+                        harnessRoot.clientDetailsView.render(it)
+                        rule.activity?.title = it.name
                     }
                 }
                 .assertSame()

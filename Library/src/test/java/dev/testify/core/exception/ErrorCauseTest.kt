@@ -71,5 +71,9 @@ class ErrorCauseTest {
         assertEquals("NO_TEST_STORAGE", describeErrorCause(TestStorageNotFoundException()).name)
         assertEquals("FINALIZE_DESTINATION", describeErrorCause(FinalizeDestinationException("")).name)
         assertEquals("UNEXPECTED_ORIENTATION", describeErrorCause(UnexpectedOrientationException("")).name)
+        assertEquals(
+            "INVALID_RESOURCE_CONFIGURATION",
+            describeErrorCause(NoResourceConfigurationOnScenarioException("", "", "")).name
+        )
     }
 }
