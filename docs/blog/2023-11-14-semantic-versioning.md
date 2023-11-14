@@ -55,7 +55,7 @@ Ensuring the stability and backward compatibility of Testify is paramount. A rob
 
 We value community involvement and encourage users to actively participate:
 
-- **GitHub Interaction:** Log bugs, submit requests, and propose changes directly through the [GitHub repository]([https://github.com/example/testify](https://github.com/ndtp/android-testify/issues/new/choose)).
+- **GitHub Interaction:** Log bugs, submit requests, and propose changes directly through the [GitHub repository](https://github.com/ndtp/android-testify/issues/new/choose).
 - **Stack Overflow Tag:** Tag questions with `android-testify` on [Stack Overflow](https://stackoverflow.com/questions/tagged/android-testify) for community-driven support.
 
 Testify is on a journey of continuous improvement, and the adoption of Semantic Versioning is a crucial step in this evolution. We look forward to a more agile, transparent, and collaborative future with our vibrant community.
