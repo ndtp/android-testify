@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[361],{8821:s=>{s.exports=JSON.parse('{"label":"versioning","permalink":"/android-testify/blog/tags/versioning","allTagsPath":"/android-testify/blog/tags","count":1}')}}]);
