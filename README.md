@@ -27,17 +27,6 @@ representative of what your users will see in your final product.
 
 ---
 
-> **Warning**
->
-> **The Testify 2.0 platform requires new build artifacts and a migration from
-the `com.shopify.testify` package to the new `dev.testify` package.**
->
-> **Please refer to the [migration guide](https://ndtp.github.io/android-testify/docs/migration) for
-more information**
->
-
----
-
 # Getting Started
 
 📷 **Visit [testify.dev](https://testify.dev) for full documentation, blogs, and code recipes to help
