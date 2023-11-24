@@ -28,8 +28,21 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 
+/**
+ * Interface used to provide a reference to the current activity.
+ * This is used to allow the library to always have access to the current instance of the running activity.
+ * This is needed due to configurations changes which may cause the activity to be recreated.
+ */
 interface ActivityProvider<T : Activity> {
+
+    /**
+     * Returns the current activity.
+     */
     fun getActivity(): T
+
+    /**
+     * Ensures that the activity is started and available.
+     */
     fun assureActivity(intent: Intent?)
 }
 
@@ -38,12 +51,23 @@ private object ActivityProviderRegistry {
     var hashCode: Int = 0
 }
 
+/**
+ * Get the currently registered activity provider.
+ * There can only be a single activity provider registered at a time.
+ *
+ * If there is no activity provider registered, an exception will be thrown.
+ * If the activity provider is not registered from the same context as the current instrumentation, an exception will be thrown.
+ */
 fun <T : Activity> Instrumentation.getActivityProvider(): ActivityProvider<T> {
     require(ActivityProviderRegistry.hashCode == this.targetContext.hashCode())
     @Suppress("UNCHECKED_CAST")
     return ActivityProviderRegistry.provider as ActivityProvider<T>
 }
 
+/**
+ * Register an activity provider.
+ * There can only be a single activity provider registered at a time.
+ */
 fun <T : Activity> Instrumentation.registerActivityProvider(activityProvider: ActivityProvider<T>) {
     ActivityProviderRegistry.hashCode = this.targetContext.hashCode()
     ActivityProviderRegistry.provider = activityProvider

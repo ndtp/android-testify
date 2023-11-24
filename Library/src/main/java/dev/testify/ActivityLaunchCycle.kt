@@ -23,6 +23,11 @@
  */
 package dev.testify
 
+/**
+ * Interface for Activity launch cycle.
+ * This interface is used to invoke methods before and after the Activity under test has been launched.
+ * Allows for a variety of testing methodologies to be consistently applied.
+ */
 interface ActivityLaunchCycle {
 
     /**

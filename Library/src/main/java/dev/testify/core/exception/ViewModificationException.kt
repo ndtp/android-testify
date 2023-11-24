@@ -23,6 +23,11 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when there is an error modifying the view.
+ *
+ * @param throwable the throwable that caused the error
+ */
 class ViewModificationException(throwable: Throwable) : TestifyException(
     "VIEW_MODIFICATION",
     """

@@ -25,6 +25,14 @@
 
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when the screenshot baseline is not defined.
+ *
+ * @param moduleName The name of the module.
+ * @param testName The name of the test.
+ * @param testClass The name of the test class.
+ * @param deviceKey The device key.
+ */
 class ScreenshotBaselineNotDefinedException(
     moduleName: String,
     testName: String,

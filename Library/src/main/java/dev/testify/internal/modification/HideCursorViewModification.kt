@@ -27,12 +27,28 @@ package dev.testify.internal.modification
 import android.view.View
 import android.widget.EditText
 
+/**
+ * A [ViewModification] that hides the cursor on an [EditText].
+ *
+ * The blinking caret cursor can randomly appear in screenshots, so this modification ensures that screenshots do not
+ * accidentally capture the cursor.
+ *
+ * @see TestifyConfiguration.hideCursor
+ */
 class HideCursorViewModification : ViewModification() {
 
+    /**
+     * Modifies the view by hiding the cursor.
+     *
+     * @see EditText.setCursorVisible
+     */
     override fun performModification(view: View) {
         (view as EditText).isCursorVisible = false
     }
 
+    /**
+     * Returns true if the view is an [EditText].
+     */
     override fun qualifies(view: View): Boolean {
         return view is EditText
     }

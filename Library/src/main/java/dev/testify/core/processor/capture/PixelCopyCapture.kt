@@ -35,6 +35,17 @@ import android.view.PixelCopy
 import android.view.View
 import java.util.concurrent.CountDownLatch
 
+/**
+ * Capture a bitmap of the current activity.
+ *
+ * Uses PixelCopy.request() to capture the bitmap.
+ *
+ * Note: PixelCopy is only available on API 26 and above.
+ *
+ * @param activity The activity to capture.
+ * @param targetView The view to capture. If null, the entire decorView of the activity will be captured.
+ * @return A bitmap of the activity.
+ */
 @TargetApi(Build.VERSION_CODES.O)
 fun pixelCopyCapture(activity: Activity, targetView: View?): Bitmap {
     val window = activity.window!!

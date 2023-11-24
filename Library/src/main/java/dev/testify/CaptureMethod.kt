@@ -29,7 +29,7 @@ import android.graphics.Bitmap
 import android.view.View
 
 /**
- * Returns a [Bitmap] from the provided [activity] and [targetView]
- * Invoked from the UI thread
+ * Returns a [Bitmap] from the provided [Activity] and [View].
+ * Invoked from the UI thread.
  */
 typealias CaptureMethod = (activity: Activity, targetView: View?) -> Bitmap?

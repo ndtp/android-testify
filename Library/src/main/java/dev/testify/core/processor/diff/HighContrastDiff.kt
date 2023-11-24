@@ -46,6 +46,8 @@ import dev.testify.saveBitmapToDestination
  * - Yellow:  Different, but within allowable tolerances
  * - Red:     Different in excess of allowable tolerances
  *
+ * @param exclusionRects A set of [Rect]s that should be excluded from the diff.
+ *
  */
 class HighContrastDiff private constructor(private val exclusionRects: Set<Rect>) {
 
@@ -53,6 +55,11 @@ class HighContrastDiff private constructor(private val exclusionRects: Set<Rect>
     private var baselineBitmap: Bitmap? = null
     private var currentBitmap: Bitmap? = null
 
+    /**
+     * Generate the diff image.
+     *
+     * @param context The context to use for writing the diff image.
+     */
     fun generate(context: Context) {
         val fileName = this.fileName ?: throw IllegalArgumentException("call name() to set fileName")
         val baselineBitmap =
@@ -98,27 +105,52 @@ class HighContrastDiff private constructor(private val exclusionRects: Set<Rect>
 
     private var exactness: Float? = null
 
+    /**
+     * Set the exactness value for the diff.
+     *
+     * @param exactness The exactness value to use for the diff.
+     */
     fun exactness(exactness: Float?): HighContrastDiff {
         this.exactness = exactness
         return this
     }
 
+    /**
+     * Set the name of the diff file.
+     *
+     * @param outputFileName The name of the diff file.
+     */
     fun name(outputFileName: String): HighContrastDiff {
         fileName = outputFileName
         return this
     }
 
+    /**
+     * Set the baseline bitmap.
+     *
+     * @param baselineBitmap The baseline bitmap.
+     */
     fun baseline(baselineBitmap: Bitmap): HighContrastDiff {
         this.baselineBitmap = baselineBitmap
         return this
     }
 
+    /**
+     * Set the current bitmap.
+     *
+     * @param currentBitmap The current bitmap.
+     */
     fun current(currentBitmap: Bitmap): HighContrastDiff {
         this.currentBitmap = currentBitmap
         return this
     }
 
     companion object {
+        /**
+         * Create a new [HighContrastDiff] instance.
+         *
+         * @param exclusionRects A set of [Rect]s that should be excluded from the diff.
+         */
         fun create(exclusionRects: Set<Rect>) =
             HighContrastDiff(
                 exclusionRects

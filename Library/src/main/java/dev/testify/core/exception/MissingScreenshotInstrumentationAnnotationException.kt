@@ -24,5 +24,10 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when [annotationName] annotation is missing.
+ *
+ * Use of the Gradle plugin requires the specified annotation.
+ */
 class MissingScreenshotInstrumentationAnnotationException(annotationName: String, methodName: String) :
     TestifyException("NO_ANNOTATION", "Please add annotation $annotationName to the test '$methodName'")

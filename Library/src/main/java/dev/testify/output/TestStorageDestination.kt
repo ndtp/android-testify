@@ -34,6 +34,21 @@ import dev.testify.core.formatDeviceString
 import java.io.File
 import java.io.FileInputStream
 
+/**
+ * A [Destination] that writes to the [TestStorage] service.
+ *
+ * https://developer.android.com/reference/androidx/test/services/storage/TestStorage
+ *
+ * Files using this destination will be stored to the user's host device's storage.
+ *
+ * [TestStorage] is a service that allows you to store files on the host device's storage. This is useful
+ * for situations where you do not have access to the device under test's local storage. For example, if you are
+ * running tests on a cloud device farm. The [TestStorage] service is provided by the AndroidX Test Services library.
+ * It is also useful to use this service when you want to store files on the host device's storage for debugging
+ * purposes.
+ *
+ * To enable TestStorage, add `testInstrumentationRunnerArguments useTestStorageService: "true"` to your build.gradle file
+ */
 class TestStorageDestination(
     private val context: Context,
     override val fileName: String,
@@ -45,6 +60,10 @@ class TestStorageDestination(
 ) {
     override val LOG_TAG: String = "TestStorageDestination"
 
+    /**
+     * Check if the [TestStorage] service is enabled.
+     * Please ensure that `testInstrumentationRunnerArguments useTestStorageService: "true"` is added to your build.gradle.
+     */
     @SuppressLint("UnsafeOptInUsageError")
     private fun isTestStorageEnabled(): Boolean =
         try {
@@ -54,9 +73,15 @@ class TestStorageDestination(
             false
         }
 
+    /**
+     * Check that the [TestStorage] service is enabled and that the destination exists.
+     */
     override fun assureDestination(context: Context): Boolean =
         isTestStorageEnabled() && super.assureDestination(context)
 
+    /**
+     * Get the exception to throw when the destination is not found.
+     */
     override fun getScreenshotDestinationNotFoundException(): Exception {
         return if (isTestStorageEnabled())
             super.getScreenshotDestinationNotFoundException()
@@ -64,6 +89,10 @@ class TestStorageDestination(
             TestStorageNotFoundException()
     }
 
+    /**
+     * Called when the usage of the destination file is finished.
+     * Writes the file to the [TestStorage] service.
+     */
     @SuppressLint("UnsafeOptInUsageError")
     override fun finalize(): Boolean {
         fun copyToTestStorage(pathTo: Uri): Boolean {
@@ -84,6 +113,13 @@ class TestStorageDestination(
         return copyToTestStorage(pathTo = testStorageUri)
     }
 
+    /**
+     * Construct a path to the output file
+     *
+     * @param context The [Context] to use
+     * @param fileName The name of the file
+     * @param extension The file extension
+     */
     private fun getTestStoragePath(
         context: Context,
         fileName: String,
@@ -92,6 +128,9 @@ class TestStorageDestination(
         return "${getTestStorageDirectory(context).path}/$fileName$extension"
     }
 
+    /**
+     * Get the path to the output directory
+     */
     private fun getTestStorageDirectory(context: Context): File {
         val root = this.root ?: ROOT_DESTINATION_DIR
         val path = File(root)
@@ -105,6 +144,9 @@ class TestStorageDestination(
     }
 }
 
+/**
+ * Exception to throw when the [TestStorage] service is not found.
+ */
 internal class TestStorageNotFoundException :
     TestifyException(
         "NO_TEST_STORAGE",

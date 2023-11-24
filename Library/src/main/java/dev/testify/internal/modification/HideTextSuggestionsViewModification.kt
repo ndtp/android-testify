@@ -28,13 +28,28 @@ import android.text.InputType
 import android.view.View
 import android.widget.EditText
 
+/**
+ * A [ViewModification] that hides the text suggestions on an [EditText].
+ *
+ * This stops the default text suggestions from appearing when typing in an [EditText]. This is useful for ensuring that
+ * screenshots do not accidentally capture the suggestions.
+ *
+ * @see TestifyConfiguration.hideTextSuggestions
+ */
 class HideTextSuggestionsViewModification : ViewModification() {
 
+    /**
+     * Modifies the view by hiding the text suggestions.
+     * This is done by adding [InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS] to the input type.
+     */
     override fun performModification(view: View) {
         val inputType = (view as EditText).inputType
         view.inputType = inputType or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
     }
 
+    /**
+     * Returns true if the view is an [EditText] with an input type.
+     */
     override fun qualifies(view: View): Boolean {
         return view is EditText && view.inputType != 0
     }

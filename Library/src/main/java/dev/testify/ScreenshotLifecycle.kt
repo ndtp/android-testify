@@ -27,6 +27,13 @@ import android.app.Activity
 import android.graphics.Bitmap
 import dev.testify.core.TestifyConfiguration
 
+/**
+ * Interface for Screenshot lifecycle.
+ * This interface is used to invoke methods before and after the screenshot is taken.
+ * Allows for a variety of testing methodologies to be consistently applied.
+ *
+ * Default, empty implementations are provided for all methods.
+ */
 interface ScreenshotLifecycle {
 
     /**

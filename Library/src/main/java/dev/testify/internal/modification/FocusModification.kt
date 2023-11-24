@@ -33,16 +33,30 @@ import androidx.annotation.WorkerThread
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+/**
+ * A [ViewModification] that requests focus on a view.
+ *
+ * This is useful for ensuring that the view is in a consistent state before taking a screenshot.
+ *
+ * @see TestifyConfiguration.focusTargetId
+ *
+ * @param focusTargetId the id of the view to request focus on. If [View.NO_ID] is provided, the root view will be used.
+ */
 class FocusModification(@IdRes var focusTargetId: Int) : ViewModification() {
 
+    /**
+     * Returns the view to request focus on.
+     */
     private fun Activity.getFocusTargetView(): View {
         val id = if (focusTargetId == View.NO_ID) android.R.id.content else focusTargetId
         return this.findViewById(id) ?: throw Exception("Requested focus target view $id not found")
     }
 
-    /*
-    This method requires test-thread/ui-thread synchronization and so must be invoked from
-    a background thread.
+    /**
+     * Modifies the view by requesting focus on it.
+     * This method requires test-thread/ui-thread synchronization and so must be invoked from a background thread.
+     *
+     * @see View.requestFocus
      */
     @WorkerThread
     fun modify(activity: Activity) {
@@ -59,11 +73,22 @@ class FocusModification(@IdRes var focusTargetId: Int) : ViewModification() {
         threadLatch.await(5, TimeUnit.SECONDS)
     }
 
+    /**
+     * Modifies the view by requesting focus on it.
+     *
+     * @see View.isFocusableInTouchMode
+     * @see View.isFocusable
+     * @see View.requestFocus
+     */
     override fun performModification(view: View) {
         view.isFocusableInTouchMode = true
         view.isFocusable = true
         view.requestFocus()
     }
 
+    /**
+     * Returns false since this modification does not operate on a single view.
+     * The modification operates from the root view of the activity.
+     */
     override fun qualifies(view: View) = false
 }

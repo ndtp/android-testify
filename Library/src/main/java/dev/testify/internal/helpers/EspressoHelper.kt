@@ -30,16 +30,39 @@ import dev.testify.ScreenshotLifecycle
 import dev.testify.core.TestifyConfiguration
 import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
+/**
+ * Typealias for Espresso actions.
+ */
 typealias EspressoActions = () -> Unit
 
+/**
+ * Helper class for Espresso.
+ *
+ * This class is responsible for interaction with the Espresso framework.
+ *
+ * https://developer.android.com/training/testing/espresso
+ *
+ * @param configuration The [TestifyConfiguration] to use.
+ */
 class EspressoHelper(private val configuration: TestifyConfiguration) : ScreenshotLifecycle {
 
+    /**
+     * The actions to perform after the view is initialized.
+     */
     var actions: EspressoActions? = null
 
+    /**
+     * Reset the helper.
+     */
     fun reset() {
         actions = null
     }
 
+    /**
+     * Perform the actions after the view is initialized.
+     *
+     * @param activity The activity to perform the actions on.
+     */
     override fun afterInitializeView(activity: Activity) {
         actions?.invoke()
 
@@ -49,11 +72,21 @@ class EspressoHelper(private val configuration: TestifyConfiguration) : Screensh
             closeSoftKeyboard()
     }
 
+    /**
+     * Loops the main thread until the app goes idle.
+     * This is used to ensure that all Espresso actions have been completed.
+     * This is needed to ensure that the view is in the correct state before taking a screenshot.
+     *
+     * Wrapper for [Espresso.onIdle], used to allow mocking.
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal fun syncUiThread() =
         Espresso.onIdle()
 
+    /**
+     * Wrapper for [Espresso.closeSoftKeyboard], used to allow mocking.
+     */
     @VisibleForTesting
     internal fun closeSoftKeyboard() =
         Espresso.closeSoftKeyboard()

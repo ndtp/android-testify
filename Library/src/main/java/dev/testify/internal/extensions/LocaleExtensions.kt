@@ -35,6 +35,12 @@ import androidx.annotation.VisibleForTesting
 import dev.testify.internal.helpers.buildVersionSdkInt
 import java.util.Locale
 
+/**
+ * Update the locale of the context.
+ *
+ * @param locale The locale to update to.
+ * @return The updated context.
+ */
 internal fun Context.updateLocale(locale: Locale?): Context {
     if (locale == null) return this
 
@@ -45,6 +51,14 @@ internal fun Context.updateLocale(locale: Locale?): Context {
     }
 }
 
+/**
+ * Update the locale of the context.
+ *
+ * This method is only available on API 24+.
+ *
+ * @param locale The locale to update to.
+ * @return The updated context.
+ */
 @VisibleForTesting
 @TargetApi(Build.VERSION_CODES.N)
 internal fun Context.updateResources(locale: Locale): Context {
@@ -55,6 +69,14 @@ internal fun Context.updateResources(locale: Locale): Context {
     return this.createConfigurationContext(configuration)
 }
 
+/**
+ * Update the locale of the context.
+ *
+ * This method is only available on API 23 and below.
+ *
+ * @param locale The locale to update to.
+ * @return The updated context.
+ */
 @VisibleForTesting
 @Suppress("DEPRECATION")
 internal fun Context.updateResourcesLegacy(locale: Locale): Context {
@@ -65,6 +87,9 @@ internal fun Context.updateResourcesLegacy(locale: Locale): Context {
     return this
 }
 
+/**
+ * Convert a locale to a language tag string.
+ */
 internal val Locale.languageTag: String
     @SuppressLint("NewApi")
     get() {

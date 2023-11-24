@@ -32,11 +32,21 @@ import dev.testify.internal.extensions.languageTag
 import dev.testify.internal.helpers.buildVersionSdkInt
 import java.util.Locale
 
+/**
+ * A typealias for the test class and test name.
+ *
+ * @param first - The test class name
+ * @param second - The test method name
+ */
 typealias TestName = Pair<String, String>
 
 const val DEFAULT_FOLDER_FORMAT = "a-wxh@d-l"
 const val DEFAULT_NAME_FORMAT = "c_n"
 
+/**
+ * Returns the device dimensions in pixels.
+ * @return Pair<Int, Int> - width and height in pixels
+ */
 @Suppress("DEPRECATION")
 fun getDeviceDimensions(context: Context): Pair<Int, Int> {
     val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -50,20 +60,33 @@ fun getDeviceDimensions(context: Context): Pair<Int, Int> {
     return realWidth to realHeight
 }
 
+/**
+ * Returns a string representing the device description.
+ */
 fun getDeviceDescription(context: Context): String {
     return formatDeviceString(DeviceStringFormatter(context, null), DEFAULT_FOLDER_FORMAT)
 }
 
+/**
+ * Returns a string representing the device description.
+ *
+ * @param testName - The name of the currently running test
+ * @param format - The format of the device description string
+ *  The following values will be substituted:
+ *     a: API level (ex. 21)
+ *     w: Device width (ex.720)
+ *     h: Device height (ex. 1440)
+ *     d: Device density (ex. 320dp)
+ *     l: Locale (ex. en_US)
+ *     c: Test class (ex. OrderDetailTest)
+ *     n: Test name (ex. testDefault)
+ *
+ * For example, a-wxh@d-l would be formatted as 21-720x1440@320dp-en_US
+ *
+ * @return String - The formatted device description string
+ */
 fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String {
-    /*
-    a: API level (ex. 21)
-    w: Device width (ex.720)
-    h: Device height (ex. 1440)
-    d: Device density (ex. 320dp)
-    l: Locale (ex. en_US)
-    c: Test class (ex. OrderDetailTest)
-    n: Test name (ex. testDefault)
-     */
+
     val a = formatter.androidVersion
     val w = formatter.deviceWidth
     val h = formatter.deviceHeight
@@ -89,6 +112,9 @@ fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String
     return stringBuilder.toString()
 }
 
+/**
+ * Utility class for formatting device description strings.
+ */
 open class DeviceStringFormatter(private val context: Context, private val testName: TestName?) {
 
     internal open val dimensions: Pair<Int, Int>

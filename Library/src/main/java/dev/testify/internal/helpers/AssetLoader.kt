@@ -24,15 +24,27 @@
 package dev.testify.internal.helpers
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 
 private const val LOG_TAG = "AssetLoader"
 
+/**
+ * Load an asset from the assets folder.
+ *
+ * @see [Context.getAssets]
+ * @see [AssetManager.open]
+ *
+ * @param context The context to use to load the asset.
+ * @param filePath The path to the asset to load.
+ * @param decoder The decoder to use to decode the asset.
+ * @return The decoded asset.
+ */
 @Throws(Exception::class)
 fun <T> loadAsset(context: Context, filePath: String, decoder: (InputStream) -> T): T? {
-    val assetManager = context.assets
+    val assetManager: AssetManager = context.assets
     var inputStream: InputStream? = null
     var asset: T?
     try {

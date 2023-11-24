@@ -28,12 +28,29 @@ import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.EditText
 
+/**
+ * A [ViewModification] that hides the password on an [EditText].
+ *
+ * This stops the default transformation method from briefly showing the typed characters, then replacing them with
+ * dots. This is useful for hiding passwords in screenshots and ensures that screenshots do not accidentally capture
+ * the characters mid-transformation.
+  *
+ * @see TestifyConfiguration.hidePassword
+ */
 class HidePasswordViewModification : ViewModification() {
 
+    /**
+     * Modifies the view by hiding the password.
+     *
+     * @see EditText.setTransformationMethod
+     */
     override fun performModification(view: View) {
         (view as EditText).transformationMethod = StaticPasswordTransformationMethod.getInstance()
     }
 
+    /**
+     * Returns true if the view is an [EditText] with a [PasswordTransformationMethod].
+     */
     override fun qualifies(view: View): Boolean {
         return view is EditText && view.transformationMethod is PasswordTransformationMethod
     }

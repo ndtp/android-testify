@@ -30,6 +30,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 
+/**
+ * Helper method that creates a [Bitmap] from the [ParallelPixelProcessor.TransformResult].
+ */
 fun ParallelPixelProcessor.TransformResult.createBitmap(): Bitmap {
     return Bitmap.createBitmap(
         this.pixels,
@@ -39,16 +42,28 @@ fun ParallelPixelProcessor.TransformResult.createBitmap(): Bitmap {
     )
 }
 
+/**
+ * Cache the number of processor cores available for parallel processing.
+ */
 private val numberOfAvailableCores = Runtime.getRuntime().availableProcessors()
 
+/**
+ * The maximum number of threads to use for parallel processing.
+ * This value is set to the number of available cores by default.
+ * This value can be overridden for testing purposes.
+ */
 @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
 internal var maxNumberOfChunkThreads = numberOfAvailableCores
 
+/**
+ * The [CoroutineDispatcher] to use for parallel processing.
+ * This value is set to a [Executors.newFixedThreadPool] with the number of available cores by default.
+ * This value can be overridden for testing purposes.
+ */
 @Suppress("ObjectPropertyName")
 @VisibleForTesting
 internal var _executorDispatcher: CoroutineDispatcher? = null
-
-val executorDispatcher by lazy {
+internal val executorDispatcher by lazy {
     if (_executorDispatcher == null) {
         _executorDispatcher = Executors.newFixedThreadPool(numberOfAvailableCores).asCoroutineDispatcher()
     }

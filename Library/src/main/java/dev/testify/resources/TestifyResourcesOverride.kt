@@ -42,6 +42,9 @@ import dev.testify.internal.helpers.ResourceWrapper
  */
 interface TestifyResourcesOverride {
 
+    /**
+     * Override the base context of the activity under test.
+     */
     @CallSuper
     fun attachBaseContext(newBase: Context?)
 

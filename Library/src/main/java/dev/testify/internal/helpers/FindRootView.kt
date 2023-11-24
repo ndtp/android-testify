@@ -29,6 +29,13 @@ import androidx.annotation.IdRes
 import dev.testify.core.exception.RootViewNotFoundException
 import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
+/**
+ * Helper extension method to find the root view of an [Activity].
+ *
+ * @param rootViewId The id of the root view.
+ * @return The root view.
+ * @throws RootViewNotFoundException If the root view is not found.
+ */
 @ExcludeFromJacocoGeneratedReport
 fun Activity.findRootView(@IdRes rootViewId: Int): ViewGroup =
     this.findViewById(rootViewId) ?: throw RootViewNotFoundException(this, rootViewId)
