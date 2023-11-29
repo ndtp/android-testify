@@ -23,6 +23,7 @@
  */
 package dev.testify.core.logic
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Bitmap
 import android.view.View
@@ -40,6 +41,7 @@ import dev.testify.createBitmapFromActivity
  * @return A [Bitmap] representing the captured [screenshotView] in [activity]
  *          Will return [null] if there is an error capturing the bitmap.
  */
+@SuppressLint("UnsafeOptInUsageError")
 fun takeScreenshot(
     activity: Activity,
     fileName: String,

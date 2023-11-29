@@ -121,6 +121,13 @@ fun calculateDeltaE(L1: Double, a1: Double, b1: Double, L2: Double, a2: Double, 
     )
 }
 
+/**
+ * Calculate the color difference value between two pixels in lab space.
+ *
+ * @param baselinePixel the baseline pixel
+ * @param currentPixel the current pixel
+ * @return the CIE 2000 colour difference
+ */
 fun calculateDeltaE(baselinePixel: Int, currentPixel: Int): Double {
     val baselineLab = RGB.fromInt(baselinePixel).toLAB()
     val currentLab = RGB.fromInt(currentPixel).toLAB()

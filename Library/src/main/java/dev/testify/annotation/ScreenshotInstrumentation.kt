@@ -27,6 +27,18 @@ package dev.testify.annotation
 
 import java.lang.annotation.Inherited
 
+/**
+ * Annotation used to indicate that this method or class is a Testify screenshot test.
+ * The annotation is used by the Gradle Plugin to filter tests and the Intellij Platform Plugin
+ * as an anchor for the IDE integration.
+ *
+ *     @ScreenshotInstrumentation
+ *     @Test
+ *     fun default() {
+ *         // Write test here
+ *     }
+ *
+ */
 @Inherited
 @Retention(AnnotationRetention.RUNTIME)
 @Target(

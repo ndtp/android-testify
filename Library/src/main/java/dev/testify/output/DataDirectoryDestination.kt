@@ -35,6 +35,10 @@ import dev.testify.core.formatDeviceString
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * A [Destination] that writes to the device's internal storage.
+ * Files using this destination will be stored in the app's internal data/data directory.
+ */
 open class DataDirectoryDestination(
     context: Context,
     override val fileName: String,
@@ -49,25 +53,47 @@ open class DataDirectoryDestination(
 
     open val LOG_TAG = "DataDirectory"
 
+    /**
+     * The path to the output file
+     */
     @VisibleForTesting
     val outputPath: String by lazy { getOutputFilePath(context, fileName, extension) }
 
+    /**
+     * A user-facing string describing the destination
+     * In this case, the description is the path to the output directory
+     */
     override val description: String
         get() = outputPath
 
+    /**
+     * Get [File] for the destination file
+     */
     override val file: File
         get() = File(outputPath)
 
+    /**
+     * Get an [OutputStream] for this destination
+     */
     override fun getFileOutputStream(): FileOutputStream =
         FileOutputStream(outputPath)
 
+    /**
+     * Load the destination file as a [Bitmap]
+     */
     override fun loadBitmap(preferredBitmapOptions: BitmapFactory.Options): Bitmap? {
         return BitmapFactory.decodeFile(outputPath, preferredBitmapOptions)
     }
 
+    /**
+     * Exception to throw when the destination is not found
+     */
     override fun getScreenshotDestinationNotFoundException(): Exception =
         DataDirectoryDestinationNotFoundException(outputPath)
 
+    /**
+     * Get the path to the output file
+     */
     protected open fun getOutputFilePath(
         context: Context,
         fileName: String,
@@ -76,6 +102,9 @@ open class DataDirectoryDestination(
         return "${getOutputDirectoryPath(context).path}/$fileName$extension"
     }
 
+    /**
+     * Get the path to the output directory
+     */
     protected open fun getOutputDirectoryPath(context: Context): File {
         val root = this.root ?: DATA_DESTINATION_DIR
         val path: File = context.getDir(root, Context.MODE_PRIVATE)
@@ -84,6 +113,9 @@ open class DataDirectoryDestination(
         return File(path, directory)
     }
 
+    /**
+     * Ensure the output destination directory exists, create if necessary
+     */
     override fun assureDestination(context: Context): Boolean {
         var created = true
         val outputDirectory = getOutputDirectoryPath(context)
@@ -94,8 +126,14 @@ open class DataDirectoryDestination(
         return created
     }
 
+    /**
+     * Remove the file at this Destination
+     */
     override fun delete(): Boolean = file.delete()
 }
 
+/**
+ * Exception to throw when the destination is not found or could not be created.
+ */
 internal class DataDirectoryDestinationNotFoundException(path: String) :
     TestifyException("NO_DIRECTORY", "\n\n* Could not find or create path {$path}")

@@ -25,4 +25,7 @@ package dev.testify
 
 import android.os.Bundle
 
+/**
+ * Function signature for providing Bundle extras to the Activity under test.
+ */
 typealias ExtrasProvider = (bundle: Bundle) -> Unit

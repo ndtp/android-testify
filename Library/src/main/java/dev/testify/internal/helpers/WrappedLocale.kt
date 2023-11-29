@@ -30,21 +30,49 @@ import android.content.Context
 import dev.testify.internal.extensions.updateLocale
 import java.util.Locale
 
+/**
+ * A wrapped resource that allows for overriding the locale of the device.
+ *
+ * @see TestifyResourcesOverride
+ * @see ResourceWrapper
+ */
 class WrappedLocale(override var overrideValue: Locale) : WrappedResource<Locale> {
+
+    /**
+     * The default value of the locale.
+     */
     override lateinit var defaultValue: Locale
 
+    /**
+     * Lifecycle method called before the activity is launched.
+     * This method is used to store the default value of the locale.
+     */
     override fun beforeActivityLaunched() {
         this.defaultValue = Locale.getDefault()
     }
 
+    /**
+     * Lifecycle method called after the activity is launched.
+     * This method is used to update the locale of the activity.
+     */
     override fun afterActivityLaunched(activity: Activity) {
         activity.updateLocale(this.overrideValue)
     }
 
+    /**
+     * Lifecycle method called after the test is finished.
+     * This method is used to reset the locale of the activity.
+     */
     override fun afterTestFinished(activity: Activity) {
         activity.updateLocale(defaultValue)
     }
 
+    /**
+     * Update the context with the locale.
+     *
+     * @param context The context to update.
+     * @return The updated context.
+     */
     override fun updateContext(context: Context): Context {
         return context.updateLocale(overrideValue)
     }

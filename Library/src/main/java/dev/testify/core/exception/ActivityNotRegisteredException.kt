@@ -24,6 +24,11 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when an activity is not registered in the AndroidManifest.xml.
+ *
+ * @param activityClass The activity class that is not registered.
+ */
 class ActivityNotRegisteredException(activityClass: Class<*>) : TestifyException(
     "NO_ACTIVITY",
     """

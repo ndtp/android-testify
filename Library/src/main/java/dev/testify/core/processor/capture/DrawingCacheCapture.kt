@@ -28,6 +28,15 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.view.View
 
+/**
+ * Capture a bitmap of the current activity.
+ *
+ * Uses View.getDrawingCache() to capture the bitmap.
+ *
+ * @param activity The activity to capture.
+ * @param targetView The view to capture. If null, the entire decorView of the activity will be captured.
+ * @return A bitmap of the activity.
+ */
 @Suppress("DEPRECATION")
 fun createBitmapFromDrawingCache(activity: Activity, targetView: View?): Bitmap {
     val view: View = targetView ?: activity.window.decorView

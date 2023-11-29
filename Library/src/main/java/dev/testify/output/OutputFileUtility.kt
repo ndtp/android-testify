@@ -24,11 +24,22 @@
  */
 package dev.testify.output
 
+/**
+ * The default screenshot directory name
+ */
 internal const val SCREENSHOT_DIR = "screenshots"
+
+/**
+ * The default screenshot file extension
+ */
 internal const val PNG_EXTENSION = ".png"
 
 /**
- * Get path to baseline image in assets
+ * Construct a path to the baseline image file
+ *
+ * @param subpath The subpath to the file
+ * @param fileName The name of the file
+ * @param extension The file extension
  */
 fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
     return "$SCREENSHOT_DIR/$subpath/$fileName$extension"

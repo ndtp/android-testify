@@ -26,13 +26,31 @@ package dev.testify.internal.modification
 
 import android.view.View
 
+/**
+ * A [ViewModification] that hides the scrollbars on a view.
+ *
+ * Scrolling content will display scrollbars on the side of the screen which can interfere with screenshots.
+ * Hiding the scrollbars is useful for ensuring that the view is in a consistent state before taking a screenshot.
+ *
+ * @see TestifyConfiguration.hideScrollbars
+ */
 class HideScrollbarsViewModification : ViewModification() {
 
+    /**
+     * Modifies the view by hiding the scrollbars.
+     *
+     * @see View.setHorizontalScrollBarEnabled
+     * @see View.setVerticalScrollBarEnabled
+     */
     override fun performModification(view: View) {
         view.isHorizontalScrollBarEnabled = false
         view.isVerticalScrollBarEnabled = false
     }
 
+    /**
+     * Returns true for all views.
+     * This modification is applied to all views to ensure that scrollbars are hidden on all views.
+     */
     override fun qualifies(view: View): Boolean {
         return true
     }

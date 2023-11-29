@@ -37,21 +37,36 @@ import dev.testify.ScreenshotRule
 import dev.testify.TestifyFeatures
 import java.util.Locale
 
+/**
+ * A class that allows the test to configure the screenshot rule.
+ * This class is primarily provided to allow the Java users to configure the rule in a more fluent manner.
+ */
 class ConfigurationBuilder<T : Activity> internal constructor(private val rule: ScreenshotRule<T>) {
 
     private val innerConfiguration = TestifyConfiguration()
 
+    /**
+     * Define set set of [Rect]s that should be excluded from the bitmap comparison.
+     */
     fun defineExclusionRects(provider: ExclusionRectProvider): ConfigurationBuilder<T> {
         innerConfiguration.exclusionRectProvider = provider
         return this
     }
 
+    /**
+     * Set the exactness of the bitmap comparison.
+     * The exactness is a value between 0.0 and 1.0, where 0.0 is the least exact and 1.0 is the most exact.
+     * The default value is 0.0.
+     */
     fun setExactness(exactness: Float?): ConfigurationBuilder<T> {
         require(exactness == null || exactness in 0.0..1.0)
         innerConfiguration.exactness = exactness
         return this
     }
 
+    /**
+     * Set the @IdRes of the view that should be focused before the bitmap is captured.
+     */
     fun setFocusTarget(
         enabled: Boolean = true,
         @IdRes focusTargetId: Int = android.R.id.content
@@ -63,46 +78,80 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
         return this
     }
 
+    /**
+     * Set the font scale of the Activity under test.
+     * The default value is 1.0.
+     */
     fun setFontScale(fontScale: Float): ConfigurationBuilder<T> {
         innerConfiguration.fontScale = fontScale
         return this
     }
 
+    /**
+     * Hide the text cursor before the bitmap is captured.
+     */
     fun setHideCursor(hideCursor: Boolean): ConfigurationBuilder<T> {
         innerConfiguration.hideCursor = hideCursor
         return this
     }
 
+    /**
+     * Hide passwords before the bitmap is captured.
+     */
     fun setHidePasswords(hidePasswords: Boolean): ConfigurationBuilder<T> {
         innerConfiguration.hidePasswords = hidePasswords
         return this
     }
 
+    /**
+     * Hide scrollbars before the bitmap is captured.
+     */
     fun setHideScrollbars(hideScrollbars: Boolean): ConfigurationBuilder<T> {
         innerConfiguration.hideScrollbars = hideScrollbars
         return this
     }
 
+    /**
+     * Hide the soft keyboard before the bitmap is captured.
+     */
     fun setHideSoftKeyboard(hideSoftKeyboard: Boolean): ConfigurationBuilder<T> {
         innerConfiguration.hideSoftKeyboard = hideSoftKeyboard
         return this
     }
 
+    /**
+     * Hide text suggestions before the bitmap is captured.
+     */
     fun setHideTextSuggestions(hideTextSuggestions: Boolean): ConfigurationBuilder<T> {
         innerConfiguration.hideTextSuggestions = hideTextSuggestions
         return this
     }
 
+    /**
+     * Pause the test execution after the bitmap is captured.
+     * This allows the user to inspect the bitmap before the comparison is performed.
+     *
+     * This is meant for debugging purposes only. It is not intended to be used in your final tests.
+     */
     fun setLayoutInspectionModeEnabled(layoutInspectionModeEnabled: Boolean): ConfigurationBuilder<T> {
         innerConfiguration.pauseForInspection = layoutInspectionModeEnabled
         return this
     }
 
+    /**
+     * Set the locale of the Activity under test.
+     * The default value is the system locale.
+     */
     fun setLocale(newLocale: Locale): ConfigurationBuilder<T> {
         innerConfiguration.locale = newLocale
         return this
     }
 
+    /**
+     * Set the orientation of the Activity under test.
+     * The requested orientation must be one of the following values:
+     * [SCREEN_ORIENTATION_LANDSCAPE] or [SCREEN_ORIENTATION_PORTRAIT]
+     */
     fun setOrientation(requestedOrientation: Int): ConfigurationBuilder<T> {
         require(
             requestedOrientation in SCREEN_ORIENTATION_LANDSCAPE..SCREEN_ORIENTATION_PORTRAIT
@@ -111,11 +160,21 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
         return this
     }
 
+    /**
+     * Request the use of the software renderer when capturing the bitmap.
+     *
+     * @see [View.setLayerType]
+     */
     fun setUseSoftwareRenderer(useSoftwareRenderer: Boolean): ConfigurationBuilder<T> {
         innerConfiguration.useSoftwareRenderer = useSoftwareRenderer
         return this
     }
 
+    /**
+     * Enable an experimental feature.
+     *
+     * @see [TestifyFeatures]
+     */
     fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ConfigurationBuilder<T> {
         feature.setEnabled(true)
         return this
@@ -167,6 +226,9 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
         this.isRecordMode = innerConfiguration.isRecordMode
     }
 
+    /**
+     * Apply the configuration to the rule and assert that the view matches the baseline.
+     */
     fun assertSame() {
         rule
             .configure(build())
@@ -174,6 +236,9 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
     }
 }
 
+/**
+ * Create a new [ConfigurationBuilder] instance.
+ */
 fun <T : Activity> makeConfigurable(rule: ScreenshotRule<T>): ConfigurationBuilder<T> {
     return ConfigurationBuilder(rule)
 }

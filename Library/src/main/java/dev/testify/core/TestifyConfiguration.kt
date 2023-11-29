@@ -59,35 +59,115 @@ import java.util.Locale
 typealias ExclusionRectProvider = (rootView: ViewGroup, exclusionRects: MutableSet<Rect>) -> Unit
 
 /**
- *
- * @param orientation:   Install an activity monitor and set the requested orientation.
- *                       Blocks and waits for the orientation change to complete before returning.
- *                       SCREEN_ORIENTATION_LANDSCAPE or SCREEN_ORIENTATION_PORTRAIT
- * @param focusTargetId: Allows Testify to deliberately set the keyboard focus to the specified view ID
- * @param captureMethod: Allow the test to define a custom bitmap capture method.
- *                       The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View
- *                       under test.
- * @param compareMethod: Allow the test to define a custom bitmap comparison method.
- *
- * @param isRecordMode: Record a new baseline when running the test
+ * A class that allows the test to configure the Activity and View as well as the method used for both capture and comparison.
  */
 data class TestifyConfiguration(
+    /**
+     * A callback of type ExclusionRectProvider. Used to provide a set of Rects that should be
+     * excluded from the bitmap comparison.
+     */
     var exclusionRectProvider: ExclusionRectProvider? = null,
+
+    /**
+     * A set of Rects that should be excluded from the bitmap comparison.
+     */
     val exclusionRects: MutableSet<Rect> = HashSet(),
+
+    /**
+     * Set the exactness of the bitmap comparison. The exactness is a value between 0.0 and 1.0, where 0.0 is the least
+     * exact and 1.0 is the most exact. The default value is 0.0.
+     */
     @FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null,
+
+    /**
+     * Install an activity monitor and set the requested orientation. Blocks and waits for the orientation change to
+     * complete before returning. Must be either SCREEN_ORIENTATION_LANDSCAPE or SCREEN_ORIENTATION_PORTRAIT.
+     */
     var orientation: Int? = null,
+
+    /**
+     * Set the font scale of the Activity under test.
+     */
     var fontScale: Float? = null,
+
+    /**
+     * Set the locale of the Activity under test.
+     */
     var locale: Locale? = null,
+
+    /**
+     * Hide the cursor before the bitmap is captured.
+     */
     var hideCursor: Boolean = true,
+
+    /**
+     * Hide passwords before the bitmap is captured.
+     */
     var hidePasswords: Boolean = true,
+
+    /**
+     * Hide scrollbars before the bitmap is captured.
+     */
     var hideScrollbars: Boolean = true,
+
+    /**
+     * Hide text suggestions before the bitmap is captured.
+     */
     var hideTextSuggestions: Boolean = true,
+
+    /**
+     * Use a software renderer to capture the bitmap. @see [View.setLayerType]
+     *
+     * A software layer is backed by a bitmap and causes the view to be rendered using Android's software rendering
+     * pipeline, even if hardware acceleration is enabled.
+     *
+     * Software layers can occasionally be useful to work around inconsistencies present when using hardware acceleration on
+     * a variety of different devices. For example, some devices may render a view differently when hardware acceleration is
+     * enabled, so a software layer can be used to ensure that the view is rendered consistently across all devices.
+     *
+     * However, it is important to note that the software rendered is significantly slower than the hardware accelerated.
+     * And, some features (such as rounded corners, shadows and elevation) are not supported when using software rendering.
+     * This may result in undesirable artifacts when using software rendering.
+     *
+     * If you are using a custom view that is not rendering consistently across devices, you may want to consider the
+     * techniques described in the
+     * [Accounting for platform differences](https://testify.dev/blog/platform-differences) blog post.
+     */
     var useSoftwareRenderer: Boolean = false,
+
+    /**
+     * Set the @IdRes of the view that should be focused before the bitmap is captured.
+     * Allows Testify to deliberately set the keyboard focus to the specified view ID.
+     */
     @IdRes var focusTargetId: Int = View.NO_ID,
+
+    /**
+     * Pause the test execution after the bitmap is captured.
+     * This allows the user to inspect the bitmap before the comparison is performed.
+     *
+     * This is meant for debugging purposes only. It is not intended to be used in your final tests.
+     */
     var pauseForInspection: Boolean = false,
+
+    /**
+     * Hide the soft keyboard before the bitmap is captured.
+     */
     var hideSoftKeyboard: Boolean = true,
+
+    /**
+     *  Allow the test to define a custom bitmap capture method.
+     *  The provided [captureMethod] will be used to create and save a [Bitmap] of the Activity and View under test.
+     */
     var captureMethod: CaptureMethod? = null,
+
+    /**
+     * Allow the test to define a custom bitmap comparison method.
+     */
     var compareMethod: CompareMethod? = null,
+
+    /**
+     * Record a new baseline when running the test
+     */
     var isRecordMode: Boolean = false
 ) {
 
@@ -98,6 +178,9 @@ data class TestifyConfiguration(
         )
     }
 
+    /**
+     * Returns true if the exactness value has been set.
+     */
     val hasExactness: Boolean
         get() = exactness != null
 
@@ -193,8 +276,14 @@ data class TestifyConfiguration(
         }
     }
 
+    /**
+     * Returns true if the test has defined any exclusion rects.
+     */
     internal fun hasExclusionRect() = exclusionRects.isNotEmpty()
 
+    /**
+     * Get the CaptureMethod that should be used to capture the bitmap.
+     */
     fun getBitmapCompare(): CompareMethod {
         return when {
             this.compareMethod != null -> this.compareMethod!!

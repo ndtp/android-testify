@@ -28,6 +28,9 @@ package dev.testify.core.exception
  * Thrown by assertExpectedDevice() when no baseline exists for the current target device, but a baseline exists for a
  * different device description. This is similar to [ScreenshotBaselineNotDefinedException] except that it indicates
  * that you may be running your tests on an incorrectly configured emulator.
+ *
+ * @param currentDevice The device description of the currently running emulator.
+ * @param expectedDevice The device description of the expected emulator.
  */
 class UnexpectedDeviceException(currentDevice: String, expectedDevice: String) :
     TestifyException(

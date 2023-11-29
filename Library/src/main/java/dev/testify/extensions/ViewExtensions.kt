@@ -27,6 +27,9 @@ package dev.testify.extensions
 import android.graphics.Rect
 import android.view.View
 
+/**
+ * Helper extension method to return the bounding box of the view in screen coordinates.
+ */
 val View.boundingBox
     get(): Rect {
         val screenLocation = IntArray(2)

@@ -25,10 +25,22 @@
 package dev.testify.report
 
 /**
- * Result of an individual test
+ * Result of an individual test.
+ * Used to create a YAML report.
  */
 enum class TestStatus {
+    /**
+     * Test passed
+     */
     PASS,
+
+    /**
+     * Test was skipped
+     */
     SKIP,
+
+    /**
+     * Test failed
+     */
     FAIL;
 }

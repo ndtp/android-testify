@@ -33,6 +33,16 @@ import dev.testify.CompatibilityMethods
 import dev.testify.ScreenshotRule
 import java.util.Locale
 
+/**
+ * Interface that defines methods which are API compatible with the old Testify builder API.
+ * These are provided as a migration tool for users who are upgrading from the old API.
+ * These methods should not be used in new code.
+ *
+ * The recommended way to configure the rule is to use the [ScreenshotRule.configure] method.
+ *
+ * @param TRule The type of the [ScreenshotRule] that is being configured.
+ * @param TActivity The type of the [Activity] that is being tested.
+ */
 internal class ScreenshotRuleCompatibilityMethods<TRule : ScreenshotRule<TActivity>, TActivity : Activity> :
     CompatibilityMethods<TRule, TActivity> {
 

@@ -144,7 +144,7 @@ class ScreenshotRuleTest {
         mockkStatic("dev.testify.internal.helpers.FindRootViewKt")
         mockkStatic(BitmapFactory::class)
         mockkObject(Reporter.Companion)
-        mockkObject(TestInstrumentationRegistry.Companion)
+        mockkObject(TestInstrumentationRegistry)
         mockkObject(HighContrastDiff.Companion)
 
         val arguments = mockk<Bundle>(relaxed = true)

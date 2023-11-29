@@ -24,5 +24,9 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown to safeguard against accidentally omitting the call to `assertSame`.
+ * `assertSame` must be called in the test method.
+ */
 class MissingAssertSameException :
     TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the ScreenshotRule *\n")
