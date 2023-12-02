@@ -1,5 +1,21 @@
 # Testify Change Log
 
+## Unreleased
+
+### Library
+
+#### Added
+
+- Added additional method documentation.
+
+### Flix Sample
+
+#### Changed
+
+- Flix Sample now uses Hilt instead of Koin for dependency injection.
+
+---
+
 ## 2.0.0-rc03
 
 ### Library

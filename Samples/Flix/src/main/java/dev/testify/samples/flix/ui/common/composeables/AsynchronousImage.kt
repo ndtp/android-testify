@@ -9,9 +9,11 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
-import dev.testify.samples.flix.application.foundation.coil.ImageLoaderProvider
+import coil.imageLoader
 
 @Composable
 fun AsynchronousImage(
@@ -30,10 +32,11 @@ fun AsynchronousImage(
     colorFilter: ColorFilter? = null,
     filterQuality: FilterQuality = DrawScope.DefaultFilterQuality,
 ) {
+    val imageLoader: ImageLoader = LocalContext.current.imageLoader
     AsyncImage(
         model = model,
         contentDescription = contentDescription,
-        imageLoader = ImageLoaderProvider().provide(),
+        imageLoader = imageLoader,
         modifier = modifier,
         placeholder = placeholder,
         error = error,

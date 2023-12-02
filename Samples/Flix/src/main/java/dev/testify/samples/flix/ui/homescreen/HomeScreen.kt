@@ -33,6 +33,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.testify.samples.flix.R
 import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
@@ -45,13 +46,12 @@ import dev.testify.samples.flix.ui.common.composeables.*
 import dev.testify.samples.flix.ui.common.renderer.ScreenState
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeScreenViewModel = koinViewModel(),
     onNavigateToMovieDetailsScreen: ((Int) -> Unit)? = null
 ) {
+    val viewModel = hiltViewModel<HomeScreenViewModel>()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     val viewActionHandler = viewModel::handleViewAction
     val systemActions = viewModel.systemActions

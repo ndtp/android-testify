@@ -41,17 +41,11 @@ import dev.testify.samples.flix.domain.model.MovieReleaseDatesDomainModel
 import dev.testify.samples.flix.domain.model.PersonDomainModel
 import dev.testify.samples.flix.domain.model.ReleaseType
 import kotlinx.datetime.Instant
+import javax.inject.Inject
 
-interface DataLayerEntityToDomainModelMapper {
-    fun map(movie: Movie, urlResolver: TheMovieDbUrlResolver): MovieDomainModel?
-    fun map(movieDetails: MovieDetail, urlResolver: TheMovieDbUrlResolver): MovieDomainModel?
-    fun map(movieReleaseDates: MovieReleaseDates): MovieReleaseDatesDomainModel?
-    fun map(movieCredits: MovieCredits, urlResolver: TheMovieDbUrlResolver): MovieCreditsDomainModel
-}
+class DataLayerEntityToDomainModelMapper @Inject constructor()  {
 
-class DataLayerEntityToDomainModelMapperImpl : DataLayerEntityToDomainModelMapper {
-
-    override fun map(movie: Movie, urlResolver: TheMovieDbUrlResolver): MovieDomainModel? {
+    fun map(movie: Movie, urlResolver: TheMovieDbUrlResolver): MovieDomainModel? {
         return runCatching {
             requireNotNull(movie.id)
             requireNotNull(movie.title)
@@ -69,7 +63,7 @@ class DataLayerEntityToDomainModelMapperImpl : DataLayerEntityToDomainModelMappe
         }.getOrNull()
     }
 
-    override fun map(
+    fun map(
         movieDetails: MovieDetail,
         urlResolver: TheMovieDbUrlResolver
     ): MovieDomainModel? {
@@ -106,7 +100,7 @@ class DataLayerEntityToDomainModelMapperImpl : DataLayerEntityToDomainModelMappe
         return split("-").firstOrNull()
     }
 
-    override fun map(movieReleaseDates: MovieReleaseDates): MovieReleaseDatesDomainModel? {
+    fun map(movieReleaseDates: MovieReleaseDates): MovieReleaseDatesDomainModel? {
         return runCatching {
             movieReleaseDates.releaseDateByCountries
                 .filteredValid()
@@ -175,7 +169,7 @@ class DataLayerEntityToDomainModelMapperImpl : DataLayerEntityToDomainModelMappe
         return this?.takeIf { it.isNotBlank() }?.let { urlResolver.resolveImageUrl(it) }
     }
 
-    override fun map(movieCredits: MovieCredits, urlResolver: TheMovieDbUrlResolver): MovieCreditsDomainModel {
+    fun map(movieCredits: MovieCredits, urlResolver: TheMovieDbUrlResolver): MovieCreditsDomainModel {
         return MovieCreditsDomainModel(
             cast = movieCredits.cast?.mapNotNull { it.toDomainModel(urlResolver) } ?: emptyList()
         )

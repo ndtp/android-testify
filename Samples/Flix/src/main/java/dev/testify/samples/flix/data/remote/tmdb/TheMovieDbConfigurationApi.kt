@@ -29,34 +29,27 @@ import android.util.Log
 import dev.testify.samples.flix.data.remote.tmdb.entity.Configuration
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
-import org.koin.core.qualifier.named
+import javax.inject.Inject
 
-interface TheMovieDbConfigurationApi {
-    suspend fun getApiConfiguration(): TheMovieDbApiConfiguration
-}
-
-internal class TheMovieDbConfigurationApiImpl(
+class TheMovieDbConfigurationApi @Inject constructor(
     private val theMovieDbApi: TheMovieDbApi,
-    private var cachedConfiguration: TheMovieDbApiConfiguration? = null,
+    private val defaultConfiguration: TheMovieDbApiConfiguration
+) {
+    private var cachedConfiguration: TheMovieDbApiConfiguration? = null
     private val cachedConfigurationMutex: Mutex = Mutex()
-) : TheMovieDbConfigurationApi, KoinComponent {
 
     companion object {
-        private val LOG_TAG = TheMovieDbConfigurationApiImpl::class.simpleName
+        private val LOG_TAG = TheMovieDbConfigurationApi::class.simpleName
     }
 
-    private val defaultConfiguration: TheMovieDbApiConfiguration = get(qualifier = named("default_configuration"))
-
-    override suspend fun getApiConfiguration(): TheMovieDbApiConfiguration {
+    suspend fun getApiConfiguration(): TheMovieDbApiConfiguration {
         return cachedConfigurationMutex.withLock {
             cachedConfiguration ?: loadConfiguration() ?: defaultConfiguration
         }
     }
 
     private suspend fun loadConfiguration(): TheMovieDbApiConfiguration? {
-            theMovieDbApi.getConfiguration().fold(
+        theMovieDbApi.getConfiguration().fold(
             onSuccess = { cachedConfiguration = it.toConfiguration() },
             onFailure = {
                 cachedConfiguration = null

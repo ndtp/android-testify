@@ -26,6 +26,7 @@
 package dev.testify.samples.flix.presentation.moviedetails.model.mapper
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.testify.samples.flix.R
 import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
 import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
@@ -36,16 +37,12 @@ import dev.testify.samples.flix.ui.common.util.ImagePromise
 import dev.testify.samples.flix.ui.common.util.imagePromise
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import javax.inject.Inject
 
-interface MovieDetailsDomainModelToPresentationMapper {
-    fun map(domainModel: MovieDetailsDomainModel): MovieDetailsPresentationModel
-}
-
-class MovieDetailsDomainModelToPresentationMapperImpl(
-    private val context: Context
-) :
-    MovieDetailsDomainModelToPresentationMapper {
-    override fun map(domainModel: MovieDetailsDomainModel): MovieDetailsPresentationModel {
+class MovieDetailsDomainModelToPresentationMapper @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
+    fun map(domainModel: MovieDetailsDomainModel): MovieDetailsPresentationModel {
         return with(domainModel.movie) {
             MovieDetailsPresentationModel(
                 id = id,

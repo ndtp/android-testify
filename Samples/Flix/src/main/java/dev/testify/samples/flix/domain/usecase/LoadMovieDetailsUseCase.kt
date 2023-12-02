@@ -34,20 +34,17 @@ import dev.testify.samples.flix.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-interface LoadMovieDetailsUseCase {
-    fun asFlow(movieId: Int): Flow<Result<MovieDetailsDomainModel>?>
-}
-
-internal class LoadMovieDetailsUseCaseImpl(
+class LoadMovieDetailsUseCase @Inject constructor(
     private val movieRepository: MovieRepository
-) : LoadMovieDetailsUseCase {
+) {
 
     companion object {
-        private val LOG_TAG = LoadHomeScreenUseCaseImpl::class.simpleName
+        private val LOG_TAG = LoadMovieDetailsUseCase::class.simpleName
     }
 
-    override fun asFlow(movieId: Int): Flow<Result<MovieDetailsDomainModel>?> {
+    fun asFlow(movieId: Int): Flow<Result<MovieDetailsDomainModel>?> {
         val movieDetailsFlow = flow {
             val movieDetails = movieRepository.getMovieDetails(movieId)
             emit(movieDetails)

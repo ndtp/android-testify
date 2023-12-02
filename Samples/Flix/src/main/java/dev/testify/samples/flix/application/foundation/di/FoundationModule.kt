@@ -1,23 +1,32 @@
-package dev.testify.samples.flix.application.foundation.coil
+package dev.testify.samples.flix.application.foundation.di
 
+import android.content.Context
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
 import coil.ImageLoader
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import dev.testify.samples.flix.BuildConfig
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.asCoroutineDispatcher
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import org.koin.dsl.module
+import javax.inject.Singleton
 
-val coilImageLoaderModule = module {
+
+@Module
+@InstallIn(value = [SingletonComponent::class])
+class FoundationModule {
 
     // A Coroutine dispatcher built from an Espresso IdlingThreadPoolExecutor.
     // Using this dispatcher, Coil will participate with Espresso's IdlingResource system allowing screenshot tests
     // to block while Coil is loading images.
-    single<CoroutineDispatcher>(createdAtStart = false) {
+    @Provides
+    @Singleton
+    fun provideCoroutineDispatcher(): CoroutineDispatcher =
         IdlingThreadPoolExecutor(
             "coilImageLoaderThreadPool",
             Runtime.getRuntime().availableProcessors(),
@@ -27,21 +36,17 @@ val coilImageLoaderModule = module {
             LinkedBlockingQueue(),
             Executors.defaultThreadFactory()
         ).asCoroutineDispatcher()
-    }
 
-    // A singleton ImageLoader for the Coil image loading library. In debug builds an Espresso IdlingThreadPoolExecutor
-    // will be injected. Otherwise a default ImageLoader will be used.
-    single<ImageLoader> {
+    @Provides
+    @Singleton
+    fun provideImageLoader(
+        @ApplicationContext context: Context,
+        dispatcher: CoroutineDispatcher
+    ): ImageLoader =
         if (BuildConfig.DEBUG) {
-            ImageLoader.Builder(get()).dispatcher(get()).build()
+            ImageLoader.Builder(context).dispatcher(dispatcher).build()
         } else {
-            ImageLoader.Builder(get()).build()
+            ImageLoader.Builder(context).build()
         }
-    }
 }
 
-class ImageLoaderProvider : KoinComponent {
-
-    private val coilImageLoader: ImageLoader by inject()
-    fun provide(): ImageLoader = coilImageLoader
-}

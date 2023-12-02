@@ -28,6 +28,7 @@ package dev.testify.samples.flix.presentation.moviedetails.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.testify.samples.flix.application.foundation.ui.state.BasicScreenState
 import dev.testify.samples.flix.application.foundation.ui.state.FullscreenLoadingState
 import dev.testify.samples.flix.application.foundation.ui.state.ScreenState
@@ -46,13 +47,16 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+
 
 sealed class MovieDetailsViewState : ViewState() {
-    data class LoadedMovieDetailsViewState(val presentationModel: MovieDetailsPresentationModel) : MovieDetailsViewState()
+    data class LoadedMovieDetailsViewState(val presentationModel: MovieDetailsPresentationModel) :
+        MovieDetailsViewState()
 }
 
-class MovieDetailsViewModel(
-    private val args: Args,
+@HiltViewModel
+class MovieDetailsViewModel @Inject constructor(
     private val loadMovieDetailsUseCase: LoadMovieDetailsUseCase,
     private val movieDetailsPresentationMapper: MovieDetailsDomainModelToPresentationMapper
 ) : ViewModel() {
@@ -61,20 +65,23 @@ class MovieDetailsViewModel(
         private val LOG_TAG = MovieDetailsViewModel::class.simpleName
     }
 
-    data class Args(val movieId: Int)
+    private var movieId: Int = 0
 
     val screenState: StateFlow<ScreenState>
         get() = _screenState
 
     private val _screenState: MutableStateFlow<ScreenState> = MutableStateFlow(UnsetScreenState)
 
-    init {
-        start()
+    fun initialize(movieId: Int) {
+        if (screenState.value is UnsetScreenState) {
+            this.movieId = movieId
+            start()
+        }
     }
 
     private fun start() {
         viewModelScope.launch {
-            loadMovieDetailsUseCase.asFlow(args.movieId)
+            loadMovieDetailsUseCase.asFlow(movieId)
                 .onStart {
                     Log.d(LOG_TAG, "Began collecting from LoadMovieDetailsUseCase")
                     updateScreenState(FullscreenLoadingState)

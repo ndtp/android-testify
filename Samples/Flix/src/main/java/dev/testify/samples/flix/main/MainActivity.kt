@@ -31,6 +31,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -38,14 +39,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dagger.hilt.android.AndroidEntryPoint
 import dev.testify.samples.flix.application.navigation.NavigationDestinations
 import dev.testify.samples.flix.application.navigation.NavigationViewModel
 import dev.testify.samples.flix.ui.homescreen.HomeScreen
 import dev.testify.samples.flix.ui.moviedetails.MovieDetailsScreen
 import dev.testify.samples.flix.ui.theme.FlixTheme
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,9 +63,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun FlixNavigationHost(
-    navigationViewModel: NavigationViewModel = koinViewModel(),
     navHostController: NavHostController = rememberNavController()
 ) {
+    val navigationViewModel = hiltViewModel<NavigationViewModel>()
     LaunchedEffect(Unit) {
         launch {
             navigationViewModel.navigationCommandFlow.collect {

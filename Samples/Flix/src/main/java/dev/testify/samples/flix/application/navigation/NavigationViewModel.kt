@@ -27,12 +27,15 @@ package dev.testify.samples.flix.application.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NavigationViewModel : ViewModel() {
+@HiltViewModel
+class NavigationViewModel @Inject constructor() : ViewModel() {
 
     private val _navigationCommandFlow = MutableSharedFlow<NavigationCommand>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     val navigationCommandFlow = _navigationCommandFlow.asSharedFlow()

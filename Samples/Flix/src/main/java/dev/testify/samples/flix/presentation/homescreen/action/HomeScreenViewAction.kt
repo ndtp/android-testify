@@ -26,21 +26,21 @@
 package dev.testify.samples.flix.presentation.homescreen.action
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dev.testify.samples.flix.R
 import dev.testify.samples.flix.application.foundation.ui.action.ViewAction
 import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import javax.inject.Inject
 
-sealed class HomeScreenViewAction : ViewAction, KoinComponent {
-
-    internal val context: Context by inject()
+sealed class HomeScreenViewAction : ViewAction {
 
     data class ViewHeadliningMoveInfoPressed(val moviePresentationModel: MoviePresentationModel) : HomeScreenViewAction() {
-        override fun describe() = context.getString(R.string.view_action_view_headlining_movie_info, moviePresentationModel.title)
+        override fun describe() = moviePresentationModel.title
+            // TODO: context.getString(R.string.view_action_view_headlining_movie_info, moviePresentationModel.title)
     }
 
     data class MovieThumbnailPressed(val moviePresentationModel: MoviePresentationModel) : HomeScreenViewAction() {
-        override fun describe(): String = context.getString(R.string.view_action_view_movie_detail, moviePresentationModel.title)
+        override fun describe(): String = moviePresentationModel.title
+            // TODO: context.getString(R.string.view_action_view_movie_detail, moviePresentationModel.title)
     }
 }

@@ -28,6 +28,7 @@ package dev.testify.samples.flix.presentation.homescreen.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.testify.samples.flix.application.foundation.ui.state.BasicScreenState
 import dev.testify.samples.flix.application.foundation.ui.state.ScreenState
 import dev.testify.samples.flix.application.foundation.ui.state.UnsetScreenState
@@ -49,6 +50,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed class HomeScreenViewState : ViewState() {
     data class LoadedHomeScreenViewState(val presentationModel: HomeScreenPresentationModel) : HomeScreenViewState()
@@ -56,7 +58,8 @@ sealed class HomeScreenViewState : ViewState() {
 
 typealias HomeScreenViewActionHandler = (HomeScreenViewAction) -> Unit
 
-class HomeScreenViewModel(
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
     private val loadHomeScreenUseCase: LoadHomeScreenUseCase,
     private val homeScreenPresentationMapper: HomeScreenDomainModelToPresentationMapper
 ) : ViewModel() {

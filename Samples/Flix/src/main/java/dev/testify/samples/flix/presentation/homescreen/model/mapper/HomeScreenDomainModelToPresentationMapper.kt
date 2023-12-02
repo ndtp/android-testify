@@ -28,15 +28,12 @@ package dev.testify.samples.flix.presentation.homescreen.model.mapper
 import dev.testify.samples.flix.domain.model.HomeScreenDomainModel
 import dev.testify.samples.flix.presentation.common.model.mapper.MovieDomainModelToPresentationMapper
 import dev.testify.samples.flix.presentation.homescreen.model.HomeScreenPresentationModel
+import javax.inject.Inject
 
-interface HomeScreenDomainModelToPresentationMapper {
-    fun convert(domainModel: HomeScreenDomainModel): HomeScreenPresentationModel
-}
-
-class HomeScreenDomainModelToPresentationMapperImpl(
+class HomeScreenDomainModelToPresentationMapper @Inject constructor(
     private val movieMapper: MovieDomainModelToPresentationMapper
-) : HomeScreenDomainModelToPresentationMapper {
-    override fun convert(domainModel: HomeScreenDomainModel): HomeScreenPresentationModel {
+) {
+    fun convert(domainModel: HomeScreenDomainModel): HomeScreenPresentationModel {
         return HomeScreenPresentationModel(
             headliningMovie = domainModel.headlineTrendingMovie?.let { movieMapper.convert(it) },
             moviesNowPlaying = domainModel.moviesNowPlaying.map { movieMapper.convert(it) },
