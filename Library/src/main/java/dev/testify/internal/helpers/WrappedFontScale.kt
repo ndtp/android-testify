@@ -32,29 +32,56 @@ import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.VisibleForTesting
 
+/**
+ * A wrapped resource that allows for overriding the font scale of the device.
+ *
+ * @see TestifyResourcesOverride
+ * @see ResourceWrapper
+ */
 class WrappedFontScale(override var overrideValue: Float) : WrappedResource<Float> {
     override var defaultValue: Float = 1.0f
 
+    /**
+     * Lifecycle method called before the activity is launched.
+     * This method is not used for this resource.
+     */
     override fun beforeActivityLaunched() {
     }
 
+    /**
+     * Lifecycle method called after the activity is launched.
+     * This method is used to update the font scale of the activity.
+     */
     override fun afterActivityLaunched(activity: Activity) {
         defaultValue = activity.resources.configuration.fontScale
         activity.updateFontScale(this.overrideValue)
     }
 
+    /**
+     * Lifecycle method called after the test is finished.
+     * This method is used to reset the font scale of the activity.
+     */
     override fun afterTestFinished(activity: Activity) {
         if (buildVersionSdkInt() <= Build.VERSION_CODES.M) {
             activity.updateFontScale(defaultValue)
         }
     }
 
+    /**
+     * Update the context with the font scale.
+     */
     override fun updateContext(context: Context): Context {
         defaultValue = context.resources.configuration.fontScale
         return context.updateFontScale(overrideValue)
     }
 }
 
+/**
+ * Update the font scale of the context.
+ *
+ * @param fontScale The font scale to update to.
+ * @return The updated context.
+ */
 internal fun Context.updateFontScale(fontScale: Float?): Context {
     if (fontScale == null) return this
 
@@ -65,15 +92,30 @@ internal fun Context.updateFontScale(fontScale: Float?): Context {
     }
 }
 
+/**
+ * Update the font scale of the context.
+ *
+ * This method is only available on API 24+.
+ *
+ * @param fontScale The font scale to update to.
+ * @return The updated context.
+ */
 @VisibleForTesting
 @TargetApi(Build.VERSION_CODES.N)
 internal fun Context.updateResources(fontScale: Float): Context {
     val configuration = Configuration(this.resources.configuration)
     configuration.fontScale = fontScale
-    val x = this.createConfigurationContext(configuration)
-    return x
+    return this.createConfigurationContext(configuration)
 }
 
+/**
+ * Update the font scale of the context.
+ *
+ * This method is only available on API 23 and below.
+ *
+ * @param fontScale The font scale to update to.
+ * @return The updated context.
+ */
 @VisibleForTesting
 @Suppress("DEPRECATION")
 internal fun Context.updateResourcesLegacy(fontScale: Float): Context {

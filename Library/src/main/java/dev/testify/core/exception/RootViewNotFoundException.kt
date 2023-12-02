@@ -27,6 +27,13 @@ package dev.testify.core.exception
 import android.content.Context
 import androidx.annotation.IdRes
 
+/**
+ * Exception thrown when the root view id cannot be found in the test harness Activity.
+ *
+ * @param context The context of the test harness Activity.
+ * @param rootViewId The id of the root view.
+ *
+ */
 class RootViewNotFoundException(context: Context, @IdRes rootViewId: Int) :
     TestifyException(
         "NO_ROOT_VIEW",

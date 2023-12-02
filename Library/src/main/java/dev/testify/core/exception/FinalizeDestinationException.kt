@@ -23,5 +23,8 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when the [Destination] could not be finalized.
+ */
 class FinalizeDestinationException(description: String) :
     TestifyException("FINALIZE_DESTINATION", "Failed to finalize $description")

@@ -27,6 +27,7 @@ package dev.testify
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Debug
@@ -42,6 +43,11 @@ import dev.testify.output.getFileRelativeToRoot
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+/**
+ * The default, preferred [BitmapFactory.Options] to use when decoding a [Bitmap].
+ * This is set to [Bitmap.Config.ARGB_8888] to ensure that the bitmap is decoded with an alpha channel.
+ * This is required for the [Bitmap.sameAs] function to work correctly.
+ */
 val preferredBitmapOptions: BitmapFactory.Options
     get() {
         val options = BitmapFactory.Options()
@@ -49,6 +55,17 @@ val preferredBitmapOptions: BitmapFactory.Options
         return options
     }
 
+/**
+ * Write the given [bitmap] to the [destination] file.
+ *
+ * @param context The [Context] to use when writing the bitmap to disk.
+ * @param bitmap The [Bitmap] to write to disk. If null, this function will return false.
+ * @param destination The [Destination] to write the bitmap to.
+ *
+ * @throws DestinationNotFoundException if the destination cannot be found.
+ *
+ * @return true if the bitmap was successfully written to the destination, false otherwise.
+ */
 fun saveBitmapToDestination(context: Context, bitmap: Bitmap?, destination: Destination): Boolean {
     if (bitmap == null) {
         return false
@@ -67,6 +84,17 @@ fun saveBitmapToDestination(context: Context, bitmap: Bitmap?, destination: Dest
     }
 }
 
+/**
+ * Load a [Bitmap] from the androidTest assets directory.
+ *
+ * @see [Context.getAssets]
+ * @see [AssetManager.open]
+ *
+ * @param context The [Context] to use to load the asset.
+ * @param filePath The path to the asset to load.
+ *
+ * @return The decoded asset as a Bitmap.
+ */
 @Throws(Exception::class)
 private fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap? {
     return loadAsset(context, filePath) {
@@ -76,6 +104,11 @@ private fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap? {
 
 /**
  * Load a baseline bitmap from the androidTest assets directory.
+ *
+ * @param context The [Context] to use to load the asset.
+ * @param testName The name of the test to load the baseline for.
+ *
+ * @return The decoded asset as a Bitmap.
  */
 fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap? {
     val filePath = getFileRelativeToRoot(
@@ -133,11 +166,23 @@ fun createBitmapFromActivity(
 /**
  * Decode the file specified by [outputPath] into a bitmap. If the specified file name is null, or cannot be
  * decoded into a bitmap, the function returns null.
+ *
+ * @param outputPath The path to the file to decode.
+ * @param preferredBitmapOptions The [BitmapFactory.Options] to use when decoding the file.
+ *
+ * @return A [Bitmap] representing the file at [outputPath], or null if the file cannot be decoded.
  */
 fun loadBitmapFromFile(outputPath: String, preferredBitmapOptions: BitmapFactory.Options): Bitmap? {
     return BitmapFactory.decodeFile(outputPath, preferredBitmapOptions)
 }
 
+/**
+ * Delete the Bitmap [File] specified by [destination].
+ *
+ * @param destination The [Destination] to delete.
+ *
+ * @return true if the file was successfully deleted, false otherwise.
+ */
 fun deleteBitmap(destination: Destination): Boolean {
     return destination.delete()
 }

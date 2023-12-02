@@ -30,49 +30,50 @@ import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
 
-class TestInstrumentationRegistry {
-    companion object {
+/**
+ * A collection of utility methods for interacting with the instrumentation registry.
+ */
+object TestInstrumentationRegistry {
 
-        /**
-         * Returns true if the current test run is in record mode.
-         * When in record mode, differences will be reported, but ignored.
-         * Tests will not fail and all baselines will be updated.
-         */
-        val isRecordMode: Boolean
-            get() {
-                val extras = InstrumentationRegistry.getArguments()
-                return extras.getString("isRecordMode") == "true" || ManifestPlaceholder.RecordMode.getMetaDataValue()
-                    .contentEquals("true", true)
-            }
-
-        /**
-         * Prints a string to the instrumentation output stream (test log).
-         *
-         * @param str - A string to print to the instrumentation stream.
-         */
-        fun instrumentationPrintln(str: String) {
-            InstrumentationRegistry.getInstrumentation().sendStatus(
-                0,
-                Bundle().apply {
-                    putString(Instrumentation.REPORT_KEY_STREAMRESULT, "\n" + str)
-                }
-            )
-        }
-
-        /**
-         * Get the gradle project name of the module which contains the currently running test.
-         * This requires the argument "moduleName" to be specified. Tests run via Android Studio do not specify the
-         * "moduleName" argument and so this method will return an empty string.
-         *
-         * @return Gradle module name if available.  e.g. :Sample
-         *      Empty string otherwise.
-         */
-        @ExcludeFromJacocoGeneratedReport
-        fun getModuleName(): String {
+    /**
+     * Returns true if the current test run is in record mode.
+     * When in record mode, differences will be reported, but ignored.
+     * Tests will not fail and all baselines will be updated.
+     */
+    val isRecordMode: Boolean
+        get() {
             val extras = InstrumentationRegistry.getArguments()
-            val name = if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
-            return name.ifEmpty { ManifestPlaceholder.Module.getMetaDataValue() ?: "" }
+            return extras.getString("isRecordMode") == "true" || ManifestPlaceholder.RecordMode.getMetaDataValue()
+                .contentEquals("true", true)
         }
+
+    /**
+     * Prints a string to the instrumentation output stream (test log).
+     *
+     * @param str - A string to print to the instrumentation stream.
+     */
+    fun instrumentationPrintln(str: String) {
+        InstrumentationRegistry.getInstrumentation().sendStatus(
+            0,
+            Bundle().apply {
+                putString(Instrumentation.REPORT_KEY_STREAMRESULT, "\n" + str)
+            }
+        )
+    }
+
+    /**
+     * Get the gradle project name of the module which contains the currently running test.
+     * This requires the argument "moduleName" to be specified. Tests run via Android Studio do not specify the
+     * "moduleName" argument and so this method will return an empty string.
+     *
+     * @return Gradle module name if available.  e.g. :Sample
+     *      Empty string otherwise.
+     */
+    @ExcludeFromJacocoGeneratedReport
+    fun getModuleName(): String {
+        val extras = InstrumentationRegistry.getArguments()
+        val name = if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
+        return name.ifEmpty { ManifestPlaceholder.Module.getMetaDataValue() ?: "" }
     }
 }
 
@@ -85,4 +86,7 @@ fun isInvokedFromPlugin(): Boolean =
 private const val ESC_CYAN = "${27.toChar()}[36m"
 private const val ESC_RESET = "${27.toChar()}[0m"
 
+/**
+ * Returns a string wrapped in ANSI cyan escape characters.
+ */
 fun String.cyan() = "$ESC_CYAN$this$ESC_RESET"

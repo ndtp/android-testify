@@ -40,6 +40,14 @@ import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+/**
+ * Helper class for orientation.
+ *
+ * This class is responsible for changing the orientation of the activity under test.
+ *
+ * @param requestedOrientation The orientation to change to.
+ *  The value must be one of [SCREEN_ORIENTATION_LANDSCAPE] or [SCREEN_ORIENTATION_PORTRAIT].
+ */
 class OrientationHelper(
     private var requestedOrientation: Int?
 ) {
@@ -53,8 +61,18 @@ class OrientationHelper(
         )
     }
 
+    /**
+     * Change the orientation of the activity under test.
+     * Set the orientation based on how the activity was launched.
+     *
+     * If the activity was launched in a different orientation than the requested orientation, perform a rotation.
+     *
+     * @param activity The activity to change the orientation of.
+     * @param requestedOrientation The orientation to change to.
+     *  The value must be one of [SCREEN_ORIENTATION_LANDSCAPE] or [SCREEN_ORIENTATION_PORTRAIT].
+     */
     fun afterActivityLaunched() {
-        // Set the orientation based on how the activity was launched
+        //
         this.requestedOrientation?.let { requestedOrientation ->
             if (!activity.isRequestedOrientation(requestedOrientation)) {
                 changeOrientation(activity, requestedOrientation)
@@ -73,6 +91,9 @@ class OrientationHelper(
         }
     }
 
+    /**
+     * Reset the helper.
+     */
     fun afterTestFinished() {
         requestedOrientation = null
     }
@@ -94,12 +115,26 @@ class OrientationHelper(
         }
     }
 
+    /**
+     * Loops the main thread until the app goes idle.
+     * This is used to ensure that all Espresso actions have been completed.
+     * This is needed to ensure that the view is in the correct state before taking a screenshot.
+     *
+     * Wrapper for [Espresso.onIdle], used to allow mocking.
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal fun syncUiThread() {
         Espresso.onIdle()
     }
 
+    /**
+     * Change the orientation of the activity under test.
+     *
+     * @param activity The activity to change the orientation of.
+     * @param requestedOrientation The orientation to change to.
+     *  The value must be one of [SCREEN_ORIENTATION_LANDSCAPE] or [SCREEN_ORIENTATION_PORTRAIT].
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal fun changeOrientation(activity: Activity, requestedOrientation: Int) {
@@ -132,6 +167,9 @@ class OrientationHelper(
     }
 }
 
+/**
+ * Check if the activity is in landscape orientation.
+ */
 private val Activity.isLandscape: Boolean
     get() {
         val size = Point(-1, -1)

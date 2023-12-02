@@ -26,6 +26,26 @@ package dev.testify.internal.modification
 
 import android.view.View
 
+/**
+ * A [ViewModification] that sets the layer type to [View.LAYER_TYPE_SOFTWARE].
+ *
+ * A software layer is backed by a bitmap and causes the view to be rendered using Android's software rendering pipeline,
+ * even if hardware acceleration is enabled.
+ *
+ * Software layers can occasionally be useful to work around inconsistencies present when using hardware acceleration on
+ * a variety of different devices. For example, some devices may render a view differently when hardware acceleration is
+ * enabled, so a software layer can be used to ensure that the view is rendered consistently across all devices.
+ *
+ * However, it is important to note that the software rendered is significantly slower than the hardware accelerated.
+ * And, some features (such as rounded corners, shadows and elevation) are not supported when using software rendering.
+ * This may result in undesirable artifacts when using software rendering.
+ *
+ * If you are using a custom view that is not rendering consistently across devices, you may want to consider the
+ * techniques described in the
+ * [Accounting for platform differences](https://testify.dev/blog/platform-differences) blog post.
+ *
+ * @see TestifyConfiguration.useSoftwareRenderer
+ */
 class SoftwareRenderViewModification : ViewModification() {
 
     override fun performModification(view: View) {

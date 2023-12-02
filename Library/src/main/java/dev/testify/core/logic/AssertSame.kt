@@ -61,6 +61,7 @@ import org.junit.Assume
 
 /**
  * Assert if the Activity matches the baseline screenshot.
+ * This is the core logic for Testify.
  *
  * Using the provided [AssertionState] and [TestifyConfiguration], capture a bitmap of the Activity provided by
  * [ActivityProvider] and compare it to the baseline image already recorded.

@@ -24,6 +24,10 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when assertSame() has been called before another method.
+ * assertSame() must be called after setViewModifications() and setEspressoActions().
+ */
 class AssertSameMustBeLastException : TestifyException(
     "ASSERT_LAST",
     "\n\n*  assertSame must be called after setViewModifications " +

@@ -27,8 +27,18 @@ package dev.testify.internal.modification
 import android.view.View
 import android.view.ViewGroup
 
+/**
+ * A [ViewModification] is used to modify a [View] before a screenshot is taken.
+ *
+ * Modifications are applied recursively to all views in the view hierarchy.
+ *
+ * @see TestifyConfiguration.viewModifications
+ */
 abstract class ViewModification {
 
+    /**
+     * Modifies the view and all of its children.
+     */
     fun modify(view: View) {
         if (qualifies(view)) {
             performModification(view)
@@ -41,7 +51,18 @@ abstract class ViewModification {
         }
     }
 
+    /**
+     * Modifies the view.
+     * This method is called if [qualifies] returns true.
+     *
+     * @param view The view to modify.
+     */
     protected abstract fun performModification(view: View)
 
+    /**
+     * Returns true if the view qualifies for this modification.
+     *
+     * @param view The view to check.
+     */
     protected abstract fun qualifies(view: View): Boolean
 }

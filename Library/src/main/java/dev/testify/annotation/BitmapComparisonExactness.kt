@@ -25,6 +25,16 @@
 
 package dev.testify.annotation
 
+/**
+ * Set the tolerance used by the bitmap comparison algorithm.
+ *
+ * 0.0f ignores all differences
+ * 1.0f is strict binary exactness
+ *
+ * A value of 0.95f is good for most test cases.
+ *
+ * @param exactness - value from 0.0f to 1.0f
+ */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 annotation class BitmapComparisonExactness(val exactness: Float)

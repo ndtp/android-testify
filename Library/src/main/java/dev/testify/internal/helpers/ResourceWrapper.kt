@@ -33,24 +33,81 @@ import dev.testify.core.exception.ActivityMustImplementResourceOverrideException
 import dev.testify.core.exception.TestMustWrapContextException
 import dev.testify.resources.TestifyResourcesOverride
 
+/**
+ * An interface for wrapping (transforming or overriding) a resources.
+ * A resource in this context refers to an environmental property of the device.
+ * For example, the locale or font scale.
+ *
+ * @see WrappedLocale
+ * @see WrappedFontScale
+ */
 interface WrappedResource<T> {
+
+    /**
+     * The override (new) value of the resource.
+     */
     val overrideValue: T
+
+    /**
+     * The default value of the resource.
+     */
     var defaultValue: T
 
+    /**
+     * Lifecycle method called before the activity is launched.
+     * This method is used to store the default value of the resource.
+     */
     fun beforeActivityLaunched()
+
+    /**
+     * Lifecycle method called after the activity is launched.
+     * This method is used to update the resource of the activity.
+     */
     fun afterActivityLaunched(activity: Activity)
+
+    /**
+     * Lifecycle method called after the test is finished.
+     * This method is used to reset the resource of the activity.
+     */
     fun afterTestFinished(activity: Activity)
+
+    /**
+     * Update the context with the resource.
+     * This is where the actual transformation of the resource happens.
+     *
+     * @param context The context to update.
+     * @return The updated context.
+     */
     fun updateContext(context: Context): Context
 }
 
+/**
+ * Wrapper around the application context to allow for overriding resources.
+ * This is used to override the locale and font scale of the application.
+ * This is required to be able to test the application in different languages and font scales.
+ *
+ * @see TestifyResourcesOverride
+ */
 object ResourceWrapper {
 
+    /**
+     * Whether ot not the context has been wrapped.
+     */
     @VisibleForTesting
     internal var isWrapped: Boolean = false
 
+    /**
+     * The set of wrapped resources.
+     */
     @VisibleForTesting
     internal val wrappedResources = HashSet<WrappedResource<*>>()
 
+    /**
+     * Wrap the context with the ResourceWrapper.
+     *
+     * @param context The context to wrap.
+     * @return The wrapped context.
+     */
     fun wrap(context: Context): Context {
         isWrapped = true
 
@@ -61,22 +118,42 @@ object ResourceWrapper {
         return wrappedContext
     }
 
+    /**
+     * Add a resource override.
+     *
+     * @param value The override value.
+     */
     fun addOverride(value: WrappedResource<*>) {
         wrappedResources.add(value)
     }
 
+    /**
+     * Lifecycle callback. Called before the activity is launched.
+     * Notify each resource transformation that the activity is about to be launched.
+     */
     fun beforeActivityLaunched() {
         wrappedResources.forEach {
             it.beforeActivityLaunched()
         }
     }
 
+    /**
+     * Lifecycle callback. Called after the activity is launched.
+     * Apply each resource transformation to the activity.
+     *
+     * @param activity The activity that was launched.
+     */
     fun afterActivityLaunched(activity: Activity) {
         wrappedResources.forEach {
             it.applyToActivity(activity)
         }
     }
 
+    /**
+     * Apply the resource override to the activity.
+     *
+     * @param activity The activity to apply the override to.
+     */
     private fun WrappedResource<*>.applyToActivity(activity: Activity) {
         val version: Int = buildVersionSdkInt()
         when {
@@ -95,6 +172,13 @@ object ResourceWrapper {
         }
     }
 
+    /**
+     * Lifecycle callback. Called after the test has finished.
+     * Notify each resource transformation that the test has finished.
+     * Reset the ResourceWrapper.
+     *
+     * @param activity The activity that was launched.
+     */
     fun afterTestFinished(activity: Activity) {
         wrappedResources.forEach {
             it.afterTestFinished(activity)
@@ -102,6 +186,9 @@ object ResourceWrapper {
         reset()
     }
 
+    /**
+     * Reset the ResourceWrapper.
+     */
     @VisibleForTesting
     fun reset() {
         isWrapped = false

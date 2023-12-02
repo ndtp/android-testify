@@ -23,4 +23,10 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Base exception for Testify.
+ *
+ * @param tag The tag used to identify the exception in the Report.
+ * @param message The message to display in the Report.
+ */
 abstract class TestifyException(val tag: String, message: String) : RuntimeException(message)

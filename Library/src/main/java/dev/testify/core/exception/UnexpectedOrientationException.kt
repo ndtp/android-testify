@@ -24,6 +24,9 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when the requested orientation could not be configured.
+ */
 class UnexpectedOrientationException(errorMessage: String) :
     TestifyException(
         "UNEXPECTED_ORIENTATION",

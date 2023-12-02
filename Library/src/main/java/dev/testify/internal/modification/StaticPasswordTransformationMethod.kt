@@ -29,12 +29,25 @@ import android.text.method.TransformationMethod
 import android.view.View
 import java.util.Arrays
 
+/**
+ * A [TransformationMethod] that replaces all characters with a dot.
+ *
+ * This is used to hide the password in an [android.widget.EditText].
+ *
+ * @see HidePasswordViewModification
+ */
 internal class StaticPasswordTransformationMethod : TransformationMethod {
 
+    /**
+     * Create a [ReplacementCharSequence] that replaces all characters with a dot.
+     */
     override fun getTransformation(source: CharSequence, v: View): CharSequence {
         return ReplacementCharSequence(source)
     }
 
+    /**
+     * Not used.
+     */
     override fun onFocusChanged(
         view: View,
         sourceText: CharSequence,
@@ -45,7 +58,11 @@ internal class StaticPasswordTransformationMethod : TransformationMethod {
         // not used
     }
 
+    /**
+     * A [CharSequence] that replaces all characters with a dot.
+     */
     class ReplacementCharSequence(private val sourceCharSequence: CharSequence) : CharSequence {
+
         override val length: Int
             get() = sourceCharSequence.length
 
@@ -59,7 +76,11 @@ internal class StaticPasswordTransformationMethod : TransformationMethod {
     }
 
     companion object {
+        /**
+         * The dot character • unicode Character 'BULLET' (U+2022)
+         */
         private const val DOT = '\u2022'
+
         private var instance: StaticPasswordTransformationMethod? = null
 
         fun getInstance(): StaticPasswordTransformationMethod? {

@@ -36,8 +36,8 @@ import com.google.android.apps.common.testing.accessibility.framework.uielement.
 import dev.testify.ScreenshotLifecycle
 import dev.testify.accessibility.exception.AccessibilityErrorsException
 import dev.testify.internal.extensions.TestInstrumentationRegistry
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.instrumentationPrintln
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode
+import dev.testify.internal.extensions.TestInstrumentationRegistry.instrumentationPrintln
+import dev.testify.internal.extensions.TestInstrumentationRegistry.isRecordMode
 import dev.testify.internal.extensions.cyan
 import dev.testify.testDescription
 import java.util.Locale

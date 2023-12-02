@@ -24,5 +24,8 @@
 
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when the test is marked with @Ignore.
+ */
 class ScreenshotTestIgnoredException :
     TestifyException("IGNORED", "\n\n* Test is ignored and will not run. *\n")

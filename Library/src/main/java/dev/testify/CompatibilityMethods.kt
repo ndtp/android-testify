@@ -31,6 +31,13 @@ import java.util.Locale
 /**
  * CompatibilityMethods are provided for an API-compatible migration path to the new Testify
  * configuration method.
+ *
+ * It is recommended to use the new configuration method, as it is more flexible and allows for more customization.
+ *
+ * @see ScreenshotRule.configure
+ *
+ * @param TRule The type of the ScreenshotRule
+ * @param TActivity The type of the Activity
  */
 interface CompatibilityMethods<TRule : ScreenshotRule<TActivity>, TActivity : Activity> {
     fun withRule(rule: TRule)
