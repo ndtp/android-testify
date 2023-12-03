@@ -31,24 +31,24 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
-class TheMovieDbConfigurationApi @Inject constructor(
+class TheMovieDbConfigurationApiImpl @Inject constructor(
     private val theMovieDbApi: TheMovieDbApi,
     private val defaultConfiguration: TheMovieDbApiConfiguration
-) {
+) : TheMovieDbConfigurationApi {
     private var cachedConfiguration: TheMovieDbApiConfiguration? = null
     private val cachedConfigurationMutex: Mutex = Mutex()
 
     companion object {
-        private val LOG_TAG = TheMovieDbConfigurationApi::class.simpleName
+        private val LOG_TAG = TheMovieDbConfigurationApiImpl::class.simpleName
     }
 
-    suspend fun getApiConfiguration(): TheMovieDbApiConfiguration {
+    override suspend fun getApiConfiguration(): TheMovieDbApiConfiguration {
         return cachedConfigurationMutex.withLock {
             cachedConfiguration ?: loadConfiguration() ?: defaultConfiguration
         }
     }
 
-    private suspend fun loadConfiguration(): TheMovieDbApiConfiguration? {
+    suspend fun loadConfiguration(): TheMovieDbApiConfiguration? {
         theMovieDbApi.getConfiguration().fold(
             onSuccess = { cachedConfiguration = it.toConfiguration() },
             onFailure = {

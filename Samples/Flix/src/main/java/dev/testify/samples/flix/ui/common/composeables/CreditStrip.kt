@@ -29,14 +29,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dev.testify.samples.flix.R
-import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
+import dev.testify.samples.flix.ui.cast.CastMember
+import dev.testify.samples.flix.ui.cast.CastMemberPresentationModel
 
 @Composable
 fun CreditStrip(
-    credits: List<CreditPresentationModel>,
-    modifier: Modifier = Modifier
+    credits: List<CastMemberPresentationModel>,
+    modifier: Modifier = Modifier,
+    onCastMemberClick: (Int) -> Unit
 ) {
     HorizontalThumbnailStripWithTitle(title = stringResource(R.string.creditstrip_title), thumbnails = credits, modifier) {
-        CastMember(model = it)
+        CastMember(model = it, onPressed = onCastMemberClick)
     }
 }

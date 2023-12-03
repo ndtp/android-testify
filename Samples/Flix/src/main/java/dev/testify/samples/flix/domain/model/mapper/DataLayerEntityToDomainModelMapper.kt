@@ -34,6 +34,7 @@ import dev.testify.samples.flix.data.remote.tmdb.entity.MovieReleaseDates
 import dev.testify.samples.flix.data.remote.tmdb.entity.ReleaseDate
 import dev.testify.samples.flix.data.remote.tmdb.entity.ReleaseDateByCountry
 import dev.testify.samples.flix.data.remote.tmdb.entity.isValid
+import dev.testify.samples.flix.data.remote.tmdb.resolveImageUrl
 import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
 import dev.testify.samples.flix.domain.model.MovieDomainModel
 import dev.testify.samples.flix.domain.model.MovieReleaseDateDomainModel
@@ -47,14 +48,11 @@ class DataLayerEntityToDomainModelMapper @Inject constructor()  {
 
     fun map(movie: Movie, urlResolver: TheMovieDbUrlResolver): MovieDomainModel? {
         return runCatching {
-            requireNotNull(movie.id)
-            requireNotNull(movie.title)
-            requireNotNull(movie.overview)
             requireNotNull(movie.releaseDate)
             MovieDomainModel(
-                id = movie.id,
-                title = movie.title,
-                overview = movie.overview,
+                id = requireNotNull(movie.id),
+                title = requireNotNull(movie.title),
+                overview = requireNotNull(movie.overview),
                 releaseDateYear = movie.releaseDateYear(),
                 genres = emptyList(),
                 posterUrl = movie.resolvePosterUrl(urlResolver),
@@ -69,14 +67,11 @@ class DataLayerEntityToDomainModelMapper @Inject constructor()  {
     ): MovieDomainModel? {
         return runCatching {
             with(movieDetails) {
-                requireNotNull(id)
-                requireNotNull(title)
-                requireNotNull(overview)
                 requireNotNull(releaseDate)
                 MovieDomainModel(
-                    id = id,
-                    title = title,
-                    overview = overview,
+                    id = requireNotNull(id),
+                    title = requireNotNull(title),
+                    overview = requireNotNull(overview),
                     tagline = tagline,
                     runtimeMinutes = runtime,
                     releaseDateYear = releaseDateYear(),
@@ -115,9 +110,7 @@ class DataLayerEntityToDomainModelMapper @Inject constructor()  {
         val countryCodeToReleaseDatesMap = mutableMapOf<String, List<MovieReleaseDateDomainModel>>()
         forEach { releaseDateByCountry ->
             if (releaseDateByCountry.isValid()) {
-                requireNotNull(releaseDateByCountry.iso3166_1)
-                requireNotNull(releaseDateByCountry.releaseDates)
-                countryCodeToReleaseDatesMap[releaseDateByCountry.iso3166_1] = releaseDateByCountry.releaseDates.mapNotNull { releaseDate ->
+                countryCodeToReleaseDatesMap[requireNotNull(releaseDateByCountry.iso3166_1)] = requireNotNull(releaseDateByCountry.releaseDates).mapNotNull { releaseDate ->
                     releaseDate.toDomainModel()
                 }
             }
@@ -127,10 +120,9 @@ class DataLayerEntityToDomainModelMapper @Inject constructor()  {
 
     private fun ReleaseDate.toDomainModel(): MovieReleaseDateDomainModel? {
         return runCatching {
-            requireNotNull(releaseDate)
             MovieReleaseDateDomainModel(
                 iso639_1LanguageCode = iso639_1,
-                releaseDate = Instant.parse(releaseDate),
+                releaseDate = Instant.parse(requireNotNull(releaseDate)),
                 certification = certification,
                 type = type.toMovieReleaseType()
             )
@@ -165,10 +157,6 @@ class DataLayerEntityToDomainModelMapper @Inject constructor()  {
         return posterPath.resolveImageUrl(urlResolver)
     }
 
-    private fun String?.resolveImageUrl(urlResolver: TheMovieDbUrlResolver): String? {
-        return this?.takeIf { it.isNotBlank() }?.let { urlResolver.resolveImageUrl(it) }
-    }
-
     fun map(movieCredits: MovieCredits, urlResolver: TheMovieDbUrlResolver): MovieCreditsDomainModel {
         return MovieCreditsDomainModel(
             cast = movieCredits.cast?.mapNotNull { it.toDomainModel(urlResolver) } ?: emptyList()
@@ -177,14 +165,11 @@ class DataLayerEntityToDomainModelMapper @Inject constructor()  {
 
     private fun CastMember.toDomainModel(urlResolver: TheMovieDbUrlResolver): PersonDomainModel? {
         return runCatching {
-            requireNotNull(id)
-            requireNotNull(name)
-            requireNotNull(character)
             PersonDomainModel(
-                id = id,
-                name = name,
+                id = requireNotNull(id),
+                name = requireNotNull(name),
                 originalName = originalName ?: "",
-                characterName = character,
+                characterName = requireNotNull(character),
                 popularity = popularity,
                 imageUrl = this.profilePath.resolveImageUrl(urlResolver)
             )

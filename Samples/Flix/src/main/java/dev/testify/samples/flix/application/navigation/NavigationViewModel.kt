@@ -46,6 +46,7 @@ class NavigationViewModel @Inject constructor() : ViewModel() {
 
     fun navigateToHomeScreenDestination() = emitNavigationCommand(NavigationCommands.HomeScreen())
     fun navigateToMovieDetailsScreen(movieId: Int) = emitNavigationCommand(NavigationCommands.MovieDetails(movieId))
+    fun navigateToCastDetailScreen(castId: Int) = emitNavigationCommand(NavigationCommands.CastDetail(castId))
 
     private fun emitNavigationCommand(command: NavigationCommand) = viewModelScope.launch {
         _navigationCommandFlow.emit(command)

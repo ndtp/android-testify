@@ -29,7 +29,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dev.testify.samples.flix.application.foundation.secret.SecretsProvider
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApi
 import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApiConfiguration
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApi
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApiImpl
 import dev.testify.samples.flix.data.remote.tmdb.defaultApiConfiguration
 import dev.testify.samples.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
 import dev.testify.samples.flix.data.remote.tmdb.httpclient.buildKtorHttpClient
@@ -55,4 +58,15 @@ class DataModule {
         hostnameProvider: TmdbHostnameProvider
     ): TheMovieDbApiConfiguration =
         defaultApiConfiguration(hostnameProvider)
+
+    @Provides
+    @Singleton
+    fun provideTheMovieDbConfigurationApi(
+        theMovieDbApi: TheMovieDbApi,
+        defaultConfiguration: TheMovieDbApiConfiguration
+    ): TheMovieDbConfigurationApi =
+        TheMovieDbConfigurationApiImpl(
+            theMovieDbApi,
+            defaultConfiguration
+        )
 }

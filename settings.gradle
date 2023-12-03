@@ -5,7 +5,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven {
-          url "https://plugins.gradle.org/m2/"
+            url "https://plugins.gradle.org/m2/"
         }
     }
 }
@@ -19,6 +19,7 @@ dependencyResolutionManagement {
 
 include ':LegacySample'
 include ':FlixSample'
+include ':FlixLibrary'
 include ':GmdSample'
 include ':Plugin'
 include ':Library'
@@ -32,4 +33,5 @@ project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':Accessibility').projectDir = new File("./Ext/Accessibility")
 project(':LegacySample').projectDir = new File("./Samples/Legacy")
 project(':FlixSample').projectDir = new File("./Samples/Flix")
+project(':FlixLibrary').projectDir = new File("./Samples/Flix/FlixLibrary")
 project(':GmdSample').projectDir = new File("./Samples/Gmd")

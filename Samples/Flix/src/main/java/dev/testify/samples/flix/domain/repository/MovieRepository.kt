@@ -29,7 +29,7 @@ import android.util.Log
 import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApi
 import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApiFailure
 import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApi
-import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbUrlResolverImpl
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbUrlResolver
 import dev.testify.samples.flix.data.remote.tmdb.entity.Movie
 import dev.testify.samples.flix.data.remote.tmdb.entity.Page
 import dev.testify.samples.flix.domain.exception.DomainException
@@ -63,7 +63,7 @@ class MovieRepository @Inject constructor(
             onSuccess = { page ->
                 val apiConfiguration = apiConfigurationDeferred.await()
                 val domainModel = page.results?.firstOrNull()?.let {
-                    dataModelEntityToDomainModelMapper.map(it, TheMovieDbUrlResolverImpl(apiConfiguration.baseUrl, apiConfiguration.headlineImageSizeKey))
+                    dataModelEntityToDomainModelMapper.map(it, TheMovieDbUrlResolver(apiConfiguration.baseUrl, apiConfiguration.headlineImageSizeKey))
                 }
                 domainModel?.let { Result.success(it) } ?: Result.failure(onFailedToConvertToDomainModel())
             },
@@ -92,7 +92,7 @@ class MovieRepository @Inject constructor(
         endpointSelector(remoteApi).fold(
             onSuccess = { page ->
                 val apiConfiguration = apiConfigurationDeferred.await()
-                val domainModels = page.results?.mapNotNull { dataModelEntityToDomainModelMapper.map(it, TheMovieDbUrlResolverImpl(apiConfiguration.baseUrl, apiConfiguration.thumbnailImageSizeKey)) }
+                val domainModels = page.results?.mapNotNull { dataModelEntityToDomainModelMapper.map(it, TheMovieDbUrlResolver(apiConfiguration.baseUrl, apiConfiguration.thumbnailImageSizeKey)) }
                 domainModels?.let { Result.success(it) }
                     ?: Result.failure(onFailedToConvertToDomainModel())
             },
@@ -107,7 +107,7 @@ class MovieRepository @Inject constructor(
         remoteApi.getMovieDetails(movieId).fold(
             onSuccess = { dataModel ->
                 val apiConfiguration = apiConfigurationDeferred.await()
-                val domainModel = dataModelEntityToDomainModelMapper.map(dataModel, TheMovieDbUrlResolverImpl(apiConfiguration.baseUrl, apiConfiguration.thumbnailImageSizeKey))
+                val domainModel = dataModelEntityToDomainModelMapper.map(dataModel, TheMovieDbUrlResolver(apiConfiguration.baseUrl, apiConfiguration.thumbnailImageSizeKey))
                 domainModel?.let { Result.success(it) }
                     ?: Result.failure(onFailedToConvertToDomainModel())
             },
@@ -136,7 +136,7 @@ class MovieRepository @Inject constructor(
         remoteApi.getMovieCredits(movieId).fold(
             onSuccess = { movieCredits ->
                 val apiConfiguration = apiConfigurationDeferred.await()
-                val urlResolver = TheMovieDbUrlResolverImpl(apiConfiguration.baseUrl, apiConfiguration.thumbnailImageSizeKey)
+                val urlResolver = TheMovieDbUrlResolver(apiConfiguration.baseUrl, apiConfiguration.thumbnailImageSizeKey)
                 val domainModel = dataModelEntityToDomainModelMapper.map(movieCredits, urlResolver)
                 Result.success(domainModel)
             },
