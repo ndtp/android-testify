@@ -25,7 +25,7 @@
 
 package dev.testify.samples.flix.presentation.moviedetails.model
 
-import dev.testify.samples.flix.ui.common.util.ImagePromise
+import dev.testify.samples.flix.ui.cast.CastMemberPresentationModel
 
 data class MovieDetailsPresentationModel(
     val id: Int,
@@ -37,12 +37,7 @@ data class MovieDetailsPresentationModel(
     val releaseDate: String? = null,
     val genres: List<String> = emptyList(),
     val certification: String? = null,
-    val credits: List<CreditPresentationModel> = emptyList(),
+    val credits: List<CastMemberPresentationModel> = emptyList(),
     val posterPath: String? = null,
 )
 
-data class CreditPresentationModel(
-    val name: String,
-    val characterName: String,
-    val image: ImagePromise?
-)

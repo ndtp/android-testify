@@ -42,6 +42,8 @@ import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import dev.testify.samples.flix.application.navigation.NavigationDestinations
 import dev.testify.samples.flix.application.navigation.NavigationViewModel
+import dev.testify.samples.flix.ui.cast.ARG_CAST_ID
+import dev.testify.samples.flix.ui.cast.CastDetail
 import dev.testify.samples.flix.ui.homescreen.HomeScreen
 import dev.testify.samples.flix.ui.moviedetails.MovieDetailsScreen
 import dev.testify.samples.flix.ui.theme.FlixTheme
@@ -101,7 +103,17 @@ fun FlixNavigationHost(
         ) { navBackStackEntry ->
             val movieId = navBackStackEntry.arguments?.getInt(NavigationDestinations.MovieDetailsScreen.ARG_MOVIE_ID)
             requireNotNull(movieId)
-            MovieDetailsScreen(movieId = movieId)
+            MovieDetailsScreen(
+                movieId = movieId,
+                onCastMemberClick = { castId -> navigationViewModel.navigateToCastDetailScreen(castId) }
+            )
+        }
+
+        composable(
+            route = NavigationDestinations.CastDetailScreen.destinationName,
+            arguments = listOf(navArgument(ARG_CAST_ID) { type = NavType.IntType } )
+        ) { navBackStackEntry ->
+            CastDetail(navBackStackEntry)
         }
     }
 }

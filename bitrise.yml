@@ -198,10 +198,75 @@ workflows:
             <!--
         - update_comment_tag: testify-flix
         - personal_access_token: "$GITHUB_TOKEN"
+  _testFlixLibrary:
+    summary: Run your Android unit tests and get the test report.
+    description: The workflow will first clone your Git repository, cache your Gradle
+      dependencies, install Android tools, run your Android unit tests and save the
+      test report.
+    steps:
+    - android-unit-test@1:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: FlixLibrary
+        - cache_level: none
+    - android-build-for-ui-testing@0:
+        inputs:
+        - variant: Debug
+        - module: FlixLibrary
+    - git::https://github.com/ndtp/bitrise-step-android-testify.git@main:
+        timeout: 1800
+        title: Run Screenshot Tests
+        inputs:
+        - adb_command: "./gradlew FlixLibrary:screenshotTest"
+        - module: ":FlixLibrary"
+        - app_apk: "./Samples/Flix/FlixLibrary/build/outputs/apk/androidTest/debug/FlixLibrary-debug-androidTest.apk"
+        - app_package: dev.testify.samples.flix.library.test
+        - test_apk: "./Samples/Flix/FlixLibrary/build/outputs/apk/androidTest/debug/FlixLibrary-debug-androidTest.apk"
+        - test_package: dev.testify.samples.flix.library.test
+        - test_runner: androidx.test.runner.AndroidJUnitRunner
+        - verbose: true
+    - custom-test-results-export@1.0:
+        is_always_run: true
+        timeout: 120
+        inputs:
+        - test_name: Flix Libray Screenshot Test
+        - search_pattern: "**test_result_**.xml**"
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+    - script@1:
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -e
+            set -x
+            if [ "$BITRISE_BUILD_STATUS" == 0 ]; then
+                STATUS=":white_check_mark: Success!"
+                MESSAGE=""
+            else
+                STATUS=":x: Failed!"
+                MESSAGE="Please verify the screenshot tests and update them as necessary"
+            fi
+            envman add --key LAST_COMMIT --value `git log --format="%H" -n 1`
+            envman add --key TESTIFY_STATUS --value "$STATUS"
+            envman add --key TESTIFY_MESSAGE --value "$MESSAGE"
+        title: Prepare PR comment
+    - comment-on-github-pull-request@0:
+        is_always_run: true
+        inputs:
+        - body: |-
+            ### $TESTIFY_STATUS - <a href="https://app.bitrise.io/app/8bee1dcb-c321-4d26-a54e-0123ee4df70f/addon/addons-testing/login_page?build_slug=$BITRISE_BUILD_SLUG">Flix Library screenshot test results</a>
+            $TESTIFY_MESSAGE
+            ###### [View build](https://app.bitrise.io/build/$BITRISE_BUILD_SLUG) for commit $LAST_COMMIT
+            <!--
+        - update_comment_tag: testify-flix-library
+        - personal_access_token: "$GITHUB_TOKEN"
 meta:
   bitrise.io:
     stack: linux-docker-android-20.04
-    machine_type_id: standard
+    machine_type_id: elite
 app:
   envs:
   - opts:

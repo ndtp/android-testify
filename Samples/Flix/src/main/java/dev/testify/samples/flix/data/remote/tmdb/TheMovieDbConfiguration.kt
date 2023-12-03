@@ -27,15 +27,6 @@ package dev.testify.samples.flix.data.remote.tmdb
 
 import dev.testify.samples.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
 
-interface TheMovieDbApiConfiguration {
-    val baseUrl: String
-
-    val thumbnailImageSizeKey: String
-    val headlineImageSizeKey: String
-
-    fun isDefaultConfiguration(): Boolean = false
-}
-
 private const val ImageSize185 = "w185"
 private const val ImageSize342 = "w342"
 private const val ImageSize500 = "w500"

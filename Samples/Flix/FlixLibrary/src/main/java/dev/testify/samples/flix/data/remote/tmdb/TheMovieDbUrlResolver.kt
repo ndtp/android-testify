@@ -25,16 +25,16 @@
 
 package dev.testify.samples.flix.data.remote.tmdb
 
-interface TheMovieDbUrlResolver {
-    fun resolveImageUrl(imageName: String): String
-}
-
-class TheMovieDbUrlResolverImpl(
+class TheMovieDbUrlResolver(
     private val baseUrl: String,
     private val imageSizeKey: String
-) : TheMovieDbUrlResolver {
+) {
 
-    override fun resolveImageUrl(imageName: String): String {
+    fun resolveImageUrl(imageName: String): String {
         return baseUrl + imageSizeKey + imageName
     }
+}
+
+fun String?.resolveImageUrl(urlResolver: TheMovieDbUrlResolver): String? {
+    return this?.takeIf { it.isNotBlank() }?.let { urlResolver.resolveImageUrl(it) }
 }

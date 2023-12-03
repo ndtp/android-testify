@@ -2,7 +2,7 @@ package dev.testify.samples.flix.ui.common.composables
 
 import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
+import dev.testify.samples.flix.ui.cast.CastMemberPresentationModel
 import dev.testify.samples.flix.ui.common.composeables.CreditStrip
 import org.junit.Rule
 import org.junit.Test
@@ -13,27 +13,32 @@ class CreditStripScreenshotTest {
     val rule = ComposableScreenshotRule()
 
     private val presentationModels = listOf(
-        CreditPresentationModel(
+        CastMemberPresentationModel(
+            id = 1,
             name = "Ving Rhames",
             characterName = "Marsellus Wallace",
             image = null
         ),
-        CreditPresentationModel(
+        CastMemberPresentationModel(
+            id = 2,
             name = "Marlon Brando",
             characterName = "Don Vito Corleone",
             image = null
         ),
-        CreditPresentationModel(
+        CastMemberPresentationModel(
+            id = 3,
             name = "Tom Hanks",
             characterName = "Paul Edgecomb",
             image = null
         ),
-        CreditPresentationModel(
+        CastMemberPresentationModel(
+            id = 4,
             name = "Clint Eastwood",
             characterName = "Blondie",
             image = null
         ),
-        CreditPresentationModel(
+        CastMemberPresentationModel(
+            id = 5,
             name = "Rumi Hiiragi",
             characterName = "Chihiro Ogino / Sen (voice)",
             image = null
@@ -44,7 +49,7 @@ class CreditStripScreenshotTest {
     @ScreenshotInstrumentation
     fun default() {
         rule.setCompose {
-            CreditStrip(credits = presentationModels.take(3))
+            CreditStrip(credits = presentationModels.take(3)) {}
         }.assertSame()
     }
 
@@ -52,7 +57,7 @@ class CreditStripScreenshotTest {
     @ScreenshotInstrumentation
     fun longCreditStrip() {
         rule.setCompose {
-            CreditStrip(credits = presentationModels)
+            CreditStrip(credits = presentationModels) {}
         }.assertSame()
     }
 
@@ -60,7 +65,7 @@ class CreditStripScreenshotTest {
     @ScreenshotInstrumentation
     fun emptyCreditStrip() {
         rule.setCompose {
-            CreditStrip(credits = emptyList())
+            CreditStrip(credits = emptyList()) {}
         }.assertSame()
     }
 }
