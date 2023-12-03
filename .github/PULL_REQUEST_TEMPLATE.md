@@ -22,5 +22,5 @@ https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-
 
 ### Notice
 
-> **Warning**
+> [!WARNING]
 > This change must keep `main` in a shippable state; **it may be shipped without further notice**.
