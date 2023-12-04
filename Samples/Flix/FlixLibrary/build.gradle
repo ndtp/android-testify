@@ -75,10 +75,6 @@ testify {
     testPackageId "dev.testify.samples.flix.library.test"
 }
 
-kapt {
-    correctErrorTypes true
-}
-
 dependencies {
 
     androidTestImplementation "dev.testify:testify-compose:2.0.0-rc02"
