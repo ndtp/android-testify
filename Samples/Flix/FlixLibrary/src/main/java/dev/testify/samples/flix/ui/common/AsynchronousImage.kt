@@ -1,5 +1,6 @@
 package dev.testify.samples.flix.ui.common.composeables
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,9 @@ fun AsynchronousImage(
     filterQuality: FilterQuality = DrawScope.DefaultFilterQuality,
 ) {
     val imageLoader: ImageLoader = LocalContext.current.imageLoader
+
+    Log.d("JETTE", "using loader $imageLoader")
+
     AsyncImage(
         model = model,
         contentDescription = contentDescription,
