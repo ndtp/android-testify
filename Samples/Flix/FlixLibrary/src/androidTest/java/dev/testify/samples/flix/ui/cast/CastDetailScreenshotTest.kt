@@ -6,10 +6,12 @@ import androidx.compose.ui.Modifier
 import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.samples.flix.data.model.FlixPerson
+import dev.testify.samples.flix.test.setSynchronousImageLoader
 import dev.testify.samples.flix.ui.cast.CastDetailState.Error
 import dev.testify.samples.flix.ui.cast.CastDetailState.Loaded
 import dev.testify.samples.flix.ui.cast.CastDetailState.Loading
 import dev.testify.samples.flix.ui.common.util.imagePromise
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -17,6 +19,11 @@ class CastDetailScreenshotTest {
 
     @get:Rule
     val rule = ComposableScreenshotRule()
+
+    @Before
+    fun before() {
+        setSynchronousImageLoader()
+    }
 
     @ScreenshotInstrumentation
     @Test
