@@ -9,3 +9,4 @@ projectFilesBackup/
 report.yml
 Plugins/Intellij/out
 Plugins/.idea/
+docs/yarn.lock
