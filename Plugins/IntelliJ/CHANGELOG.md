@@ -1,5 +1,9 @@
 # Android Testify - IntelliJ Platform Plugin - Change Log
 
+## [2.0.0]
+
+- Added support for Android Studio Iguana | 2023.2.1.16 Canary 16 | 232.+
+
 ## [2.0.0-rc03]
 
 - Added support for Android Studio Iguana | 2023.2.1 Canary 3 | 232.+
