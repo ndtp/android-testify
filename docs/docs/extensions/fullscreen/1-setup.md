@@ -13,7 +13,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-beta04"
+        classpath "dev.testify:plugin:2.0.0"
     }
 }
 ```
@@ -25,6 +25,6 @@ The Android Testify Fullscreen Capture Method extension is packaged as a separat
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-fullscreen:2.0.0-beta04"
+    androidTestImplementation "dev.testify:testify-fullscreen:2.0.0"
 }
 ```
