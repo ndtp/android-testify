@@ -58,6 +58,12 @@ import com.intellij.execution.ExecutorRegistry
 import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
+import com.intellij.ide.util.PropertiesComponent
+import dev.testify.adb.BridgeImpl
+import dev.testify.adb.DeviceResultFetcher
+import dev.testify.adb.UseSameDevicesHelper
+import dev.testify.preferences.PreferenceAccessorImpl
+import dev.testify.preferences.ProjectPreferences
 
 abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
 
@@ -86,6 +92,17 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
     private val AnActionEvent.module: Module?
         get() = LangDataKeys.MODULE.getData(this.dataContext)
 
+
+
+    /*
+    TODO: don't run when sync is in progress
+
+        if (AdbUtil.isGradleSyncInProgress(project)) {
+            NotificationHelper.error("Gradle sync is in progress")
+            return
+        }
+     */
+
     private fun getSelectedDevice(devices: Array<out com.android.ddmlib.IDevice>): com.android.ddmlib.IDevice? {
         // Logic to determine the selected device, for example, based on the device state
         // You might need to adjust this logic based on your requirements
@@ -102,10 +119,27 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
 
     private fun selectEmulator(module: Module) {
 
+        val project = module.project
+
+        val projectPreferenceAccessor = PreferenceAccessorImpl(PropertiesComponent.getInstance(project))
+        val projectPreferences = ProjectPreferences(projectPreferenceAccessor)
+        val bridge = BridgeImpl(project)
+        val helper = UseSameDevicesHelper(projectPreferences, bridge)
+
+        val result = DeviceResultFetcher(
+            project,
+            helper,
+            bridge
+        ).fetch()
+
+        println("$result")
+
+
+
         val androidFacet = AndroidFacet.getInstance(module)
         println("$androidFacet")
 
-        val project = module.project
+
 
         AndroidDebugBridge.initIfNeeded(false)
         val devices = AndroidDebugBridge.createBridge().devices

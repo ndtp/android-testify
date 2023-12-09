@@ -55,6 +55,7 @@ Copyright (c) 2023 ndtp
     ]]>
   </change-notes>
 
+  <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.androidstudio</depends>
   <depends>org.jetbrains.kotlin</depends>
   <depends>org.jetbrains.android</depends>
