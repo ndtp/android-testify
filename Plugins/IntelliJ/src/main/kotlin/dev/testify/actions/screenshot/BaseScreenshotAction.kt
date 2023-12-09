@@ -117,6 +117,20 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         return null
     }
 
+    /**
+     *
+     * TODO
+     *
+     * 1. single select; remove multi-select; remove list; update prompt text
+     * 2. do I need the module?
+     *   2.a. if yes, can I get it from the test?
+     *   2.b. if no, delete this code
+     * 3. Does the preferences work? -- how do you reset?
+     *   3.a add a menu to view preferences?
+     * 4. hook up option. Do I need to offer a direct method? Can I assume the same order?
+     *
+     */
+
     private fun selectEmulator(module: Module) {
 
         val project = module.project
