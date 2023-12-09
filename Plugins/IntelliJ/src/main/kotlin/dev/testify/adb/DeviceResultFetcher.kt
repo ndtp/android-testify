@@ -6,6 +6,7 @@ import com.android.tools.idea.util.androidFacet
 import com.intellij.facet.ProjectFacetManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
+import dev.testify.preferences.ProjectPreferences
 import dev.testify.ui.DeviceChooserDialog
 import dev.testify.ui.ModuleChooserDialogHelper
 import dev.testify.ui.NotificationHelper
@@ -13,6 +14,7 @@ import org.jetbrains.android.facet.AndroidFacet
 
 class DeviceResultFetcher constructor(
     private val project: Project,
+    private val projectPreferences: ProjectPreferences,
     private val useSameDevicesHelper: UseSameDevicesHelper,
     private val bridge: Bridge
 ) {
@@ -62,7 +64,7 @@ class DeviceResultFetcher constructor(
     }
 
     private fun showDeviceChooserDialog(facet: AndroidFacet, packageName: String): DeviceResult {
-        val chooser = DeviceChooserDialog(facet)
+        val chooser = DeviceChooserDialog(facet, projectPreferences)
         chooser.show()
 
         if (chooser.exitCode != DialogWrapper.OK_EXIT_CODE) {

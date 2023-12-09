@@ -128,6 +128,7 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
 
         val result = DeviceResultFetcher(
             project,
+            projectPreferences,
             helper,
             bridge
         ).fetch()

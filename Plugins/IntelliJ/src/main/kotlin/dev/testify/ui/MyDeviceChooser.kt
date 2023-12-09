@@ -159,7 +159,14 @@ class MyDeviceChooser(
     }
 
     fun updateTable() {
+
         val devices = myBridge?.let { getFilteredDevices(it) } ?: EMPTY_DEVICE_ARRAY
+
+        // Here we go!
+
+        println("$devices")
+
+
         if (devices.size > 1) { // sort by API level
             Arrays.sort(devices, object : Comparator<IDevice> {
                 override fun compare(device1: IDevice, device2: IDevice): Int {
