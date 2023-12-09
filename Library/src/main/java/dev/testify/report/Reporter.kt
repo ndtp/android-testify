@@ -50,14 +50,24 @@ import java.io.File
  *
  * To enable, set enableReporter to true when initializing [ScreenshotRule]
  * Or, <meta-data android:name="testify-reporter" android:value="true" /> in the AndroidManifest
+ *
+ * Use `./gradlew :
+ *
  */
 internal open class Reporter protected constructor(
     private val context: Context,
     private val session: ReportSession
 ) {
 
+    /**
+     * Builder for the YAML report
+     */
     @VisibleForTesting
     internal val builder = StringBuilder()
+
+    /**
+     * Description of the current test
+     */
     private lateinit var testDescription: TestDescription
 
     /**
@@ -134,14 +144,23 @@ internal open class Reporter protected constructor(
     fun finalize() =
         getDestination().finalize()
 
+    /**
+     * Write the report to the given file
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     open fun writeToFile(builder: StringBuilder, file: File) =
         file.appendText(builder.toString())
 
+    /**
+     * Append a line to the builder with the given indent
+     */
     private fun StringBuilder.appendLine(value: String, indent: Int): StringBuilder =
         append("".padStart(indent)).appendLine(value)
 
+    /**
+     * Get the path to the baseline image
+     */
     @VisibleForTesting
     internal open fun getBaselinePath(): String =
         getFileRelativeToRoot(
@@ -150,6 +169,9 @@ internal open class Reporter protected constructor(
             extension = PNG_EXTENSION
         )
 
+    /**
+     * Get the path to the output image
+     */
     @get:ExcludeFromJacocoGeneratedReport
     private val Context.fileName: String
         get() = formatDeviceString(
@@ -160,16 +182,25 @@ internal open class Reporter protected constructor(
             DEFAULT_NAME_FORMAT
         )
 
+    /**
+     * Get the path to the report YAML file
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun getOutputPath(): String =
         getDestination(context, context.fileName).description
 
+    /**
+     * Get the arguments passed to the test
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun getEnvironmentArguments(): Bundle =
         InstrumentationRegistry.getArguments()
 
+    /**
+     * Construct the destination object for the report file
+     */
     private fun getDestination(): Destination = getDestination(
         context = context,
         fileName = "report",
@@ -178,6 +209,9 @@ internal open class Reporter protected constructor(
         customKey = ""
     )
 
+    /**
+     * Get the report file
+     */
     @VisibleForTesting
     internal open fun getReportFile(): File {
         val destination = getDestination()
@@ -188,10 +222,16 @@ internal open class Reporter protected constructor(
         return destination.file
     }
 
+    /**
+     * Get the number of lines in the header
+     */
     @VisibleForTesting
     internal val headerLineCount: Int
         get() = listOf(HEADER, "tests").size + session.sessionLineCount
 
+    /**
+     * Insert the header into the builder
+     */
     @VisibleForTesting
     internal fun insertHeader() {
         builder.insert(0, "- tests:\n")
@@ -199,6 +239,9 @@ internal open class Reporter protected constructor(
         builder.insert(0, "$HEADER\n")
     }
 
+    /**
+     * Initialize the YAML file
+     */
     @VisibleForTesting
     internal fun initializeYaml(file: File) {
         if (!file.exists()) {
@@ -214,12 +257,21 @@ internal open class Reporter protected constructor(
         }
     }
 
+    /**
+     * Clear the contents of the given file
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun clearFile(file: File) {
         file.writeText("")
     }
 
+    /**
+     * Update the existing file
+     *
+     * Initialize a session from the given file, updated it with the current session information and test results,
+     * then update the file.
+     */
     private fun updateExistingFile(file: File) {
         session.initFromFile(file)
         val lines = readBodyLines(file)
@@ -232,6 +284,9 @@ internal open class Reporter protected constructor(
         }
     }
 
+    /**
+     * Read the body lines from the given file
+     */
     @ExcludeFromJacocoGeneratedReport
     @VisibleForTesting
     internal open fun readBodyLines(file: File): List<String> {
@@ -241,6 +296,9 @@ internal open class Reporter protected constructor(
     companion object {
         private const val HEADER = "---"
 
+        /**
+         * Factory method to create an instance of [Reporter]
+         */
         fun create(context: Context, session: ReportSession = ReportSession()): Reporter =
             Reporter(context, session)
     }

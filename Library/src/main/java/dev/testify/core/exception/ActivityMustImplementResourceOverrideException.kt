@@ -24,6 +24,11 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when an activity is missing the [TestifyResourcesOverride] interface.
+ *
+ * @param activityName The name of the activity that is missing the interface.
+ */
 class ActivityMustImplementResourceOverrideException(activityName: String) :
     TestifyException(
         "ACTIVITY_OVERRIDE",

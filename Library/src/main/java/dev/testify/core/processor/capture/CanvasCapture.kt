@@ -30,6 +30,15 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.view.View
 
+/**
+ * Capture a bitmap of the current activity.
+ *
+ * Uses View.draw() to capture the bitmap.
+ *
+ * @param activity The activity to capture.
+ * @param targetView The view to capture. If null, the entire decorView of the activity will be captured.
+ * @return A bitmap of the activity.
+ */
 fun canvasCapture(activity: Activity, targetView: View?): Bitmap {
     val view: View = targetView ?: activity.window.decorView
     val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)

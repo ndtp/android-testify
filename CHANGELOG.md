@@ -14,6 +14,10 @@
 
 - Flix Sample now uses Hilt instead of Koin for dependency injection.
 
+## 2.0.0
+
+Released without additional changes from 2.0.0-rc03.
+
 ---
 
 ## 2.0.0-rc03

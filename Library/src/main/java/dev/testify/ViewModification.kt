@@ -25,4 +25,7 @@ package dev.testify
 
 import android.view.ViewGroup
 
+/**
+ * Function signature for modifying the root view of the Activity under test.
+ */
 typealias ViewModification = (rootView: ViewGroup) -> Unit

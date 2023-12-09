@@ -27,7 +27,7 @@ representative of what your users will see in your final product.
 
 ---
 
-> **Warning**
+> [!Warning]
 >
 > **The Testify 2.0 platform requires new build artifacts and a migration from
 the `com.shopify.testify` package to the new `dev.testify` package.**
@@ -71,7 +71,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-beta04"
+        classpath "dev.testify:plugin:2.0.0"
     }
 }
 ```

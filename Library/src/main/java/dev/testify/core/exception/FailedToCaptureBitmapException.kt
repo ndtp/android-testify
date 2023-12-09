@@ -23,5 +23,8 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when there is an error capturing a bitmap from an activity.
+ */
 class FailedToCaptureBitmapException :
     TestifyException("FAILED_BITMAP_CAPTURE", "Failed to capture bitmap from activity")

@@ -24,6 +24,11 @@
  */
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when attempting to use setLocale or setFontScale without wrapping the context.
+ *
+ * @param activityName The name of the activity that is missing the interface.
+ */
 class TestMustWrapContextException(activityName: String) :
     TestifyException(
         "WRAP_CONTEXT",

@@ -31,6 +31,16 @@ import dev.testify.core.DeviceStringFormatter
 import dev.testify.core.formatDeviceString
 import dev.testify.testDescription
 
+/**
+ * Helper extension method to get the output file name for a [Context].
+ *
+ * @param description The [TestDescription] to use for the file name.
+ * @param format The format to use for the file name.
+ * @return The output file name.
+ *
+ * @see [formatDeviceString]
+ * @see [DeviceStringFormatter]
+ */
 fun Context.outputFileName(
     description: TestDescription = InstrumentationRegistry.getInstrumentation().testDescription,
     format: String = DEFAULT_NAME_FORMAT

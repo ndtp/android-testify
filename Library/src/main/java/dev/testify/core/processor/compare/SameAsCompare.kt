@@ -29,6 +29,12 @@ import android.graphics.Bitmap
 
 /**
  * Compare two bitmaps using android.graphics.Bitmap.sameAs()
+ *
+ * Given another bitmap, return true if it has the same dimensions, config, and pixel
+ * data as this bitmap. If any of those differ, return false. If other is null, return false.
+ *
+ * @param baselineBitmap The baseline bitmap to compare against.
+ * @param currentBitmap The current bitmap to compare.
  */
 fun sameAsCompare(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
     return baselineBitmap.sameAs(currentBitmap)

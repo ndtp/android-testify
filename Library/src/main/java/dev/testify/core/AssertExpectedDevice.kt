@@ -29,7 +29,7 @@ import dev.testify.core.exception.UnexpectedDeviceException
 import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import dev.testify.output.SCREENSHOT_DIR
 import java.io.File
-import dev.testify.internal.extensions.TestInstrumentationRegistry.Companion.isRecordMode as recordMode
+import dev.testify.internal.extensions.TestInstrumentationRegistry.isRecordMode as recordMode
 
 /**
  * Validate that device description of the currently running emulator matches that of the

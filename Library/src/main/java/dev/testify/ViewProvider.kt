@@ -26,4 +26,7 @@ package dev.testify
 import android.view.View
 import android.view.ViewGroup
 
+/**
+ * Function signature for providing a custom view to the Activity under test.
+ */
 typealias ViewProvider = (rootView: ViewGroup) -> View

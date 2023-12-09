@@ -25,6 +25,12 @@
 
 package dev.testify.core.exception
 
+/**
+ * Exception thrown when the captured screenshot is different from the baseline screenshot.
+ *
+ * @param moduleName The name of the module that contains the test.
+ * @param testName The name of the test.
+ */
 class ScreenshotIsDifferentException(moduleName: String, testName: String) : TestifyException(
     "DIFFERENT",
     "\n\n*  The captured screenshot is different from the baseline screenshot.\n" +

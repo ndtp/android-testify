@@ -30,6 +30,16 @@ import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.ParallelPixelProcessor
 import dev.testify.core.processor.compare.colorspace.calculateDeltaE
 
+/**
+ * Compares two bitmaps using fuzzy logic.
+ *
+ * [TestifyConfiguration.exactness] is used as the threshold against which the Delta E 2000 difference is compared to
+ * determine if the two pixels are different.
+ *
+ * [TestifyConfiguration.exclusionRects] are used to exclude pixels from the comparison.
+ *
+ * @param configuration The configuration to use for the comparison.
+ */
 internal class FuzzyCompare(private val configuration: TestifyConfiguration) {
 
     fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
@@ -76,6 +86,7 @@ internal class FuzzyCompare(private val configuration: TestifyConfiguration) {
                             )
                             ((100.0 - deltaE) / 100.0f >= configuration.exactness!!) // return ^analyze
                         }
+
                         else -> baselinePixel == currentPixel // return ^analyze
                     }
                 }

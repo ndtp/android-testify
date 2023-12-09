@@ -26,6 +26,11 @@ package dev.testify.internal.helpers
 import android.os.Looper
 import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
+/**
+ * Helper extension method to determine if the current thread is the UI thread.
+ *
+ * @return True if the current thread is the UI thread, false otherwise.
+ */
 @ExcludeFromJacocoGeneratedReport
 fun isRunningOnUiThread(): Boolean =
     Looper.getMainLooper().thread == Thread.currentThread()

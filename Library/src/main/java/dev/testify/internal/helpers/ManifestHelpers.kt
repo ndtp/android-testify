@@ -35,11 +35,33 @@ private const val MANIFEST_MODULE_KEY = "dev.testify.module"
 private const val MANIFEST_IS_RECORD_MODE = "dev.testify.recordMode"
 
 sealed class ManifestPlaceholder(val key: String) {
+
+    /**
+     * The name of the module under test.
+     *
+     * For example, if the test is running in the `app` module, this will be `app`.
+     */
     object Module : ManifestPlaceholder(MANIFEST_MODULE_KEY)
+
+    /**
+     * The name of the destination to use for the test.
+     *
+     * For example, this would be `sdcard` if the test output is to be saved to the SD card.
+     *
+     */
     object Destination : ManifestPlaceholder(MANIFEST_DESTINATION_KEY)
+
+    /**
+     * Whether or not the test is running in record mode.
+     */
     object RecordMode : ManifestPlaceholder(MANIFEST_IS_RECORD_MODE)
 }
 
+/**
+ * Get the [Bundle] of meta data from the application under test's manifest.
+ *
+ * @return The [Bundle] of meta data, or null if it does not exist.
+ */
 @ExcludeFromJacocoGeneratedReport
 @SuppressLint("NewApi")
 internal fun getMetaDataBundle(context: Context): Bundle? {
@@ -52,6 +74,14 @@ internal fun getMetaDataBundle(context: Context): Bundle? {
     return applicationInfo?.metaData
 }
 
+/**
+ * Get the value of a manifest placeholder.
+ * Manifest placeholders are injected by the Library into the application under test's manifest.
+ * This works in conjunction with the strings.xml resources defined by the Library to pass values from the
+ * Gradle Plugin to the application under test.
+ *
+ * @return The value of the manifest placeholder, or null if it does not exist.
+ */
 @ExcludeFromJacocoGeneratedReport
 fun ManifestPlaceholder.getMetaDataValue(): String? {
     val metaData = getMetaDataBundle(InstrumentationRegistry.getInstrumentation().context)

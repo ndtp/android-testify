@@ -13,7 +13,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-beta04"
+        classpath "dev.testify:plugin:2.0.0"
     }
 }
 ```
@@ -25,6 +25,6 @@ The Android Testify Accessibility Checks extension is packaged as a separate art
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-accessibility:2.0.0-beta04"
+    androidTestImplementation "dev.testify:testify-accessibility:2.0.0"
 }
 ```
