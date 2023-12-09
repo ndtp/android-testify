@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.resolve.source.getPsi
+import javax.swing.Icon
 
 // Reference https://github.com/square/dagger-intellij-plugin/blob/master/src/com/squareup/ideaplugin/dagger/InjectionLineMarkerProvider.java
 
@@ -72,6 +73,10 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
     }
 
     companion object {
-        private val ICON = IconLoader.getIcon("/icons/camera.svg")
+        private val ICON: Icon
+            get() {
+                val classLoader = ScreenshotClassMarkerProvider.Companion::class.java.classLoader
+                return IconLoader.getIcon("/icons/camera.svg", classLoader)
+            }
     }
 }

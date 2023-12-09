@@ -24,13 +24,19 @@
  */
 package dev.testify.actions.screenshot
 
+import com.android.ddmlib.AndroidDebugBridge
+import com.android.ddmlib.IDevice
+import com.android.tools.idea.run.AndroidRunConfiguration
+import com.intellij.execution.RunManager
 import com.intellij.ide.actions.runAnything.RunAnythingAction
 import com.intellij.ide.actions.runAnything.RunAnythingContext
 import com.intellij.ide.actions.runAnything.activity.RunAnythingProvider
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
@@ -38,11 +44,20 @@ import dev.testify.methodName
 import dev.testify.moduleName
 import dev.testify.testifyClassInvocationPath
 import dev.testify.testifyMethodInvocationPath
+import org.jetbrains.android.facet.AndroidFacet
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.plugins.gradle.action.GradleExecuteTaskAction
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
+
+import com.android.tools.idea.run.editor.AndroidRunConfigurationEditor
+import com.intellij.execution.ExecutionManager
+import com.intellij.execution.Executor
+import com.intellij.execution.ExecutorRegistry
+import com.intellij.execution.configurations.ConfigurationTypeUtil
+import com.intellij.execution.configurations.RunConfiguration
+import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 
 abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
 
@@ -68,7 +83,135 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
             return if (isClass()) (anchorElement as? KtClass)?.name else null
         }
 
+    private val AnActionEvent.module: Module?
+        get() = LangDataKeys.MODULE.getData(this.dataContext)
+
+    private fun getSelectedDevice(devices: Array<out com.android.ddmlib.IDevice>): com.android.ddmlib.IDevice? {
+        // Logic to determine the selected device, for example, based on the device state
+        // You might need to adjust this logic based on your requirements
+
+        for (device in devices) {
+            if (device.isOnline) {
+                // Assuming the selected device is the first online device
+                return device
+            }
+        }
+
+        return null
+    }
+
+    private fun selectEmulator(module: Module) {
+
+        val androidFacet = AndroidFacet.getInstance(module)
+        println("$androidFacet")
+
+        val project = module.project
+
+        AndroidDebugBridge.initIfNeeded(false)
+        val devices = AndroidDebugBridge.createBridge().devices
+        val selectedDevice = getSelectedDevice(devices)
+
+        println("$selectedDevice")
+
+        if (selectedDevice != null) {
+            val deviceName = selectedDevice.name
+            val deviceSerial = selectedDevice.serialNumber
+            println("Selected device: $deviceName ($deviceSerial)")
+        } else {
+            println("No device selected")
+        }
+
+//        (RunManager.getInstance(project).selectedConfiguration as? AndroidRunConfiguration)?.let { androidRunConfiguration ->
+//            println("$androidRunConfiguration")
+//        }
+//        project?.let { project ->
+//            val androidFacet = AndroidFacet.getInstance(module)
+//            (RunManager.getInstance(project).selectedConfiguration as? AndroidRunConfiguration)?.let { androidRunConfiguration->
+////                val emulatorId = androidRunConfiguration.getEmulatorId()
+//                println("$androidRunConfiguration $androidFacet")
+//            }
+//        }
+    }
+
+
+        fun foo(event: AnActionEvent) {
+            val project: Project = event.project ?: return
+
+            // Access the currently active run configuration
+            val executionManager = ExecutionManager.getInstance(project)
+
+//            val context = executionManager.selectedContext ?: return
+//            val runConfiguration = context.runProfile as? RunConfiguration ?: return
+
+            val runConfiguration = RunManager.getInstance(project).selectedConfiguration?.configuration ?: return
+
+            val module = event.module ?: return
+
+            val androidFacet = AndroidFacet.getInstance(module) ?: return
+
+//            // Check if it's an Android run configuration
+//            if (isAndroidRunConfiguration(runConfiguration)) {
+//                val androidFacet = getAndroidFacet(runConfiguration)
+                val selectedDevice = getSelectedDevice(androidFacet)
+//
+//                if (selectedDevice != null) {
+//                    val deviceName = selectedDevice.name
+//                    val deviceSerial = selectedDevice.serialNumber
+//                    println("Selected device: $deviceName ($deviceSerial)")
+//                } else {
+//                    println("No device selected")
+//                }
+//            }
+        }
+
+        private fun isAndroidRunConfiguration(runConfiguration: RunConfiguration): Boolean {
+            // Customize this check based on your actual run configuration type
+            return runConfiguration.type.id.startsWith("AndroidRunConfiguration")
+        }
+
+//        private fun getAndroidFacet(runConfiguration: RunConfiguration, module: Module): AndroidFacet? {
+//            val configurationModule = runConfiguration
+//
+//            // Need a "module"
+//
+//            // com.intellij.openapi.module
+//            AndroidFacet.getInstance(module)
+//
+//            println("$configurationModule")
+////            AndroidFacet.getInstance()
+////
+////            return AndroidFacet.getInstance(configurationModule.module)
+//            return null
+//        }
+
+        private fun getSelectedDevice(androidFacet: AndroidFacet): IDevice? {
+
+            val mainModule = androidFacet.mainModule ?: return null
+
+            println("$mainModule")
+//            AndroidFacet
+
+//            val application = androidFacet.getApplicationFacet() ?: return null
+//            val runningDevices = application.lastState?.deployedDevices ?: emptyList()
+//
+//            // Logic to determine the selected device based on the running devices
+//            // You might need to adjust this logic based on your requirements
+//
+//            return runningDevices.firstOrNull()
+            return null
+        }
+
+
+
     private fun String.toFullGradleCommand(event: AnActionEvent): String {
+
+        foo(event)
+
+        event.module?.let { module ->
+            selectEmulator(module)
+        }
+
+
         val arguments = when (anchorElement) {
             is KtNamedFunction -> anchorElement.testifyMethodInvocationPath
             is KtClass -> anchorElement.testifyClassInvocationPath
@@ -99,7 +242,9 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         anActionEvent.presentation.apply {
             text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
-            icon = IconLoader.getIcon("/icons/${this@BaseScreenshotAction.icon}.svg")
+
+            val classLoader = BaseScreenshotAction::class.java.classLoader
+            icon = IconLoader.getIcon("/icons/${this@BaseScreenshotAction.icon}.svg", classLoader)
         }
     }
 
@@ -115,6 +260,7 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
                     )
                 }
                 ?.data?.linkedExternalProjectPath
+
         is RunAnythingContext.ModuleContext -> ExternalSystemApiUtil.getExternalProjectPath(module)
         is RunAnythingContext.RecentDirectoryContext -> path
         is RunAnythingContext.BrowseRecentDirectoryContext -> null

@@ -32,6 +32,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.FilenameIndex
 import dev.testify.baselineImageName
+import dev.testify.extensions.ScreenshotClassMarkerProvider
 import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtFile
 
@@ -49,7 +50,9 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
             text = menuText
             isEnabled = isInProject
             isVisible = (anActionEvent.project != null)
-            icon = IconLoader.getIcon("/icons/${this@BaseFileAction.icon}.svg")
+
+            val classLoader = BaseFileAction::class.java.classLoader
+            icon = IconLoader.getIcon("/icons/${this@BaseFileAction.icon}.svg", classLoader)
         }
     }
 
