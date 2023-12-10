@@ -24,6 +24,7 @@
  */
 package dev.testify.actions.utility
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
@@ -31,16 +32,28 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.FilenameIndex
+import dev.testify.actions.base.BaseTestifyAction
 import dev.testify.baselineImageName
 import dev.testify.extensions.ScreenshotClassMarkerProvider
 import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtFile
 
-abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnAction() {
+abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseTestifyAction() {
 
-    protected val baselineImageName = anchorElement.baselineImageName
+    private val baselineImageName = anchorElement.baselineImageName
+
+    override val classMenuText: String
+        get() = menuText
+
+    override val methodMenuText: String
+        get() = menuText
+
     abstract val menuText: String
     abstract val icon: String
+
+    override val isDeviceRequired: Boolean = false
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     final override fun update(anActionEvent: AnActionEvent) {
 
@@ -48,7 +61,7 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
 
         anActionEvent.presentation.apply {
             text = menuText
-            isEnabled = isInProject
+            isEnabled = this@BaseFileAction.isEnabled && isInProject
             isVisible = (anActionEvent.project != null)
 
             val classLoader = BaseFileAction::class.java.classLoader
@@ -65,6 +78,10 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
     private fun AnActionEvent.findBaselineImage(): VirtualFile? {
         val psiFile = anchorElement.containingFile
         if (psiFile is KtFile && psiFile.module != null) {
+
+            // TODO: Should this be used?
+//            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, psiFile.module!!.moduleContentScope)
+
             val files =
                 FilenameIndex.getVirtualFilesByName(project, baselineImageName, psiFile.module!!.moduleContentScope)
             if (files.isNotEmpty()) {

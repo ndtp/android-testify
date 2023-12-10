@@ -26,9 +26,6 @@ package dev.testify.extensions
 
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
 import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionPopupMenu
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
@@ -42,12 +39,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.ui.awt.RelativePoint
+import dev.testify.actions.base.create
 import dev.testify.actions.screenshot.ScreenshotClearAction
 import dev.testify.actions.screenshot.ScreenshotPullAction
 import dev.testify.actions.screenshot.ScreenshotRecordAction
 import dev.testify.actions.screenshot.ScreenshotTestAction
 import dev.testify.actions.utility.DeleteBaselineAction
 import dev.testify.actions.utility.RevealBaselineAction
+import dev.testify.adb.DeviceList
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
 import javax.swing.Icon
@@ -86,7 +85,7 @@ class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: P
         }
     }
 
-    fun main() : DefaultActionGroup {
+    fun main(): DefaultActionGroup {
 
         val actionA = MyAction("Record default()")
 
@@ -145,29 +144,48 @@ class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: P
 
     private fun createActionGroupPopup(event: ComponentEvent, anchorElement: PsiElement): JBPopup {
 
-        fun createSubmenu(anchorElement: PsiElement): DefaultActionGroup {
-            val submenuGroup = listOf(
-                ScreenshotTestAction(anchorElement, "Testify 33"),
-                ScreenshotTestAction(anchorElement, "Testify Open Source Emulator")
-                // Add more submenu items as needed
-            )
-
-            return DefaultActionGroup("Test 'default()'", true)
-        }
-
-        val _group = DefaultActionGroup(
-            createSubmenu(anchorElement),
-//            ScreenshotTestAction(anchorElement, "Testify 33"),
-//            ScreenshotTestAction(anchorElement, "Testify Open Source Emulator"),
-            ScreenshotRecordAction(anchorElement),
-            ScreenshotPullAction(anchorElement),
-            ScreenshotClearAction(anchorElement),
-            RevealBaselineAction(anchorElement),
-            DeleteBaselineAction(anchorElement)
+        val actionClasses = listOf(
+            ScreenshotTestAction::class,
+            ScreenshotRecordAction::class,
+            ScreenshotPullAction::class,
+            ScreenshotClearAction::class,
+            RevealBaselineAction::class,
+            DeleteBaselineAction::class
         )
 
-        val group = main()
+        val devices = DeviceList()
 
+        val actions = when {
+            devices.isEmpty() -> actionClasses.map { kclass ->
+                kclass.create(anchorElement).apply {
+                    isEnabled = !isDeviceRequired
+                }
+            }
+
+            devices.hasMultipleDevices() ->
+                actionClasses.map { kclass ->
+                    val action = kclass.create(anchorElement)
+                    if (action.isDeviceRequired) {
+                        val subActions = devices.list().map {
+                            kclass.create(anchorElement)
+                        }
+
+                        val deviceActions = DefaultActionGroup(
+                            *subActions.toTypedArray()
+                        )
+
+                        DefaultActionGroup(action.methodMenuText, true).apply {
+                            add(deviceActions)
+                        }
+                    } else {
+                        action
+                    }
+                }
+
+            else -> actionClasses.map { it.create(anchorElement) }
+        }
+
+        val group = DefaultActionGroup(actions)
         val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(
             "",

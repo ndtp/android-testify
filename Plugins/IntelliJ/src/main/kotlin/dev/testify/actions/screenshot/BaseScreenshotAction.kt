@@ -59,21 +59,25 @@ import com.intellij.execution.configurations.ConfigurationTypeUtil
 import com.intellij.execution.configurations.RunConfiguration
 import com.intellij.execution.runners.ExecutionEnvironmentBuilder
 import com.intellij.ide.util.PropertiesComponent
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import dev.testify.actions.base.BaseTestifyAction
 import dev.testify.adb.BridgeImpl
 import dev.testify.adb.DeviceResultFetcher
 import dev.testify.adb.UseSameDevicesHelper
 import dev.testify.preferences.PreferenceAccessorImpl
 import dev.testify.preferences.ProjectPreferences
 
-abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
+abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : BaseTestifyAction() {
 
     abstract val classGradleCommand: String
-    abstract val classMenuText: String
 
     abstract val methodGradleCommand: String
-    abstract val methodMenuText: String
 
     abstract val icon: String
+
+    override val isDeviceRequired: Boolean = true
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     protected val methodName: String
         get() {
@@ -91,7 +95,6 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
 
     private val AnActionEvent.module: Module?
         get() = LangDataKeys.MODULE.getData(this.dataContext)
-
 
 
     /*
@@ -150,7 +153,6 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         println("$result")
 
 
-
         val androidFacet = AndroidFacet.getInstance(module)
         println("$androidFacet")
 
@@ -183,25 +185,25 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
     }
 
 
-        fun foo(event: AnActionEvent) {
-            val project: Project = event.project ?: return
+    fun foo(event: AnActionEvent) {
+        val project: Project = event.project ?: return
 
-            // Access the currently active run configuration
-            val executionManager = ExecutionManager.getInstance(project)
+        // Access the currently active run configuration
+        val executionManager = ExecutionManager.getInstance(project)
 
 //            val context = executionManager.selectedContext ?: return
 //            val runConfiguration = context.runProfile as? RunConfiguration ?: return
 
-            val runConfiguration = RunManager.getInstance(project).selectedConfiguration?.configuration ?: return
+        val runConfiguration = RunManager.getInstance(project).selectedConfiguration?.configuration ?: return
 
-            val module = event.module ?: return
+        val module = event.module ?: return
 
-            val androidFacet = AndroidFacet.getInstance(module) ?: return
+        val androidFacet = AndroidFacet.getInstance(module) ?: return
 
 //            // Check if it's an Android run configuration
 //            if (isAndroidRunConfiguration(runConfiguration)) {
 //                val androidFacet = getAndroidFacet(runConfiguration)
-                val selectedDevice = getSelectedDevice(androidFacet)
+        val selectedDevice = getSelectedDevice(androidFacet)
 //
 //                if (selectedDevice != null) {
 //                    val deviceName = selectedDevice.name
@@ -211,12 +213,12 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
 //                    println("No device selected")
 //                }
 //            }
-        }
+    }
 
-        private fun isAndroidRunConfiguration(runConfiguration: RunConfiguration): Boolean {
-            // Customize this check based on your actual run configuration type
-            return runConfiguration.type.id.startsWith("AndroidRunConfiguration")
-        }
+    private fun isAndroidRunConfiguration(runConfiguration: RunConfiguration): Boolean {
+        // Customize this check based on your actual run configuration type
+        return runConfiguration.type.id.startsWith("AndroidRunConfiguration")
+    }
 
 //        private fun getAndroidFacet(runConfiguration: RunConfiguration, module: Module): AndroidFacet? {
 //            val configurationModule = runConfiguration
@@ -233,11 +235,11 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
 //            return null
 //        }
 
-        private fun getSelectedDevice(androidFacet: AndroidFacet): IDevice? {
+    private fun getSelectedDevice(androidFacet: AndroidFacet): IDevice? {
 
-            val mainModule = androidFacet.mainModule ?: return null
+        val mainModule = androidFacet.mainModule ?: return null
 
-            println("$mainModule")
+        println("$mainModule")
 //            AndroidFacet
 
 //            val application = androidFacet.getApplicationFacet() ?: return null
@@ -247,18 +249,17 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
 //            // You might need to adjust this logic based on your requirements
 //
 //            return runningDevices.firstOrNull()
-            return null
-        }
-
+        return null
+    }
 
 
     private fun String.toFullGradleCommand(event: AnActionEvent): String {
 
-        foo(event)
-
-        event.module?.let { module ->
-            selectEmulator(module)
-        }
+//        foo(event)
+//
+//        event.module?.let { module ->
+//            selectEmulator(module)
+//        }
 
 
         val arguments = when (anchorElement) {
@@ -291,6 +292,8 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         anActionEvent.presentation.apply {
             text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
+
+            isEnabled = this@BaseScreenshotAction.isEnabled
 
             val classLoader = BaseScreenshotAction::class.java.classLoader
             icon = IconLoader.getIcon("/icons/${this@BaseScreenshotAction.icon}.svg", classLoader)
