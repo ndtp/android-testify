@@ -26,7 +26,7 @@ package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
 
-class ScreenshotTestAction(anchorElement: PsiElement, private val device: String? = null) :
+class ScreenshotTestAction(anchorElement: PsiElement) :
     BaseScreenshotAction(anchorElement) {
 
     override val classGradleCommand: String
@@ -39,9 +39,7 @@ class ScreenshotTestAction(anchorElement: PsiElement, private val device: String
         get() = "screenshotTest"
 
     override val methodMenuText: String
-        get() {
-            return device.takeIf { !device.isNullOrEmpty() } ?: "Test '$methodName()'"
-        }
+        get() = "Test '$methodName()'"
 
     override val icon = "play"
 }

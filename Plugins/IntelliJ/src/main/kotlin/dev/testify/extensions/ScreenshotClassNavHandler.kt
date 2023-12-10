@@ -68,8 +68,10 @@ class ScreenshotClassNavHandler(private val anchorElement: PsiElement) : GutterI
 
     private fun createActionGroupPopup(event: ComponentEvent, anchorElement: PsiElement): JBPopup {
 
+        // TODO: Make device-aware
+
         val group = DefaultActionGroup(
-            ScreenshotTestAction(anchorElement, ""),
+            ScreenshotTestAction(anchorElement),
             ScreenshotRecordAction(anchorElement),
             ScreenshotPullAction(anchorElement),
             ScreenshotClearAction(anchorElement)

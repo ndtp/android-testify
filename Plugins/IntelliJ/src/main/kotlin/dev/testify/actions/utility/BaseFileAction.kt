@@ -51,8 +51,6 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseTes
     abstract val menuText: String
     abstract val icon: String
 
-    override val isDeviceRequired: Boolean = false
-
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     final override fun update(anActionEvent: AnActionEvent) {

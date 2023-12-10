@@ -64,8 +64,10 @@ import dev.testify.actions.base.BaseTestifyAction
 import dev.testify.adb.BridgeImpl
 import dev.testify.adb.DeviceResultFetcher
 import dev.testify.adb.UseSameDevicesHelper
+import dev.testify.adb.isGradleSyncInProgress
 import dev.testify.preferences.PreferenceAccessorImpl
 import dev.testify.preferences.ProjectPreferences
+import dev.testify.ui.NotificationHelper
 
 abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : BaseTestifyAction() {
 
@@ -74,8 +76,6 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : Bas
     abstract val methodGradleCommand: String
 
     abstract val icon: String
-
-    override val isDeviceRequired: Boolean = true
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
@@ -276,7 +276,14 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : Bas
     }
 
     final override fun actionPerformed(event: AnActionEvent) {
+
         val project = event.project as Project
+
+        if (isGradleSyncInProgress(project)) {
+            NotificationHelper.error("Gradle sync is in progress")
+            return
+        }
+
         val dataContext = SimpleDataContext.getProjectContext(project)
         val executionContext =
             dataContext.getData(RunAnythingProvider.EXECUTING_CONTEXT) ?: RunAnythingContext.ProjectContext(project)
@@ -290,7 +297,10 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : Bas
 
     final override fun update(anActionEvent: AnActionEvent) {
         anActionEvent.presentation.apply {
-            text = if (isClass()) classMenuText else methodMenuText
+            text =
+                menuTextOverride.takeUnless { menuTextOverride.isNullOrEmpty() }
+                    ?: classMenuText.takeIf { isClass() }
+                        ?: methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
 
             isEnabled = this@BaseScreenshotAction.isEnabled

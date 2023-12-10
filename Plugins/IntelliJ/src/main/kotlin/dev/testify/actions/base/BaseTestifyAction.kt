@@ -1,13 +1,18 @@
 package dev.testify.actions.base
 
 import com.intellij.openapi.actionSystem.AnAction
+import dev.testify.actions.screenshot.BaseScreenshotAction
 
 abstract class BaseTestifyAction : AnAction() {
 
     abstract val classMenuText: String
+
     abstract val methodMenuText: String
 
-    open var isEnabled: Boolean = true
+    open var menuTextOverride: String? = null
 
-    abstract val isDeviceRequired: Boolean
+    open var isEnabled: Boolean = true
 }
+
+val BaseTestifyAction.isDeviceRequired: Boolean
+    get() = (this is BaseScreenshotAction)

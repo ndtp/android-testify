@@ -40,6 +40,7 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.ui.awt.RelativePoint
 import dev.testify.actions.base.create
+import dev.testify.actions.base.isDeviceRequired
 import dev.testify.actions.screenshot.ScreenshotClearAction
 import dev.testify.actions.screenshot.ScreenshotPullAction
 import dev.testify.actions.screenshot.ScreenshotRecordAction
@@ -166,8 +167,10 @@ class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: P
                 actionClasses.map { kclass ->
                     val action = kclass.create(anchorElement)
                     if (action.isDeviceRequired) {
-                        val subActions = devices.list().map {
-                            kclass.create(anchorElement)
+                        val subActions = devices.list().map { device ->
+                            kclass.create(anchorElement).apply {
+                                menuTextOverride = device.name
+                            }
                         }
 
                         val deviceActions = DefaultActionGroup(
