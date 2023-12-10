@@ -167,9 +167,10 @@ class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: P
                 actionClasses.map { kclass ->
                     val action = kclass.create(anchorElement)
                     if (action.isDeviceRequired) {
-                        val subActions = devices.list().map { device ->
+                        val subActions = devices.list().mapIndexed { index, device ->
                             kclass.create(anchorElement).apply {
                                 menuTextOverride = device.name
+                                (this as? ScreenshotTestAction)?.targetDevice = index
                             }
                         }
 

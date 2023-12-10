@@ -79,6 +79,8 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : Bas
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
+    var targetDevice: Int? = null
+
     protected val methodName: String
         get() {
             var name = anchorElement.methodName
@@ -262,12 +264,17 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : Bas
 //        }
 
 
-        val arguments = when (anchorElement) {
+        var arguments = when (anchorElement) {
             is KtNamedFunction -> anchorElement.testifyMethodInvocationPath
             is KtClass -> anchorElement.testifyClassInvocationPath
             else -> null
         }
         val command = ":${event.moduleName}:$this"
+
+        targetDevice?.let {
+            arguments += " -Pdevice=$it"
+        }
+
         return if (arguments != null) "$command -PtestClass=$arguments" else command
     }
 
