@@ -26,7 +26,7 @@ package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
 
-class ScreenshotTestAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotTestAction(anchorElement: PsiElement, private val device: String) : BaseScreenshotAction(anchorElement) {
 
     override val classGradleCommand: String
         get() = "screenshotTest"

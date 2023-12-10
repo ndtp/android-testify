@@ -26,6 +26,11 @@ package dev.testify.extensions
 
 import com.intellij.codeInsight.daemon.GutterIconNavigationHandler
 import com.intellij.ide.DataManager
+import com.intellij.openapi.actionSystem.ActionGroup
+import com.intellij.openapi.actionSystem.ActionManager
+import com.intellij.openapi.actionSystem.ActionPopupMenu
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.DefaultActionGroup
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -45,6 +50,7 @@ import dev.testify.actions.utility.DeleteBaselineAction
 import dev.testify.actions.utility.RevealBaselineAction
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
+import javax.swing.Icon
 
 class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: PsiElement) :
     GutterIconNavigationHandler<PsiElement> {
@@ -69,16 +75,99 @@ class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: P
         }
     }
 
+
+    class MyAction(text: String, private val icon: Icon? = null) : AnAction(text) {
+        override fun actionPerformed(e: AnActionEvent) {
+            // Action logic goes here
+        }
+
+        override fun update(e: AnActionEvent) {
+            e.presentation.icon = icon
+        }
+    }
+
+    fun main() : DefaultActionGroup {
+
+        val actionA = MyAction("Record default()")
+
+        val submenuB = DefaultActionGroup(
+            MyAction("Testify 33"),
+            MyAction("Testify Open Source Emulator")
+        )
+
+        val actionB = DefaultActionGroup("Test default()", true).apply {
+            add(submenuB)
+        }
+
+
+        val mainGroup = DefaultActionGroup(
+            actionB,
+            actionA,
+            MyAction("Pull all screenshots"),
+            MyAction("Clear all screenshots from device"),
+        )
+
+        return mainGroup
+//        val actionA = MyAction("A")
+//        val actionD = MyAction("D")
+//        val actionE = MyAction("E")
+//
+//        val submenuB = DefaultActionGroup(
+//            actionD,
+//            actionE
+//        )
+//
+//        val actionB = object : ActionGroup() {
+//            override fun getChildren(e: AnActionEvent?): Array<AnAction> {
+//                return submenuB.getChildren(e)
+//            }
+//        }
+//
+//        val actionC = MyAction("C")
+//
+//        return DefaultActionGroup(
+//            actionA,
+//            actionB,
+//            actionC
+//        )
+
+//        val popupMenu: ActionPopupMenu =
+//            JBPopupFactory.getInstance().createActionGroupPopup(
+//                "Popup Title",
+//                mainGroup,
+//                ActionManager.getInstance().dataContext,
+//                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+//                true
+//            )
+
+//        popupMenu.showInBestPositionFor(ActionManager.getInstance().getContextComponent())
+    }
+
     private fun createActionGroupPopup(event: ComponentEvent, anchorElement: PsiElement): JBPopup {
 
-        val group = DefaultActionGroup(
-            ScreenshotTestAction(anchorElement),
+        fun createSubmenu(anchorElement: PsiElement): DefaultActionGroup {
+            val submenuGroup = listOf(
+                ScreenshotTestAction(anchorElement, "Testify 33"),
+                ScreenshotTestAction(anchorElement, "Testify Open Source Emulator")
+                // Add more submenu items as needed
+            )
+
+            return DefaultActionGroup("Test 'default()'", true)
+        }
+
+        val _group = DefaultActionGroup(
+            createSubmenu(anchorElement),
+//            ScreenshotTestAction(anchorElement, "Testify 33"),
+//            ScreenshotTestAction(anchorElement, "Testify Open Source Emulator"),
             ScreenshotRecordAction(anchorElement),
             ScreenshotPullAction(anchorElement),
             ScreenshotClearAction(anchorElement),
             RevealBaselineAction(anchorElement),
             DeleteBaselineAction(anchorElement)
         )
+
+        val group = main()
+
         val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(
             "",
