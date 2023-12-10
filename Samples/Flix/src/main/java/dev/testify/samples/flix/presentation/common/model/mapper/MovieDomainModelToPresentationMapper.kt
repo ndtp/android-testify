@@ -27,13 +27,10 @@ package dev.testify.samples.flix.presentation.common.model.mapper
 
 import dev.testify.samples.flix.domain.model.MovieDomainModel
 import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
+import javax.inject.Inject
 
-interface MovieDomainModelToPresentationMapper {
-    fun convert(domainModel: MovieDomainModel): MoviePresentationModel
-}
-
-class MovieDomainModelToPresentationMapperImpl : MovieDomainModelToPresentationMapper {
-    override fun convert(domainModel: MovieDomainModel): MoviePresentationModel {
+class MovieDomainModelToPresentationMapper @Inject constructor() {
+    fun convert(domainModel: MovieDomainModel): MoviePresentationModel {
         return MoviePresentationModel(
             id = domainModel.id,
             title = domainModel.title.takeIf { it.isNotBlank() } ?: "",

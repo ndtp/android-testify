@@ -32,20 +32,17 @@ import dev.testify.samples.flix.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-interface LoadHomeScreenUseCase {
-    fun asFlow(): Flow<Result<HomeScreenDomainModel>>
-}
-
-internal class LoadHomeScreenUseCaseImpl(
+class LoadHomeScreenUseCase @Inject constructor(
     private val movieRepository: MovieRepository,
-) : LoadHomeScreenUseCase {
+) {
 
     companion object {
-        private val LOG_TAG = LoadHomeScreenUseCaseImpl::class.simpleName
+        private val LOG_TAG = LoadHomeScreenUseCase::class.simpleName
     }
 
-    override fun asFlow(): Flow<Result<HomeScreenDomainModel>> {
+    fun asFlow(): Flow<Result<HomeScreenDomainModel>> {
 
         val mostTrendingMovieFlow: Flow<Result<MovieDomainModel>?> = flow {
             emit(movieRepository.getMostTrendingMovie())

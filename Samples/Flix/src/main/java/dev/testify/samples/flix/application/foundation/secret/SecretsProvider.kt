@@ -30,47 +30,40 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
-import org.koin.dsl.module
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-interface SecretsProvider {
-    fun getTheMovieDatabaseApiToken(): String
-}
+class SecretsProvider @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
-internal val secretModule = module {
-    single<SecretsProvider> {
+    private val apiToken by lazy {
+        val applicationInfo = getApplicationInfo(context)
+        val token = applicationInfo.metaData.getString("com.flix.tmdb.api.key") ?: "fiddlesticks"
+        token
+    }
 
-        object : SecretsProvider {
+    fun getTheMovieDatabaseApiToken(): String {
+        return apiToken
+    }
 
-            private val apiToken by lazy {
-                val applicationInfo = getApplicationInfo()
-                val token = applicationInfo.metaData.getString("com.flix.tmdb.api.key") ?: "fiddlesticks"
-                token
-            }
+    private fun getApplicationInfo(context: Context): ApplicationInfo {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            getApplicationInfoTiramisu(context)
+        else
+            getApplicationInfoPreTiramisu(context)
+    }
 
-            override fun getTheMovieDatabaseApiToken(): String {
-                return apiToken
-            }
+    @Suppress("DEPRECATION")
+    private fun getApplicationInfoPreTiramisu(context: Context): ApplicationInfo {
+        return context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+    }
 
-            private fun getApplicationInfo(): ApplicationInfo {
-                return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                    getApplicationInfoTiramisu()
-                else
-                    getApplicationInfoPreTiramisu()
-            }
-
-            @Suppress("DEPRECATION")
-            private fun getApplicationInfoPreTiramisu(): ApplicationInfo {
-                val context: Context by inject()
-                return context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-            }
-
-            @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-            private fun getApplicationInfoTiramisu(): ApplicationInfo {
-                val context: Context by inject()
-                return context.packageManager.getApplicationInfo(
-                    context.packageName,
-                    PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA.toLong()))
-            }
-        }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun getApplicationInfoTiramisu(context: Context): ApplicationInfo {
+        return context.packageManager.getApplicationInfo(
+            context.packageName,
+            PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA.toLong())
+        )
     }
 }

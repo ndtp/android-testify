@@ -22,25 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package dev.testify.samples.flix.data.di
 
-import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApi
-import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApiImpl
-import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApi
-import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbConfigurationApiImpl
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dev.testify.samples.flix.application.foundation.secret.SecretsProvider
+import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbApiConfiguration
 import dev.testify.samples.flix.data.remote.tmdb.defaultApiConfiguration
+import dev.testify.samples.flix.data.remote.tmdb.httpclient.TmdbHostnameProvider
 import dev.testify.samples.flix.data.remote.tmdb.httpclient.buildKtorHttpClient
-import dev.testify.samples.flix.data.remote.tmdb.httpclient.getTmdbHostnameProvider
-import org.koin.core.qualifier.named
-import org.koin.dsl.module
+import io.ktor.client.HttpClient
+import javax.inject.Singleton
 
-val dataModule = module {
-    single { getTmdbHostnameProvider() }
-    single { buildKtorHttpClient(get(), get()) }
-    single<TheMovieDbApi> { TheMovieDbApiImpl(get()) }
-    single<TheMovieDbConfigurationApi> { TheMovieDbConfigurationApiImpl(get()) }
-    single(qualifier = named("default_configuration")) {
-        defaultApiConfiguration(get())
-    }
+
+@Module
+@InstallIn(value = [SingletonComponent::class])
+class DataModule {
+
+    @Provides
+    @Singleton
+    fun provideHttpClient(
+        hostnameProvider: TmdbHostnameProvider,
+        secretsProvider: SecretsProvider
+    ): HttpClient =
+        buildKtorHttpClient(hostnameProvider, secretsProvider)
+
+    @Provides
+    @Singleton
+    fun provideTheMovieDbApiConfiguration(
+        hostnameProvider: TmdbHostnameProvider
+    ): TheMovieDbApiConfiguration =
+        defaultApiConfiguration(hostnameProvider)
 }

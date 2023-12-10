@@ -26,18 +26,16 @@
 package dev.testify.samples.flix.application
 
 import android.app.Application
-import dev.testify.samples.flix.application.di.applicationModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
-class FlixApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        startKoin {
-            androidLogger()
-            androidContext(this@FlixApplication)
-            modules(applicationModule)
-        }
-    }
+@HiltAndroidApp
+class FlixApplication : Application(), ImageLoaderFactory {
+
+    @Inject
+    lateinit var imageLoader: ImageLoader
+
+    override fun newImageLoader(): ImageLoader = imageLoader
 }
