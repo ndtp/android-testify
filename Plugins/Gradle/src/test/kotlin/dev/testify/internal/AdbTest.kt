@@ -68,11 +68,15 @@ class AdbTest {
         mockkStatic(Project::android)
         mockkStatic(Project::isVerbose)
         mockkStatic(Project::user)
+        mockkStatic(Project::deviceId)
+        mockkStatic(Project::deviceToken)
         mockkObject(Device)
 
         every { any<Project>().android } returns extension
         every { any<Project>().isVerbose } returns false
         every { any<Project>().user } returns null
+        every { any<Project>().deviceId } returns null
+        every { any<Project>().deviceToken } returns null
 
         mockkStatic(::runProcess)
 
@@ -86,9 +90,9 @@ class AdbTest {
         processLog.clear()
         val slot = slot<String>()
         every { runProcess(capture(slot), any()) } answers {
-            val capture = slot.captured.trim()
-            processLog.add(capture)
-            resultMap.entries.find { (key, _) -> capture.contains(key) }?.value ?: capture
+            val command = slot.captured.trim()
+            processLog.add(command)
+            resultMap.entries.find { (key, _) -> command.contains(key) }?.value ?: command
         }
     }
 
@@ -141,8 +145,39 @@ class AdbTest {
     }
 
     @Test
+    fun `WHEN device specified by index THEN use the expected device`() {
+        configureRunProcessCapture(
+            mapOf(
+                "devices" to "emulator-5554\tdevice\nemulator-5556\tdevice",
+            )
+        )
+
+        every { any<Project>().deviceId } returns 1
+
+        Adb.init(project)
+        subject.shell().execute()
+        assertThat(processLog[0]).contains("devices")
+        assertThat(processLog[1]).contains("-s emulator-5556")
+    }
+
+    @Test
+    fun `WHEN device specified by name THEN use the expected device`() {
+        configureRunProcessCapture(
+            mapOf(
+                "devices" to "emulator-5554\tdevice\nemulator-5556\tdevice",
+            )
+        )
+
+        every { any<Project>().deviceToken } returns "emulator-5556"
+
+        Adb.init(project)
+        subject.shell().execute()
+        assertThat(processLog[0]).contains("devices")
+        assertThat(processLog[1]).contains("-s emulator-5556")
+    }
+
+    @Test
     fun `WHEN no user defined THEN do not specify a user`() {
-        println("WHEN no user defined THEN do not specify a user")
         configureRunProcessCapture(mapOf("get-current-user" to ""))
         subject.shell().runAs("dev.testify").execute()
         processLog.forEach {
@@ -152,7 +187,6 @@ class AdbTest {
 
     @Test
     fun `WHEN user is 0 THEN do not specify a user`() {
-        println("WHEN user is 0 THEN do not specify a user")
         subject.shell().runAs("dev.testify").execute()
         processLog.forEach {
             assertThat(it).doesNotContain("--user")
@@ -161,7 +195,6 @@ class AdbTest {
 
     @Test
     fun `WHEN user is 10 THEN specify user 10`() {
-        println("WHEN user is 10 THEN specify user 10")
         configureRunProcessCapture(mapOf("get-current-user" to "10"))
         subject.shell().runAs("dev.testify").execute()
         assertThat(processLog.last()).contains("--user 10")
@@ -169,7 +202,6 @@ class AdbTest {
 
     @Test
     fun `WHEN forced user is 99 THEN specify user 99`() {
-        println("WHEN forced user is 99 THEN specify user 99")
         configureRunProcessCapture(mapOf("get-current-user" to "10"))
         every { any<Project>().user } returns 99
 

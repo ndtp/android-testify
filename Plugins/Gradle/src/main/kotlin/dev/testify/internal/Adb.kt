@@ -126,8 +126,10 @@ class Adb {
         fun init(project: Project) {
             adbPath = project.android.adbExecutable.absolutePath
                 ?: throw GradleException("adb not found. Have you defined an `android` block?")
-            val index = (project.properties["device"] as? String)?.toInt() ?: 0
-            deviceTarget = Devices.targets[index]
+
+            val deviceId = project.deviceId
+            val devices = Devices.targets
+            deviceTarget = devices.getById(deviceId) ?: project.deviceToken ?: devices.getDefault()
             verbose = project.isVerbose
             forcedUser = project.user
         }

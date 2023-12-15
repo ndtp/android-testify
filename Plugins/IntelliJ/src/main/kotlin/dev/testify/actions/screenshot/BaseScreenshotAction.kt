@@ -79,7 +79,7 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : Bas
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-    var targetDevice: Int? = null
+    var targetDevice: String? = null
 
     protected val methodName: String
         get() {

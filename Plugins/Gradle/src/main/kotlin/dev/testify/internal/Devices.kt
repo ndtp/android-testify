@@ -25,6 +25,8 @@
 
 package dev.testify.internal
 
+typealias DeviceMap = Map<Int, String>
+
 internal object Devices {
 
     val isEmpty: Boolean
@@ -41,7 +43,7 @@ internal object Devices {
             }.count()
         }
 
-    val targets: Map<Int, String>
+    val targets: DeviceMap
         get() {
             val map = HashMap<Int, String>()
             enumerateDevices().mapIndexed { index, s ->
@@ -61,4 +63,12 @@ internal object Devices {
             it.substringBefore("\t")
         }
     }
+}
+
+fun DeviceMap.getById(id: Int?): String? {
+    return this.getOrDefault(id, null).takeIf { id != null }
+}
+
+fun DeviceMap.getDefault(): String? {
+    return this.entries.firstOrNull()?.value
 }

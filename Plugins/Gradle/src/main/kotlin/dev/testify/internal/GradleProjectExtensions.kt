@@ -43,6 +43,12 @@ val Project.useLocale: Boolean
 val Project.user: Int?
     get() = (this.properties["user"] as? String)?.toInt()
 
+val Project.deviceId: Int?
+    get() = (this.properties["device"] as? String)?.toIntOrNull()
+
+val Project.deviceToken: String?
+    get() = (this.properties["device"] as? String)
+
 val Project.inferredInstallTask: String?
     get() {
         val pattern = "^install.*Debug$".toRegex()
