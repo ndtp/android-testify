@@ -1,9 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2021 Shopify Inc.
- *
+ * Copyright (c) 2023 ndtp
+  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -22,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.compose.scenario
 
 import android.app.Activity
 import android.graphics.Bitmap
@@ -30,28 +29,51 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.test.core.app.ActivityScenario
+import dev.testify.CaptureMethod
 import dev.testify.compose.R
+import dev.testify.compose.exception.ComposeContainerNotFoundException
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.capture.pixelCopyCapture
 import dev.testify.internal.disposeComposition
 import dev.testify.internal.helpers.findRootView
+import dev.testify.scenario.ScreenshotScenarioRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
 /**
- * Helper extension of [ScreenshotRule] which simplifies testing [Composable] functions.
+ * Helper extension of [ScreenshotScenarioRule] which simplifies testing [Composable] functions.
+ * This rule is used to test a single composable function.
+ * An [ActivityScenario] is used to launch the Activity under test.
+ *
+ * **Example:**
+ * ```
+ * @get:Rule
+ * val screenshotRule = ComposableScreenshotScenarioRule()
+ *
+ * @Test
+ * fun test() {
+ *   launchActivity<ComposableTestActivity>().use { scenario ->
+ *       screenshotRule
+ *          .withScenario(scenario)
+ *          .setCompose {
+ *              Text(text = "Hello, Testify!")
+ *          }
+ *          .assertSame()
+ *   }
+ * }
+ * ```
  *
  * @param exactness: The tolerance used when comparing the current image to the baseline. A value of 1f requires
  *      a perfect binary match. 0f will ignore all differences.
  * @param enableReporter Whether the reporter is run for this test rule.
  * @param composeTestRule: A TestRule that allows you to test and control composables and applications using Compose.
  */
-open class ComposableScreenshotRule(
+open class ComposableScreenshotScenarioRule(
     exactness: Float = 0.9f,
     enableReporter: Boolean = false,
     private val composeTestRule: ComposeTestRule = createEmptyComposeRule()
-) : ScreenshotRule<ComposableTestActivity>(
-    activityClass = ComposableTestActivity::class.java,
+) : ScreenshotScenarioRule(
     enableReporter = enableReporter,
     configuration = TestifyConfiguration(exactness = exactness)
 ) {
@@ -72,27 +94,22 @@ open class ComposableScreenshotRule(
     private var captureMethod: CaptureMethod = ::pixelCopyCapture
 
     /**
-     * Disposes of the composition after the screenshot has been taken.
+     * Dispose of any compositions after the screenshot has been taken.
      */
     open fun onCleanUp(activity: Activity) {
         activity.disposeComposition()
     }
 
     /**
-     * Set the method used to capture the screenshot.
+     * Set the ActivityScenario to be used for this test.
+     * This method must be called before [assertSame].
      *
-     * setCaptureMethod is deprecated. Please use configure() instead.
-     *
-     * @param captureMethod - The method used to capture the screenshot.
+     * @param scenario - The [ActivityScenario] to be used for this test.
      */
-    @Deprecated(
-        message = "Please use configure()",
-        replaceWith = ReplaceWith("configure { this@configure.captureMethod = captureMethod }")
-    )
-    override fun setCaptureMethod(captureMethod: CaptureMethod?): ComposableScreenshotRule {
-        configure {
-            this@configure.captureMethod = captureMethod
-        }
+    override fun <TActivity : Activity> withScenario(
+        scenario: ActivityScenario<TActivity>
+    ): ComposableScreenshotScenarioRule {
+        super.withScenario(scenario)
         return this
     }
 
@@ -102,7 +119,7 @@ open class ComposableScreenshotRule(
     override fun beforeAssertSame() {
         super.beforeAssertSame()
         super.configure {
-            captureMethod = this@ComposableScreenshotRule.captureMethod
+            captureMethod = this@ComposableScreenshotScenarioRule.captureMethod
         }
         setScreenshotViewProvider {
             it.getChildAt(0)
@@ -113,8 +130,10 @@ open class ComposableScreenshotRule(
      * Render the composable function after the activity has loaded.
      */
     override fun afterActivityLaunched() {
-        activity.runOnUiThread {
-            val composeView = activity.findViewById<ComposeView>(R.id.compose_container)
+        getActivity().runOnUiThread {
+            val composeView: ComposeView = getActivity().findViewById(R.id.compose_container)
+                ?: throw ComposeContainerNotFoundException()
+
             composeView.setContent {
                 composeFunction()
             }
@@ -136,11 +155,13 @@ open class ComposableScreenshotRule(
 
     /**
      * Used to provide a @Composable function to be rendered in the screenshot.
+     * This is the main entry point for the ComposableScreenshotRule.
+     * This method must be called before [assertSame].
      *
      * @param composable - The composable function to be rendered in the screenshot.
-     * @return [ComposableScreenshotRule]
+     * @return [ComposableScreenshotScenarioRule]
      */
-    fun setCompose(composable: @Composable () -> Unit): ComposableScreenshotRule {
+    fun setCompose(composable: @Composable () -> Unit): ComposableScreenshotScenarioRule {
         composeFunction = composable
         return this
     }
@@ -158,9 +179,9 @@ open class ComposableScreenshotRule(
      *
      * @param actions: A lambda which provides a [ComposeTestRule] instance that can be used with semantics to interact
      * with the UI hierarchy.
-     * @return [ComposableScreenshotRule]
+     *
      */
-    fun setComposeActions(actions: (ComposeTestRule) -> Unit): ComposableScreenshotRule {
+    fun setComposeActions(actions: (ComposeTestRule) -> Unit): ComposableScreenshotScenarioRule {
         composeActions = actions
         return this
     }
@@ -197,8 +218,9 @@ open class ComposableScreenshotRule(
     /**
      * Modifies the method-running Statement to implement this test-running rule.
      *
-     * @param base - The base statement
-     * @param description - The description of the test
+     * @param base - The [Statement] to be modified
+     * @param description - A [Description] of the test implemented in [base]
+     *
      * @return a new statement, which may be the same as base, a wrapper around base, or a completely new [Statement].
      */
     override fun apply(base: Statement, description: Description): Statement {
@@ -210,10 +232,9 @@ open class ComposableScreenshotRule(
      * Set the configuration for the ComposableScreenshotRule
      *
      * @param configureRule - [TestifyConfiguration]
-     *
-     * @return [ComposableScreenshotRule]
+     * @return [ComposableScreenshotScenarioRule]
      */
-    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ComposableScreenshotRule {
+    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ComposableScreenshotScenarioRule {
         super.configure(configureRule)
 
         this.captureMethod = configuration.captureMethod ?: ::pixelCopyCapture
