@@ -32,6 +32,7 @@ import androidx.annotation.VisibleForTesting
 import dev.testify.core.exception.ActivityMustImplementResourceOverrideException
 import dev.testify.core.exception.TestMustWrapContextException
 import dev.testify.resources.TestifyResourcesOverride
+import java.util.Locale
 
 /**
  * An interface for wrapping (transforming or overriding) a resources.
@@ -194,4 +195,17 @@ object ResourceWrapper {
         isWrapped = false
         wrappedResources.clear()
     }
+}
+
+fun <A : Activity> overrideResourceConfiguration(
+    fontScale: Float? = null,
+    locale: Locale? = null
+) {
+    if (fontScale != null)
+        ResourceWrapper.addOverride(WrappedFontScale(fontScale))
+
+    if (locale != null)
+        ResourceWrapper.addOverride(WrappedLocale(locale))
+
+    ResourceWrapper.beforeActivityLaunched()
 }

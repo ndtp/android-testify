@@ -1,9 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
- *
+ * Copyright (c) 2023 ndtp
+  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -25,8 +24,8 @@
 package dev.testify.core.exception
 
 /**
- * Exception thrown to safeguard against accidentally omitting the call to `assertSame`.
- * `assertSame` must be called in the test method.
+ * TODO
  */
-class MissingAssertSameException(parent: String? = "ScreenshotRule") :
-    TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the $parent *\n")
+class ScenarioRequiredException : Exception(
+    "\n\n*  An ActivityScenario instance is required.\n* Please call withScenario() prior to calling assertSame()\n"
+)

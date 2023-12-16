@@ -68,6 +68,8 @@ android {
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
             exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-common'
         }
+        implementation "androidx.test:core-ktx:${versions.androidx.test.coreKtx}"
+//        implementation "org.jetbrains.kotlin:kotlin-reflect:1.8.21"
 
         testImplementation "io.mockk:mockk:${versions.mockk}"
         testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinx}"
