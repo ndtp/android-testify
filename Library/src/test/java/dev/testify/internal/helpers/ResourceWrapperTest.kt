@@ -31,6 +31,7 @@ import dev.testify.core.exception.TestMustWrapContextException
 import dev.testify.resources.TestifyResourcesOverride
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.spyk
 import io.mockk.verify
@@ -46,6 +47,7 @@ class ResourceWrapperTest {
 
     @Before
     fun before() {
+        mockkObject(ResourceWrapper)
         mockkStatic(::buildVersionSdkInt)
         every { buildVersionSdkInt() } returns Build.VERSION_CODES.M
 
@@ -119,5 +121,61 @@ class ResourceWrapperTest {
 
         subject.addOverride(mockWrappedResource)
         subject.afterActivityLaunched(mockTestifyResourcesOverride)
+    }
+
+    @Test
+    fun `WHEN overrideResourceConfiguration AND no arguments THEN nothing is changed`() {
+        overrideResourceConfiguration<Activity>()
+        verify(exactly = 0) { ResourceWrapper.addOverride(any()) }
+    }
+
+    @Test
+    fun `WHEN overrideResourceConfiguration AND locale is set THEN locale is changed`() {
+        lateinit var wrappedResource: WrappedResource<*>
+        every { ResourceWrapper.addOverride(any()) } answers {
+            val value = firstArg<WrappedResource<*>>()
+            wrappedResource = spyk(value)
+            ResourceWrapper.wrappedResources.add(wrappedResource)
+        }
+
+        overrideResourceConfiguration<Activity>(
+            locale = Locale("fr_CA")
+        )
+        verify(exactly = 1) { ResourceWrapper.addOverride(any()) }
+        verify { wrappedResource.beforeActivityLaunched() }
+    }
+
+    @Test
+    fun `WHEN overrideResourceConfiguration AND font scale is set THEN font scale is changed`() {
+        lateinit var wrappedResource: WrappedResource<*>
+        every { ResourceWrapper.addOverride(any()) } answers {
+            val value = firstArg<WrappedResource<*>>()
+            wrappedResource = spyk(value)
+            ResourceWrapper.wrappedResources.add(wrappedResource)
+        }
+
+        overrideResourceConfiguration<Activity>(
+            fontScale = 1.5f
+        )
+        verify(exactly = 1) { ResourceWrapper.addOverride(any()) }
+        verify { wrappedResource.beforeActivityLaunched() }
+    }
+
+    @Test
+    fun `WHEN overrideResourceConfiguration AND locale is set AND font scale is set THEN both are changed`() {
+        val wrappedResources = mutableSetOf<WrappedResource<*>>()
+        every { ResourceWrapper.addOverride(any()) } answers {
+            val value: WrappedResource<*> = spyk(firstArg<WrappedResource<*>>())
+            wrappedResources.add(value)
+            ResourceWrapper.wrappedResources.add(value)
+        }
+
+        overrideResourceConfiguration<Activity>(
+            locale = Locale("fr_CA"),
+            fontScale = 1.5f
+        )
+        verify(exactly = 2) { ResourceWrapper.addOverride(any()) }
+        verify { wrappedResources.first().beforeActivityLaunched() }
+        verify { wrappedResources.last().beforeActivityLaunched() }
     }
 }

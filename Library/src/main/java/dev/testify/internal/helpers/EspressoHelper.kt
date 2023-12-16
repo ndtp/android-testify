@@ -83,11 +83,9 @@ class EspressoHelper(private val configuration: TestifyConfiguration) : Screensh
     @VisibleForTesting
     internal fun syncUiThread() =
         Espresso.onIdle()
-
-    /**
-     * Wrapper for [Espresso.closeSoftKeyboard], used to allow mocking.
-     */
-    @VisibleForTesting
-    internal fun closeSoftKeyboard() =
-        Espresso.closeSoftKeyboard()
 }
+
+/**
+ * Wrapper for [Espresso.closeSoftKeyboard], used to allow mocking.
+ */
+fun closeSoftKeyboard() = Espresso.closeSoftKeyboard()

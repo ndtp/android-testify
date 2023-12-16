@@ -21,12 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.scenario
 
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.Context
-import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -37,17 +36,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
+import dev.testify.ScreenshotLifecycle
+import dev.testify.TestifyFeatures
 import dev.testify.annotation.TestifyLayout
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.assertExpectedDevice
 import dev.testify.core.exception.AssertSameMustBeLastException
 import dev.testify.core.exception.FailedToCaptureBitmapException
 import dev.testify.core.exception.FinalizeDestinationException
+import dev.testify.core.exception.IllegalScenarioException
 import dev.testify.core.exception.MissingAssertSameException
 import dev.testify.core.exception.MissingScreenshotInstrumentationAnnotationException
+import dev.testify.core.exception.NoResourceConfigurationOnScenarioException
 import dev.testify.core.exception.NoScreenshotsOnUiThreadException
+import dev.testify.core.exception.ScenarioRequiredException
 import dev.testify.core.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.core.exception.ScreenshotIsDifferentException
 import dev.testify.core.exception.ScreenshotTestIgnoredException
@@ -58,11 +63,14 @@ import dev.testify.core.logic.takeScreenshot
 import dev.testify.core.processor.capture.createBitmapFromDrawingCache
 import dev.testify.core.processor.compare.sameAsCompare
 import dev.testify.core.processor.diff.HighContrastDiff
+import dev.testify.deleteBitmap
 import dev.testify.internal.extensions.TestInstrumentationRegistry
 import dev.testify.internal.helpers.EspressoHelper
 import dev.testify.internal.helpers.closeSoftKeyboard
 import dev.testify.internal.helpers.findRootView
 import dev.testify.internal.helpers.isRunningOnUiThread
+import dev.testify.loadBaselineBitmapForComparison
+import dev.testify.loadBitmapFromFile
 import dev.testify.output.DataDirectoryDestination
 import dev.testify.output.DataDirectoryDestinationNotFoundException
 import dev.testify.output.getDestination
@@ -79,22 +87,22 @@ import io.mockk.spyk
 import io.mockk.unmockkAll
 import io.mockk.verify
 import org.junit.After
+import org.junit.Assert
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.AssumptionViolatedException
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import java.io.File
+import java.util.Locale
 
-class ScreenshotRuleTest {
+class ScreenshotScenarioRuleTest {
 
-    private lateinit var subject: ScreenshotRule<Activity>
+    private lateinit var subject: ScreenshotScenarioRule
     private var observer: ScreenshotLifecycle? = null
     private val mockActivity = mockk<Activity>(relaxed = true)
-    private val mockIntent = mockk<Intent>(relaxed = true)
+    private val mockScenario = mockk<ActivityScenario<Activity>>(relaxed = true)
     private val mockViewGroup = mockk<ViewGroup>(relaxed = true)
     private val mockCapturedBitmap = mockk<Bitmap>(relaxed = true)
     private val mockCurrentBitmap = mockk<Bitmap>(relaxed = true)
@@ -102,7 +110,7 @@ class ScreenshotRuleTest {
     private val mockStatement = mockk<Statement>(relaxed = true)
     private val mockDescription = mockk<Description>(relaxed = true) {
         every { methodName } returns "default"
-        every { testClass } returns ScreenshotRuleTest::class.java
+        every { testClass } returns ScreenshotScenarioRuleTest::class.java
     }
     private val mockDestination = spyk(
         DataDirectoryDestination(
@@ -119,8 +127,9 @@ class ScreenshotRuleTest {
     /**
      * Simulate the TestRule evaluation
      */
-    private fun ScreenshotRule<*>.test() {
+    private fun ScreenshotScenarioRule.test() {
         every { mockStatement.evaluate() } answers {
+            this@test.withScenario(mockScenario)
             this@test.assertSame()
         }
         this.statement?.evaluate()
@@ -140,14 +149,14 @@ class ScreenshotRuleTest {
         mockkStatic(::getDestination)
         mockkStatic(::isRunningOnUiThread)
         mockkStatic(::pauseForInspection)
-        mockkStatic(::closeSoftKeyboard)
         mockkStatic(InstrumentationRegistry::class)
         mockkStatic(Looper::class)
         mockkStatic("dev.testify.internal.helpers.FindRootViewKt")
         mockkStatic(BitmapFactory::class)
-        mockkObject(Reporter.Companion)
+        mockkStatic(::closeSoftKeyboard)
+        mockkObject(Reporter)
         mockkObject(TestInstrumentationRegistry)
-        mockkObject(HighContrastDiff.Companion)
+        mockkObject(HighContrastDiff)
 
         val arguments = mockk<Bundle>(relaxed = true)
         val currentThread = mockk<Thread>()
@@ -189,36 +198,37 @@ class ScreenshotRuleTest {
         every { mockActivity.getDir(capture(getDirSlot), Context.MODE_PRIVATE) } answers {
             File("/data/user/0/dev.testify.sample/app_images/" + getDirSlot.captured)
         }
+
         subject = initSubject()
     }
 
     private fun initSubject(
         configuration: TestifyConfiguration = testifyConfiguration,
-        constructor: () -> ScreenshotRule<Activity> = {
+        @LayoutRes targetLayoutId: Int = View.NO_ID,
+        constructor: () -> ScreenshotScenarioRule = {
             spyk(
-                ScreenshotRule(
-                    activityClass = Activity::class.java,
+                ScreenshotScenarioRule(
                     enableReporter = true,
+                    targetLayoutId = targetLayoutId,
                     configuration = configuration
                 )
             )
         },
         base: Statement = mockStatement,
         description: Description = mockDescription
-    ): ScreenshotRule<Activity> = constructor().apply {
+    ): ScreenshotScenarioRule = constructor().apply {
         mockActivityLifecycle()
         apply(base = base, description = description)
     }
 
-    private fun ScreenshotRule<*>.mockActivityLifecycle() {
-        every { launchActivity(any()) } answers {
-            beforeActivityLaunched()
-            afterActivityLaunched()
-            mockActivity
+    private fun ScreenshotScenarioRule.mockActivityLifecycle() {
+        every { getActivity() } returns mockActivity
+
+        val activityActionSlot = slot<ActivityScenario.ActivityAction<Activity>>()
+        every { mockScenario.onActivity(capture(activityActionSlot)) } answers {
+            activityActionSlot.captured.perform(mockActivity)
+            mockScenario
         }
-        every { activity } returns mockActivity
-        every { getIntent() } returns mockIntent
-        every { espressoHelper } returns mockEspressoHelper
     }
 
     private fun verifyReporter() {
@@ -237,33 +247,6 @@ class ScreenshotRuleTest {
         }
     }
 
-    @Suppress("DEPRECATION")
-    @Test
-    fun `WHEN using deprecated constructor THEN create instance`() {
-        val subject = initSubject(
-            constructor = {
-                spyk(
-                    ScreenshotRule(
-                        activityClass = Activity::class.java,
-                        rootViewId = 123,
-                        initialTouchMode = true,
-                        launchActivity = true,
-                        enableReporter = true
-                    )
-                )
-            }
-        )
-        subject.test()
-
-        verify { subject.launchActivity(any()) }
-        verify { takeScreenshot(any(), any(), any(), any()) }
-        verify { assertExpectedDevice(any(), any(), any()) }
-        verify { loadBaselineBitmapForComparison(any(), any()) }
-        verify { compareBitmaps(any(), any(), any()) }
-        verify(exactly = 0) { mockDestination.finalize() }
-        verifyReporter()
-    }
-
     @Test
     fun `WHEN reporter is enabled in constructor THEN enable reporter`() {
         assertThat(subject.reporter).isNotNull()
@@ -272,13 +255,13 @@ class ScreenshotRuleTest {
     @Test
     fun `WHEN reporter is enabled by feature THEN enable reporter`() {
         TestifyFeatures.Reporter.setEnabled(true)
-        val subject = spyk(ScreenshotRule(Activity::class.java, enableReporter = false))
+        val subject = spyk(ScreenshotScenarioRule(enableReporter = false))
         assertThat(subject.reporter).isNotNull()
     }
 
     @Test
     fun `WHEN reporter is disabled in constructor THEN do not enable reporter`() {
-        val subject = spyk(ScreenshotRule(Activity::class.java, enableReporter = false))
+        val subject = spyk(ScreenshotScenarioRule(enableReporter = false))
         assertThat(subject.reporter).isNull()
     }
 
@@ -316,8 +299,6 @@ class ScreenshotRuleTest {
     @Test
     fun `WHEN baseline matches current THEN pass`() {
         subject.test()
-
-        verify { subject.launchActivity(any()) }
 
         verify { takeScreenshot(any(), any(), any(), any()) }
         verify { assertExpectedDevice(any(), any(), any()) }
@@ -380,7 +361,7 @@ class ScreenshotRuleTest {
         }
 
         subject.test()
-        assertTrue(expectedCalls.isEmpty())
+        assertThat(expectedCalls).isEmpty()
     }
 
     @Test(expected = FinalizeDestinationException::class)
@@ -389,10 +370,11 @@ class ScreenshotRuleTest {
         every { loadBaselineBitmapForComparison(any(), any()) } returns null
 
         subject
+            .withScenario(mockScenario)
             .configure {
                 isRecordMode = true
             }
-            .assertSame()
+            .test()
 
         verifyReporter()
     }
@@ -404,8 +386,8 @@ class ScreenshotRuleTest {
     }
 
     @Test(expected = AssumptionViolatedException::class)
-    fun `WHEN assureActivity throws ScreenshotTestIgnoredException THEN ignore test`() {
-        every { subject.assureActivity(any()) } throws ScreenshotTestIgnoredException()
+    fun `WHEN testifyConfiguration throws ScreenshotTestIgnoredException THEN ignore test`() {
+        every { testifyConfiguration.afterActivityLaunched(any()) } throws ScreenshotTestIgnoredException()
         subject.test()
     }
 
@@ -430,6 +412,7 @@ class ScreenshotRuleTest {
     @Test
     fun `WHEN pauseForInspection THEN sleep`() {
         subject
+            .withScenario(mockScenario)
             .configure {
                 pauseForInspection = true
             }
@@ -443,6 +426,7 @@ class ScreenshotRuleTest {
         every { loadBaselineBitmapForComparison(any(), any()) } returns null
 
         subject
+            .withScenario(mockScenario)
             .configure {
                 isRecordMode = true
             }
@@ -490,6 +474,7 @@ class ScreenshotRuleTest {
     fun `WHEN configuration isRecordMode is true THEN pass`() {
         every { compareBitmaps(any(), any(), any()) } returns false
         subject
+            .withScenario(mockScenario)
             .configure {
                 isRecordMode = true
             }
@@ -498,30 +483,13 @@ class ScreenshotRuleTest {
         verifyReporter()
     }
 
-    @Test
-    fun `WHEN espresso action are specified THEN execute espresso`() {
-        var isEvaluated = false
-        subject
-            .setEspressoActions {
-                isEvaluated = true
-            }
-            .test()
-        assertThat(isEvaluated).isTrue()
-    }
-
-    @Test(expected = AssertSameMustBeLastException::class)
-    fun `WHEN espresso action are specified after assertSame THEN throw exception`() {
-        subject.test()
-        subject.setEspressoActions { }
-    }
-
     @Test(expected = ScreenshotIsDifferentException::class)
-    fun `WHEN experimental feature enabled THEN generate diffs`() {
+    fun `WHEN feature enabled THEN generate diffs`() {
         every { compareBitmaps(any(), any(), any()) } returns false
 
-        subject
-            .withExperimentalFeatureEnabled(TestifyFeatures.GenerateDiffs)
-            .test()
+        TestifyFeatures.GenerateDiffs.setEnabled(true)
+
+        subject.test()
 
         verify { mockHighContrastDiff.generate(any()) }
         verify { mockReporter.fail(any<ScreenshotIsDifferentException>()) }
@@ -548,18 +516,22 @@ class ScreenshotRuleTest {
 
     @Test(expected = MissingAssertSameException::class)
     fun `WHEN assertSame is not invoked THEN throw exception`() {
-        every { mockStatement.evaluate() } just runs
+        subject.withScenario(mockScenario).statement?.evaluate()
+    }
+
+    @Test
+    fun `WHEN assertSame is not invoked AND is not using a scenario THEN just run`() {
         subject.statement?.evaluate()
     }
 
     @Test
-    fun `WHEN setRootViewId THEN find requested view`() {
+    fun `WHEN set root view id THEN find requested view`() {
         @IdRes val id = 1234
         val mockRoot = mockk<ViewGroup>(relaxed = true)
         every { any<Activity>().findRootView(id) } returns mockRoot
 
         val subject = initSubject()
-        subject.setRootViewId(id)
+        subject.rootViewId = id
         subject.setViewModifications { viewGroup ->
             assertThat(viewGroup).isEqualTo(mockRoot)
         }
@@ -567,7 +539,7 @@ class ScreenshotRuleTest {
     }
 
     @Test
-    fun `WHEN setTargetLayoutId THEN inflate layout`() {
+    fun `WHEN set target layout id THEN inflate layout`() {
         @LayoutRes val layoutId = 1234
         val mockLayoutRoot = mockk<View>(relaxed = true)
         val mockLayoutInflater = mockk<LayoutInflater>(relaxed = true)
@@ -575,7 +547,7 @@ class ScreenshotRuleTest {
         every { mockLayoutInflater.inflate(any<Int>(), any<ViewGroup>(), any<Boolean>()) } returns mockLayoutRoot
 
         val subject = initSubject()
-        subject.setTargetLayoutId(layoutId)
+        subject.targetLayoutId = layoutId
         subject.setViewModifications { viewGroup ->
             assertThat(viewGroup).isEqualTo(mockViewGroup)
         }
@@ -641,7 +613,7 @@ class ScreenshotRuleTest {
         } catch (e: RuntimeException) {
             assertThat(e.cause).isInstanceOf(MissingScreenshotInstrumentationAnnotationException::class.java)
         } catch (t: Throwable) {
-            fail()
+            Assert.fail()
         }
     }
 
@@ -654,32 +626,139 @@ class ScreenshotRuleTest {
     }
 
     @Test
-    fun `WHEN has intent extras THEN pass to activity`() {
-        val subject = initSubject()
-
-        val extraValues = mutableMapOf<String, String>()
-        val providerValues = mutableMapOf<String, String>()
-        val providerBundle = mockk<Bundle>(relaxed = true) {
-            every { putString(any(), any()) } answers { providerValues[arg(0)] = arg(1) }
-        }
-        val extrasBundle = mockk<Bundle>(relaxed = true) {
-            every { putAll(providerBundle) } answers { extraValues.putAll(providerValues) }
-        }
-        every { mockIntent.extras } returns extrasBundle
-        every { subject.invokeExtrasProvider() } answers {
-            subject.extrasProvider?.invoke(providerBundle)
-            providerBundle
-        }
-
-        var isEvaluated = false
+    fun `WHEN configure AND scenario is set THEN cache activity`() {
         subject
-            .addIntentExtras {
-                it.putString("Testify", "Extra")
-                isEvaluated = true
+            .withScenario(mockScenario)
+            .configure {
+                // no-op
             }
             .test()
 
-        assertThat(extraValues).containsEntry("Testify", "Extra")
-        assertThat(isEvaluated).isTrue()
+        verify { mockScenario.onActivity(any()) }
+        assertThat(subject.activity).isEqualTo(mockActivity)
+    }
+
+    @Test(expected = ScenarioRequiredException::class)
+    fun `WHEN configure AND scenario is not set THEN throw ScenarioRequiredException`() {
+        subject
+            .configure {
+                // no-op
+            }
+            .test()
+    }
+
+    @Test(expected = NoResourceConfigurationOnScenarioException::class)
+    fun `WHEN configure AND set font scale THEN throw NoResourceConfigurationOnScenarioException`() {
+        subject
+            .withScenario(mockScenario)
+            .configure {
+                fontScale = 1.0f
+            }
+            .test()
+    }
+
+    @Test(expected = NoResourceConfigurationOnScenarioException::class)
+    fun `WHEN configure AND set locale THEN throw NoResourceConfigurationOnScenarioException`() {
+        subject
+            .withScenario(mockScenario)
+            .configure {
+                locale = Locale.CANADA_FRENCH
+            }
+            .test()
+    }
+
+    @Test
+    fun `WHEN init THEN targetLayoutId is NO_ID by default`() {
+        subject.test()
+        assertThat(subject.targetLayoutId).isEqualTo(View.NO_ID)
+    }
+
+    @Test
+    fun `WHEN setTargetLayoutId THEN targetLayoutId is set`() {
+        val layoutId = 1234
+        val subject = initSubject(
+            targetLayoutId = layoutId,
+        )
+        subject.test()
+        assertThat(subject.targetLayoutId).isEqualTo(layoutId)
+    }
+
+    @Test
+    fun `WHEN TargetLayout annotation is used THEN prefer annotation over constructor`() {
+        val layoutId = 1234
+        every { mockDescription.annotations } returns listOf(
+            TestifyLayout(layoutId = layoutId)
+        )
+        val subject = initSubject(
+            targetLayoutId = 5678,
+        )
+        subject.test()
+        assertThat(subject.targetLayoutId).isEqualTo(layoutId)
+    }
+
+    @Test
+    fun `WHEN TargetLayout annotation is AND layoutResName is invalid THEN fallback to targetLayoutId`() {
+        val layoutId = 1234
+        val layoutResName = "dev.testify.test:layout/invalid"
+        val mockResources = mockk<Resources>(relaxed = true)
+        every { mockResources.getIdentifier(layoutResName, any(), any()) } returns 0
+        every { mockActivity.resources } returns mockResources
+        every { mockDescription.annotations } returns listOf(
+            TestifyLayout(layoutResName = layoutResName)
+        )
+        val subject = initSubject(
+            targetLayoutId = layoutId
+        )
+        subject.test()
+
+        verify { mockResources.getIdentifier(layoutResName, any(), any()) }
+        assertThat(subject.targetLayoutId).isEqualTo(layoutId)
+    }
+
+    @Test(expected = ScenarioRequiredException::class)
+    fun `WHEN getActivity() AND scenario not set THEN throws ScenarioRequiredException`() {
+        every { subject.getActivity() } answers { callOriginal() }
+        subject.getActivity()
+    }
+
+    @Test
+    fun `WHEN getActivity() AND scenario is set THEN returns activity`() {
+        every { subject.getActivity() } answers { callOriginal() }
+        subject.withScenario(mockScenario)
+        assertThat(subject.getActivity()).isEqualTo(mockActivity)
+    }
+
+    @Test
+    fun `WHEN enableReporter is true THEN reporter is constructed`() {
+        val subject = ScreenshotScenarioRule(enableReporter = true)
+        assertThat(subject.reporter).isNotNull()
+    }
+
+    @Test
+    fun `WHEN enableReporter is false THEN reporter is not constructed`() {
+        val subject = ScreenshotScenarioRule(enableReporter = false)
+        assertThat(subject.reporter).isNull()
+    }
+
+    @Test
+    fun `WHEN withScenario is called twice with the same scenario THEN test runs`() {
+        subject
+            .withScenario(mockScenario)
+            .withScenario(mockScenario)
+            .test()
+        verifyReporter()
+    }
+
+    @Test(expected = IllegalScenarioException::class)
+    fun `WHEN withScenario is called twice with the different scenario THEN throws IllegalScenarioException`() {
+        subject
+            .withScenario(mockScenario)
+            .withScenario(mockk<ActivityScenario<Activity>>(relaxed = true))
+            .test()
+    }
+
+    @Test(expected = ScenarioRequiredException::class)
+    fun `WHEN assertSame() is called AND scenario is not set THEN throw ScenarioRequiredException `() {
+        subject.assertSame()
     }
 }
