@@ -33,7 +33,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
-
 class ScenarioRuleExceptionTest {
 
     @get:Rule val screenshotRule = ScreenshotScenarioRule()

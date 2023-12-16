@@ -35,5 +35,6 @@ class NoResourceConfigurationOnScenarioException(cause: String, value: String, a
     TestifyException(
         "INVALID_RESOURCE_CONFIGURATION",
         "\n\n* Configuration `$cause` can not be used with a `ScenarioRule`\n" +
-            "* To configure $cause, use `overrideResourceConfiguration<$activity>($cause = ${value})` before calling `launchActivity<$activity>()`\n"
+            "* To configure $cause, use `overrideResourceConfiguration<$activity>($cause = $value)` " +
+            "before calling `launchActivity<$activity>()`\n"
     )
