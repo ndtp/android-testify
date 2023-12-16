@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2021 Shopify Inc.
+ * Copyright (c) 2023 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify
+package dev.testify.scenario
 
 import android.app.Activity
 import android.graphics.Bitmap
+import androidx.test.core.app.launchActivity
+import dev.testify.TestActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.core.TestifyConfiguration
 import io.mockk.every
@@ -35,14 +36,13 @@ import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 
-class ScreenshotRuleLifecycleTest {
+class ScenarioRuleLifecycleTest {
 
     private val configuration = spyk(TestifyConfiguration()) {
         every { applyViewModificationsMainThread(any()) } answers { methodOrder.add("applyViewModifications") }
     }
 
-    inner class TestScreenshotRule : ScreenshotRule<TestActivity>(
-        activityClass = TestActivity::class.java,
+    inner class TestScreenshotRule : ScreenshotScenarioRule(
         configuration = configuration
     ) {
 
@@ -91,11 +91,15 @@ class ScreenshotRuleLifecycleTest {
     @ScreenshotInstrumentation
     @Test
     fun default() {
-        rule.assertSame()
+        launchActivity<TestActivity>().use { scenario ->
+            rule.withScenario(scenario).assertSame()
+        }
 
-        assertEquals("beforeAssertSame", methodOrder[0])
-        assertEquals("beforeActivityLaunched", methodOrder[1])
-        assertEquals("afterActivityLaunched", methodOrder[2])
+        assertEquals(8, methodOrder.size)
+
+        assertEquals("beforeActivityLaunched", methodOrder[0])
+        assertEquals("afterActivityLaunched", methodOrder[1])
+        assertEquals("beforeAssertSame", methodOrder[2])
         assertEquals("beforeInitializeView", methodOrder[3])
         assertEquals("applyViewModifications", methodOrder[4])
         assertEquals("afterInitializeView", methodOrder[5])

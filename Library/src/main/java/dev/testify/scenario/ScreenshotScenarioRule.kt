@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2023 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,133 +21,127 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-@file:Suppress("deprecation")
-
-package dev.testify
+package dev.testify.scenario
 
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.os.Bundle
-import android.view.View.NO_ID
+import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.VisibleForTesting
+import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
-import androidx.test.rule.ActivityTestRule
+import dev.testify.ActivityLaunchCycle
+import dev.testify.ScreenshotLifecycle
+import dev.testify.TestDescription
+import dev.testify.TestifyFeatures
+import dev.testify.ViewModification
+import dev.testify.ViewProvider
 import dev.testify.annotation.TestifyLayout
 import dev.testify.annotation.findAnnotation
 import dev.testify.annotation.getScreenshotAnnotationName
 import dev.testify.annotation.getScreenshotInstrumentationAnnotation
-import dev.testify.core.ScreenshotRuleCompatibilityMethods
 import dev.testify.core.TestifyConfigurable
 import dev.testify.core.TestifyConfiguration
-import dev.testify.core.exception.ActivityNotRegisteredException
 import dev.testify.core.exception.AssertSameMustBeLastException
 import dev.testify.core.exception.MissingAssertSameException
 import dev.testify.core.exception.MissingScreenshotInstrumentationAnnotationException
+import dev.testify.core.exception.NoResourceConfigurationOnScenarioException
+import dev.testify.core.exception.ScenarioRequiredException
 import dev.testify.core.exception.ScreenshotBaselineNotDefinedException
 import dev.testify.core.exception.ScreenshotIsDifferentException
-import dev.testify.core.exception.ScreenshotTestIgnoredException
 import dev.testify.core.logic.AssertionState
 import dev.testify.core.logic.ScreenshotLifecycleHost
 import dev.testify.core.logic.ScreenshotLifecycleObserver
-import dev.testify.core.logic.assertSame
-import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
+import dev.testify.internal.extensions.TestInstrumentationRegistry.instrumentationPrintln
 import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.helpers.ActivityProvider
-import dev.testify.internal.helpers.EspressoActions
-import dev.testify.internal.helpers.EspressoHelper
-import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.registerActivityProvider
 import dev.testify.report.ReportSession
 import dev.testify.report.Reporter
-import org.junit.AssumptionViolatedException
+import dev.testify.testDescription
 import org.junit.rules.TestRule
+import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
+/*
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        launchActivity<TestHarnessActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setViewModifications { harnessRoot ->
+                    rule.getActivity().getViewState(name = "default").let {
+                        harnessRoot.clientDetailsView.render(it)
+                        rule.getActivity().title = it.name
+                    }
+                }
+                .assertSame()
+        }
+    }
+ */
+
 /**
- * ScreenshotRule is the main entry point for Testify.
+ * ScreenshotScenarioRule is one of the main entry point for Testify.
  * It is a JUnit4 [TestRule] that provides the ability to take screenshots of an [Activity] under test.
  *
- * [ScreenshotRule] is a subclass of Android's [ActivityTestRule]. The testing framework launches the activity under
- * test before each test method annotated with @Test and before any method annotated with @Before.
+ * [ScreenshotScenarioRule] works in conjunction with Android's [ActivityScenario]. The activity under test is launched
+ * and controlled by the [ActivityScenario]. The [ActivityScenario] is then passed to the [ScreenshotScenarioRule] via
+ * the [withScenario] method.
  *
  * For interoperability with the Testify Gradle Plugin and the Testify Intellij Platform Plugin, each screenshot test
  * method should be annotated with the [ScreenshotInstrumentation] annotation.
  *
- * Within your test method, you can configure the Activity as needed and call ScreenshotRule.assertSame() to capture
- * and validate your UI. The framework handles shutting down the activity after the test finishes and all methods
- * annotated with @After are run.
+ * Within your test method, you can configure the Activity as needed and call ScreenshotScenarioRule.assertSame() to
+ * capture and validate your UI.
  *
  * Example:
  *
- *      @RunWith(AndroidJUnit4::class)
  *      class MainActivityScreenshotTest {
  *
- *          @get:Rule val rule = ScreenshotRule(MainActivity::class.java)
+ *          @get:Rule val rule = ScreenshotScenarioRule()
  *
  *          @ScreenshotInstrumentation
  *          @Test
  *          fun default() {
- *              rule.assertSame()
+ *              launchActivity<MainActivity>().use { scenario ->
+ *                  rule.assertSame()
+ *              }
  *          }
  *      }
  *
- * @param T The type of the Activity under test
- * @param activityClass The class of the Activity under test
  * @param rootViewId The id of the root view of the Activity under test
- * @param initialTouchMode Whether or not the Activity should be launched in touch mode
  * @param enableReporter Whether or not to enable the Reporter
  * @param configuration The [TestifyConfiguration] for the current test
  */
-@Suppress("unused", "MemberVisibilityCanBePrivate")
-open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
-    protected val activityClass: Class<T>,
+open class ScreenshotScenarioRule @JvmOverloads constructor(
     @IdRes override var rootViewId: Int = android.R.id.content,
-    initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     override val configuration: TestifyConfiguration = TestifyConfiguration()
-) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
-    TestRule,
-    ActivityProvider<T>,
+) :
+    TestWatcher(),
+    ActivityProvider<Activity>,
     ScreenshotLifecycle,
-    ActivityLaunchCycle,
-    AssertionState,
     ScreenshotLifecycleHost by ScreenshotLifecycleObserver(),
-    CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods(),
+    AssertionState,
+    ActivityLaunchCycle,
     TestifyConfigurable {
 
     /**
-     * @deprecated Use ScreenshotRule(activityClass, rootViewId, initialTouchMode, enableReporter, configuration)
-     * Provided for backwards compatibility with the Testify 1.* architecture
+     * The [ActivityScenario] to be used by the test.
+     * This is required by Testify to access the [Activity] under test.
+     * Call [withScenario] before [assertSame] to set the scenario.
      */
-    @ExcludeFromJacocoGeneratedReport
-    @Deprecated(
-        message = "Parameter launchActivity is deprecated and no longer required",
-        replaceWith = ReplaceWith("ScreenshotRule(activityClass = activityClass, rootViewId = rootViewId, initialTouchMode = initialTouchMode, enableReporter = enableReporter, configuration = TestifyConfiguration())") // ktlint-disable max-line-length
-    )
-    constructor(
-        activityClass: Class<T>,
-        @IdRes rootViewId: Int = android.R.id.content,
-        initialTouchMode: Boolean = false,
-        @Suppress("UNUSED_PARAMETER") launchActivity: Boolean,
-        enableReporter: Boolean = false
-    ) : this(
-        activityClass = activityClass,
-        rootViewId = rootViewId,
-        initialTouchMode = initialTouchMode,
-        enableReporter = enableReporter,
-        configuration = TestifyConfiguration()
-    )
+    private var scenario: ActivityScenario<*>? = null
 
     /**
      * The ID of the XML layout file to be inflated.
      */
-    @LayoutRes
-    override var targetLayoutId: Int = NO_ID
+    @LayoutRes override var targetLayoutId: Int = View.NO_ID
 
     /**
      * Return the Context of this instrumentation's package. Note that this is often different than the Context of the
@@ -157,7 +150,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      *
      * @see [Instrumentation.getTargetContext] to retrieve a Context for the target application.
      */
-    internal val testContext = getInstrumentation().context
+    private val testContext = getInstrumentation().context
 
     /**
      * Track if the assertSame() method was invoked by the caller.
@@ -166,10 +159,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override var assertSameInvoked = false
 
     /**
-     * The [EspressoHelper] instance used for taking a screenshot.
-     * This EspressoHelper is responsible for interaction with the Espresso framework.
+     * Caught exception that thrown during assertSame().
      */
-    internal val espressoHelper: EspressoHelper by lazy { EspressoHelper(configuration) }
+    override var throwable: Throwable? = null
 
     /**
      * The [ViewProvider] instance used for taking a screenshot.
@@ -178,22 +170,16 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     override var screenshotViewProvider: ViewProvider? = null
 
     /**
-     * Caught exception that thrown during assertSame().
-     */
-    override var throwable: Throwable? = null
-
-    /**
      * The [ViewModification] to apply to the activity prior to taking the screenshot.
      * Allows you to modify the root view of the Activity under test.
      */
     override var viewModification: ViewModification? = null
 
     /**
-     * The [ExtrasProvider] to apply to the activity prior to taking the screenshot.
-     * Allows you to provide Bundle extras to the Activity under test.
+     * The [Statement] to be executed by the [ScreenshotStatement].
      */
     @VisibleForTesting
-    internal var extrasProvider: ExtrasProvider? = null
+    internal var statement: Statement? = null
 
     /**
      * The [Reporter] instance used for reporting test results.
@@ -213,61 +199,31 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
-     * Set the ID of the root [android.view.View] of the layout under test.
-     * The default is android.R.id.content.
+     * Set the [ActivityScenario] to be used by the test.
+     * This is required by Testify to access the [Activity] under test.
+     * [withScenario] must be called before [assertSame].
      *
-     * @param rootViewId - ID of the root [android.view.View] of the layout under test
+     * **Example:**
+     *
+     *    @ScreenshotInstrumentation
+     *    @Test
+     *    fun default() {
+     *        launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *            rule
+     *                .withScenario(scenario)
+     *                .assertSame()
+     *        }
+     *    }
+     *
+     * @param scenario - [ActivityScenario] to be used by the test
+     * @return the [ScreenshotScenarioRule] instance
      */
-    fun setRootViewId(@IdRes rootViewId: Int): ScreenshotRule<T> {
-        this.rootViewId = rootViewId
-        return this
-    }
-
-    /**
-     * Set the ID of the XML layout file to be inflated.
-     * The default is NO_ID and no layout will automatically be inflated.
-     *
-     *     @ScreenshotInstrumentation
-     *     @Test
-     *     fun setTargetLayoutId() {
-     *         rule
-     *             .setTargetLayoutId(R.layout.view_client_details)
-     *             .assertSame()
-     *     }
-     *
-     *  @see TestifyLayout
-     *
-     *  @param layoutId - ID of the XML layout file to be inflated
-     */
-    fun setTargetLayoutId(@LayoutRes layoutId: Int): ScreenshotRule<T> {
-        this.targetLayoutId = layoutId
-        return this
-    }
-
-    /**
-     * Set the Espresso actions to run on the Activity under test before taking a screenshot.
-     *
-     * @see https://developer.android.com/training/testing/espresso
-     *
-     *     @ScreenshotInstrumentation
-     *     @Test
-     *     fun setEspressoActions() {
-     *         rule
-     *             .setEspressoActions {
-     *                 onView(withId(R.id.edit_text)).perform(typeText("Testify"))
-     *             }
-     *             .assertSame()
-     *     }
-     *
-     * @see EspressoActions
-     *
-     * @param espressoActions - Espresso actions to run on the Activity under test before taking a screenshot
-     */
-    fun setEspressoActions(espressoActions: EspressoActions): ScreenshotRule<T> {
-        if (assertSameInvoked) {
-            throw AssertSameMustBeLastException()
-        }
-        espressoHelper.actions = espressoActions
+    @CallSuper
+    open fun <TActivity : Activity> withScenario(
+        scenario: ActivityScenario<TActivity>
+    ): ScreenshotScenarioRule {
+        this.scenario = scenario
+        this.beforeActivityLaunched()
         return this
     }
 
@@ -277,18 +233,21 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun default() {
-     *         rule
-     *             .setViewModifications { harnessRoot ->
-     *                 harnessRoot.findViewById<Button>(R.id.my_view).visibility = View.GONE
-     *             }
-     *             .assertSame()
+     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *             rule
+     *                 .withScenario(scenario)
+     *                 .setViewModifications { harnessRoot ->
+     *                     harnessRoot.findViewById<Button>(R.id.my_view).visibility = View.GONE
+     *                 }
+     *                 .assertSame()
+     *         }
      *     }
      *
      *  @see ViewModification
      *
      *  @param viewModification - [ViewModification] to apply to the activity prior to taking the screenshot
      */
-    fun setViewModifications(viewModification: ViewModification): ScreenshotRule<T> {
+    fun setViewModifications(viewModification: ViewModification): ScreenshotScenarioRule {
         if (assertSameInvoked) {
             throw AssertSameMustBeLastException()
         }
@@ -304,41 +263,46 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun setScreenshotViewProvider() {
-     *         rule
-     *             .setScreenshotViewProvider {
-     *                 it.findViewById(R.id.info_card)
-     *             }
-     *             .assertSame()
+     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *             rule
+     *                 .withScenario(scenario)
+     *                 .setScreenshotViewProvider {
+     *                     it.findViewById(R.id.info_card)
+     *                 }
+     *                 .assertSame()
+     *         }
      *     }
      *
      * @see ViewProvider
      *
      * @param viewProvider - [ViewProvider] instance used for taking a screenshot
      */
-    override fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotRule<T> {
+    override fun setScreenshotViewProvider(viewProvider: ViewProvider): ScreenshotScenarioRule {
         this.screenshotViewProvider = viewProvider
         return this
     }
 
     /**
-     * Enable a [TestifyFeatures] feature.
-     * A feature will be enabled only for a single invocation of assertSame().
-     * All features will be reset to their default at the end of the test.
+     * Set the ID of the XML layout file to be inflated.
+     * The default is NO_ID and no layout will automatically be inflated.
      *
      *     @ScreenshotInstrumentation
      *     @Test
-     *     fun withExperimentalFeatureEnabled() {
-     *         rule
-     *             .withExperimentalFeatureEnabled(TestifyFeatures.GenerateDiffs)
-     *             .assertSame()
+     *     fun setTargetLayoutId() {
+     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *             rule
+     *                 .withScenario(scenario)
+     *                 .setTargetLayoutId(R.layout.view_client_details)
+     *                 .assertSame()
+     *         }
      *     }
      *
-     * @see TestifyFeatures
+     *  @see TestifyLayout
      *
-     * @param feature - [TestifyFeatures] feature to enable
+     *  @param layoutId - ID of the XML layout file to be inflated
      */
-    fun withExperimentalFeatureEnabled(feature: TestifyFeatures): ScreenshotRule<T> {
-        feature.setEnabled(true)
+    fun setTargetLayoutId(@LayoutRes layoutId: Int): ScreenshotScenarioRule {
+        this.targetLayoutId = layoutId
         return this
     }
 
@@ -349,11 +313,14 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun testConfigure() {
-     *         rule
-     *             .configure {
-     *                 exactness = 0.95f
-     *             }
-     *             .assertSame()
+     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *             rule
+     *                 .withScenario(scenario)
+     *                 .configure {
+     *                     exactness = 0.95f
+     *                 }
+     *                 .assertSame()
+     *         }
      *     }
      *
      * @see TestifyConfiguration
@@ -361,61 +328,41 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @param configureRule - [TestifyConfiguration]
      */
     @CallSuper
-    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
+    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotScenarioRule {
         configureRule.invoke(configuration)
+
+        if (scenario != null) {
+            var activity: Activity? = null
+            scenario?.onActivity { activity = it }
+
+            if (activity != null) {
+                if (configuration.fontScale != null)
+                    throw NoResourceConfigurationOnScenarioException(
+                        cause = "fontScale",
+                        value = configuration.fontScale.toString(),
+                        activity = activity?.javaClass?.simpleName.orEmpty()
+                    )
+
+                if (configuration.locale != null)
+                    throw NoResourceConfigurationOnScenarioException(
+                        cause = "locale",
+                        value = configuration.locale.toString(),
+                        activity = activity?.javaClass?.simpleName.orEmpty()
+                    )
+            }
+        }
+
         return this
     }
 
     /**
-     * Test lifecycle method.
-     * Invoked immediately before the Activity is launched.
-     *
-     * @see ActivityTestRule.beforeActivityLaunched
-     * @see ActivityLaunchCycle.beforeActivityLaunched
-     */
-    @CallSuper
-    override fun beforeActivityLaunched() {
-        super.beforeActivityLaunched()
-        configuration.beforeActivityLaunched()
-        ResourceWrapper.beforeActivityLaunched()
-    }
-
-    /**
-     * Test lifecycle method.
-     * Invoked immediately after the Activity is launched.
-     *
-     * @see ActivityTestRule.afterActivityLaunched
-     * @see ActivityLaunchCycle.afterActivityLaunched
-     */
-    @CallSuper
-    override fun afterActivityLaunched() {
-        super.afterActivityLaunched()
-        ResourceWrapper.afterActivityLaunched(activity)
-        configuration.afterActivityLaunched(activity)
-        notifyObservers { it.applyConfiguration(activity, configuration) }
-    }
-
-    /**
-     * The [Statement] to be executed by the [ScreenshotStatement].
-     */
-    @VisibleForTesting
-    internal var statement: Statement? = null
-
-    /**
      * Modifies the method-running [Statement] to implement this test-running rule.
-     * This method is called by JUnit's [org.junit.rules.RuleChain] for each [org.junit.rules.TestRule] in the chain.
-     * This method should not be called by users.
-     *
      * @param base – The [Statement] to be modified
      * @param description – A [Description] of the test implemented in base
      *
      * @return a new statement, which may be the same as base, a wrapper around base, or a completely new [Statement].
      */
     override fun apply(base: Statement, description: Description): Statement {
-        addScreenshotObserver(TestifyFeatures)
-
-        withRule(this)
-
         val methodAnnotations = description.annotations
         apply(description.methodName, description.testClass, methodAnnotations)
         val statement = ScreenshotStatement(base)
@@ -424,11 +371,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
-     * Configures the [ScreenshotRule] based on the currently running test.
+     * Configures the [ScreenshotScenarioRule] based on the currently running test.
      * This is a generalization of the modifications expected by the JUnit4's [apply] method which exposes these
      * modification to non-JUnit4 implementations.
-     *
-     * This method is called by [apply] and should not be called by users.
      *
      * @param methodName - The name of the currently running test
      * @param testClass - The [Class] of the currently running test
@@ -439,25 +384,24 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         testClass: Class<*>,
         methodAnnotations: Collection<Annotation>?
     ) {
+        instrumentationPrintln("apply")
+        val classAnnotations = testClass.annotations.asList()
         assertForScreenshotInstrumentationAnnotation(
-            methodName = methodName,
-            classAnnotations = testClass.annotations.asList(),
-            methodAnnotations = methodAnnotations
+            methodName,
+            classAnnotations,
+            methodAnnotations
         )
-
         configuration.applyAnnotations(methodAnnotations)
-
-        espressoHelper.reset()
-        addScreenshotObserver(espressoHelper)
 
         getInstrumentation().testDescription = TestDescription(
             methodName = methodName,
             testClass = testClass
         )
+
         reporter?.startTest(getInstrumentation().testDescription)
 
         val testifyLayout = methodAnnotations?.findAnnotation<TestifyLayout>()
-        targetLayoutId = testifyLayout?.resolvedLayoutId ?: NO_ID
+        targetLayoutId = testifyLayout?.resolvedLayoutId ?: View.NO_ID
     }
 
     /**
@@ -469,16 +413,43 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         get() {
             if (this.layoutResName.isNotEmpty()) {
                 return getInstrumentation().targetContext.resources?.getIdentifier(layoutResName, null, null)
-                    ?: NO_ID
+                    ?: View.NO_ID
             }
             return layoutId
         }
 
     /**
+     * Returns the current activity under test.
+     * @throws ScenarioRequiredException if the activity is not started and available.
+     */
+    override fun getActivity(): Activity {
+        var activity: Activity? = null
+        scenario?.onActivity {
+            activity = it
+        }
+        return activity ?: throw ScenarioRequiredException()
+    }
+
+    /**
+     * Returns the current activity under test.
+     * @throws ScenarioRequiredException if the activity is not started and available.
+     */
+    val activity: Activity
+        get() = getActivity()
+
+    /**
+     * Ensures that the activity is started and available.
+     * @throws ScenarioRequiredException if the activity is not started and available.
+     */
+    override fun assureActivity(intent: Intent?) {
+        getActivity()
+    }
+
+    /**
      * Assert that the @ScreenshotInstrumentation is defined on the test method.
      *
      * The Gradle plugin requires the @ScreenshotInstrumentation annotation and so this
-     * check applies only when run via the Gradle plugin commands. e.g. ./gradlew :screenshotTest
+     * check applies only when run via the Gradle plugin commands. e.g. screenshotTest
      *
      * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
      * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
@@ -503,91 +474,16 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
-     * Set the [ExtrasProvider] to provide Bundle extras to the Activity under test.
-     *
-     * @see ExtrasProvider
-     *
-     * @param extrasProvider - [ExtrasProvider] to provide Bundle extras to the Activity under test
-     */
-    fun addIntentExtras(extrasProvider: ExtrasProvider): ScreenshotRule<T> {
-        this.extrasProvider = extrasProvider
-        return this
-    }
-
-    /**
-     * The Intent to launch the Activity under test.
-     *
-     * This override of ActivityTestRule.getActivityIntent() allows Testify to set up a custom Intent as if supplied to
-     * android.content.Context.startActivity.
-     */
-    public final override fun getActivityIntent(): Intent? {
-        var intent: Intent? = super.getActivityIntent()
-        if (intent == null) {
-            intent = getIntent()
-        }
-
-        extrasProvider?.let {
-            val bundle = invokeExtrasProvider()
-            intent.extras?.putAll(bundle) ?: intent.replaceExtras(bundle)
-        }
-
-        return intent
-    }
-
-    /**
-     * Invokes the [ExtrasProvider] to provide Bundle extras to the Activity under test.
-     */
-    @ExcludeFromJacocoGeneratedReport
-    @VisibleForTesting
-    internal fun invokeExtrasProvider(): Bundle =
-        Bundle().apply { extrasProvider?.invoke(this) }
-
-    /**
-     * The Intent to launch the Activity under test.
-     */
-    @ExcludeFromJacocoGeneratedReport
-    @VisibleForTesting
-    internal fun getIntent(): Intent {
-        var intent = super.getActivityIntent()
-        if (intent == null) {
-            intent = Intent()
-        }
-        return intent
-    }
-
-    /**
-     * Implementation of ActivityProvider method.
-     * Assures that the Activity under test is launched.
-     */
-    override fun assureActivity(intent: Intent?) {
-        launchActivity(intent)
-    }
-
-    /**
-     * Launches the Activity under test.
-     * Don't call this method directly.
-     * Use [ActivityProvider.assureActivity] instead.
-     * This method is overridden to catch the RuntimeException thrown when the Activity under test is not registered.
-     */
-    @ExcludeFromJacocoGeneratedReport
-    override fun launchActivity(startIntent: Intent?): T {
-        try {
-            return super.launchActivity(startIntent)
-        } catch (runtimeException: java.lang.RuntimeException) {
-            if (runtimeException.message?.contains("Could not launch activity") == true) {
-                throw ActivityNotRegisteredException(activityClass)
-            }
-            throw runtimeException
-        }
-    }
-
-    /**
      * Test lifecycle method.
-     * Invoked immediately before assertSame and before the activity is launched.
+     * Invoked immediately before assertSame and after the scenario has launched the activity.
      */
     @CallSuper
     override fun beforeAssertSame() {
+        instrumentationPrintln("beforeAssertSame")
         getInstrumentation().registerActivityProvider(this)
+
+        // Called after configuration has been set
+        this.afterActivityLaunched()
     }
 
     /**
@@ -597,6 +493,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      *
      * Cannot be called from the main thread.
      *
+     * @throws ScenarioRequiredException if the scenario is not provided
      * @throws ScreenshotBaselineNotDefinedException if the baseline image is not defined and the test is not in record mode
      * @throws ScreenshotIsDifferentException if the screenshot is different from the baseline
      *
@@ -605,31 +502,37 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun default() {
-     *         rule
-     *             .configure {
-     *                 exactness = 0.95f
-     *             }
-     *             .setViewModifications { harnessRoot ->
-     *                 harnessRoot.findViewById<Button>(R.id.my_view).visibility = View.GONE
-     *             }
-     *             .assertSame()
+     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *             rule
+     *                 .configure {
+     *                     exactness = 0.95f
+     *                 }
+     *                 .setViewModifications { harnessRoot ->
+     *                     harnessRoot.findViewById<Button>(R.id.my_view).visibility = View.GONE
+     *                 }
+     *                 .assertSame()
+     *         }
      *     }
      */
     fun assertSame() {
+        if (scenario == null) {
+            throw ScenarioRequiredException()
+        }
+
         addScreenshotObserver(this)
+
         try {
-            assertSame(
+            dev.testify.core.logic.assertSame(
                 state = this,
                 configuration = configuration,
                 testContext = testContext,
                 screenshotLifecycleHost = this,
                 activityProvider = this,
-                activityIntent = activityIntent,
-                reporter = reporter
+                activityIntent = null,
+                reporter = reporter,
             )
         } finally {
             removeScreenshotObserver(this)
-            removeScreenshotObserver(espressoHelper)
         }
     }
 
@@ -655,6 +558,9 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Called by the [ScreenshotStatement] before each test method is executed.
      */
     protected fun evaluateBeforeEach() {
+
+        instrumentationPrintln("evaluateBeforeEach")
+
         getInstrumentation()?.run {
             reporter?.identifySession(this)
         }
@@ -662,13 +568,31 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     }
 
     /**
+     * Returns true if the test is a screenshot test.
+     * A screenshot test is defined as a test that has the @ScreenshotInstrumentation annotation or
+     * the test has been started via an ActivityScenario.
+     */
+    private fun isScreenshotTest() =
+        throwable !is MissingScreenshotInstrumentationAnnotationException &&
+            scenario != null
+
+    /**
      * Called by the [ScreenshotStatement] after each test method is executed.
      */
     protected fun evaluateAfterEach() {
-        // Safeguard against accidentally omitting the call to `assertSame`
-        if (!assertSameInvoked) {
-            throw MissingAssertSameException()
+        instrumentationPrintln("evaluateAfterEach")
+
+        /**
+         * Only throw the MissingAssertSameException if the test is a screenshot test.
+         * This allows the user to run the test as a normal JUnit test without having to call assertSame.
+         */
+        if (isScreenshotTest()) {
+            // Safeguard against accidentally omitting the call to `assertSame`
+            if (!assertSameInvoked) {
+                throw MissingAssertSameException(ScreenshotScenarioRule::class.simpleName)
+            }
         }
+
         reporter?.pass()
     }
 
@@ -684,10 +608,30 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Called by the [ScreenshotStatement] when a test method throws an exception.
      */
     protected fun handleTestException(throwable: Throwable) {
-        if (throwable is ScreenshotTestIgnoredException || throwable is AssumptionViolatedException)
-            reporter?.skip()
-        else
-            reporter?.fail(throwable)
+        reporter?.fail(throwable)
         throw throwable
+    }
+
+    /**
+     * Test lifecycle method.
+     * Invoked immediately before the Activity is launched.
+     *
+     * @see ActivityLaunchCycle.beforeActivityLaunched
+     */
+    @CallSuper
+    override fun beforeActivityLaunched() {
+        configuration.beforeActivityLaunched()
+    }
+
+    /**
+     * Test lifecycle method.
+     * Invoked immediately after the Activity is launched.
+     *
+     * @see ActivityLaunchCycle.afterActivityLaunched
+     */
+    @CallSuper
+    override fun afterActivityLaunched() {
+        configuration.afterActivityLaunched(getActivity())
+        notifyObservers { it.applyConfiguration(getActivity(), configuration) }
     }
 }
