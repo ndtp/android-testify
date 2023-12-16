@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2023 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,13 +23,18 @@
  */
 package dev.testify.core.exception
 
-import dev.testify.ScreenshotRule
-
 /**
- * Exception thrown to safeguard against accidentally omitting the call to `assertSame`.
- * `assertSame` must be called in the test method.
+ * Exception thrown when attempting to use a resource configuration with a ScenarioRule.
+ * ScenarioRule controls the lifecycle of the activity, and therefore the resource configuration
+ * must be applied before the activity is launched.
  *
- * @param parent the name of the parent class
+ * @param cause the type of the resource configuration
+ * @param value the value of the resource configuration being set
  */
-class MissingAssertSameException(parent: String? = ScreenshotRule::class.simpleName) :
-    TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the $parent *\n")
+class NoResourceConfigurationOnScenarioException(cause: String, value: String, activity: String) :
+    TestifyException(
+        "INVALID_RESOURCE_CONFIGURATION",
+        "\n\n* Configuration `$cause` can not be used with a `ScenarioRule`\n" +
+            "* To configure $cause, use `overrideResourceConfiguration<$activity>($cause = $value)` " +
+            "before calling `launchActivity<$activity>()`\n"
+    )

@@ -292,3 +292,20 @@ data class TestifyConfiguration(
         }
     }
 }
+
+/**
+ * Indicates that this class can be configured using a [TestifyConfiguration] instance
+ */
+interface TestifyConfigurable {
+
+    /**
+     * The current configuration for this instance
+     */
+    val configuration: TestifyConfiguration
+
+    /**
+     * Configure the instance using the provided [configureRule] lambda
+     * @return The current configuration
+     */
+    fun configure(configureRule: TestifyConfiguration.() -> Unit): TestifyConfigurable
+}

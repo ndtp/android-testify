@@ -42,6 +42,7 @@ import dev.testify.annotation.findAnnotation
 import dev.testify.annotation.getScreenshotAnnotationName
 import dev.testify.annotation.getScreenshotInstrumentationAnnotation
 import dev.testify.core.ScreenshotRuleCompatibilityMethods
+import dev.testify.core.TestifyConfigurable
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.exception.ActivityNotRegisteredException
 import dev.testify.core.exception.AssertSameMustBeLastException
@@ -109,7 +110,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     @IdRes override var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
-    protected val configuration: TestifyConfiguration = TestifyConfiguration()
+    override val configuration: TestifyConfiguration = TestifyConfiguration()
 ) : ActivityTestRule<T>(activityClass, initialTouchMode, false),
     TestRule,
     ActivityProvider<T>,
@@ -117,7 +118,8 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     ActivityLaunchCycle,
     AssertionState,
     ScreenshotLifecycleHost by ScreenshotLifecycleObserver(),
-    CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods() {
+    CompatibilityMethods<ScreenshotRule<T>, T> by ScreenshotRuleCompatibilityMethods(),
+    TestifyConfigurable {
 
     /**
      * @deprecated Use ScreenshotRule(activityClass, rootViewId, initialTouchMode, enableReporter, configuration)
@@ -150,7 +152,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
 
     /**
      * Return the Context of this instrumentation's package. Note that this is often different than the Context of the
-     * application being instrumentated, since the instrumentation code often lives is a different package than that of
+     * application being instrumented, since the instrumentation code often lives is a different package than that of
      * the application it is running against.
      *
      * @see [Instrumentation.getTargetContext] to retrieve a Context for the target application.
@@ -359,7 +361,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @param configureRule - [TestifyConfiguration]
      */
     @CallSuper
-    open fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
+    override fun configure(configureRule: TestifyConfiguration.() -> Unit): ScreenshotRule<T> {
         configureRule.invoke(configuration)
         return this
     }
@@ -369,7 +371,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Invoked immediately before the Activity is launched.
      *
      * @see ActivityTestRule.beforeActivityLaunched
-     * @see ScreenshotLifecycle.beforeActivityLaunched
+     * @see ActivityLaunchCycle.beforeActivityLaunched
      */
     @CallSuper
     override fun beforeActivityLaunched() {
@@ -383,7 +385,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Invoked immediately after the Activity is launched.
      *
      * @see ActivityTestRule.afterActivityLaunched
-     * @see ScreenshotLifecycle.afterActivityLaunched
+     * @see ActivityLaunchCycle.afterActivityLaunched
      */
     @CallSuper
     override fun afterActivityLaunched() {
@@ -393,6 +395,10 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
         notifyObservers { it.applyConfiguration(activity, configuration) }
     }
 
+    /**
+     * The [Statement] to be executed by the [ScreenshotStatement].
+     */
+    @VisibleForTesting
     internal var statement: Statement? = null
 
     /**
