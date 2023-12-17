@@ -32,6 +32,7 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.VisibleForTesting
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso.closeSoftKeyboard
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.ActivityLaunchCycle
 import dev.testify.ScreenshotLifecycle
@@ -454,6 +455,20 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
                 annotationName = getScreenshotAnnotationName(),
                 methodName = methodName
             )
+    }
+
+    /**
+     * Perform the actions after the view is initialized.
+     *
+     * @param activity The activity to perform the actions on.
+     */
+    override fun afterInitializeView(activity: Activity) {
+        super.afterInitializeView(activity)
+
+        getInstrumentation().waitForIdleSync()
+
+        if (configuration.hideSoftKeyboard)
+            closeSoftKeyboard()
     }
 
     /**
