@@ -32,5 +32,5 @@ package dev.testify.core.exception
  *
  */
 class ScenarioRequiredException : Exception(
-    "\n\n*  An ActivityScenario instance is required.\n* Please call withScenario() prior to calling assertSame()\n"
+    "\n\n* An ActivityScenario instance is required.\n* Please call withScenario() prior to calling assertSame()\n"
 )

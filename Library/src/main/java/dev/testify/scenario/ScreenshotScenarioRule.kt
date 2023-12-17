@@ -67,24 +67,6 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
-/*
-    @ScreenshotInstrumentation
-    @Test
-    fun default() {
-        launchActivity<TestHarnessActivity>().use { scenario ->
-            rule
-                .withScenario(scenario)
-                .setViewModifications { harnessRoot ->
-                    rule.getActivity().getViewState(name = "default").let {
-                        harnessRoot.clientDetailsView.render(it)
-                        rule.getActivity().title = it.name
-                    }
-                }
-                .assertSame()
-        }
-    }
- */
-
 /**
  * ScreenshotScenarioRule is one of the main entry point for Testify.
  * It is a JUnit4 [TestRule] that provides the ability to take screenshots of an [Activity] under test.
@@ -434,6 +416,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      * Returns the current activity under test.
      * @throws ScenarioRequiredException if the activity is not started and available.
      */
+    @get:JvmName("activity")
     val activity: Activity
         get() = getActivity()
 
