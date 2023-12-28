@@ -24,23 +24,29 @@
  */
 package dev.testify.tasks.internal
 
+import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 
 abstract class ReportTask : TestifyDefaultTask() {
+
+    @get:Input lateinit var reportFileName: String
+    @get:Input lateinit var reportPath: String
 
     override fun getGroup() = "Testify reports"
 
     @get:Internal
     protected val reportName: String
-        get() {
-            return project.properties["reportFileName"]?.toString() ?: DEFAULT_REPORT_FILE_NAME
-        }
+        get() = reportFileName
 
     @get:Internal
     protected val destinationPath: String
-        get() {
-            return project.properties["reportPath"]?.toString() ?: project.file(".").absolutePath
-        }
+        get() = reportPath
+
+    override fun provideInput(project: Project) {
+        reportFileName = project.properties["reportFileName"]?.toString() ?: DEFAULT_REPORT_FILE_NAME
+        reportPath = project.properties["reportPath"]?.toString() ?: project.file(".").absolutePath
+    }
 }
 
 internal const val DEFAULT_REPORT_FILE_NAME = "report.yml"
