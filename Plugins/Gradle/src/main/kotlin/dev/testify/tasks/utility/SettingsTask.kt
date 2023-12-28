@@ -32,31 +32,68 @@ import dev.testify.internal.screenshotDirectory
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 import dev.testify.testifySettings
+import org.gradle.api.Project
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 
 open class SettingsTask : TestifyUtilityTask() {
 
+    @get:Input lateinit var baselineSourceDir: String
+    @get:Input lateinit var moduleName: String
+    @get:Input lateinit var screenshotDirectory: String
+    @get:Input lateinit var targetPackageId: String
+    @get:Input lateinit var testPackageId: String
+    @get:Input lateinit var testRunner: String
+    @get:Input var isRecordMode: Boolean = false
+    @get:Input var pullWaitTime: Long = 0L
+    @get:Input var useSdCard: Boolean = false
+    @get:Input var useTestStorage: Boolean = false
+    @get:Optional @get:Input var installAndroidTestTask: String? = null
+    @get:Optional @get:Input var installTask: String? = null
+    @get:Optional @get:Input var outputFileNameFormat: String? = null
+    @get:Optional @get:Input var reportFilePath: String? = null
+    @get:Optional @get:Input var screenshotAnnotation: String? = null
+
     override fun getDescription() = "Displays the Testify gradle extension settings"
+
+    override fun provideInput(project: Project) {
+        with(project.testifySettings) {
+            this@SettingsTask.baselineSourceDir = this.baselineSourceDir
+            this@SettingsTask.installAndroidTestTask = this.installAndroidTestTask
+            this@SettingsTask.installTask = this.installTask
+            this@SettingsTask.isRecordMode = this.isRecordMode
+            this@SettingsTask.moduleName = this.moduleName
+            this@SettingsTask.outputFileNameFormat = this.outputFileNameFormat
+            this@SettingsTask.pullWaitTime = this.pullWaitTime
+            this@SettingsTask.screenshotAnnotation = this.screenshotAnnotation
+            this@SettingsTask.targetPackageId = this.targetPackageId
+            this@SettingsTask.testPackageId = this.testPackageId
+            this@SettingsTask.testRunner = this.testRunner
+            this@SettingsTask.useSdCard = this.useSdCard
+            this@SettingsTask.useTestStorage = this.useTestStorage
+        }
+        this@SettingsTask.reportFilePath = project.reportFilePath
+        this@SettingsTask.screenshotDirectory = project.screenshotDirectory
+    }
 
     override fun taskAction() {
         val userId = Adb.forcedUser?.toString() ?: Device.user
-        with(project.testifySettings) {
-            println("  baselineSourceDir      = $baselineSourceDir")
-            println("  installAndroidTestTask = $installAndroidTestTask")
-            println("  installTask            = $installTask")
-            println("  moduleName             = $moduleName")
-            println("  outputFileNameFormat   = $outputFileNameFormat")
-            println("  pullWaitTime           = $pullWaitTime")
-            println("  reportFilePath         = ${project.reportFilePath}")
-            println("  screenshotAnnotation   = $screenshotAnnotation")
-            println("  screenshotDirectory    = ${project.screenshotDirectory}")
-            println("  targetPackageId        = $targetPackageId")
-            println("  testPackageId          = $testPackageId")
-            println("  testRunner             = $testRunner")
-            println("  useSdCard              = $useSdCard")
-            println("  useTestStorage         = $useTestStorage")
-            println("  isRecordMode           = $isRecordMode")
-            println("  user                   = $userId")
-        }
+        println("  baselineSourceDir      = $baselineSourceDir")
+        println("  installAndroidTestTask = $installAndroidTestTask")
+        println("  installTask            = $installTask")
+        println("  moduleName             = $moduleName")
+        println("  outputFileNameFormat   = $outputFileNameFormat")
+        println("  pullWaitTime           = $pullWaitTime")
+        println("  reportFilePath         = $reportFilePath")
+        println("  screenshotAnnotation   = $screenshotAnnotation")
+        println("  screenshotDirectory    = $screenshotDirectory")
+        println("  targetPackageId        = $targetPackageId")
+        println("  testPackageId          = $testPackageId")
+        println("  testRunner             = $testRunner")
+        println("  useSdCard              = $useSdCard")
+        println("  useTestStorage         = $useTestStorage")
+        println("  isRecordMode           = $isRecordMode")
+        println("  user                   = $userId")
     }
 
     companion object : TaskNameProvider {
