@@ -105,7 +105,7 @@ class TestifyPlugin : Plugin<Project> {
         tasks.create(ReportPullTask.taskName(), ReportPullTask::class.java)
         tasks.create(ReportShowTask.taskName(), ReportShowTask::class.java)
         tasks.create(ScreenshotClearTask.taskName(), ScreenshotClearTask::class.java)
-        tasks.create(ScreenshotPullTask.taskName(), ScreenshotPullTask::class.java)
+        registerTask<ScreenshotPullTask>(ScreenshotPullTask.Companion)
         tasks.create(ScreenshotRecordTask.taskName(), ScreenshotRecordTask::class.java)
         tasks.create(ScreenshotTestTask.taskName(), ScreenshotTestTask::class.java)
         registerTask<SettingsTask>(SettingsTask.Companion)
