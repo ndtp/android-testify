@@ -103,7 +103,7 @@ class TestifyPlugin : Plugin<Project> {
         tasks.create(HidePasswordsTasks.taskName(), HidePasswordsTasks::class.java)
         tasks.create(LocaleTask.taskName(), LocaleTask::class.java)
         tasks.create(ReportPullTask.taskName(), ReportPullTask::class.java)
-        tasks.create(ReportShowTask.taskName(), ReportShowTask::class.java)
+        registerTask<ReportShowTask>(ReportShowTask.Companion)
         registerTask<ScreenshotClearTask>(ScreenshotClearTask.Companion)
         registerTask<ScreenshotPullTask>(ScreenshotPullTask.Companion)
         tasks.create(ScreenshotRecordTask.taskName(), ScreenshotRecordTask::class.java)
