@@ -34,6 +34,7 @@ import dev.testify.tasks.main.ScreenshotClearTask
 import dev.testify.tasks.main.ScreenshotPullTask
 import dev.testify.tasks.main.ScreenshotRecordTask
 import dev.testify.tasks.main.ScreenshotTestTask
+import dev.testify.tasks.main.internal.InternalScreenshotTestRecordTask
 import dev.testify.tasks.report.ReportPullTask
 import dev.testify.tasks.report.ReportShowTask
 import dev.testify.tasks.utility.DeviceKeyTask
@@ -102,15 +103,16 @@ class TestifyPlugin : Plugin<Project> {
         tasks.create(DisableSoftKeyboardTask.taskName(), DisableSoftKeyboardTask::class.java)
         tasks.create(HidePasswordsTasks.taskName(), HidePasswordsTasks::class.java)
         tasks.create(LocaleTask.taskName(), LocaleTask::class.java)
+        tasks.create(TimeZoneTask.taskName(), TimeZoneTask::class.java)
+        tasks.create(VersionTask.taskName(), VersionTask::class.java)
         registerTask<ReportPullTask>(ReportPullTask.Companion)
         registerTask<ReportShowTask>(ReportShowTask.Companion)
         registerTask<ScreenshotClearTask>(ScreenshotClearTask.Companion)
         registerTask<ScreenshotPullTask>(ScreenshotPullTask.Companion)
-        tasks.create(ScreenshotRecordTask.taskName(), ScreenshotRecordTask::class.java)
-        tasks.create(ScreenshotTestTask.taskName(), ScreenshotTestTask::class.java)
+        registerTask<ScreenshotRecordTask>(ScreenshotRecordTask.Companion)
+        registerTask<ScreenshotTestTask>(ScreenshotTestTask.Companion)
         registerTask<SettingsTask>(SettingsTask.Companion)
-        tasks.create(TimeZoneTask.taskName(), TimeZoneTask::class.java)
-        tasks.create(VersionTask.taskName(), VersionTask::class.java)
+        registerTask<InternalScreenshotTestRecordTask>(InternalScreenshotTestRecordTask.Companion)
     }
 
     private inline fun <reified T : TestifyDefaultTask> Project.registerTask(taskNameProvider: TaskNameProvider) {
@@ -118,7 +120,6 @@ class TestifyPlugin : Plugin<Project> {
             (it as? TestifyDefaultTask)?.provideInput(this)
         }
     }
-
 
     companion object {
         const val EVALUATED_SETTINGS = "testify_evaluated_settings"
