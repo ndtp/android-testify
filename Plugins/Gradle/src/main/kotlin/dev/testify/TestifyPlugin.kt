@@ -28,6 +28,8 @@ package dev.testify
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
 import dev.testify.internal.Adb
 import dev.testify.internal.android
+import dev.testify.tasks.internal.TaskNameProvider
+import dev.testify.tasks.internal.TestifyDefaultTask
 import dev.testify.tasks.main.ScreenshotClearTask
 import dev.testify.tasks.main.ScreenshotPullTask
 import dev.testify.tasks.main.ScreenshotRecordTask
@@ -106,10 +108,17 @@ class TestifyPlugin : Plugin<Project> {
         tasks.create(ScreenshotPullTask.taskName(), ScreenshotPullTask::class.java)
         tasks.create(ScreenshotRecordTask.taskName(), ScreenshotRecordTask::class.java)
         tasks.create(ScreenshotTestTask.taskName(), ScreenshotTestTask::class.java)
-        tasks.create(SettingsTask.taskName(), SettingsTask::class.java)
+        registerTask<SettingsTask>(SettingsTask.Companion)
         tasks.create(TimeZoneTask.taskName(), TimeZoneTask::class.java)
         tasks.create(VersionTask.taskName(), VersionTask::class.java)
     }
+
+    private inline fun <reified T : TestifyDefaultTask> Project.registerTask(taskNameProvider: TaskNameProvider) {
+        tasks.register(taskNameProvider.taskName(), T::class.java) {
+            (it as? TestifyDefaultTask)?.provideInput(this)
+        }
+    }
+
 
     companion object {
         const val EVALUATED_SETTINGS = "testify_evaluated_settings"
