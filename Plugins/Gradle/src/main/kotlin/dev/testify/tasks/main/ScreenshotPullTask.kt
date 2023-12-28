@@ -38,22 +38,43 @@ import dev.testify.internal.screenshotDirectory
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyDefaultTask
 import dev.testify.testifySettings
+import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import java.io.File
 import java.io.FileOutputStream
 
 open class ScreenshotPullTask : TestifyDefaultTask() {
 
+    @get:Input lateinit var screenshotDirectory: String
+    @get:Input lateinit var destinationImageDirectory: String
+    @get:Input lateinit var targetPackageId: String
+    @get:Input var isVerbose: Boolean = false
+    @get:Input var pullWaitTime: Long = 0L
+
     override fun getDescription() = "Pull screenshots from the device and wait for all files to be committed to disk"
+
+    override fun provideInput(project: Project) {
+        screenshotDirectory = project.screenshotDirectory
+        destinationImageDirectory = project.destinationImageDirectory
+        targetPackageId = project.testifySettings.targetPackageId
+        isVerbose = project.isVerbose
+        pullWaitTime = project.testifySettings.pullWaitTime
+    }
 
     override fun taskAction() {
         println("  Pulling screenshots:")
 
         println()
-        println("  Source               = ${project.screenshotDirectory}")
-        println("  Destination          = ${project.destinationImageDirectory}")
+        println("  Source               = $screenshotDirectory")
+        println("  Destination          = $destinationImageDirectory")
         println()
 
-        val failedScreenshots = project.listFailedScreenshots()
+        val failedScreenshots = listFailedScreenshots(
+            src = screenshotDirectory,
+            dst = destinationImageDirectory,
+            targetPackageId = targetPackageId,
+            isVerbose = isVerbose
+        )
         if (failedScreenshots.isEmpty()) {
             println(AnsiFormat.Green, "  No failed screenshots found")
             return
@@ -68,23 +89,27 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
     }
 
     private fun String.toLocalPath(): String {
-        val src = project.screenshotDirectory
-        val dst = project.destinationImageDirectory
+        val src = screenshotDirectory
+        val dst = destinationImageDirectory
         val key = this.removePrefix("$src/").replace('/', File.separatorChar)
         return "$dst${File.separatorChar}$SCREENSHOT_DIR${File.separatorChar}$key"
     }
 
     private fun pullScreenshots() {
-        val dst = project.destinationImageDirectory
+        val dst = destinationImageDirectory
         File(dst).assurePath()
 
-        val failedScreenshots = project.listFailedScreenshotsWithPath()
+        val failedScreenshots = listFailedScreenshotsWithPath(
+            src = screenshotDirectory,
+            targetPackageId = targetPackageId,
+            isVerbose = isVerbose
+        )
 
         failedScreenshots.forEach {
 
             val localPath = it.toLocalPath()
 
-            if (project.isVerbose) {
+            if (isVerbose) {
                 println(AnsiFormat.Purple, "Copying $it to ${it.toLocalPath()}")
             }
 
@@ -92,18 +117,23 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
             Adb()
                 .execOut()
-                .runAs(project.testifySettings.targetPackageId)
+                .runAs(targetPackageId)
                 .argument("cat")
                 .argument(it)
                 .stream(BinaryStream(FileOutputStream(it.toLocalPath())))
                 .execute()
         }
 
-        Thread.sleep(project.testifySettings.pullWaitTime)
+        Thread.sleep(pullWaitTime)
     }
 
     private fun syncScreenshots() {
-        val failedScreenshots = project.listFailedScreenshots()
+        val failedScreenshots = listFailedScreenshots(
+            src = screenshotDirectory,
+            dst = destinationImageDirectory,
+            targetPackageId = targetPackageId,
+            isVerbose = isVerbose
+        )
         failedScreenshots.forEach {
             println(AnsiFormat.Green, "    Copying ${File(it).nameWithoutExtension}...")
             Thread.sleep(SYNC_SLEEP)
