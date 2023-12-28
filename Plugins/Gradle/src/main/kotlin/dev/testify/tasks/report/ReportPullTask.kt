@@ -38,21 +38,36 @@ import dev.testify.tasks.internal.ReportTask
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.main.ScreenshotPullTask
 import dev.testify.testifySettings
+import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import java.io.File
 import java.io.FileOutputStream
 
 open class ReportPullTask : ReportTask() {
 
+    @get:Input lateinit var reportFilePath: String
+    @get:Input lateinit var targetPackageId: String
+    @get:Input var isVerbose: Boolean = false
+    @get:Input var pullWaitTime: Long = 0L
+
     override fun getDescription() =
         "Pull $DEFAULT_REPORT_FILE_NAME from the device and wait for it to be committed to disk"
+
+    override fun provideInput(project: Project) {
+        super.provideInput(project)
+        reportFilePath = project.reportFilePath
+        targetPackageId = project.testifySettings.targetPackageId
+        isVerbose = project.isVerbose
+        pullWaitTime = project.testifySettings.pullWaitTime
+    }
 
     override fun taskAction() {
         println("  Pulling report:")
 
-        val reportFilePath = project.reportFilePath
+        val reportFilePath = reportFilePath
         val files = Adb()
             .shell()
-            .runAs(project.testifySettings.targetPackageId)
+            .runAs(targetPackageId)
             .listFiles(reportFilePath)
 
         val file = files.find { it.endsWith(DEFAULT_REPORT_FILE_NAME) }
@@ -80,19 +95,19 @@ open class ReportPullTask : ReportTask() {
 
         val destinationFile = File(destinationPath, reportName)
 
-        if (project.isVerbose) {
+        if (isVerbose) {
             println(AnsiFormat.Purple, "Copying $sourceFilePath to ${destinationFile.absolutePath}")
         }
 
         Adb()
             .execOut()
-            .runAs(project.testifySettings.targetPackageId)
+            .runAs(targetPackageId)
             .argument("cat")
             .argument(sourceFilePath)
             .stream(StreamData.BinaryStream(FileOutputStream(destinationFile)))
             .execute()
 
-        Thread.sleep(project.testifySettings.pullWaitTime)
+        Thread.sleep(pullWaitTime)
     }
 
     private fun sync() {
