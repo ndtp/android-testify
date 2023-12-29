@@ -25,6 +25,7 @@ include ':Library'
 include ':ComposeExtensions'
 include ':FullscreenCaptureMethod'
 include ':Accessibility'
+include ':PluginSample'
 
 project(':Plugin').projectDir = new File("./Plugins/Gradle")
 project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
@@ -33,3 +34,4 @@ project(':Accessibility').projectDir = new File("./Ext/Accessibility")
 project(':LegacySample').projectDir = new File("./Samples/Legacy")
 project(':FlixSample').projectDir = new File("./Samples/Flix")
 project(':GmdSample').projectDir = new File("./Samples/Gmd")
+project(':PluginSample').projectDir = new File("./Samples/Plugin")
