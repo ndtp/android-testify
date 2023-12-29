@@ -27,7 +27,6 @@ import com.google.common.truth.Truth.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -35,13 +34,6 @@ import java.io.File
 
 class ConfigurationCacheTest {
 
-//    @BeforeEach
-//    fun setup() {
-//        settingsFile = File(testProjectDir, "settings.gradle")
-//        buildFile = File(testProjectDir, "build.gradle").apply {
-//            writeText("plugins { id 'dev.testify' }")
-//        }
-//    }
     companion object {
 
         @field:TempDir
@@ -65,7 +57,7 @@ class ConfigurationCacheTest {
         GradleRunner
             .create()
             .withProjectDir(File("../.."))
-            .withArguments("--configuration-cache", taskName)
+            .withArguments("--configuration-cache", ":PluginSample:$taskName")
             .build()
 
     private fun assertCacheReused(result: BuildResult) =
