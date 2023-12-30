@@ -104,7 +104,7 @@ class Adb {
             println(AnsiFormat.Purple, command)
         }
 
-        return runProcess(command, streamData ?: BufferedStream())
+        return runProcess(command, streamData ?: BufferedStream(), isDryRun)
     }
 
     fun testOptions(testOptionsBuilder: TestOptionsBuilder): Adb {
@@ -121,6 +121,7 @@ class Adb {
         private lateinit var adbPath: String
         @VisibleForTesting var deviceTarget: String? = null
         private var verbose: Boolean = false
+        private var isDryRun: Boolean = false
         var forcedUser: Int? = null
 
         fun init(project: Project) {
@@ -130,6 +131,7 @@ class Adb {
             deviceTarget = Devices.targets[index]
             verbose = project.isVerbose
             forcedUser = project.user
+            isDryRun = project.isDryRun
         }
     }
 }

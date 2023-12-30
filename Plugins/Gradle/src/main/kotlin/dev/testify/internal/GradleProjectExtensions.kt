@@ -37,6 +37,9 @@ val Project.android: TestedExtension
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
 
+val Project.isDryRun: Boolean
+    get() = (this.properties["dryRun"] as? String)?.toBoolean() ?: false
+
 val Project.useLocale: Boolean
     get() = (this.properties["useLocale"] as? String)?.toBoolean() ?: false
 

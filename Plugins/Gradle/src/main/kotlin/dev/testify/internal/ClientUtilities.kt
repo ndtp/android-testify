@@ -27,12 +27,12 @@ package dev.testify.internal
 
 import dev.testify.internal.StreamData.BufferedStream
 import dev.testify.testifySettings
+import org.gradle.api.Project
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
-import org.gradle.api.Project
 
 sealed class StreamData {
 
@@ -86,18 +86,16 @@ sealed class StreamData {
 internal val Project.destinationImageDirectory: String
     get() = "${project.testifySettings.baselineSourceDir}${File.separatorChar}"
 
-fun runProcess(command: String, streamData: StreamData = BufferedStream()): String {
-    val process = Runtime.getRuntime().exec(command)
-    val result = streamData.handleInputStream(process.inputStream)
-    process.waitFor()
-    return result
+fun runProcess(command: String, streamData: StreamData = BufferedStream(), dryRun: Boolean = false): String {
+    return if (dryRun) {
+        "Dry run $command"
+    } else {
+        val process = Runtime.getRuntime().exec(command)
+        val result = streamData.handleInputStream(process.inputStream)
+        process.waitFor()
+        result
+    }
 }
-
-val File.pathRelativeToCurrentDir: String
-    get() = ".${this.path.removePrefix(currentDir)}"
-
-private val currentDir: String
-    get() = runProcess("pwd")
 
 sealed class AnsiFormat(private val code: String) {
     object Reset : AnsiFormat("\u001B[0m")

@@ -57,7 +57,7 @@ class ConfigurationCacheTest {
         GradleRunner
             .create()
             .withProjectDir(File("../.."))
-            .withArguments("--configuration-cache", ":PluginSample:$taskName")
+            .withArguments("--configuration-cache", ":PluginSample:$taskName", "-PdryRun=true")
             .build()
 
     private fun assertCacheReused(result: BuildResult) =
