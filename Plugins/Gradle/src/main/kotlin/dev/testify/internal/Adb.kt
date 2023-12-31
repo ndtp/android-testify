@@ -124,6 +124,7 @@ class Adb {
         private var isDryRun: Boolean = false
         var forcedUser: Int? = null
 
+        // TODO: Refactor this -- no more globals if possible
         fun init(project: Project) {
             adbPath = project.android.adbExecutable.absolutePath
                 ?: throw GradleException("adb not found. Have you defined an `android` block?")

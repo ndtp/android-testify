@@ -58,6 +58,9 @@ abstract class TestifyDefaultTask : DefaultTask() {
     internal open fun provideInput(project: Project) {}
 
     protected open fun beforeAction() {
+
+        dev.testify.internal.println(AnsiFormat.Cyan, "beforeAction")
+
         if (Devices.isEmpty) throw GradleException(
             "No Android Virtual Device found. Please start an emulator prior to running Testify tasks."
         )
@@ -65,6 +68,9 @@ abstract class TestifyDefaultTask : DefaultTask() {
 
     @TaskAction
     protected fun action() {
+
+        dev.testify.internal.println(AnsiFormat.Cyan, "start action()")
+
         beforeAction()
 
         println()
@@ -73,6 +79,7 @@ abstract class TestifyDefaultTask : DefaultTask() {
         println(divider)
         println()
 
+        dev.testify.internal.println(AnsiFormat.Cyan, "execute taskAction()")
         taskAction()
     }
 

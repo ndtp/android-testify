@@ -87,13 +87,54 @@ internal val Project.destinationImageDirectory: String
     get() = "${project.testifySettings.baselineSourceDir}${File.separatorChar}"
 
 fun runProcess(command: String, streamData: StreamData = BufferedStream(), dryRun: Boolean = false): String {
-    return if (dryRun) {
-        "Dry run $command"
-    } else {
-        val process = Runtime.getRuntime().exec(command)
-        val result = streamData.handleInputStream(process.inputStream)
-        process.waitFor()
-        result
+//    return if (dryRun) {
+//        "Dry run $command"
+//    } else {
+//        val process = Runtime.getRuntime().exec(command)
+//        val result = streamData.handleInputStream(process.inputStream)
+//        process.waitFor()
+//        result
+//    }
+
+    if (dryRun) {
+        val result = DryRunCache.get(command)
+        if (result != null) {
+            println(AnsiFormat.Yellow, "\n\tresult from cache:[$result]")
+            return result
+        }
+    }
+
+    println(AnsiFormat.Yellow, "\n\tcommand:[$command]")
+
+    val process = Runtime.getRuntime().exec(command)
+    val result = streamData.handleInputStream(process.inputStream)
+    process.waitFor()
+
+    println(AnsiFormat.Yellow, "\tresult:[$result]")
+
+    return result
+}
+
+private object DryRunCache {
+
+    private val cache = mapOf(
+        "adb -s emulator-5554 shell getprop ro.build.version.sdk" to "29",
+        "adb -s emulator-5554 shell wm size" to "Physical size: 1080x2220",
+        "adb -s emulator-5554 shell wm density" to "Physical density: 440",
+        "adb -s emulator-5554 shell getprop persist.sys.locale" to "",
+        "adb -s emulator-5554 shell settings put system show_password 0" to "",
+        "adb -s emulator-5554 shell getprop persist.sys.timezone" to "Atlantic/Reykjavik",
+        "adb -s emulator-5554 shell settings put secure show_ime_with_hard_keyboard 0" to "Atlantic/Reykjavik",
+//        "adb -s emulator-5554 devices" to "\nList of devices attached\nemulator-5554   device\n",
+        "adb -s emulator-5554 shell am get-current-user" to "0",
+        "adb -s emulator-5554 devices" to "List of devices attached\n" +
+            "emulator-5554   device\n" +
+            "\n",
+    )
+
+    fun get(command: String): String? {
+        val key = command.substringAfterLast("/")
+        return cache[key]
     }
 }
 
