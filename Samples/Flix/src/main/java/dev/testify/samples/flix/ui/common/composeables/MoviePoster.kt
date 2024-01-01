@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import dev.testify.samples.flix.R
+import dev.testify.samples.flix.ui.common.AsynchronousImage
 
 @Composable
 fun MoviePoster(

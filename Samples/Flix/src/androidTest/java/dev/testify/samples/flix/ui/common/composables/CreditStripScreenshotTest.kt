@@ -2,7 +2,7 @@ package dev.testify.samples.flix.ui.common.composables
 
 import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.samples.flix.ui.cast.CastMemberPresentationModel
+import dev.testify.samples.flix.ui.common.composeables.CastMemberPresentationModel
 import dev.testify.samples.flix.ui.common.composeables.CreditStrip
 import org.junit.Rule
 import org.junit.Test

@@ -1,4 +1,4 @@
-package dev.testify.samples.flix.ui.cast
+package dev.testify.samples.flix.ui.common.composeables
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,11 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.testify.samples.flix.library.R
-import dev.testify.samples.flix.ui.common.composeables.AsynchronousImage
+import dev.testify.samples.flix.ui.common.AsynchronousImage
 import dev.testify.samples.flix.ui.common.util.ImagePromise
 import dev.testify.samples.flix.ui.theme.Spacing
 
-// TODO: Revert?
 data class CastMemberPresentationModel(
     val id: Int,
     val name: String,

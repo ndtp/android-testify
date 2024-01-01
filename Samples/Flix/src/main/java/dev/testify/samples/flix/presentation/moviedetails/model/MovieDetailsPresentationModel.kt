@@ -25,7 +25,7 @@
 
 package dev.testify.samples.flix.presentation.moviedetails.model
 
-import dev.testify.samples.flix.ui.cast.CastMemberPresentationModel
+import dev.testify.samples.flix.ui.common.composeables.CastMemberPresentationModel
 
 data class MovieDetailsPresentationModel(
     val id: Int,

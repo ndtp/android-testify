@@ -32,7 +32,7 @@ import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
 import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
 import dev.testify.samples.flix.domain.model.MovieDomainModel
 import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
-import dev.testify.samples.flix.ui.cast.CastMemberPresentationModel
+import dev.testify.samples.flix.ui.common.composeables.CastMemberPresentationModel
 import dev.testify.samples.flix.ui.common.util.toImagePromise
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

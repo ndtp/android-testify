@@ -4,7 +4,7 @@ import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
 import dev.testify.samples.flix.presentation.moviedetails.viewmodel.MovieDetailsViewState
-import dev.testify.samples.flix.ui.cast.CastMemberPresentationModel
+import dev.testify.samples.flix.ui.common.composeables.CastMemberPresentationModel
 import org.junit.Rule
 import org.junit.Test
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2024 ndtp
  * Original work copyright (c) 2023 Andrew Carmichael
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
