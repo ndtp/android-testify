@@ -38,6 +38,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import dev.testify.samples.flix.application.foundation.ui.action.ViewAction
 import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
+import dev.testify.samples.flix.ui.common.AsynchronousImage
 
 @Composable
 fun LoadingMovieThumbnail(

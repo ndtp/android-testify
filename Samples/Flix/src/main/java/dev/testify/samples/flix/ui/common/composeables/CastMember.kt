@@ -11,22 +11,30 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.testify.samples.flix.R
-import dev.testify.samples.flix.application.foundation.ui.action.ViewAction
-import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
+import dev.testify.samples.flix.library.R
+import dev.testify.samples.flix.ui.common.AsynchronousImage
+import dev.testify.samples.flix.ui.common.util.ImagePromise
+import dev.testify.samples.flix.ui.theme.Spacing
+
+data class CastMemberPresentationModel(
+    val id: Int,
+    val name: String,
+    val characterName: String,
+    val image: ImagePromise?
+) {
+    fun describe() = "$name as $characterName"
+}
 
 @Composable
 fun CastMember(
-    model: CreditPresentationModel,
+    model: CastMemberPresentationModel,
     modifier: Modifier = Modifier,
-    viewAction: ViewAction? = null,
-    onPressed: (() -> Unit)? = null
+    onPressed: ((Int) -> Unit)? = null
 ) {
     Surface(
         modifier = modifier
@@ -36,22 +44,22 @@ fun CastMember(
         shadowElevation = 1.dp,
         tonalElevation = 1.dp
     ) {
-        Column() {
+        Column {
             AsynchronousImage(
                 modifier = Modifier
                     .weight(0.66f)
                     .clickable(
                         onPressed != null,
                         role = Role.Button
-                    ) { onPressed?.invoke() },
+                    ) { onPressed?.invoke(model.id) },
                 model = model.image?.resolve(),
-                contentDescription = viewAction?.describe(),
+                contentDescription = model.describe(),
                 fallback = painterResource(id = R.drawable.outline_photo_camera_24),
             )
             Column(
                 modifier = Modifier
                     .weight(0.33f)
-                    .padding(horizontal = dimensionResource(id = R.dimen.padding_half)),
+                    .padding(horizontal = Spacing.Half),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(

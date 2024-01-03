@@ -31,10 +31,9 @@ import dev.testify.samples.flix.R
 import dev.testify.samples.flix.domain.model.MovieCreditsDomainModel
 import dev.testify.samples.flix.domain.model.MovieDetailsDomainModel
 import dev.testify.samples.flix.domain.model.MovieDomainModel
-import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
 import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
-import dev.testify.samples.flix.ui.common.util.ImagePromise
-import dev.testify.samples.flix.ui.common.util.imagePromise
+import dev.testify.samples.flix.ui.common.composeables.CastMemberPresentationModel
+import dev.testify.samples.flix.ui.common.util.toImagePromise
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
@@ -74,19 +73,16 @@ class MovieDetailsDomainModelToPresentationMapper @Inject constructor(
         }
     }
 
-    private fun MovieCreditsDomainModel?.toPresentation(): List<CreditPresentationModel> {
+    private fun MovieCreditsDomainModel?.toPresentation(): List<CastMemberPresentationModel> {
         return this?.let {
             it.cast.map { personDomainModel ->
-                CreditPresentationModel(
+                CastMemberPresentationModel(
+                    id = personDomainModel.id,
                     name = personDomainModel.name,
                     characterName = personDomainModel.characterName,
                     image = personDomainModel.imageUrl.toImagePromise()
                 )
             }
         } ?: emptyList()
-    }
-
-    private fun String?.toImagePromise(): ImagePromise? {
-        return this?.let { imagePromise(it) }
     }
 }

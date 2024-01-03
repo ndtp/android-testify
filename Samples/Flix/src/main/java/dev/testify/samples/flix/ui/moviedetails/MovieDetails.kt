@@ -52,12 +52,16 @@ import dev.testify.samples.flix.ui.common.renderer.ScreenState
 
 @Composable
 fun MovieDetailsScreen(
-    movieId: Int
+    movieId: Int,
+    onCastMemberClick: (Int) -> Unit
 ) {
     val viewModel = hiltViewModel<MovieDetailsViewModel>()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
     ScreenState<MovieDetailsViewState>(screenState) { viewState ->
-        MovieDetails(viewState)
+        MovieDetails(
+            movieDetailsViewState = viewState,
+            onCastMemberClick = onCastMemberClick
+        )
     }
     LaunchedEffect(Unit) {
         viewModel.initialize(movieId)
@@ -66,14 +70,20 @@ fun MovieDetailsScreen(
 
 @Composable
 fun MovieDetails(
-    movieDetailsViewState: MovieDetailsViewState
-) = when(movieDetailsViewState) {
-    is MovieDetailsViewState.LoadedMovieDetailsViewState -> LoadedMovieDetails(movieDetailsViewState.presentationModel)
+    movieDetailsViewState: MovieDetailsViewState,
+    onCastMemberClick: (Int) -> Unit
+) = when (movieDetailsViewState) {
+    is MovieDetailsViewState.LoadedMovieDetailsViewState ->
+        LoadedMovieDetails(
+            model = movieDetailsViewState.presentationModel,
+            onCastMemberClick = onCastMemberClick
+        )
 }
 
 @Composable
 fun LoadedMovieDetails(
-    model: MovieDetailsPresentationModel
+    model: MovieDetailsPresentationModel,
+    onCastMemberClick: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -90,7 +100,10 @@ fun LoadedMovieDetails(
         OverviewText(
             text = model.overview
         )
-        CreditStrip(credits = model.credits)
+        CreditStrip(
+            credits = model.credits,
+            onCastMemberClick = onCastMemberClick
+        )
         Spacer(modifier = Modifier.height(100.dp))
     }
 }

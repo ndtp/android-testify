@@ -25,6 +25,8 @@
 
 package dev.testify.samples.flix.application.navigation
 
+import dev.testify.samples.flix.ui.cast.ARG_CAST_ID
+
 interface NavigationDestination {
     val destinationName: String
 }
@@ -42,5 +44,9 @@ object NavigationDestinations {
     object MovieDetailsScreen : NavigationDestination {
         const val ARG_MOVIE_ID = "arg_movie_id"
         override val destinationName = "dev.testify.samples.flix.navigation.moviedetails/{$ARG_MOVIE_ID}"
+    }
+
+    object CastDetailScreen : NavigationDestination {
+        override val destinationName = "dev.testify.samples.flix.navigation.castdetail/{$ARG_CAST_ID}"
     }
 }

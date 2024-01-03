@@ -2,9 +2,9 @@ package dev.testify.samples.flix.ui.moviedetails
 
 import dev.testify.ComposableScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
-import dev.testify.samples.flix.presentation.moviedetails.model.CreditPresentationModel
 import dev.testify.samples.flix.presentation.moviedetails.model.MovieDetailsPresentationModel
 import dev.testify.samples.flix.presentation.moviedetails.viewmodel.MovieDetailsViewState
+import dev.testify.samples.flix.ui.common.composeables.CastMemberPresentationModel
 import org.junit.Rule
 import org.junit.Test
 
@@ -30,12 +30,14 @@ class MovieDetailsScreenshotTest {
                         genres = listOf("Horror", "Mystery"),
                         certification = "14A",
                         credits = listOf(
-                            CreditPresentationModel(
+                            CastMemberPresentationModel(
+                                id = 1,
                                 name = "Rei Hance",
                                 characterName = "Heather",
                                 image = null
                             ),
-                            CreditPresentationModel(
+                            CastMemberPresentationModel(
+                                id = 2,
                                 name = "Michael C. Williams",
                                 characterName = "Mike",
                                 image = null
@@ -44,7 +46,7 @@ class MovieDetailsScreenshotTest {
                         posterPath = "file:///android_asset/images/posters/tracked-by-the-police-poster.jpg"
                     )
                 )
-            )
+            ) {}
         }.assertSame()
     }
 }

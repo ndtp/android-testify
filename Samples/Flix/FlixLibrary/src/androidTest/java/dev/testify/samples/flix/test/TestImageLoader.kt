@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2023 ndtp
- * Original work copyright (c) 2023 Andrew Carmichael
+ * Copyright (c) 2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +21,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package dev.testify.samples.flix.test
 
-package dev.testify.samples.flix.data.remote.tmdb
+import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
+import androidx.test.platform.app.InstrumentationRegistry
+import coil.Coil
+import coil.ImageLoader
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
 
-interface TheMovieDbUrlResolver {
-    fun resolveImageUrl(imageName: String): String
+private fun synchronousDispatcher(): CoroutineDispatcher =
+    IdlingThreadPoolExecutor(
+        "coilImageLoaderThreadPool",
+        Runtime.getRuntime().availableProcessors(),
+        Runtime.getRuntime().availableProcessors(),
+        0L,
+        TimeUnit.MILLISECONDS,
+        LinkedBlockingQueue(),
+        Executors.defaultThreadFactory()
+    ).asCoroutineDispatcher()
+
+fun setSynchronousImageLoader() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val imageLoader = ImageLoader.Builder(context).dispatcher(synchronousDispatcher()).build()
+    Coil.setImageLoader(imageLoader)
 }
 
-class TheMovieDbUrlResolverImpl(
-    private val baseUrl: String,
-    private val imageSizeKey: String
-) : TheMovieDbUrlResolver {
-
-    override fun resolveImageUrl(imageName: String): String {
-        return baseUrl + imageSizeKey + imageName
-    }
-}

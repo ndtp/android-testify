@@ -1,0 +1,97 @@
+buildscript {
+    dependencies {
+        classpath "dev.testify:plugin:${versions.testify}"
+    }
+    ext {
+        versions = [
+                'testify': '2.0.0',
+                'compose': [
+                        'compilerExt': '1.4.7',
+                        'core'       : '1.4.3',
+                        'material'   : '1.4.3',
+                        'ui'         : '1.4.3',
+                ]
+        ]
+    }
+}
+
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+}
+
+apply plugin: 'dev.testify'
+
+android {
+    namespace 'dev.testify.samples.flix.library'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 24
+        targetSdk 33
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+kapt {
+    correctErrorTypes true
+}
+
+testify {
+    applicationPackageId "dev.testify.samples.flix.library.test"
+    testPackageId "dev.testify.samples.flix.library.test"
+}
+
+dependencies {
+    kapt "com.google.dagger:dagger-compiler:2.46.1"
+    kapt "com.google.dagger:hilt-compiler:2.44"
+
+    def composeBom = platform('androidx.compose:compose-bom:2022.12.00')
+    implementation composeBom
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.1"
+    implementation "androidx.test.espresso.idling:idling-concurrent:3.6.0-alpha01"
+    implementation "com.google.dagger:hilt-android:2.44"
+    implementation 'androidx.compose.material3:material3:1.1.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'io.ktor:ktor-client-android:1.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0'
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
+    androidTestImplementation composeBom
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
+    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "dev.testify:testify-compose:${versions.testify}"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+}
