@@ -44,6 +44,7 @@ abstract class ReportTask : TestifyDefaultTask() {
         get() = reportPath
 
     override fun provideInput(project: Project) {
+        super.provideInput(project)
         reportFileName = project.properties["reportFileName"]?.toString() ?: DEFAULT_REPORT_FILE_NAME
         reportPath = project.properties["reportPath"]?.toString() ?: project.file(".").absolutePath
     }

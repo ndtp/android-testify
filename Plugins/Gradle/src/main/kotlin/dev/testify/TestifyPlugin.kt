@@ -98,13 +98,12 @@ class TestifyPlugin : Plugin<Project> {
     }
 
     private fun Project.createTasks() {
-        tasks.create(DeviceKeyTask.taskName(), DeviceKeyTask::class.java)
-        tasks.create(DevicesTask.taskName(), DevicesTask::class.java)
-        tasks.create(DisableSoftKeyboardTask.taskName(), DisableSoftKeyboardTask::class.java)
-        tasks.create(HidePasswordsTasks.taskName(), HidePasswordsTasks::class.java)
-        tasks.create(LocaleTask.taskName(), LocaleTask::class.java)
-        tasks.create(TimeZoneTask.taskName(), TimeZoneTask::class.java)
-        tasks.create(VersionTask.taskName(), VersionTask::class.java)
+        registerTask<DeviceKeyTask>(DeviceKeyTask.Companion)
+        registerTask<DevicesTask>(DevicesTask.Companion)
+        registerTask<DisableSoftKeyboardTask>(DisableSoftKeyboardTask.Companion)
+        registerTask<HidePasswordsTasks>(HidePasswordsTasks.Companion)
+        registerTask<InternalScreenshotTestRecordTask>(InternalScreenshotTestRecordTask.Companion)
+        registerTask<LocaleTask>(LocaleTask.Companion)
         registerTask<ReportPullTask>(ReportPullTask.Companion)
         registerTask<ReportShowTask>(ReportShowTask.Companion)
         registerTask<ScreenshotClearTask>(ScreenshotClearTask.Companion)
@@ -112,7 +111,8 @@ class TestifyPlugin : Plugin<Project> {
         registerTask<ScreenshotRecordTask>(ScreenshotRecordTask.Companion)
         registerTask<ScreenshotTestTask>(ScreenshotTestTask.Companion)
         registerTask<SettingsTask>(SettingsTask.Companion)
-        registerTask<InternalScreenshotTestRecordTask>(InternalScreenshotTestRecordTask.Companion)
+        registerTask<TimeZoneTask>(TimeZoneTask.Companion)
+        registerTask<VersionTask>(VersionTask.Companion)
     }
 
     private inline fun <reified T : TestifyDefaultTask> Project.registerTask(taskNameProvider: TaskNameProvider) {

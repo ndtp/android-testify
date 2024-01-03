@@ -47,6 +47,7 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
     override fun getDescription() = "Remove any existing screenshot test images from the device"
 
     override fun provideInput(project: Project) {
+        super.provideInput(project)
         screenshotDirectory = project.screenshotDirectory
         targetPackageId = project.testifySettings.targetPackageId
         isVerbose = project.isVerbose

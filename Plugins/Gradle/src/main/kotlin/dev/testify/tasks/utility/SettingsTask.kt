@@ -57,6 +57,7 @@ open class SettingsTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the Testify gradle extension settings"
 
     override fun provideInput(project: Project) {
+        super.provideInput(project)
         with(project.testifySettings) {
             this@SettingsTask.baselineSourceDir = this.baselineSourceDir
             this@SettingsTask.installAndroidTestTask = this.installAndroidTestTask

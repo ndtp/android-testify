@@ -27,12 +27,12 @@ package dev.testify.internal
 
 import dev.testify.internal.StreamData.BufferedStream
 import dev.testify.testifySettings
+import org.gradle.api.Project
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
-import org.gradle.api.Project
 
 sealed class StreamData {
 
@@ -92,12 +92,6 @@ fun runProcess(command: String, streamData: StreamData = BufferedStream()): Stri
     process.waitFor()
     return result
 }
-
-val File.pathRelativeToCurrentDir: String
-    get() = ".${this.path.removePrefix(currentDir)}"
-
-private val currentDir: String
-    get() = runProcess("pwd")
 
 sealed class AnsiFormat(private val code: String) {
     object Reset : AnsiFormat("\u001B[0m")
