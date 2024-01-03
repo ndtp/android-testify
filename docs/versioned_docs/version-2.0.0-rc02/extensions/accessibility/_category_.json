@@ -1,8 +1,0 @@
-{
-  "label": "Accessibility Checks",
-  "position": 1,
-  "link": {
-    "type": "generated-index",
-    "description": "Testify Accessibility can be used to verify common errors that lead to a poorly accessible application."
-  }
-}

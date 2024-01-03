@@ -1,8 +1,0 @@
-{
-  "label": "Jetpack Compose",
-  "position": 1,
-  "link": {
-    "type": "generated-index",
-    "description": "Easily create screenshot tests for @Composable functions."
-  }
-}
