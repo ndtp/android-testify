@@ -35,8 +35,9 @@ import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.io.File
 
 class AdbTest {
@@ -59,7 +60,7 @@ class AdbTest {
 
     private lateinit var subject: Adb
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
 
@@ -92,10 +93,12 @@ class AdbTest {
         }
     }
 
-    @Test(expected = GradleException::class)
+    @Test
     fun `WHEN init AND no android closure THEN throw exception`() {
         unmockkStatic(Project::android)
-        Adb.init(project)
+        assertThrows<GradleException> {
+            Adb.init(project)
+        }
     }
 
     @Test
@@ -103,11 +106,13 @@ class AdbTest {
         Adb.init(project)
     }
 
-    @Test(expected = GradleException::class)
+    @Test
     fun `WHEN init AND no adb path THEN throw exception`() {
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         every { adbExecutable.absolutePath } returns null
-        Adb.init(project)
+        assertThrows<GradleException> {
+            Adb.init(project)
+        }
     }
 
     @Test
@@ -127,9 +132,11 @@ class AdbTest {
         verify { println(any(), any()) }
     }
 
-    @Test(expected = GradleException::class)
+    @Test
     fun `WHEN runAs AND shell not called THEN throw exception`() {
-        subject.runAs("dev.testify").execute()
+        assertThrows<GradleException> {
+            subject.runAs("dev.testify").execute()
+        }
     }
 
     @Test

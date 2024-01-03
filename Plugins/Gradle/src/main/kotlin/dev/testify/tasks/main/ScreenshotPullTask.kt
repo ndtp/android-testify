@@ -54,6 +54,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
     override fun getDescription() = "Pull screenshots from the device and wait for all files to be committed to disk"
 
     override fun provideInput(project: Project) {
+        super.provideInput(project)
         screenshotDirectory = project.screenshotDirectory
         destinationImageDirectory = project.destinationImageDirectory
         targetPackageId = project.testifySettings.targetPackageId

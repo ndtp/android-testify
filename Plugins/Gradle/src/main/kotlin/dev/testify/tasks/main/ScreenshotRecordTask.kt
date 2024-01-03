@@ -35,6 +35,8 @@ open class ScreenshotRecordTask : TestifyDefaultTask() {
     override fun getDescription() = "Run the screenshot tests and record a new baseline"
 
     override fun taskAction() {
+        // no-op
+        // Public task is just a placeholder for the internal task
     }
 
     companion object : TaskNameProvider, TaskDependencyProvider {
