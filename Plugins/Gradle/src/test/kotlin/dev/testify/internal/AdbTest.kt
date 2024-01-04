@@ -116,8 +116,9 @@ class AdbTest {
 
     @Test
     fun `WHEN project is not verbose THEN never print`() {
-        subject.argument("test")
-        subject.execute()
+        subject.execute {
+            argument("test")
+        }
         verify(exactly = 0) { println(any(), any()) }
     }
 
@@ -125,23 +126,27 @@ class AdbTest {
     fun `WHEN project is verbose THEN print`() {
         every { any<Project>().isVerbose } returns true
         subject = Adb.construct(project)
-
-        subject.argument("test")
-        subject.execute()
+        subject.execute {
+            argument("test")
+        }
         verify { println(any(), any()) }
     }
 
     @Test
     fun `WHEN runAs AND shell not called THEN throw exception`() {
         assertThrows<GradleException> {
-            subject.runAs("dev.testify").execute()
+            subject.execute {
+                runAs("dev.testify")
+            }
         }
     }
 
     @Test
     fun `WHEN executing any command THEN always check which device to run on`() {
         subject = Adb.construct(project)
-        subject.shell().execute()
+        subject.execute {
+            shell()
+        }
         assertThat(processLog[0]).contains("devices")
         assertThat(processLog[1]).contains("-s emulator-5554")
     }
@@ -150,7 +155,10 @@ class AdbTest {
     fun `WHEN no user defined THEN do not specify a user`() {
         println("WHEN no user defined THEN do not specify a user")
         configureRunProcessCapture(mapOf("get-current-user" to ""))
-        subject.shell().runAs("dev.testify").execute()
+        subject.execute {
+            shell()
+            runAs("dev.testify")
+        }
         processLog.forEach {
             assertThat(it).doesNotContain("--user")
         }
@@ -159,7 +167,10 @@ class AdbTest {
     @Test
     fun `WHEN user is 0 THEN do not specify a user`() {
         println("WHEN user is 0 THEN do not specify a user")
-        subject.shell().runAs("dev.testify").execute()
+        subject.execute {
+            shell()
+            runAs("dev.testify")
+        }
         processLog.forEach {
             assertThat(it).doesNotContain("--user")
         }
@@ -169,7 +180,10 @@ class AdbTest {
     fun `WHEN user is 10 THEN specify user 10`() {
         println("WHEN user is 10 THEN specify user 10")
         configureRunProcessCapture(mapOf("get-current-user" to "10"))
-        subject.shell().runAs("dev.testify").execute()
+        subject.execute {
+            shell()
+            runAs("dev.testify")
+        }
         assertThat(processLog.last()).contains("--user 10")
     }
 
@@ -180,7 +194,10 @@ class AdbTest {
         every { any<Project>().user } returns 99
 
         subject = Adb.construct(project)
-        subject.shell().runAs("dev.testify").execute()
+        subject.execute {
+            shell()
+            runAs("dev.testify")
+        }
         assertThat(processLog.last()).contains("--user 99")
     }
 }

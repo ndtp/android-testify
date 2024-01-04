@@ -52,10 +52,7 @@ open class ReportShowTask : ReportTask() {
 
     override fun taskAction() {
         val reportFilePath = reportFilePath
-        val files = adb
-            .shell()
-            .runAs(targetPackageId)
-            .listFiles(reportFilePath)
+        val files = adb.listFiles(targetPackageId, reportFilePath)
 
         val file = files.find { it.endsWith(DEFAULT_REPORT_FILE_NAME) }
         if (file.isNullOrEmpty()) {
@@ -67,13 +64,13 @@ open class ReportShowTask : ReportTask() {
     }
 
     private fun show(sourceFilePath: String) {
-        adb
-            .execOut()
-            .runAs(targetPackageId)
-            .argument("cat")
-            .argument(sourceFilePath)
-            .stream(StreamData.ConsoleStream)
-            .execute()
+        adb.execute {
+            execOut()
+            runAs(targetPackageId)
+            argument("cat")
+            argument(sourceFilePath)
+            stream(StreamData.ConsoleStream)
+        }
     }
 
     companion object : TaskNameProvider {

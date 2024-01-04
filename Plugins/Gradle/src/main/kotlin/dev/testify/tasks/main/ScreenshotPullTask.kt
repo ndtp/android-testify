@@ -117,13 +117,13 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
             File(localPath).parentFile.assurePath()
 
-            adb
-                .execOut()
-                .runAs(targetPackageId)
-                .argument("cat")
-                .argument(it)
-                .stream(BinaryStream(FileOutputStream(it.toLocalPath())))
-                .execute()
+            adb.execute {
+                execOut()
+                runAs(targetPackageId)
+                argument("cat")
+                argument(it)
+                stream(BinaryStream(FileOutputStream(it.toLocalPath())))
+            }
         }
 
         Thread.sleep(pullWaitTime)

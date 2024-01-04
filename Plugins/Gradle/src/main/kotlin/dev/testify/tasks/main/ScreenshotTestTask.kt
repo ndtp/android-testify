@@ -132,15 +132,15 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .addAll(getRuntimeParams())
             .add(annotation)
 
-        val log = adb
-            .shell()
-            .argument("am")
-            .argument("instrument")
-            .testOptions(testOptions)
-            .argument("-w")
-            .argument("$testPackageId/$testRunner")
-            .stream(ConsoleStream)
-            .execute()
+        val log = adb.execute {
+            shell()
+            argument("am")
+            argument("instrument")
+            testOptions(testOptions)
+            argument("-w")
+            argument("$testPackageId/$testRunner")
+            stream(ConsoleStream)
+        }
         finalizeTaskAction(log)
     }
 

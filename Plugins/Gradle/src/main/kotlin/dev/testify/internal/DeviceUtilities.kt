@@ -43,11 +43,14 @@ internal val Project.screenshotDirectory: String
     else
         "${root}images/$SCREENSHOT_DIR"
 
-internal fun Adb.listFiles(path: String): List<String> {
+internal fun Adb.listFiles(targetPackageId: String, path: String): List<String> {
     val log = this
-        .argument("ls $path")
-        .argument("2>/dev/null")
-        .execute()
+        .execute {
+            shell()
+            runAs(targetPackageId)
+            argument("ls $path")
+            argument("2>/dev/null")
+        }
 
     return log.lines().filter { it.isNotEmpty() }.map { "$path/$it" }
 }
@@ -58,15 +61,9 @@ internal fun listFailedScreenshotsWithPath(
     targetPackageId: String,
     isVerbose: Boolean
 ): List<String> {
-    val rootDir = adb
-        .shell()
-        .runAs(targetPackageId)
-        .listFiles(src)
+    val rootDir = adb.listFiles(targetPackageId, src)
     val files = rootDir.flatMap {
-        adb
-            .shell()
-            .runAs(targetPackageId)
-            .listFiles(it)
+        adb.listFiles(targetPackageId, it)
     }
 
     if (isVerbose) {
@@ -95,13 +92,13 @@ internal val Project.reportFilePath: String
     get() = "${root.replace("testify_", "")}testify"
 
 internal fun File.deleteOnDevice(adb: Adb, targetPackageId: String) {
-    adb
-        .shell()
-        .runAs(targetPackageId)
-        .argument("rm")
-        .argument(this.path.unixPath)
-        .stream(ConsoleStream)
-        .execute()
+    adb.execute {
+        shell()
+        runAs(targetPackageId)
+        argument("rm")
+        argument(this@deleteOnDevice.path.unixPath)
+        stream(ConsoleStream)
+    }
 }
 
 private val String.unixPath: String

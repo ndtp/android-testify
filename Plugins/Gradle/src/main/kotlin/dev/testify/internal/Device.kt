@@ -65,12 +65,13 @@ class Device private constructor(private val adb: Adb) {
     private val displayDensity: Int
         get() {
             val densityLine = adb
-                .shell()
-                .arguments(
-                    "wm",
-                    "density"
-                )
-                .execute().trim()
+                .execute {
+                    shell()
+                    arguments(
+                        "wm",
+                        "density"
+                    )
+                }.trim()
             return if (densityLine.contains("Override density", true)) {
                 densityLine.split(":").last().trim().toInt()
             } else {
@@ -81,24 +82,26 @@ class Device private constructor(private val adb: Adb) {
     private val displaySize: String
         get() {
             val sizeLine = adb
-                .shell()
-                .arguments(
-                    "wm",
-                    "size"
-                )
-                .execute().trim()
+                .execute {
+                    shell()
+                    arguments(
+                        "wm",
+                        "size"
+                    )
+                }.trim()
             return sizeLine.substring("Physical size: ".length).trim()
         }
 
     internal val user: String
         get() {
             val user = adb
-                .shell()
-                .arguments(
-                    "am",
-                    "get-current-user"
-                )
-                .execute().trim()
+                .execute {
+                    shell()
+                    arguments(
+                        "am",
+                        "get-current-user"
+                    )
+                }.trim()
             return user.ifEmpty { "0" }
         }
 
@@ -107,10 +110,11 @@ class Device private constructor(private val adb: Adb) {
     }
 
     private fun Adb.getprop(prop: String): String {
-        shell()
-        argument("getprop")
-        argument(prop)
-        return execute().trim()
+        return execute {
+            shell()
+            argument("getprop")
+            argument(prop)
+        }.trim()
     }
 
     val isEmpty: Boolean
@@ -119,9 +123,10 @@ class Device private constructor(private val adb: Adb) {
     val count: Int
         get() {
             val result = adb
-                .global()
-                .argument("devices")
-                .execute()
+                .execute {
+                    global()
+                    argument("devices")
+                }
 
             return result.lines().filter {
                 it.isNotBlank() && !it.contains("List of devices attached")
@@ -142,10 +147,10 @@ class Device private constructor(private val adb: Adb) {
         }
 
     private fun enumerateDevices(): List<String> {
-        val result = adb
-            .global()
-            .argument("devices")
-            .execute()
+        val result = adb.execute {
+            global()
+            argument("devices")
+        }
 
         return result.lines().filter {
             it.isNotBlank() && !it.contains("List of devices attached")

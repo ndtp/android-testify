@@ -64,11 +64,7 @@ open class ReportPullTask : ReportTask() {
         println("  Pulling report:")
 
         val reportFilePath = reportFilePath
-        val files = adb
-            .shell()
-            .runAs(targetPackageId)
-            .listFiles(reportFilePath)
-
+        val files = adb.listFiles(targetPackageId, reportFilePath)
         val file = files.find { it.endsWith(DEFAULT_REPORT_FILE_NAME) }
 
         val destinationFile = File(destinationPath, reportName)
@@ -98,13 +94,13 @@ open class ReportPullTask : ReportTask() {
             println(AnsiFormat.Purple, "Copying $sourceFilePath to ${destinationFile.absolutePath}")
         }
 
-        adb
-            .execOut()
-            .runAs(targetPackageId)
-            .argument("cat")
-            .argument(sourceFilePath)
-            .stream(StreamData.BinaryStream(FileOutputStream(destinationFile)))
-            .execute()
+        adb.execute {
+            execOut()
+            runAs(targetPackageId)
+            argument("cat")
+            argument(sourceFilePath)
+            stream(StreamData.BinaryStream(FileOutputStream(destinationFile)))
+        }
 
         Thread.sleep(pullWaitTime)
     }

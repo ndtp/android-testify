@@ -48,8 +48,6 @@ class Adb private constructor() {
     private lateinit var adbPath: String
     private var verbose: Boolean = false
     private var deviceIndex: Int = 0
-    private val arguments = ArrayList<String>()
-    private var streamData: StreamData? = null
     private val device: Device by lazy {
         Device.construct(
             Adb(
@@ -60,100 +58,113 @@ class Adb private constructor() {
             )
         )
     }
-    private var isGlobal: Boolean = false
+
+    inner class Foo {
+        var isGlobal: Boolean = false
+            private set
+        val arguments = ArrayList<String>()
+        var streamData: StreamData? = null
+            private set
+
+        fun global(): Foo {
+            isGlobal = true
+            return this
+        }
+
+        fun emulator(): Foo {
+            arguments.add("-e")
+            return this
+        }
+
+        fun target(deviceTarget: String) {
+            arguments.add(0, "-s")
+            arguments.add(1, deviceTarget)
+        }
+
+        fun shell(): Foo {
+            arguments.add("shell")
+            return this
+        }
+
+        fun execOut(): Foo {
+            arguments.add("exec-out")
+            return this
+        }
+
+        val isDeviceTargeted: Boolean
+            get() = isGlobal.not()
+
+        fun runAs(packageId: String): Foo {
+            if (arguments.isEmpty() ||
+                !arguments.last().contentEquals("shell") &&
+                !arguments.last().contentEquals("exec-out")
+            ) {
+                throw GradleException("You must specify 'shell' or 'execOut' before 'runAs'")
+            }
+
+            arguments.add("run-as")
+            arguments.add(packageId)
+
+            user()
+
+            return this
+        }
+
+        private fun user(): Foo {
+            if (forcedUser != null) {
+                arguments("--user", "$forcedUser")
+            } else {
+                val user = device.user
+                if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0)
+                    arguments("--user", user)
+            }
+            return this
+        }
+
+        fun arguments(vararg arg: String): Foo {
+            arguments.addAll(arg)
+            return this
+        }
+
+        fun argument(arg: String): Foo {
+            arguments.add(arg)
+            return this
+        }
+
+        fun stream(streamData: StreamData): Foo {
+            this.streamData = streamData
+            return this
+        }
+
+        fun testOptions(testOptionsBuilder: TestOptionsBuilder): Foo {
+
+            testOptionsBuilder.resolved.forEach {
+                arguments.add(TestOptionsBuilder.TEST_OPTIONS_FLAG)
+                arguments.add(it)
+            }
+
+            return this
+        }
+    }
+
     var forcedUser: Int? = null
         private set
 
-    fun emulator(): Adb {
-        arguments.add("-e")
-        return this
-    }
-
-    fun global(): Adb {
-        isGlobal = true
-        return this
-    }
-
-    private val isDeviceTargeted: Boolean
-        get() = isGlobal.not()
-
-    fun shell(): Adb {
-        arguments.add("shell")
-        return this
-    }
-
-    fun execOut(): Adb {
-        arguments.add("exec-out")
-        return this
-    }
-
-    fun runAs(packageId: String): Adb {
-        if (arguments.isEmpty() ||
-            !arguments.last().contentEquals("shell") &&
-            !arguments.last().contentEquals("exec-out")
-        ) {
-            throw GradleException("You must specify 'shell' or 'execOut' before 'runAs'")
-        }
-
-        arguments.add("run-as")
-        arguments.add(packageId)
-
-        user()
-
-        return this
-    }
-
-    private fun user(): Adb {
-        if (forcedUser != null) {
-            arguments("--user", "$forcedUser")
-        } else {
-            val user = device.user
-            if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0)
-                arguments("--user", user)
-        }
-        return this
-    }
-
-    fun arguments(vararg arg: String): Adb {
-        arguments.addAll(arg)
-        return this
-    }
-
-    fun argument(arg: String): Adb {
-        arguments.add(arg)
-        return this
-    }
-
-    fun stream(streamData: StreamData): Adb {
-        this.streamData = streamData
-        return this
-    }
-
-    fun execute(): String {
-        if (isDeviceTargeted) {
+    fun execute(args: Adb.Foo.() -> Foo): String {
+        val foo = args(this.Foo())
+        if (foo.isDeviceTargeted) {
             device.target(deviceIndex)?.let { deviceTarget ->
-                arguments.add(0, "-s")
-                arguments.add(1, deviceTarget)
+                foo.target(deviceTarget)
             }
         }
 
-        val command = (listOf(adbPath) + arguments).joinToString(" ")
+        val command = (listOf(adbPath) + foo.arguments).joinToString(" ")
 
         if (verbose) {
             println(AnsiFormat.Purple, command)
         }
 
-        return runProcess(command, streamData ?: BufferedStream())
-    }
-
-    fun testOptions(testOptionsBuilder: TestOptionsBuilder): Adb {
-
-        testOptionsBuilder.resolved.forEach {
-            arguments.add(TestOptionsBuilder.TEST_OPTIONS_FLAG)
-            arguments.add(it)
-        }
-
-        return this
+        return runProcess(command, foo.streamData ?: BufferedStream())
     }
 
     companion object {
