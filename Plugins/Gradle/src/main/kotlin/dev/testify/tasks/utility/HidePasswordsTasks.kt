@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.utility
 
-import dev.testify.internal.Adb
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 
@@ -34,15 +33,15 @@ open class HidePasswordsTasks : TestifyUtilityTask() {
     override fun getDescription() = "Hides passwords fully on the device"
 
     override fun taskAction() {
-
-        Adb().arguments(
-            "shell",
-            "settings",
-            "put",
-            "system",
-            "show_password",
-            "0"
-        )
+        adb
+            .arguments(
+                "shell",
+                "settings",
+                "put",
+                "system",
+                "show_password",
+                "0"
+            )
             .execute()
 
         println("  Success")

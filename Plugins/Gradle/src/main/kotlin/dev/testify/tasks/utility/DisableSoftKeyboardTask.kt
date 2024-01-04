@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.utility
 
-import dev.testify.internal.Adb
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 
@@ -34,15 +33,15 @@ open class DisableSoftKeyboardTask : TestifyUtilityTask() {
     override fun getDescription() = "Disables the soft keyboard on the device"
 
     override fun taskAction() {
-
-        Adb().arguments(
-            "shell",
-            "settings",
-            "put",
-            "secure",
-            "show_ime_with_hard_keyboard",
-            "0"
-        )
+        adb
+            .arguments(
+                "shell",
+                "settings",
+                "put",
+                "secure",
+                "show_ime_with_hard_keyboard",
+                "0"
+            )
             .execute()
 
         println("  Success")

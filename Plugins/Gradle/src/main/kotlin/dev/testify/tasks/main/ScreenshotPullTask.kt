@@ -24,7 +24,6 @@
  */
 package dev.testify.tasks.main
 
-import dev.testify.internal.Adb
 import dev.testify.internal.AnsiFormat
 import dev.testify.internal.SCREENSHOT_DIR
 import dev.testify.internal.StreamData.BinaryStream
@@ -71,6 +70,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         println()
 
         val failedScreenshots = listFailedScreenshots(
+            adb = adb,
             src = screenshotDirectory,
             dst = destinationImageDirectory,
             targetPackageId = targetPackageId,
@@ -101,6 +101,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         File(dst).assurePath()
 
         val failedScreenshots = listFailedScreenshotsWithPath(
+            adb = adb,
             src = screenshotDirectory,
             targetPackageId = targetPackageId,
             isVerbose = isVerbose
@@ -116,7 +117,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
             File(localPath).parentFile.assurePath()
 
-            Adb()
+            adb
                 .execOut()
                 .runAs(targetPackageId)
                 .argument("cat")
@@ -130,6 +131,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
     private fun syncScreenshots() {
         val failedScreenshots = listFailedScreenshots(
+            adb = adb,
             src = screenshotDirectory,
             dst = destinationImageDirectory,
             targetPackageId = targetPackageId,

@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.utility
 
-import dev.testify.internal.Device
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 
@@ -34,7 +33,7 @@ open class LocaleTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the device locale."
 
     override fun taskAction() {
-        println("  Current Locale       = ${Device.locale}")
+        println("  Current Locale       = ${device.locale}")
     }
 
     companion object : TaskNameProvider {

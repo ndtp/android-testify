@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.utility
 
-import dev.testify.internal.Device
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 
@@ -34,7 +33,7 @@ open class TimeZoneTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the time zone currently set on the device"
 
     override fun taskAction() {
-        println("  Time zone            = ${Device.timeZone}")
+        println("  Time zone            = ${device.timeZone}")
     }
 
     companion object : TaskNameProvider {

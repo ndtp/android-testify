@@ -28,17 +28,54 @@ package dev.testify.internal
 import dev.testify.internal.StreamData.BufferedStream
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting
 
-class Adb {
+class Adb private constructor() {
 
+    // This doesn't work because you can't use a builder pattern unless you build a new item
+
+    constructor(
+        adbPath: String,
+        deviceIndex: Int,
+        verbose: Boolean,
+        forcedUser: Int?
+    ) : this() {
+        this.adbPath = adbPath
+        this.deviceIndex = deviceIndex
+        this.verbose = verbose
+        this.forcedUser = forcedUser
+    }
+
+    private lateinit var adbPath: String
+    private var verbose: Boolean = false
+    private var deviceIndex: Int = 0
     private val arguments = ArrayList<String>()
     private var streamData: StreamData? = null
+    private val device: Device by lazy {
+        Device.construct(
+            Adb(
+                adbPath = adbPath,
+                deviceIndex = deviceIndex,
+                verbose = verbose,
+                forcedUser = forcedUser
+            )
+        )
+    }
+    private var isGlobal: Boolean = false
+    var forcedUser: Int? = null
+        private set
 
     fun emulator(): Adb {
         arguments.add("-e")
         return this
     }
+
+    fun global(): Adb {
+        isGlobal = true
+        return this
+    }
+
+    private val isDeviceTargeted: Boolean
+        get() = isGlobal.not()
 
     fun shell(): Adb {
         arguments.add("shell")
@@ -70,7 +107,7 @@ class Adb {
         if (forcedUser != null) {
             arguments("--user", "$forcedUser")
         } else {
-            val user = Device.user
+            val user = device.user
             if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0)
                 arguments("--user", user)
         }
@@ -93,9 +130,11 @@ class Adb {
     }
 
     fun execute(): String {
-        if (deviceTarget != null) {
-            arguments.add(0, "-s")
-            arguments.add(1, deviceTarget!!)
+        if (isDeviceTargeted) {
+            device.target(deviceIndex)?.let { deviceTarget ->
+                arguments.add(0, "-s")
+                arguments.add(1, deviceTarget)
+            }
         }
 
         val command = (listOf(adbPath) + arguments).joinToString(" ")
@@ -118,19 +157,14 @@ class Adb {
     }
 
     companion object {
-        private lateinit var adbPath: String
-        @VisibleForTesting var deviceTarget: String? = null
-        private var verbose: Boolean = false
-        var forcedUser: Int? = null
-
-        // TODO: Refactor this -- no more globals if possible
-        fun init(project: Project) {
-            adbPath = project.android.adbExecutable.absolutePath
-                ?: throw GradleException("adb not found. Have you defined an `android` block?")
-            val index = (project.properties["device"] as? String)?.toInt() ?: 0
-            deviceTarget = Devices.targets[index]
-            verbose = project.isVerbose
-            forcedUser = project.user
+        fun construct(project: Project): Adb {
+            return Adb(
+                adbPath = project.android.adbExecutable.absolutePath
+                    ?: throw GradleException("adb not found. Have you defined an `android` block?"),
+                deviceIndex = (project.properties["device"] as? String)?.toInt() ?: 0,
+                verbose = project.isVerbose,
+                forcedUser = project.user
+            )
         }
     }
 }

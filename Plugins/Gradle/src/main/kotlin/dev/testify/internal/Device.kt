@@ -25,29 +25,29 @@
 
 package dev.testify.internal
 
-object Device {
+class Device private constructor(private val adb: Adb) {
 
     private val version: Int
         get() {
-            return Adb().getprop("ro.build.version.sdk").toInt()
+            return adb.getprop("ro.build.version.sdk").toInt()
         }
 
     val locale: String
         get() {
             return when {
                 version in 21..22 -> {
-                    var language = Adb().getprop("persist.sys.language")
+                    var language = adb.getprop("persist.sys.language")
                     if (language.isBlank()) {
                         language = "en"
                     }
-                    var region = Adb().getprop("persist.sys.country")
+                    var region = adb.getprop("persist.sys.country")
                     if (region.isBlank()) {
                         region = "US"
                     }
                     "${language}_$region"
                 }
                 version >= 23 -> {
-                    var result = Adb().getprop("persist.sys.locale").trim().replace("-", "_")
+                    var result = adb.getprop("persist.sys.locale").trim().replace("-", "_")
                     if (result.isBlank()) {
                         result = "en_US"
                     }
@@ -59,12 +59,12 @@ object Device {
 
     val timeZone: String
         get() {
-            return Adb().getprop("persist.sys.timezone")
+            return adb.getprop("persist.sys.timezone")
         }
 
     private val displayDensity: Int
         get() {
-            val densityLine = Adb()
+            val densityLine = adb
                 .shell()
                 .arguments(
                     "wm",
@@ -80,7 +80,7 @@ object Device {
 
     private val displaySize: String
         get() {
-            val sizeLine = Adb()
+            val sizeLine = adb
                 .shell()
                 .arguments(
                     "wm",
@@ -92,7 +92,7 @@ object Device {
 
     internal val user: String
         get() {
-            val user = Adb()
+            val user = adb
                 .shell()
                 .arguments(
                     "am",
@@ -111,5 +111,50 @@ object Device {
         argument("getprop")
         argument(prop)
         return execute().trim()
+    }
+
+    val isEmpty: Boolean
+        get() = (count == 0)
+
+    val count: Int
+        get() {
+            val result = adb
+                .global()
+                .argument("devices")
+                .execute()
+
+            return result.lines().filter {
+                it.isNotBlank() && !it.contains("List of devices attached")
+            }.count()
+        }
+
+    fun target(index: Int): String? {
+        return enumerateDevices().getOrNull(index)
+    }
+
+    val targets: Map<Int, String>
+        get() {
+            val map = HashMap<Int, String>()
+            enumerateDevices().mapIndexed { index, s ->
+                map[index] = s
+            }
+            return map
+        }
+
+    private fun enumerateDevices(): List<String> {
+        val result = adb
+            .global()
+            .argument("devices")
+            .execute()
+
+        return result.lines().filter {
+            it.isNotBlank() && !it.contains("List of devices attached")
+        }.map {
+            it.substringBefore("\t")
+        }
+    }
+
+    companion object {
+        fun construct(adb: Adb): Device = Device(adb)
     }
 }

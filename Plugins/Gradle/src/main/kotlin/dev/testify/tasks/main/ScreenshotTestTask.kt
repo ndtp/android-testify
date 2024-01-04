@@ -24,7 +24,6 @@
  */
 package dev.testify.tasks.main
 
-import dev.testify.internal.Adb
 import dev.testify.internal.AdbParam
 import dev.testify.internal.AnsiFormat
 import dev.testify.internal.StreamData.ConsoleStream
@@ -133,7 +132,7 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .addAll(getRuntimeParams())
             .add(annotation)
 
-        val log = Adb()
+        val log = adb
             .shell()
             .argument("am")
             .argument("instrument")

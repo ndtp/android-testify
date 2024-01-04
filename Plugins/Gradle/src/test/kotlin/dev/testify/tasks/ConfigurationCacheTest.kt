@@ -27,6 +27,7 @@ import com.google.common.truth.Truth.assertThat
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -89,5 +90,11 @@ class ConfigurationCacheTest {
     fun `WHEN task run twice AND configuration cache enabled THEN reuse cache entry`(taskName: String) {
         testConfigurationCache(taskName)
         assertCacheReused(testConfigurationCache(taskName))
+    }
+
+    @Test
+    fun `Run deviceLocale in isolation`() {
+        testConfigurationCache("deviceLocale")
+        assertCacheReused(testConfigurationCache("deviceLocale"))
     }
 }

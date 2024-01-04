@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.report
 
-import dev.testify.internal.Adb
 import dev.testify.internal.AnsiFormat
 import dev.testify.internal.StreamData
 import dev.testify.internal.assurePath
@@ -65,7 +64,7 @@ open class ReportPullTask : ReportTask() {
         println("  Pulling report:")
 
         val reportFilePath = reportFilePath
-        val files = Adb()
+        val files = adb
             .shell()
             .runAs(targetPackageId)
             .listFiles(reportFilePath)
@@ -99,7 +98,7 @@ open class ReportPullTask : ReportTask() {
             println(AnsiFormat.Purple, "Copying $sourceFilePath to ${destinationFile.absolutePath}")
         }
 
-        Adb()
+        adb
             .execOut()
             .runAs(targetPackageId)
             .argument("cat")

@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.utility
 
-import dev.testify.internal.Devices
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 
@@ -34,9 +33,9 @@ open class DevicesTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays Testify devices"
 
     override fun taskAction() {
-        println("  Connected devices    = ${Devices.count}")
+        println("  Connected devices    = ${device.count}")
         println(divider)
-        Devices.targets.forEach {
+        device.targets.forEach {
             println("  -Pdevice=${it.key}           = ${it.value}")
         }
         println()

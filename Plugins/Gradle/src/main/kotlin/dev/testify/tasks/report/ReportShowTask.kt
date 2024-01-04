@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.report
 
-import dev.testify.internal.Adb
 import dev.testify.internal.AnsiFormat
 import dev.testify.internal.StreamData
 import dev.testify.internal.listFiles
@@ -53,7 +52,7 @@ open class ReportShowTask : ReportTask() {
 
     override fun taskAction() {
         val reportFilePath = reportFilePath
-        val files = Adb()
+        val files = adb
             .shell()
             .runAs(targetPackageId)
             .listFiles(reportFilePath)
@@ -68,7 +67,7 @@ open class ReportShowTask : ReportTask() {
     }
 
     private fun show(sourceFilePath: String) {
-        Adb()
+        adb
             .execOut()
             .runAs(targetPackageId)
             .argument("cat")

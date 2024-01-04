@@ -74,13 +74,12 @@ class AdbTest {
         every { any<Project>().android } returns extension
         every { any<Project>().isVerbose } returns false
         every { any<Project>().user } returns null
+        every { project.properties["device"] } returns 0
 
         mockkStatic(::runProcess)
 
         configureRunProcessCapture(defaultResultMap)
-        Adb.init(project)
-
-        subject = Adb()
+        subject = Adb.construct(project)
     }
 
     private fun configureRunProcessCapture(resultMap: Map<String, String>) {
@@ -97,13 +96,13 @@ class AdbTest {
     fun `WHEN init AND no android closure THEN throw exception`() {
         unmockkStatic(Project::android)
         assertThrows<GradleException> {
-            Adb.init(project)
+            Adb.construct(project)
         }
     }
 
     @Test
     fun `WHEN init THEN initialize adb`() {
-        Adb.init(project)
+        Adb.construct(project)
     }
 
     @Test
@@ -111,7 +110,7 @@ class AdbTest {
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         every { adbExecutable.absolutePath } returns null
         assertThrows<GradleException> {
-            Adb.init(project)
+            Adb.construct(project)
         }
     }
 
@@ -125,7 +124,7 @@ class AdbTest {
     @Test
     fun `WHEN project is verbose THEN print`() {
         every { any<Project>().isVerbose } returns true
-        Adb.init(project)
+        subject = Adb.construct(project)
 
         subject.argument("test")
         subject.execute()
@@ -141,7 +140,7 @@ class AdbTest {
 
     @Test
     fun `WHEN executing any command THEN always check which device to run on`() {
-        Adb.init(project)
+        subject = Adb.construct(project)
         subject.shell().execute()
         assertThat(processLog[0]).contains("devices")
         assertThat(processLog[1]).contains("-s emulator-5554")
@@ -180,7 +179,7 @@ class AdbTest {
         configureRunProcessCapture(mapOf("get-current-user" to "10"))
         every { any<Project>().user } returns 99
 
-        Adb.init(project)
+        subject = Adb.construct(project)
         subject.shell().runAs("dev.testify").execute()
         assertThat(processLog.last()).contains("--user 99")
     }
