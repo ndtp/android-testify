@@ -119,12 +119,28 @@ workflows:
         inputs:
         - test_apk_path: "./Library/build/outputs/apk/androidTest/debug/testify-debug-androidTest.apk"
         - main_apk_path: "./Library/build/outputs/apk/androidTest/debug/testify-debug-androidTest.apk"
+  _testPlugin:
+    steps:
+      - gradle-runner@2:
+          inputs:
+            - gradlew_path: "./gradlew"
+            - gradle_task: Plugin:ktlint
+          title: KtLint
+      - gradle-unit-test@1:
+          inputs:
+            - gradlew_file_path: ./gradlew
+      - gradle-runner@2:
+          inputs:
+            - gradlew_path: "./gradlew"
+            - gradle_task: Plugin:assemble Plugin:assembleLocal
+          title: Validate build
   verifyPr:
     before_run:
     - _globalSetup
     - _emulatorSetup
     after_run:
     - _testLibrary
+    - _testPlugin
     - _testLegacySample
     - _testFlixSample
     - _testFlixLibrary
