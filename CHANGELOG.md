@@ -14,6 +14,19 @@
 
 - Flix Sample now uses Hilt instead of Koin for dependency injection.
 
+### Gradle Plugin
+
+#### Fixed
+
+- Fixes https://github.com/ndtp/android-testify/issues/79: Testify incompatible with gradle configuration cache
+    The Testify Gradle Plugin now supports [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html).
+
+#### Changed
+
+- Gradle Plugin now uses Junit5 tests.
+
+---
+
 ## 2.0.0
 
 Released without additional changes from 2.0.0-rc03.
