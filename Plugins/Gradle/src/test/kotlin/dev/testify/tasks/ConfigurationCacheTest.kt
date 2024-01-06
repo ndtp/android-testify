@@ -24,6 +24,7 @@
 package dev.testify.tasks
 
 import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.TruthJUnit.assume
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.BeforeAll
@@ -67,26 +68,44 @@ class ConfigurationCacheTest {
     private fun assertCacheReused(result: BuildResult) =
         assertThat(result.output).contains("Configuration cache entry reused.")
 
+    private fun assumeDevice(isDeviceRequired: Boolean, exactly: Int = 1) {
+        if (isDeviceRequired) {
+            assume().that(
+                GradleRunner
+                    .create()
+                    .withProjectDir(File("../.."))
+                    .withArguments(
+                        ":LegacySample:testifyDevices",
+                    )
+                    .build()
+                    .output
+            ).contains("Connected devices    = $exactly")
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(
         strings = [
-            "deviceLocale",
-            "deviceTimeZone",
-            "disableSoftKeyboard",
-            "hidePasswords",
-            "reportPull",
-            "reportShow",
-            "screenshotClear",
-            "screenshotPull",
-            "screenshotRecord",
-            "screenshotTest",
-            "testifyDevices",
-            "testifyKey",
-            "testifySettings",
-            "testifyVersion",
+            "deviceLocale, true",
+            "deviceTimeZone, true",
+            "disableSoftKeyboard, true",
+            "hidePasswords, true",
+            "reportPull, true",
+            "reportShow, true",
+            "screenshotClear, true",
+            "screenshotPull, true",
+            "screenshotRecord, true",
+            "screenshotTest, true",
+            "testifyDevices, false",
+            "testifyKey, true",
+            "testifySettings, false",
+            "testifyVersion, false",
         ]
     )
-    fun `WHEN task run twice AND configuration cache enabled THEN reuse cache entry`(taskName: String) {
+    fun `WHEN task run twice AND configuration cache enabled THEN reuse cache entry`(taskConfiguration: String) {
+        val (taskName, isDeviceRequired) = taskConfiguration.split(", ")
+
+        assumeDevice(isDeviceRequired.toBoolean())
         testConfigurationCache(taskName)
         assertCacheReused(testConfigurationCache(taskName))
     }

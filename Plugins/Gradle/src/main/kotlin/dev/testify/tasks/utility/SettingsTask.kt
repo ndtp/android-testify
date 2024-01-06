@@ -38,6 +38,8 @@ import org.gradle.api.tasks.Optional
 
 open class SettingsTask : TestifyUtilityTask() {
 
+    override val isDeviceRequired = false
+
     @get:Input lateinit var baselineSourceDir: String
     @get:Input lateinit var moduleName: String
     @get:Input lateinit var screenshotDirectory: String
@@ -78,7 +80,8 @@ open class SettingsTask : TestifyUtilityTask() {
     }
 
     override fun taskAction() {
-        val userId = Adb.forcedUser?.toString() ?: Device.user
+        val userId = Adb.forcedUser?.toString() ?: Device.user.takeUnless { Device.isEmpty } ?: "Device not found"
+
         println("  baselineSourceDir      = $baselineSourceDir")
         println("  installAndroidTestTask = $installAndroidTestTask")
         println("  installTask            = $installTask")

@@ -30,6 +30,8 @@ import dev.testify.tasks.internal.TestifyUtilityTask
 
 open class VersionTask : TestifyUtilityTask() {
 
+    override val isDeviceRequired = false
+
     override fun getDescription() = "Displays the Testify plugin version"
 
     override fun taskAction() {

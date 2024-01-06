@@ -26,7 +26,7 @@
 package dev.testify.tasks.internal
 
 import dev.testify.internal.AnsiFormat
-import dev.testify.internal.Devices
+import dev.testify.internal.Device
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -55,10 +55,13 @@ abstract class TestifyDefaultTask : DefaultTask() {
     @get:Internal
     protected val divider = "-".repeat(60)
 
+    @get:Internal
+    open val isDeviceRequired = true
+
     internal open fun provideInput(project: Project) {}
 
     protected open fun beforeAction() {
-        if (Devices.isEmpty) throw GradleException(
+        if (isDeviceRequired && Device.isEmpty) throw GradleException(
             "No Android Virtual Device found. Please start an emulator prior to running Testify tasks."
         )
     }
