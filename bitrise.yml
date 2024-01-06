@@ -129,6 +129,7 @@ workflows:
       - gradle-unit-test@1:
           inputs:
             - gradlew_file_path: ./gradlew
+            - unit_test_task: Plugin:test
       - gradle-runner@2:
           inputs:
             - gradlew_path: "./gradlew"

@@ -1,58 +1,57 @@
-# Testify - Android Gradle Plugin
+# Use the Gradle Plugin tasks
 
-The Testify Android Gradle Plugin offers a suite of tasks to conveniently integrate Testify into the normal Android development workflow. It integrates seamlessly with existing test suites, providing tools for running, recording, and managing screenshot tests. The plugin enhances testing efficiency by simplifying device and emulator configurations and supports Android Studio integration for a streamlined workflow. For more details and specific instructions, please refer to the [Recipe Book](https://ndtp.github.io/android-testify/docs/category/recipes).
+The Testify Android Gradle Plugin offers a suite of tasks to conveniently integrate Testify into the normal Android development workflow. It integrates seamlessly with existing test suites, providing tools for running, recording, and managing screenshot tests. The plugin enhances testing efficiency by simplifying device and emulator configurations and supports Android Studio integration for a streamlined workflow. For more details and specific instructions, please refer to the [Recipe Book](../category/recipes).
 
 ## Configuration
 
 Applying the Testify Gradle Plugin to your projects automatically configures and includes the Testify Screenshot Library as an `androidTest` dependency on your project. The Testify Library and the Gradle Plugin are both configurable via the `testify {}` closure in your `build.gradle` file.
 
-### Apply the Plugin
-
-To set a dependency reference to the Testify plugin:
-
-**Root build.gradle**
-
-```groovy
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "dev.testify:plugin:2.0.0"
-    }
-}
-```
-
-**Application build.gradle**
-
-```groovy
-plugins {
-    id("dev.testify")
-}
-
-dependencies {
-    androidTestImplementation "androidx.test:rules:1.5.0"
-}
-```
-
 ### Gradle extension
 
 Testify supports the following configuration options:
 
-- **autoImplementLibrary** - Automatically add the `dev.testify:testify` dependency to your `androidTest` configuration. Defaults to `true`.
-- **baselineSourceDir** - The directory on the client host machine that contain the original baseline images under version control. This value defaults to the `src/androidTest/assets` directory.
-- **installAndroidTestTask** - The Gradle task used to install the Android Test APK. In most cases, this value is automatically inferred from the project configuration and is typically `installDebugAndroidTest`.
-- **installTask** - The Gradle task used to install the Application Under Test APK. In most cases, this value is automatically inferred from the project configuration and is typically `installDebug`.
-- **isRecordMode** - Indicates that screenshotTest/screenshotRecord should never fail and always record new baseline images. Default is `false`.
-- **moduleName** - The name of the module under test. This value is inferred automatically and should not normally be modified by the user.
-- **pullWaitTime** - The length of time to sleep in milliseconds after pulling files from the device. Used to allow time for the local file system to complete write operations. Defaults to 0.
-- **rootDestinationDirectory** -  The root directory containing the screenshots on the test device. Used when pulling files from the device. This value is automatically set.
-- **screenshotAnnotation** - The annotation used by ScreenshotTestTask as an argument to `adb shell am instrument` to filter tests being run. See https://developer.android.com/studio/test/command-line#run-tests-with-adb. Defaults to `dev.testify.annotation.ScreenshotInstrumentation`
-- **targetPackageId** - The package ID for the APK under test. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. `com.testify.example`
-- **testPackageId** - The package ID for the test APK. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. `com.testify.example.test`
-- **testRunner** - The AndroidJUnitRunner to use when running your instrumented tests. In most cases, this is inferred from your project configuration automatically and is typically `androidx.test.runner.AndroidJUnitRunner`. See https://developer.android.com/training/testing/instrumented-tests#set-testing
-- **useSdCard** - Instructs Testify to write screenshots to the SDCARD directory. See https://ndtp.github.io/android-testify/docs/recipes/sdcard#configuring-the-gradle-plugin-to-write-to-the-sdcard. Defaults to false.
-- **useTestStorage** - Instructs Testify to save screenshots to the Test Storage. See https://developer.android.com/reference/androidx/test/services/storage/TestStorage. Defaults to false.
+#### autoImplementLibrary
+  Automatically add the `dev.testify:testify` dependency to your `androidTest` configuration. Defaults to `true`.
+
+#### baselineSourceDir
+  The directory on the client host machine that contain the original baseline images under version control. This value defaults to the `src/androidTest/assets` directory.
+
+#### installAndroidTestTask
+  The Gradle task used to install the Android Test APK. In most cases, this value is automatically inferred from the project configuration and is typically `installDebugAndroidTest`.
+
+#### installTask
+  The Gradle task used to install the Application Under Test APK. In most cases, this value is automatically inferred from the project configuration and is typically `installDebug`.
+
+#### isRecordMode
+  Indicates that screenshotTest/screenshotRecord should never fail and always record new baseline images. Default is `false`.
+
+#### moduleName
+  The name of the module under test. This value is inferred automatically and should not normally be modified by the user.
+
+#### pullWaitTime
+  The length of time to sleep in milliseconds after pulling files from the device. Used to allow time for the local file system to complete write operations. Defaults to 0.
+
+#### rootDestinationDirectory
+  The root directory containing the screenshots on the test device. Used when pulling files from the device. This value is automatically set.
+
+#### screenshotAnnotation
+  The annotation used by ScreenshotTestTask as an argument to `adb shell am instrument` to filter tests being run. See https://developer.android.com/studio/test/command-line#run-tests-with-adb. Defaults to `dev.testify.annotation.ScreenshotInstrumentation`
+
+#### targetPackageId
+  The package ID for the APK under test. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. `com.testify.example`
+
+#### testPackageId
+  The package ID for the test APK. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. `com.testify.example.test`
+
+#### testRunner
+  The AndroidJUnitRunner to use when running your instrumented tests. In most cases, this is inferred from your project configuration automatically and is typically `androidx.test.runner.AndroidJUnitRunner`. See https://developer.android.com/training/testing/instrumented-tests#set-testing
+
+#### useSdCard
+  Instructs Testify to write screenshots to the SDCARD directory. See https://ndtp.github.io/android-testify/docs/recipes/sdcard#configuring-the-gradle-plugin-to-write-to-the-sdcard. Defaults to false.
+
+#### useTestStorage
+  Instructs Testify to save screenshots to the Test Storage. See https://developer.android.com/reference/androidx/test/services/storage/TestStorage. Defaults to false.
+
 
 ### Command-line properties
 
@@ -61,17 +60,53 @@ They can be set from the command line using the `-P` / `--project-prop` environm
 
 See https://docs.gradle.org/current/userguide/project_properties.html
 
-- **device** - Index of the Testify Device to target for the command. Use `./gradlew testifyDevices` to see a list of eligible devices.
-- **reportFileName** - Override the default file name used locally when copying the file.
-- **reportPath** - Override the default path to copy the report file to.
-- **shardCount** - Specifies the total number of shards into which the test suite is divided.
-- **shardIndex** - Identifies the specific shard to be executed, with an index ranging from 0 to `shardCount` - 1.
-    If you need to parallelize the execution of your tests, sharing them across multiple devices to make them run faster, you can split them into groups, or shards. The test runner supports splitting a single test suite into multiple shards, so you can easily run tests belonging to the same shard together as a group. Each shard is identified by an index number.
-    When running tests, use the `-PshardCount` option to specify the number of separate shards to create and the `-PshardIndex` option to specify which shard to run.
-- **testClass** - Run all tests in the specified class. Class name should be fully qualified. e.g. `-PtestClass=dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest`
-- **testName** - Run the specific test case. Must be used in conjunction with `testClass`. e.g. `-PtestName=longCreditStrip`
-- **user** - Specify the user ID for multi-user testing. See https://source.android.com/docs/devices/admin/multi-user-testing
-- **verbose** - Print verbose console output. Useful for debugging purposes.
+#### device
+
+Index of the Testify Device to target for the command. Use `./gradlew testifyDevices` to see a list of eligible devices.
+
+#### reportFileName
+
+Override the default file name used locally when copying the file.
+
+#### reportPath
+
+Override the default path to copy the report file to.
+
+#### shardCount, shardIndex
+
+**shardCount** specifies the total number of shards into which the test suite is divided; **shardIndex** identifies the specific shard to be executed, with an index ranging from 0 to `shardCount` - 1.
+
+If you need to parallelize the execution of your tests, sharing them across multiple devices to make them run faster, you can split them into groups, or shards. The test runner supports splitting a single test suite into multiple shards, so you can easily run tests belonging to the same shard together as a group. Each shard is identified by an index number.
+When running tests, use the `-PshardCount` option to specify the number of separate shards to create and the `-PshardIndex` option to specify which shard to run.
+
+#### testClass 
+
+Run all tests in the specified class. Class name should be fully qualified. 
+
+```console
+
+./gradlew FlixSample:screenshotTest -PtestClass=dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest
+
+```
+
+#### testName 
+
+Run the specific test case. Must be used in conjunction with `testClass`. 
+
+```console
+
+./gradlew FlixSample:screenshotTest -PtestName=longCreditStrip -PtestClass=dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest
+
+```
+
+#### user 
+
+Specify the user ID for multi-user testing. See https://source.android.com/docs/devices/admin/multi-user-testing
+
+#### verbose 
+
+Print verbose console output. Useful for debugging purposes.
+
 
 ## Core Tasks
 
@@ -620,29 +655,3 @@ Displays the Testify plugin version
   Title                = Testify
   Version              = 1.0.0-beta3
 ```
----
-
-# License
-
-    MIT License
-    
-    Modified work copyright (c) 2022-2024 ndtp
-    Original work copyright (c) 2021 Shopify
-    
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-    
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-    
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
