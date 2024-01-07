@@ -2,11 +2,20 @@
 
 ## Unreleased
 
+### Documentation
+
+- Major overhaul of all documentation to include alternative instructions for using ScreenshotScenarioRule.
+
 ### Library
 
 #### Added
 
+- Added ScreenshotScenarioRule which works in conjunction with Android's ActivityScenario.
 - Added additional method documentation.
+
+### Legacy Sample
+
+- Added tests demonstrating the usage of ScreenshotScenarioRule.
 
 ### Flix Sample
 
