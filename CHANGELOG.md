@@ -15,6 +15,8 @@
 
 ### Legacy Sample
 
+#### Added
+
 - Added tests demonstrating the usage of ScreenshotScenarioRule.
 
 ### Flix Sample

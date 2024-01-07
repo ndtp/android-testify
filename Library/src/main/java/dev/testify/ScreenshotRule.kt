@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -398,7 +398,6 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     /**
      * The [Statement] to be executed by the [ScreenshotStatement].
      */
-    @VisibleForTesting
     internal var statement: Statement? = null
 
     /**

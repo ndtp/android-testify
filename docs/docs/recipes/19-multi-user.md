@@ -7,7 +7,7 @@ Testify provides support for emulators running in multi-user configuration.
 
 ## Background
 
-[This page <OpenNew />](https://source.android.com/docs/devices/admin/multi-user-testing) describes important aspects of testing multiple users on the Android platform. For information about implementing multi-user support, see [Supporting Multiple Users <OpenNew />](https://source.android.com/docs/devices/admin/multi-user).
+[_Testing Multiple Users_ <OpenNew />](https://source.android.com/docs/devices/admin/multi-user-testing) describes important aspects of testing multiple users on the Android platform. For information about implementing multi-user support, see [_Supporting Multiple Users_ <OpenNew />](https://source.android.com/docs/devices/admin/multi-user).
 
 
 ## Automatic user selection
@@ -19,9 +19,8 @@ Testify automatically reads and writes files to the currently running user. The 
 
 You may optionally configure the Gradle Plugin to pull screenshots from a different user. You can override the user by specifying the `user=<number>` argument.
 
-```
-./gradlew app:screenshotPull -Puser=10
-
+```shell-session
+$ ./gradlew app:screenshotPull -Puser=10
 ```
 
 

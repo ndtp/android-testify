@@ -15,7 +15,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "dev.testify:plugin:2.0.0-beta04"
+        classpath "dev.testify:plugin:2.0.0"
     }
 }
 ```

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2023-2024 ndtp
   *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -173,7 +173,7 @@ internal fun <TActivity : Activity> assertSame(
 
             if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
                 HighContrastDiff
-                    .create(configuration.exclusionRects) // TODO: Test me
+                    .create(configuration.exclusionRects)
                     .name(outputFileName)
                     .baseline(baselineBitmap)
                     .current(currentBitmap)
@@ -181,7 +181,7 @@ internal fun <TActivity : Activity> assertSame(
                     .generate(context = activity)
             }
             if (isRecordMode) {
-                TestInstrumentationRegistry.instrumentationPrintln( // TODO: Test me
+                TestInstrumentationRegistry.instrumentationPrintln(
                     "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                 )
             } else {

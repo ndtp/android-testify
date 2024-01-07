@@ -164,6 +164,7 @@ class ScreenshotRuleExampleTests {
             .setEspressoActions {
                 onView(withId(R.id.edit_text)).perform(typeText("Testify"))
             }
+            .setCompareMethod { _, _ -> true }
             .assertSame()
     }
 
@@ -234,7 +235,6 @@ class ScreenshotRuleExampleTests {
             .assertSame()
     }
 
-
     private fun ScreenshotRule<TestHarnessActivity>.setupExactness(): ScreenshotRule<TestHarnessActivity> {
         return this
             .setScreenshotViewProvider {
@@ -302,6 +302,7 @@ class ScreenshotRuleExampleTests {
     fun setOrientation() {
         rule
             .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
+            .configure { pauseForInspection = true }
             .assertSame()
     }
 
