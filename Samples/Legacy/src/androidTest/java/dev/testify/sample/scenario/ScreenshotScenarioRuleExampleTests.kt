@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -178,11 +178,11 @@ class ScreenshotScenarioRuleExampleTests {
     /**
      * Demonstrates Testify's ability to interoperate with Espresso actions.
      *
-     * [ScreenshotRule.setEspressoActions] accepts a lambda of type [EspressoActions] in which you
-     * may define any number of Espresso actions. These actions are executed after the activity is
-     * fully inflated and any view modifications have been applied. Testify will synchronize with
-     * the Espresso event loop and ensure that all Espresso actions are complete before capturing
-     * a screenshot.
+     * You can use Espresso actions on the Activity provided by the [ActivityScenario] that you provide
+     * to [ScreenshotScenarioRule.withScenario].
+     *
+     * Testify will synchronize with the Espresso event loop and ensure that all Espresso actions are
+     * complete before capturing a screenshot.
      *
      * Note that it's not generally recommended to use complex Espresso actions with your screenshot
      * tests. Espresso test are an order of magnitude slower to run and are more susceptible to

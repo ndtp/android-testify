@@ -10,48 +10,64 @@ Applying the Testify Gradle Plugin to your projects automatically configures and
 
 Testify supports the following configuration options:
 
-#### autoImplementLibrary
-  Automatically add the `dev.testify:testify` dependency to your `androidTest` configuration. Defaults to `true`.
+<dl>
+  <dt><b><code>autoImplementLibrary</code></b></dt>
+  <dd>
+    Automatically add the <code>dev.testify:testify</code> dependency to your <code>androidTest</code> configuration. Defaults to <code>true</code>
+  </dd>
+<dt><b><code>baselineSourceDir</code></b></dt>
 
-#### baselineSourceDir
-  The directory on the client host machine that contain the original baseline images under version control. This value defaults to the `src/androidTest/assets` directory.
+<dd>The directory on the client host machine that contain the original baseline images under version control. This value defaults to the <code>src/androidTest/assets</code> directory.</dd>
 
-#### installAndroidTestTask
-  The Gradle task used to install the Android Test APK. In most cases, this value is automatically inferred from the project configuration and is typically `installDebugAndroidTest`.
+<dt><b><code>installAndroidTestTask</code></b></dt>
 
-#### installTask
-  The Gradle task used to install the Application Under Test APK. In most cases, this value is automatically inferred from the project configuration and is typically `installDebug`.
+<dd>The Gradle task used to install the Android Test APK. In most cases, this value is automatically inferred from the project configuration and is typically <code>installDebugAndroidTest</code>.</dd>
 
-#### isRecordMode
-  Indicates that screenshotTest/screenshotRecord should never fail and always record new baseline images. Default is `false`.
+<dt><b><code>installTask</code></b></dt>
 
-#### moduleName
-  The name of the module under test. This value is inferred automatically and should not normally be modified by the user.
+<dd>The Gradle task used to install the Application Under Test APK. In most cases, this value is automatically inferred from the project configuration and is typically <code>installDebug</code>.</dd>
 
-#### pullWaitTime
-  The length of time to sleep in milliseconds after pulling files from the device. Used to allow time for the local file system to complete write operations. Defaults to 0.
+<dt><b><code>isRecordMode</code></b></dt>
 
-#### rootDestinationDirectory
-  The root directory containing the screenshots on the test device. Used when pulling files from the device. This value is automatically set.
+<dd>Indicates that screenshotTest/screenshotRecord should never fail and always record new baseline images. Default is <code>false</code>.</dd>
 
-#### screenshotAnnotation
-  The annotation used by ScreenshotTestTask as an argument to `adb shell am instrument` to filter tests being run. See https://developer.android.com/studio/test/command-line#run-tests-with-adb. Defaults to `dev.testify.annotation.ScreenshotInstrumentation`
+<dt><b><code>moduleName</code></b></dt>
 
-#### targetPackageId
-  The package ID for the APK under test. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. `com.testify.example`
+<dd>The name of the module under test. This value is inferred automatically and should not normally be modified by the user.</dd>
 
-#### testPackageId
-  The package ID for the test APK. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. `com.testify.example.test`
+<dt><b><code>pullWaitTime</code></b></dt>
 
-#### testRunner
-  The AndroidJUnitRunner to use when running your instrumented tests. In most cases, this is inferred from your project configuration automatically and is typically `androidx.test.runner.AndroidJUnitRunner`. See https://developer.android.com/training/testing/instrumented-tests#set-testing
+<dd>The length of time to sleep in milliseconds after pulling files from the device. Used to allow time for the local file system to complete write operations. Defaults to 0.</dd>
 
-#### useSdCard
-  Instructs Testify to write screenshots to the SDCARD directory. See https://ndtp.github.io/android-testify/docs/recipes/sdcard#configuring-the-gradle-plugin-to-write-to-the-sdcard. Defaults to false.
+<dt><b><code>rootDestinationDirectory</code></b></dt>
 
-#### useTestStorage
-  Instructs Testify to save screenshots to the Test Storage. See https://developer.android.com/reference/androidx/test/services/storage/TestStorage. Defaults to false.
+<dd>The root directory containing the screenshots on the test device. Used when pulling files from the device. This value is automatically set.</dd>
 
+<dt><b><code>screenshotAnnotation</code></b></dt>
+
+<dd>The annotation used by ScreenshotTestTask as an argument to <code>adb shell am instrument</code> to filter tests being run. See <a href="https://developer.android.com/studio/test/command-line#run-tests-with-adb">https://developer.android.com/studio/test/command-line#run-tests-with-adb</a>. Defaults to <code>dev.testify.annotation.ScreenshotInstrumentation</code></dd>
+
+<dt><b><code>targetPackageId</code></b></dt>
+
+<dd>The package ID for the APK under test. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. <code>com.testify.example</code></dd>
+
+<dt><b><code>testPackageId</code></b></dt>
+
+<dd>The package ID for the test APK. For a typical application, testify requires two APKs: the target apk under test, and a test apk containing your tests. e.g. <code>com.testify.example.test</code></dd>
+
+<dt><b><code>testRunner</code></b></dt>
+
+<dd>The AndroidJUnitRunner to use when running your instrumented tests. In most cases, this is inferred from your project configuration automatically and is typically <code>androidx.test.runner.AndroidJUnitRunner</code>. See <a href="https://developer.android.com/training/testing/instrumented-tests#set-testing">https://developer.android.com/training/testing/instrumented-tests#set-testing</a></dd>
+
+<dt><b><code>useSdCard</code></b></dt>
+
+<dd>Instructs Testify to write screenshots to the SDCARD directory. See <a href="https://ndtp.github.io/android-testify/docs/recipes/sdcard#configuring-the-gradle-plugin-to-write-to-the-sdcard">https://ndtp.github.io/android-testify/docs/recipes/sdcard#configuring-the-gradle-plugin-to-write-to-the-sdcard</a>. Defaults to false.</dd>
+
+<dt><b><code>useTestStorage</code></b></dt>
+
+<dd>Instructs Testify to save screenshots to the Test Storage. See <a href="https://developer.android.com/reference/androidx/test/services/storage/TestStorage">https://developer.android.com/reference/androidx/test/services/storage/TestStorage</a>. Defaults to false.</dd>
+
+</dl>
 
 ### Command-line properties
 
@@ -60,52 +76,66 @@ They can be set from the command line using the `-P` / `--project-prop` environm
 
 See https://docs.gradle.org/current/userguide/project_properties.html
 
-#### device
+<dl>
+<dt><b><code>device</code></b></dt>
 
-Index of the Testify Device to target for the command. Use `./gradlew testifyDevices` to see a list of eligible devices.
+<dd>Index of the Testify Device to target for the command. Use <code>./gradlew testifyDevices</code> to see a list of eligible devices.</dd>
 
-#### reportFileName
+<dt><b><code>reportFileName</code></b></dt>
 
-Override the default file name used locally when copying the file.
+<dd>Override the default file name used locally when copying the file.</dd>
 
-#### reportPath
+<dt><b><code>reportPath</code></b></dt>
 
-Override the default path to copy the report file to.
+<dd>Override the default path to copy the report file to.</dd>
 
-#### shardCount, shardIndex
+<dt><b><code>shardCount, shardIndex</code></b></dt>
+<dd>
+  If you need to parallelize the execution of your tests, sharing them across multiple devices to make them run faster, you can split them into groups, or shards. The test runner supports splitting a single test suite into multiple shards, so you can easily run tests belonging to the same shard together as a group. Each shard is identified by an index number.
+  When running tests, use the <code>-PshardCount</code> option to specify the number of separate shards to create and the <code>-PshardIndex</code> option to specify which shard to run.
 
-**shardCount** specifies the total number of shards into which the test suite is divided; **shardIndex** identifies the specific shard to be executed, with an index ranging from 0 to `shardCount` - 1.
+  <dl>
+    <dt><b><code>shardCount</code></b></dt>
+    <dd>Specifies the total number of shards into which the test suite is divided</dd>
+    <dt><b><code>shardIndex</code></b></dt>
+    <dd>Identifies the specific shard to be executed, with an index ranging from 0 to `shardCount` - 1.</dd>
+  </dl>
+</dd>
 
-If you need to parallelize the execution of your tests, sharing them across multiple devices to make them run faster, you can split them into groups, or shards. The test runner supports splitting a single test suite into multiple shards, so you can easily run tests belonging to the same shard together as a group. Each shard is identified by an index number.
-When running tests, use the `-PshardCount` option to specify the number of separate shards to create and the `-PshardIndex` option to specify which shard to run.
+<dt><b><code>testClass</code></b></dt>
 
-#### testClass 
+<dd>
+Run all tests in the specified class. Class name should be fully qualified.
 
-Run all tests in the specified class. Class name should be fully qualified. 
+  ```shell-session
 
-```console
+  ./gradlew FlixSample:screenshotTest -PtestClass=dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest
 
-./gradlew FlixSample:screenshotTest -PtestClass=dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest
+  ```
 
-```
+</dd>
 
-#### testName 
+<dt><b><code>testName</code></b></dt>
 
-Run the specific test case. Must be used in conjunction with `testClass`. 
+<dd>
+  Run the specific test case. Must be used in conjunction with <code>testClass</code>.
 
-```console
+  ```shell-session
 
-./gradlew FlixSample:screenshotTest -PtestName=longCreditStrip -PtestClass=dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest
+  ./gradlew FlixSample:screenshotTest -PtestName=longCreditStrip -PtestClass=dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest
 
-```
+  ```
+</dd>
 
-#### user 
+<dt><b><code>user</code></b></dt>
 
-Specify the user ID for multi-user testing. See https://source.android.com/docs/devices/admin/multi-user-testing
+<dd>Specify the user ID for multi-user testing. See <a href="https://source.android.com/docs/devices/admin/multi-user-testing">https://source.android.com/docs/devices/admin/multi-user-testing</a></dd>
 
-#### verbose 
+<dt><b><code>verbose</code></b></dt>
 
-Print verbose console output. Useful for debugging purposes.
+<dd>Print verbose console output. Useful for debugging purposes.</dd>
+
+</dl>
 
 
 ## Core Tasks
@@ -114,8 +144,8 @@ Print verbose console output. Useful for debugging purposes.
 
 Run all the screenshot tests in your app and fail if any differences from the baseline are detected.
 
-```console
-~/: ./gradlew FlixSample:screenshotTest
+```shell-session
+$ ./gradlew FlixSample:screenshotTest
 
 
 > Task :FlixSample:deviceLocale
@@ -196,8 +226,8 @@ BUILD SUCCESSFUL in 13s
 
 Run all the screenshot tests in your app and update the local baseline.
 
-```console
-~/: ./gradlew FlixSample:screenshotRecord
+```shell-session
+$ ./gradlew FlixSample:screenshotRecord
 
 > Task :FlixSample:deviceLocale
 
@@ -257,50 +287,49 @@ Remove any existing screenshot test images from the device
 dev.testify.samples.flix.ComposableScreenshotTest:
 
         ✓ Recording baseline for ComposableScreenshotTest_default.
+
 dev.testify.samples.flix.ui.common.composables.CastMemberScreenshotTest:
 
         ✓ Recording baseline for CastMemberScreenshotTest_default.
+
 dev.testify.samples.flix.ui.common.composables.CreditStripScreenshotTest:
 
         ✓ Recording baseline for CreditStripScreenshotTest_longCreditStrip.
-
         ✓ Recording baseline for CreditStripScreenshotTest_emptyCreditStrip.
-
         ✓ Recording baseline for CreditStripScreenshotTest_default.
+
 dev.testify.samples.flix.ui.common.composables.GenreStripScreenshotTest:
 
         ✓ Recording baseline for GenreStripScreenshotTest_lotsOfGenres.
-
         ✓ Recording baseline for GenreStripScreenshotTest_default.
+
 dev.testify.samples.flix.ui.common.composables.MetaDataScreenshotTest:
 
         ✓ Recording baseline for MetaDataScreenshotTest_onlyCertification.
-
         ✓ Recording baseline for MetaDataScreenshotTest_onlyReleaseDate.
-
         ✓ Recording baseline for MetaDataScreenshotTest_onlyRuntime.
-
         ✓ Recording baseline for MetaDataScreenshotTest_default.
+
 dev.testify.samples.flix.ui.common.composables.MoviePosterScreenshotTest:
 
         ✓ Recording baseline for MoviePosterScreenshotTest_default.
-
         ✓ Recording baseline for MoviePosterScreenshotTest_nullPosterUrlImpliesLoading.
+
 dev.testify.samples.flix.ui.common.composables.OverviewTextScreenshotTest:
 
         ✓ Recording baseline for OverviewTextScreenshotTest_longText.
-
         ✓ Recording baseline for OverviewTextScreenshotTest_default.
+
 dev.testify.samples.flix.ui.common.composables.PrimaryTitleScreenshotTest:
 
         ✓ Recording baseline for PrimaryTitleScreenshotTest_longText.
-
         ✓ Recording baseline for PrimaryTitleScreenshotTest_default.
+
 dev.testify.samples.flix.ui.common.composables.SecondaryTitleScreenshotTest:
 
         ✓ Recording baseline for SecondaryTitleScreenshotTest_longText.
-
         ✓ Recording baseline for SecondaryTitleScreenshotTest_default.
+
 dev.testify.samples.flix.ui.moviedetails.MovieDetailsScreenshotTest:
 
         ✓ Recording baseline for MovieDetailsScreenshotTest_default.
@@ -308,8 +337,6 @@ dev.testify.samples.flix.ui.moviedetails.MovieDetailsScreenshotTest:
 Time: 7.65
 
 OK (20 tests)
-
-
 
 > Task :FlixSample:screenshotPull
 
@@ -367,8 +394,8 @@ BUILD SUCCESSFUL in 20s
 
 Copy images from the remote directory on your emulator to your local `androidTest/assets` directory.
 
-```console
-~/: ./gradlew FlixSample:screenshotPull
+```shell-session
+$ ./gradlew FlixSample:screenshotPull
 
 
 > Task :FlixSample:screenshotPull
@@ -420,8 +447,8 @@ BUILD SUCCESSFUL in 4s
 
 Clear any baseline images that may be remaining on your emulator.
 
-```console
-~/: ./gradlew FlixSample:screenshotClear
+```shell-session
+$ ./gradlew FlixSample:screenshotClear
 
 
 > Task :FlixSample:screenshotClear
@@ -474,7 +501,7 @@ You can customize the destination path and file name for the report file by prov
 
 Example:
 
-```console
+```shell-session
 ./gradlew FlixSample:reportPull -PreportPath="/user/testify/" -PreportFileName="my-report.yml"
 ```
 
@@ -482,8 +509,8 @@ Example:
 
 Print the test result report to the console.
 
-```console
-~/: ./gradlew FlixSample:reportShow
+```shell-session
+$ ./gradlew FlixSample:reportShow
 
 > Task :FlixSample:reportShow
 
@@ -514,8 +541,8 @@ Print the test result report to the console
 
 Displays the locale currently set on the device
 
-```console
-~/: ./gradlew FlixSample:deviceLocale
+```shell-session
+$ ./gradlew FlixSample:deviceLocale
 
 > Task :FlixSample:deviceLocale
 ------------------------------------------------------------
@@ -528,8 +555,8 @@ Displays the locale currently set on the device
 
 Displays the time zone currently set on the device.
 
-```console
-~/: ./gradlew FlixSample:deviceTimeZone
+```shell-session
+$ ./gradlew FlixSample:deviceTimeZone
 
 > Task :FlixSample:deviceTimeZone
 ------------------------------------------------------------
@@ -542,8 +569,8 @@ Displays the time zone currently set on the device
 
 Disables the soft keyboard on the device. The soft keyboard can interfere with your screenshots, so it's good to turn it off.
 
-```console
-~/: ./gradlew FlixSample:disableSoftKeyboard
+```shell-session
+$ ./gradlew FlixSample:disableSoftKeyboard
 
 > Task :FlixSample:disableSoftKeyboard
 ------------------------------------------------------------
@@ -557,8 +584,8 @@ Disables the soft keyboard on the device
 
 Hides passwords fully on the device.
 
-```console
-~/: ./gradlew FlixSample:hidePasswords
+```shell-session
+$ ./gradlew FlixSample:hidePasswords
 
 > Task :FlixSample:hidePasswords
 ------------------------------------------------------------
@@ -571,8 +598,8 @@ Hides passwords fully on the device
 
 Displays the connected devices.
 
-```console
-~/: ./gradlew FlixSample:testifyDevices
+```shell-session
+$ ./gradlew FlixSample:testifyDevices
 
 > Task :FlixSample:testifyDevices
 ------------------------------------------------------------
@@ -589,8 +616,8 @@ Displays Testify devices
 
 Displays the Testify output key for the current device. Testify uses the key as the baseline for the given device.
 
-```console
-~/: ./gradlew FlixSample:testifyKey
+```shell-session
+$ ./gradlew FlixSample:testifyKey
 
 > Task :FlixSample:testifyKey
 ------------------------------------------------------------
@@ -604,8 +631,8 @@ Displays the Testify output key for the current device
 
 Testify infers several project properties. You can view these properties with the `testifySettings` command.
 
-```console
-~/: ./gradlew FlixSample:testifySettings
+```shell-session
+$ ./gradlew FlixSample:testifySettings
 
 > Task :FlixSample:testifySettings
 
@@ -644,8 +671,8 @@ BUILD SUCCESSFUL in 845ms
 
 Displays the Testify plugin version
 
-```console
-~/: ./gradlew FlixSample:testifyVersion
+```shell-session
+$ ./gradlew FlixSample:testifyVersion
 
 > Task :FlixSample:testifyVersion
 ------------------------------------------------------------

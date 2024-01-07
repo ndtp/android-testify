@@ -36,6 +36,7 @@ android {
         multiDexEnabled = true
         kotlinOptions {
             allWarningsAsErrors = true
+            freeCompilerArgs = [ "-Xcontext-receivers" ]
         }
     }
 

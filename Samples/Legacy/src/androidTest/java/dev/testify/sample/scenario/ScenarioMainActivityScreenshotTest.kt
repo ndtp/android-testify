@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.MainActivity
 import dev.testify.scenario.ScreenshotScenarioRule
+import dev.testify.scenario.test
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,8 +41,8 @@ class ScenarioMainActivityScreenshotTest {
     @ScreenshotInstrumentation
     @Test
     fun default() {
-        launchActivity<MainActivity>().use { scenario ->
-            rule.withScenario(scenario).assertSame()
+        launchActivity<MainActivity>().test {
+            rule.assertSame()
         }
     }
 }

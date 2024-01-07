@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Copyright (c) 2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,8 +70,8 @@ class ScreenshotScenarioLifecycleTest {
             }
 
             assertEquals(6, observer.log.size)
-            assertEquals("applyConfiguration", observer.log[0])
-            assertEquals("beforeAssertSame", observer.log[1])
+            assertEquals("beforeAssertSame", observer.log[0])
+            assertEquals("applyConfiguration", observer.log[1])
             assertEquals("beforeInitializeView", observer.log[2])
             assertEquals("afterInitializeView", observer.log[3])
             assertEquals("beforeScreenshot", observer.log[4])

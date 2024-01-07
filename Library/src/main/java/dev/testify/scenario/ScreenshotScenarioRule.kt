@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,6 @@ import dev.testify.core.exception.ScreenshotIsDifferentException
 import dev.testify.core.logic.AssertionState
 import dev.testify.core.logic.ScreenshotLifecycleHost
 import dev.testify.core.logic.ScreenshotLifecycleObserver
-import dev.testify.internal.extensions.TestInstrumentationRegistry.instrumentationPrintln
 import dev.testify.internal.extensions.isInvokedFromPlugin
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.closeSoftKeyboard
@@ -68,6 +67,9 @@ import org.junit.rules.TestRule
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * ScreenshotScenarioRule is one of the main entry point for Testify.
@@ -189,7 +191,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      *    @ScreenshotInstrumentation
      *    @Test
      *    fun default() {
-     *        launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *        launchActivity<TestHarnessActivity>().use { scenario ->
      *            rule
      *                .withScenario(scenario)
      *                .assertSame()
@@ -217,7 +219,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun default() {
-     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *         launchActivity<TestHarnessActivity>().use { scenario ->
      *             rule
      *                 .withScenario(scenario)
      *                 .setViewModifications { harnessRoot ->
@@ -247,7 +249,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun setScreenshotViewProvider() {
-     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *         launchActivity<TestHarnessActivity>().use { scenario ->
      *             rule
      *                 .withScenario(scenario)
      *                 .setScreenshotViewProvider {
@@ -273,7 +275,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun testConfigure() {
-     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *         launchActivity<TestHarnessActivity>().use { scenario ->
      *             rule
      *                 .withScenario(scenario)
      *                 .configure {
@@ -344,7 +346,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         testClass: Class<*>,
         methodAnnotations: Collection<Annotation>?
     ) {
-        instrumentationPrintln("apply")
         val classAnnotations = testClass.annotations.asList()
         assertForScreenshotInstrumentationAnnotation(
             methodName,
@@ -454,7 +455,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      */
     @CallSuper
     override fun beforeAssertSame() {
-        instrumentationPrintln("beforeAssertSame")
         getInstrumentation().registerActivityProvider(this)
 
         // Called after configuration has been set
@@ -477,7 +477,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      *     @ScreenshotInstrumentation
      *     @Test
      *     fun default() {
-     *         launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+     *         launchActivity<TestHarnessActivity>().use { scenario ->
      *             rule
      *                 .configure {
      *                     exactness = 0.95f
@@ -493,6 +493,20 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         if (scenario == null) {
             throw ScenarioRequiredException()
         }
+
+        scenario?.let {
+            assertSame(it)
+        } ?: throw ScenarioRequiredException()
+    }
+
+    context (ActivityScenario<*>)
+    @JvmName("assertSameContext")
+    fun assertSame() {
+        assertSame(this@ActivityScenario)
+    }
+
+    private fun assertSame(scenario: ActivityScenario<*>) {
+        this.scenario = scenario
 
         addScreenshotObserver(this)
 
@@ -533,9 +547,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      * Called by the [ScreenshotStatement] before each test method is executed.
      */
     protected fun evaluateBeforeEach() {
-
-        instrumentationPrintln("evaluateBeforeEach")
-
         getInstrumentation()?.run {
             reporter?.identifySession(this)
         }
@@ -555,8 +566,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
      * Called by the [ScreenshotStatement] after each test method is executed.
      */
     protected fun evaluateAfterEach() {
-        instrumentationPrintln("evaluateAfterEach")
-
         /**
          * Only throw the MissingAssertSameException if the test is a screenshot test.
          * This allows the user to run the test as a normal JUnit test without having to call assertSame.
@@ -609,4 +618,12 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         configuration.afterActivityLaunched(getActivity())
         notifyObservers { it.applyConfiguration(getActivity(), configuration) }
     }
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun <T : ActivityScenario<A>, A : Activity> T.test(block: T.(T) -> Unit) {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    this.block(this)
 }
