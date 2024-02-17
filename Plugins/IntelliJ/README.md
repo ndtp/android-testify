@@ -36,5 +36,5 @@ This plugin will enhance the developer experience by adding fully integrated IDE
 
 ### License
 
-[MIT License -- Modified work copyright (c) 2022 ndtp](LICENSE)<br/>
+[MIT License -- Modified work copyright (c) 2022-2024 ndtp](LICENSE)<br/>
 [MIT License -- Original work copyright (c) 2020 Shopify](LICENSE)

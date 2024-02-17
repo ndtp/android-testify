@@ -4,7 +4,7 @@
 
 Testify screenshot tests are built on top of Android Instrumentation tests and so already integrate seamlessly with existing test suites. Screenshots can be captured directly from within Android Studio or using the Gradle command-line tools.
 
-Android Studio support relies on the fact that Testify tests extend [ActivityTestRule](https://developer.android.com/reference/androidx/test/rule/ActivityTestRule) and can be invoked using the built-in support for running instrumentation tests with various commands (notably sidebar icons) in Android Studio. With the installation of the Intellij-platform plugin, many common Testify actions can be seamlessly integrated into your IDE. The Testify Android Studio plugin is available for Android Studio version 4.0 through Dolphin (2021.3.1 Beta 1) via the Intellij Marketplace.
+Android Studio support relies on the fact that Testify tests extend [ActivityTestRule](https://developer.android.com/reference/androidx/test/rule/ActivityTestRule) and can be invoked using the built-in support for running instrumentation tests with various commands (notably sidebar icons) in Android Studio. With the installation of the Intellij-platform plugin, many common Testify actions can be seamlessly integrated into your IDE. The Testify Android Studio plugin is available for Android Studio Flamingo and greater via the Intellij Marketplace.
 
 This plugin will enhance the developer experience by adding fully integrated IDE UI for all relevant Testify commands:
 

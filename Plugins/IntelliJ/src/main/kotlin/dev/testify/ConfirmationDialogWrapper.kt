@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,7 +46,7 @@ class ConfirmationDialogWrapper(dialogTitle: String, private val prompt: String)
         return actions
     }
 
-    override fun createCenterPanel(): JComponent? {
+    override fun createCenterPanel(): JComponent {
         val dialogPanel = JPanel(BorderLayout())
         val label = JLabel(prompt).apply {
             preferredSize = Dimension(200, 50)
