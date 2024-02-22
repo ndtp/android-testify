@@ -22,14 +22,23 @@
 
 <p>Learn more at <a href="https://testify.dev/">testify.dev</a>
 <hr/>
-Copyright (c) 2023 ndtp
+Copyright (c) 2023-2024 ndtp
 ]]></description>
 
   <change-notes>
     <![CDATA[
+      <h3>2.1.0</h3>
+      <ul>
+        <li>Added support for Android Studio Jellyfish | 2023.3.1 Canary 10 | 233.+</li>
+        <li>Replaced deprecated API calls.</li>
+        <ul>
+          <li>Dropped support for Android Studio versions 221.* and earlier (Electric Eel, Dolphin, Chipmunk, Bumblebee)</li>
+        </ul>
+      </ul>
+
       <h3>2.0.0</h3>
       <ul>
-        <li>Added support for Android Studio Iguana | 2022.3.1 Canary 16 | 223.+</li>
+        <li>Added support for Android Studio Iguana | 2022.3.1 Canary 16 | 232.+</li>
         <li>Added support for Android Studio Hedgehog | 2023.1.1 Canary 2 | 231.+</li>
         <li>Fix bug parsing nested module names</li>
       </ul>

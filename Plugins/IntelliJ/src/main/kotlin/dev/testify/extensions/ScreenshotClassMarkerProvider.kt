@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -68,11 +68,12 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
             ICON,
             { "Android Testify Commands" },
             ScreenshotClassNavHandler(this),
-            GutterIconRenderer.Alignment.RIGHT
+            GutterIconRenderer.Alignment.RIGHT,
+            { "" }
         )
     }
 
     companion object {
-        private val ICON = IconLoader.getIcon("/icons/camera.svg")
+        private val ICON = IconLoader.getIcon("/icons/camera.svg", this@Companion::class.java)
     }
 }

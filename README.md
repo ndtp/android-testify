@@ -115,7 +115,7 @@ extend [ActivityTestRule](https://developer.android.com/reference/androidx/test/
 and can be invoked using the built-in support for running instrumentation tests with various
 commands (notably sidebar icons) in Android Studio. With the installation of the Intellij-platform
 plugin, many common Testify actions can be seamlessly integrated into your IDE. The Testify Android
-Studio plugin is available for Android Studio version 4.0 through Dolphin (2021.3.1 Beta 1) via the
+Studio plugin is available for Android Studio Flamingo 222.+ and greater via the
 Intellij Marketplace.
 
 This plugin will enhance the developer experience by adding fully integrated IDE UI for all relevant
@@ -123,7 +123,7 @@ Testify commands:
 
 With the installation of an Intellij-platform plugin, many common Testify actions can be seamlessly
 integrated into your IDE. The Testify Android Studio plugin is available for Android Studio version
-4.0 through 4.2 via the Intellij Marketplace.
+Flamingo and greater via the Intellij Marketplace.
 
 - Run the Testify screenshot tests
 - Record a new baseline image
@@ -233,7 +233,7 @@ usage, please refer to the [Plugin guide](Plugins/Gradle/README.md).
 
     MIT License
     
-    Modified work copyright (c) 2022 ndtp
+    Modified work copyright (c) 2022-2024 ndtp
     Original work copyright (c) 2021 Shopify
     
     Permission is hereby granted, free of charge, to any person obtaining a copy

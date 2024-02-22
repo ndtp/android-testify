@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +27,7 @@ package dev.testify.actions.screenshot
 import com.intellij.ide.actions.runAnything.RunAnythingAction
 import com.intellij.ide.actions.runAnything.RunAnythingContext
 import com.intellij.ide.actions.runAnything.activity.RunAnythingProvider
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
@@ -45,6 +46,8 @@ import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
 
 abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     abstract val classGradleCommand: String
     abstract val classMenuText: String
@@ -99,22 +102,22 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         anActionEvent.presentation.apply {
             text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
-            icon = IconLoader.getIcon("/icons/${this@BaseScreenshotAction.icon}.svg")
+            icon = IconLoader.getIcon("/icons/${this@BaseScreenshotAction.icon}.svg", this@BaseScreenshotAction::class.java)
         }
     }
 
-    @Suppress("UnstableApiUsage")
     private fun RunAnythingContext.getProjectPath() = when (this) {
         is RunAnythingContext.ProjectContext ->
             GradleSettings.getInstance(project).linkedProjectsSettings.firstOrNull()
                 ?.let {
-                    ExternalSystemApiUtil.findProjectData(
+                    ExternalSystemApiUtil.findProjectNode(
                         project,
                         GradleConstants.SYSTEM_ID,
                         it.externalProjectPath
                     )
                 }
                 ?.data?.linkedExternalProjectPath
+
         is RunAnythingContext.ModuleContext -> ExternalSystemApiUtil.getExternalProjectPath(module)
         is RunAnythingContext.RecentDirectoryContext -> path
         is RunAnythingContext.BrowseRecentDirectoryContext -> null

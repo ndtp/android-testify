@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +24,7 @@
  */
 package dev.testify.actions.utility
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
@@ -37,7 +38,9 @@ import org.jetbrains.kotlin.psi.KtFile
 
 abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnAction() {
 
-    protected val baselineImageName = anchorElement.baselineImageName
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+
+    private val baselineImageName = anchorElement.baselineImageName
     abstract val menuText: String
     abstract val icon: String
 
@@ -49,7 +52,7 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
             text = menuText
             isEnabled = isInProject
             isVisible = (anActionEvent.project != null)
-            icon = IconLoader.getIcon("/icons/${this@BaseFileAction.icon}.svg")
+            icon = IconLoader.getIcon("/icons/${this@BaseFileAction.icon}.svg", this@BaseFileAction::class.java)
         }
     }
 
@@ -62,8 +65,7 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
     private fun AnActionEvent.findBaselineImage(): VirtualFile? {
         val psiFile = anchorElement.containingFile
         if (psiFile is KtFile && psiFile.module != null) {
-            val files =
-                FilenameIndex.getVirtualFilesByName(project, baselineImageName, psiFile.module!!.moduleContentScope)
+            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, psiFile.module!!.moduleContentScope)
             if (files.isNotEmpty()) {
                 return files.first()
             }
