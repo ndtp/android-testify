@@ -3,6 +3,7 @@ plugins {
     id 'kotlin'
     id 'org.jetbrains.dokka'
     id 'jacoco'
+    id 'java-gradle-plugin'
 }
 
 ext {
@@ -96,6 +97,15 @@ task sourcesJar(type: Jar) {
 
 apply from: "../../publish.build.gradle"
 apply from: '../../ktlint.gradle'
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = "dev.testify"
+            implementationClass = "dev.testify.TestifyPlugin"
+        }
+    }
+}
 
 jacoco {
     toolVersion = "0.8.8"
