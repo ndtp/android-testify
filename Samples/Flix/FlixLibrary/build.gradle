@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "dev.testify:plugin:${versions.testify}"
+        classpath "dev.testify:plugin:2.0.0"
     }
     ext {
         versions = [
