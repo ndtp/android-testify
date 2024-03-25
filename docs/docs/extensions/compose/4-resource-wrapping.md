@@ -1,3 +1,6 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Testing with different Locales and Font Scales
 
 ## Locales
@@ -7,6 +10,9 @@ It is often desirable to test your composable in multiple locales. Testify allow
 When using `ComposableScreenshotRule`, you can invoke the `setLocale()` method to set the Locale used in your test. `setLocale` accepts any valid [Locale](https://docs.oracle.com/javase/7/docs/api/java/util/Locale.html) instance.
 
 ### Example
+
+<Tabs>
+<TabItem value="test" label="ComposableScreenshotRule">
 
 ```kotlin
 
@@ -27,6 +33,36 @@ When using `ComposableScreenshotRule`, you can invoke the `setLocale()` method t
             .assertSame()
     }
 ```
+</TabItem>
+<TabItem value="scenario" label="ComposableScreenshotScenarioRule">
+
+
+```kotlin
+
+    // In the res/values/strings.xml file
+    // <string name="example">A short example</string>
+
+    // In the res/values-fr/strings.xml file
+    // <string name="example">Un petit exemple</string>
+
+    @ScreenshotInstrumentation
+    @Test
+    fun localeFrance() {
+        launchComposableTestActivity().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    Text(stringResource(R.string.example))
+                }
+                .setLocale(Locale.FRANCE)
+                .assertSame()
+        }
+    }
+```
+
+</TabItem>
+</Tabs>
+
 
 ## Font Scale
 
@@ -36,6 +72,8 @@ See [Font size and display size](https://support.google.com/accessibility/androi
 
 To modify the font scale in a single test, use the `setFontScale()` method.
 
+<Tabs>
+<TabItem value="test" label="ComposableScreenshotRule">
 
 
 ```kotlin
@@ -43,11 +81,39 @@ To modify the font scale in a single test, use the `setFontScale()` method.
     @Test
     fun largeFontScale() {
         rule
-            Text(
-                text = "Test",
-                fontSize = 16.sp
-            )
+            .setCompose {
+                Text(
+                    text = "Test",
+                    fontSize = 16.sp
+                )
+            }
             .setFontScale(3.0f)
             .assertSame()
     }
 ```
+
+</TabItem>
+<TabItem value="scenario" label="ComposableScreenshotScenarioRule">
+
+```kotlin
+    @ScreenshotInstrumentation
+    @Test
+    fun largeFontScale() {
+        launchComposableTestActivity().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    Text(
+                        text = "Test",
+                        fontSize = 16.sp
+                    )
+                }
+                .setFontScale(3.0f)
+                .assertSame()
+        }
+    }
+```
+
+</TabItem>
+</Tabs>
+

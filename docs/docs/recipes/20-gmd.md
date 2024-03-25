@@ -1,4 +1,6 @@
 import OpenNew from '@site/static/img/open_new.svg';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
 # Configuring Testify to run on Gradle managed device
 
@@ -7,10 +9,7 @@ Starting from API levels
 This feature improves testing experience by delegating the task of starting, shutting down and
 managing emulator to the Gradle.
 
-When using Gradle managed device user must
-use [Test storage service <OpenNew />](https://developer.android.com/reference/androidx/test/services/storage/TestStorage)
-to save screenshots. Using this service Android Gradle Plugin would be able to save test output
-including screenshots and diffs to the `build` folder
+When using a Gradle Managed Device, you must use the [Test storage service <OpenNew />](https://developer.android.com/reference/androidx/test/services/storage/TestStorage) to save screenshots. Using this service, the Android Gradle Plugin will be able to save test output to your local `build` folder.
 
 ### Adding Gradle managed device configuration to build file
 
@@ -49,14 +48,11 @@ dependencies {
 }
 ```
 
-With that changes applied couple of new Gradle tasks should be added to your project. Suppose, you
-named your device `tester`, then `testerCheck` and `testDebugAndroidTest` tasks should be added to
-your project.
+With that changes applied, several new Gradle tasks will be added to your project. For a device named _**myDevice**_, then Gradle tasks `myDeviceCheck` and `myDeviceDebugAndroidTest` tasks will be added to your project.
 
 ### Configuring the Testify library
 
-You also need to instruct Testify to use Test storage to store screenshots and diffs. This could be
-done using Testify plugin configuration:
+You also need to instruct Testify to use Test Storage to store screenshots and diffs. This is done using Testify plugin configuration by setting the `useTestStorage` Gradle property to `true` :
 
 ```groovy
 testify {
@@ -66,35 +62,61 @@ testify {
 
 ### Running screenshot tests
 
-To perform screenshot test verification run any of the new Gradle tasks, for
-example `./gradlew testerDebugAndroidTest`.
+To perform screenshot test verification, run any of the new Gradle tasks, for example `./gradlew app:myDeviceDebugAndroidTest`.
 
-Because we need to run specific Gradle task to execute our tests using Gradle managed device, we
-cannot use `screenshotPull` task. When execution completed go to the
-module's `build/outputs/managed_device_android_test_additional_output/tester` folder to get recorded
-screenshots or diffs.
+Because we need to run specific Gradle tasks to execute our tests using the Gradle Managed Device, we cannot use `screenshotPull` task. When execution is completed, navigate to the module's `build/outputs/managed_device_android_test_additional_output/myDevice` folder to find the recorded screenshots or diffs.
 
 ### Updating baselines
 
-Because we need to run specific Gradle task to execute our tests using Gradle managed device, we
-cannot use `screenshotRecord` task. To generate new baseline there are two options:
+Because we need to run specific Gradle tasks to execute our tests using the Gradle Managed Device, we cannot use `screenshotRecord` task. 
 
-- apply necessary setting to the `ScreenshotRule`:
+To generate new baseline there are two options:
+
+1. Apply necessary configuration on the `ScreenshotRule`:
+
+<Tabs>
+<TabItem value="rule" label="ScreenshotTestRule">
 
 ```kotlin
 @get:Rule
-var rule = ScreenshotRule(ClientListActivity::class.java)
+val rule = ScreenshotRule(ClientListActivity::class.java)
 
 @ScreenshotInstrumentation
 @Test
 fun testMissingBaseline() {
     rule
-        .setRecordModeEnabled(true)
+        .configure { 
+            isRecordMode = true
+        }
         .assertSame()
 }
 ```
 
-- or enable record mode in the `build.gradle` file:
+</TabItem>
+<TabItem value="scenario" label="ScreenshotScenarioRule">
+
+```kotlin
+@get:Rule
+var rule = ScreenshotScenarioRule()
+
+@ScreenshotInstrumentation
+@Test
+fun testMissingBaseline() {
+    launchActivity<ClientListActivity>().use { scenario ->
+        rule
+            .withScenario(scenario)
+            .configure { 
+                isRecordMode = true
+            }
+            .assertSame()
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+2. Enable record mode in the `build.gradle` file:
 
 ```groovy
 testify {
@@ -102,11 +124,14 @@ testify {
 }
 ```
 
-Again we cannot use `screenshotPull` task. When execution completed go to the
-module's `build/outputs/managed_device_android_test_additional_output/tester` and copy recorded
-baseline into the `androidTest/assets/screenshots/` directory, for example: `androidTest/assets/screenshots/30-1080x1920@420dp-en_US`
+:::tip
+
+As we cannot use `screenshotPull` task, when test execution is completed, the _Test Storage_ service will copy recorded files from the module's `build/outputs/managed_device_android_test_additional_output/myDevice` into your `androidTest/assets/screenshots/` directory.
+
+:::
 
 ### Sample
 
-Please check
-provided [sample <OpenNew />](https://github.com/ndtp/android-testify/tree/main/Samples/Gmd).
+Please check provided [sample <OpenNew />](https://github.com/ndtp/android-testify/tree/main/Samples/Gmd).
+
+---

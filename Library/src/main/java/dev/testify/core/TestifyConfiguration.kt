@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Copyright (c) 2022-2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -291,4 +291,21 @@ data class TestifyConfiguration(
             else -> ::sameAsCompare
         }
     }
+}
+
+/**
+ * Indicates that this class can be configured using a [TestifyConfiguration] instance
+ */
+interface TestifyConfigurable {
+
+    /**
+     * The current configuration for this instance
+     */
+    val configuration: TestifyConfiguration
+
+    /**
+     * Configure the instance using the provided [configureRule] lambda
+     * @return The current configuration
+     */
+    fun configure(configureRule: TestifyConfiguration.() -> Unit): TestifyConfigurable
 }
