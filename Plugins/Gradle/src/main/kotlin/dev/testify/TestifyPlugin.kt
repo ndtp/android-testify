@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,10 +28,13 @@ package dev.testify
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
 import dev.testify.internal.Adb
 import dev.testify.internal.android
+import dev.testify.tasks.internal.TaskNameProvider
+import dev.testify.tasks.internal.TestifyDefaultTask
 import dev.testify.tasks.main.ScreenshotClearTask
 import dev.testify.tasks.main.ScreenshotPullTask
 import dev.testify.tasks.main.ScreenshotRecordTask
 import dev.testify.tasks.main.ScreenshotTestTask
+import dev.testify.tasks.main.internal.InternalScreenshotTestRecordTask
 import dev.testify.tasks.report.ReportPullTask
 import dev.testify.tasks.report.ReportShowTask
 import dev.testify.tasks.utility.DeviceKeyTask
@@ -95,20 +98,27 @@ class TestifyPlugin : Plugin<Project> {
     }
 
     private fun Project.createTasks() {
-        tasks.create(DeviceKeyTask.taskName(), DeviceKeyTask::class.java)
-        tasks.create(DevicesTask.taskName(), DevicesTask::class.java)
-        tasks.create(DisableSoftKeyboardTask.taskName(), DisableSoftKeyboardTask::class.java)
-        tasks.create(HidePasswordsTasks.taskName(), HidePasswordsTasks::class.java)
-        tasks.create(LocaleTask.taskName(), LocaleTask::class.java)
-        tasks.create(ReportPullTask.taskName(), ReportPullTask::class.java)
-        tasks.create(ReportShowTask.taskName(), ReportShowTask::class.java)
-        tasks.create(ScreenshotClearTask.taskName(), ScreenshotClearTask::class.java)
-        tasks.create(ScreenshotPullTask.taskName(), ScreenshotPullTask::class.java)
-        tasks.create(ScreenshotRecordTask.taskName(), ScreenshotRecordTask::class.java)
-        tasks.create(ScreenshotTestTask.taskName(), ScreenshotTestTask::class.java)
-        tasks.create(SettingsTask.taskName(), SettingsTask::class.java)
-        tasks.create(TimeZoneTask.taskName(), TimeZoneTask::class.java)
-        tasks.create(VersionTask.taskName(), VersionTask::class.java)
+        registerTask<DeviceKeyTask>(DeviceKeyTask.Companion)
+        registerTask<DevicesTask>(DevicesTask.Companion)
+        registerTask<DisableSoftKeyboardTask>(DisableSoftKeyboardTask.Companion)
+        registerTask<HidePasswordsTasks>(HidePasswordsTasks.Companion)
+        registerTask<InternalScreenshotTestRecordTask>(InternalScreenshotTestRecordTask.Companion)
+        registerTask<LocaleTask>(LocaleTask.Companion)
+        registerTask<ReportPullTask>(ReportPullTask.Companion)
+        registerTask<ReportShowTask>(ReportShowTask.Companion)
+        registerTask<ScreenshotClearTask>(ScreenshotClearTask.Companion)
+        registerTask<ScreenshotPullTask>(ScreenshotPullTask.Companion)
+        registerTask<ScreenshotRecordTask>(ScreenshotRecordTask.Companion)
+        registerTask<ScreenshotTestTask>(ScreenshotTestTask.Companion)
+        registerTask<SettingsTask>(SettingsTask.Companion)
+        registerTask<TimeZoneTask>(TimeZoneTask.Companion)
+        registerTask<VersionTask>(VersionTask.Companion)
+    }
+
+    private inline fun <reified T : TestifyDefaultTask> Project.registerTask(taskNameProvider: TaskNameProvider) {
+        tasks.register(taskNameProvider.taskName(), T::class.java) {
+            (it as? TestifyDefaultTask)?.provideInput(this)
+        }
     }
 
     companion object {

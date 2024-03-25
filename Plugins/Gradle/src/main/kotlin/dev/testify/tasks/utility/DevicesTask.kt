@@ -25,22 +25,29 @@
 
 package dev.testify.tasks.utility
 
-import dev.testify.internal.Devices
+import dev.testify.internal.Device
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyUtilityTask
 
 open class DevicesTask : TestifyUtilityTask() {
 
+    override val isDeviceRequired = false
+
     override fun getDescription() = "Displays Testify devices"
 
     override fun taskAction() {
-        println("  Connected devices    = ${Devices.count}")
+        val devices = Device.targets
+        println("  Connected devices    = ${devices.size}")
         println(divider)
-        Devices.targets.forEach {
-            println("  -Pdevice=${it.key}           = ${it.value}")
+        if (devices.isEmpty()) {
+            println("  No devices connected")
+        } else {
+            devices.forEach { (index, deviceName) ->
+                println("  -Pdevice=$index           = $deviceName")
+            }
+            println()
+            println("  Add -Pdevice=N to any command to target a specific device")
         }
-        println()
-        println("  Add -Pdevice=N to any command to target a specific device")
     }
 
     companion object : TaskNameProvider {

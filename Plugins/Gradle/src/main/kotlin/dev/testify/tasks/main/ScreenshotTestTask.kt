@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,7 +24,6 @@
  */
 package dev.testify.tasks.main
 
-import dev.testify.TestifySettings
 import dev.testify.internal.Adb
 import dev.testify.internal.AdbParam
 import dev.testify.internal.AnsiFormat
@@ -41,25 +40,30 @@ import dev.testify.tasks.utility.LocaleTask
 import dev.testify.tasks.utility.TimeZoneTask
 import dev.testify.testifySettings
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 
 open class ScreenshotTestTask : TestifyDefaultTask() {
 
-    @get:Internal
-    open val isRecordMode: Boolean = false
+    @Optional @get:Input var moduleName: String? = null
+    @Optional @get:Input var outputFormat: String? = null
+    @Optional @get:Input var shardCount: Int? = null
+    @Optional @get:Input var shardIndex: Int? = null
+    @Optional @get:Input var testClass: String? = null
+    @Optional @get:Input var testName: String? = null
+    @get:Input lateinit var screenshotAnnotation: String
+    @get:Input lateinit var testPackageId: String
+    @get:Input lateinit var testRunner: String
+    @get:Input var useSdCard: Boolean = false
 
     override fun getDescription() = "Run the Testify screenshot tests"
 
-    private val settings: TestifySettings
-        get() = project.testifySettings
-
     private val testTarget: AdbParam?
         get() {
-            val testClass = project.properties["testClass"] as String?
-            val testName = project.properties["testName"] as String?
-
-            return if (testClass != null && testClass.isNotEmpty()) {
-                AdbParam("class", "$testClass${if (testName != null && testName.isNotEmpty()) "#$testName" else ""}")
+            return if (!testClass.isNullOrEmpty()) {
+                AdbParam("class", "$testClass${if (!testName.isNullOrEmpty()) "#$testName" else ""}")
             } else {
                 null
             }
@@ -67,9 +71,6 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
 
     private val shardParams: Set<AdbParam>
         get() {
-            val shardIndex = project.properties["shardIndex"] as Int?
-            val shardCount = project.properties["shardCount"] as Int?
-
             val params = HashSet<AdbParam>()
             if (shardCount != null && shardIndex != null) {
                 println("  Running test shard $shardIndex of $shardCount...")
@@ -79,51 +80,57 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             return params
         }
 
-    private val runtimeParams: List<AdbParam>
-        get() {
-            val params = ArrayList<AdbParam>()
+    @Internal
+    protected open fun getRuntimeParams(): List<AdbParam> {
+        val params = ArrayList<AdbParam>()
 
-            val useSdCard = "TESTIFY_USE_SDCARD".fromEnv(settings.useSdCard)
-            val outputFormat = "TESTIFY_OUTPUT_FORMAT".fromEnv(settings.outputFileNameFormat)
+        if (useSdCard)
+            params.add(AdbParam("useSdCard", "true"))
 
-            if (useSdCard)
-                params.add(AdbParam("useSdCard", "true"))
-
-            if (outputFormat?.isNotEmpty() == true)
-                params.add(AdbParam("outputFileNameFormat", outputFormat))
-
-            if (settings.moduleName.isNotEmpty())
-                params.add(AdbParam("moduleName", settings.moduleName))
-
-            if (isRecordMode)
-                params.add(AdbParam("isRecordMode", "true"))
-
-            return params
+        outputFormat.letNotEmpty {
+            params.add(AdbParam("outputFileNameFormat", it))
         }
+
+        moduleName.letNotEmpty {
+            params.add(AdbParam("moduleName", it))
+        }
+
+        return params
+    }
 
     private fun String?.notEmptyOrDefault(default: String): String =
         if (this?.isNotEmpty() == true) this else default
 
+    private fun String?.letNotEmpty(block: (String) -> Unit) {
+        if (this?.isNotEmpty() == true) block(this)
+    }
+
     private val annotation: AdbParam
-        get() = AdbParam(
-            "annotation",
-            settings.screenshotAnnotation.notEmptyOrDefault(
-                default = "dev.testify.annotation.ScreenshotInstrumentation"
-            )
+        get() = AdbParam("annotation", screenshotAnnotation)
+
+    override fun provideInput(project: Project) {
+        super.provideInput(project)
+
+        moduleName = project.testifySettings.moduleName
+        outputFormat = "TESTIFY_OUTPUT_FORMAT".fromEnv(project.testifySettings.outputFileNameFormat)
+        screenshotAnnotation = project.testifySettings.screenshotAnnotation.notEmptyOrDefault(
+            default = "dev.testify.annotation.ScreenshotInstrumentation"
         )
+        shardCount = project.properties["shardCount"] as Int?
+        shardIndex = project.properties["shardIndex"] as Int?
+        testClass = project.properties["testClass"] as String?
+        testName = project.properties["testName"] as String?
+        testPackageId = project.testifySettings.testPackageId
+        testRunner = project.testifySettings.testRunner
+        useSdCard = "TESTIFY_USE_SDCARD".fromEnv(project.testifySettings.useSdCard)
+    }
 
     override fun taskAction() {
-
-        if (isRecordMode) {
-            val clearTask = project.tasks.getByName(ScreenshotClearTask.taskName()) as ScreenshotClearTask
-            clearTask.taskAction()
-        }
-
         val testOptions = TestOptionsBuilder()
         testOptions
             .addAll(shardParams)
             .add(testTarget)
-            .addAll(runtimeParams)
+            .addAll(getRuntimeParams())
             .add(annotation)
 
         val log = Adb()
@@ -132,24 +139,19 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .argument("instrument")
             .testOptions(testOptions)
             .argument("-w")
-            .argument("${settings.testPackageId}/${settings.testRunner}")
+            .argument("$testPackageId/$testRunner")
             .stream(ConsoleStream)
             .execute()
+        finalizeTaskAction(log)
+    }
 
-        if (!isRecordMode &&
-            (
-                log.contains("FAILURES!!!") ||
-                    log.contains("INSTRUMENTATION_CODE: 0") ||
-                    log.contains("Process crashed while executing")
-                )
+    protected open fun finalizeTaskAction(log: String) {
+        if (log.contains("FAILURES!!!") ||
+            log.contains("INSTRUMENTATION_CODE: 0") ||
+            log.contains("Process crashed while executing")
         ) {
             println(AnsiFormat.Red, "SCREENSHOT TESTS HAVE FAILED!!!")
             throw RuntimeException("Screenshot tests have failed")
-        }
-
-        if (isRecordMode) {
-            val pullTask = project.tasks.getByName(ScreenshotPullTask.taskName()) as ScreenshotPullTask
-            pullTask.taskAction()
         }
     }
 
@@ -158,27 +160,24 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
 
         override fun setDependencies(taskNameProvider: TaskNameProvider, project: Project) {
             val task = project.tasks.getByName(taskNameProvider.taskName())
-
             task.dependsOn(
                 HidePasswordsTasks.taskName(),
                 DisableSoftKeyboardTask.taskName(),
                 LocaleTask.taskName(),
                 TimeZoneTask.taskName()
             )
-
-            val settings = project.testifySettings
-            val installDebugAndroidTestTask =
-                project.tasks.findByPath(":${settings.moduleName}:${settings.installAndroidTestTask}")
-            if (installDebugAndroidTestTask != null) {
+            getInstallDebugAndroidTestTask(project)?.let { installDebugAndroidTestTask ->
                 task.dependsOn(installDebugAndroidTestTask)
             }
-
-            val installDebugTask = project.tasks.findByPath(
-                ":${settings.moduleName}:${settings.installTask}"
-            )
-            if (installDebugTask != null) {
+            getInstallDebugTask(project)?.let { installDebugTask ->
                 task.dependsOn(installDebugTask)
             }
         }
     }
 }
+
+internal fun getInstallDebugAndroidTestTask(project: Project): Task? =
+    project.tasks.findByPath(":${project.testifySettings.moduleName}:${project.testifySettings.installAndroidTestTask}")
+
+internal fun getInstallDebugTask(project: Project): Task? =
+    project.tasks.findByPath(":${project.testifySettings.moduleName}:${project.testifySettings.installTask}")

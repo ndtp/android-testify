@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,20 +26,39 @@ package dev.testify.tasks.main
 
 import dev.testify.internal.AnsiFormat
 import dev.testify.internal.deleteOnDevice
+import dev.testify.internal.isVerbose
 import dev.testify.internal.listFailedScreenshotsWithPath
 import dev.testify.internal.print
 import dev.testify.internal.println
+import dev.testify.internal.screenshotDirectory
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyDefaultTask
 import dev.testify.testifySettings
+import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import java.io.File
 
 open class ScreenshotClearTask : TestifyDefaultTask() {
 
+    @get:Input lateinit var screenshotDirectory: String
+    @get:Input lateinit var targetPackageId: String
+    @get:Input var isVerbose: Boolean = false
+
     override fun getDescription() = "Remove any existing screenshot test images from the device"
 
+    override fun provideInput(project: Project) {
+        super.provideInput(project)
+        screenshotDirectory = project.screenshotDirectory
+        targetPackageId = project.testifySettings.targetPackageId
+        isVerbose = project.isVerbose
+    }
+
     override fun taskAction() {
-        val failedScreenshots = project.listFailedScreenshotsWithPath()
+        val failedScreenshots = listFailedScreenshotsWithPath(
+            src = screenshotDirectory,
+            targetPackageId = targetPackageId,
+            isVerbose = isVerbose
+        )
 
         if (failedScreenshots.isEmpty()) {
             println(AnsiFormat.Green, "  No failed screenshots found")
@@ -51,7 +70,7 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
             val file = File(it)
             print(AnsiFormat.Red, "    x ")
             println(AnsiFormat.Red, file.nameWithoutExtension)
-            file.deleteOnDevice(project.testifySettings.targetPackageId)
+            file.deleteOnDevice(targetPackageId)
         }
     }
 

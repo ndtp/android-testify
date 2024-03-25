@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,6 +46,7 @@ object Device {
                     }
                     "${language}_$region"
                 }
+
                 version >= 23 -> {
                     var result = Adb().getprop("persist.sys.locale").trim().replace("-", "_")
                     if (result.isBlank()) {
@@ -53,6 +54,7 @@ object Device {
                     }
                     return result
                 }
+
                 else -> "unsupported"
             }
         }
@@ -111,5 +113,40 @@ object Device {
         argument("getprop")
         argument(prop)
         return execute().trim()
+    }
+
+    val isEmpty: Boolean
+        get() = (count == 0)
+
+    val count: Int
+        get() {
+            val result = Adb()
+                .argument("devices")
+                .execute(targetsDevice = false)
+
+            return result.lines().count {
+                it.isNotBlank() && !it.contains("List of devices attached")
+            }
+        }
+
+    val targets: Map<Int, String>
+        get() {
+            val map = HashMap<Int, String>()
+            enumerateDevices().mapIndexed { index, s ->
+                map[index] = s
+            }
+            return map
+        }
+
+    private fun enumerateDevices(): List<String> {
+        val result = Adb()
+            .argument("devices")
+            .execute(targetsDevice = false)
+
+        return result.lines().filter {
+            it.isNotBlank() && !it.contains("List of devices attached")
+        }.map {
+            it.substringBefore("\t")
+        }
     }
 }

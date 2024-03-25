@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,7 +28,6 @@ package dev.testify.internal
 import dev.testify.internal.StreamData.BufferedStream
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.internal.impldep.com.google.common.annotations.VisibleForTesting
 
 class Adb {
 
@@ -92,10 +91,13 @@ class Adb {
         return this
     }
 
-    fun execute(): String {
-        if (deviceTarget != null) {
-            arguments.add(0, "-s")
-            arguments.add(1, deviceTarget!!)
+    fun execute(targetsDevice: Boolean = true): String {
+        if (targetsDevice) {
+            val deviceTarget = Device.targets[deviceTargetIndex]
+            if (deviceTarget != null) {
+                arguments.add(0, "-s")
+                arguments.add(1, deviceTarget)
+            }
         }
 
         val command = (listOf(adbPath) + arguments).joinToString(" ")
@@ -119,15 +121,14 @@ class Adb {
 
     companion object {
         private lateinit var adbPath: String
-        @VisibleForTesting var deviceTarget: String? = null
         private var verbose: Boolean = false
         var forcedUser: Int? = null
+        private var deviceTargetIndex: Int = 0
 
         fun init(project: Project) {
             adbPath = project.android.adbExecutable.absolutePath
                 ?: throw GradleException("adb not found. Have you defined an `android` block?")
-            val index = (project.properties["device"] as? String)?.toInt() ?: 0
-            deviceTarget = Devices.targets[index]
+            deviceTargetIndex = (project.properties["device"] as? String)?.toInt() ?: 0
             verbose = project.isVerbose
             forcedUser = project.user
         }

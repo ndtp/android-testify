@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -52,31 +52,35 @@ internal fun Adb.listFiles(path: String): List<String> {
     return log.lines().filter { it.isNotEmpty() }.map { "$path/$it" }
 }
 
-internal fun Project.listFailedScreenshotsWithPath(): List<String> {
-    val src = screenshotDirectory
-
+internal fun listFailedScreenshotsWithPath(src: String, targetPackageId: String, isVerbose: Boolean): List<String> {
     val rootDir = Adb()
         .shell()
-        .runAs(this.testifySettings.targetPackageId)
+        .runAs(targetPackageId)
         .listFiles(src)
     val files = rootDir.flatMap {
         Adb()
             .shell()
-            .runAs(this.testifySettings.targetPackageId)
+            .runAs(targetPackageId)
             .listFiles(it)
     }
 
-    if (this.isVerbose) {
+    if (isVerbose) {
         files.forEach { println(AnsiFormat.Purple, "\t$it") }
     }
     return files
 }
 
-internal fun Project.listFailedScreenshots(): List<String> {
-    val src = screenshotDirectory
-    val dst = destinationImageDirectory
-
-    val files = this.listFailedScreenshotsWithPath()
+internal fun listFailedScreenshots(
+    src: String,
+    dst: String,
+    targetPackageId: String,
+    isVerbose: Boolean
+): List<String> {
+    val files = listFailedScreenshotsWithPath(
+        src = src,
+        targetPackageId = targetPackageId,
+        isVerbose = isVerbose
+    )
     return files.map { it.replace(src, dst) }
 }
 

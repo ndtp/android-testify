@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,43 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package dev.testify.tasks.main.internal
 
-package dev.testify.internal
+import dev.testify.internal.AdbParam
+import dev.testify.tasks.internal.TaskNameProvider
+import dev.testify.tasks.main.ScreenshotTestTask
+import org.gradle.api.tasks.Internal
 
-internal object Devices {
+open class InternalScreenshotTestRecordTask : ScreenshotTestTask() {
 
-    val isEmpty: Boolean
-        get() = (count == 0)
+    override val isHidden = true
 
-    val count: Int
-        get() {
-            val result = Adb()
-                .argument("devices")
-                .execute()
+    override fun getDescription() = ""
 
-            return result.lines().filter {
-                it.isNotBlank() && !it.contains("List of devices attached")
-            }.count()
-        }
+    @Internal
+    override fun getRuntimeParams(): List<AdbParam> {
+        return super.getRuntimeParams() + AdbParam("isRecordMode", "true")
+    }
 
-    val targets: Map<Int, String>
-        get() {
-            val map = HashMap<Int, String>()
-            enumerateDevices().mapIndexed { index, s ->
-                map[index] = s
-            }
-            return map
-        }
+    override fun finalizeTaskAction(log: String) {
+        // Do nothing
+    }
 
-    private fun enumerateDevices(): List<String> {
-        val result = Adb()
-            .argument("devices")
-            .execute()
-
-        return result.lines().filter {
-            it.isNotBlank() && !it.contains("List of devices attached")
-        }.map {
-            it.substringBefore("\t")
-        }
+    companion object : TaskNameProvider {
+        override fun taskName() = "screenshotTestRecord"
     }
 }
