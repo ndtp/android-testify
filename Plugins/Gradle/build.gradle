@@ -3,26 +3,40 @@ plugins {
     id 'kotlin'
     id 'org.jetbrains.dokka'
     id 'jacoco'
+
+
     id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'signing'
 }
 
-ext {
-    pom = [
-            publishedGroupId  : 'dev.testify',
-            artifact          : 'plugin',
-            libraryName       : 'testify-plugin',
-            libraryDescription: 'Android screenshot instrumentation tests plugin.',
-            siteUrl           : 'https://github.com/ndtp/android-testify',
-            gitUrl            : 'https://github.com/ndtp/android-testify.git',
-            licenseName       : 'The MIT License',
-            licenseUrl        : 'https://opensource.org/licenses/MIT',
-            author            : 'ndtp'
-    ]
+gradlePlugin {
+    plugins {
+        create("testify") {
+            id = "dev.testify"
+            implementationClass = "dev.testify.TestifyPlugin"
+        }
+    }
 }
 
-version = "$project.versions.testify"
-group = pom.publishedGroupId
-archivesBaseName = pom.artifact
+
+// ext {
+//     pom = [
+//             publishedGroupId  : 'dev.testify',
+//             artifact          : 'plugin',
+//             libraryName       : 'testify-plugin',
+//             libraryDescription: 'Android screenshot instrumentation tests plugin.',
+//             siteUrl           : 'https://github.com/ndtp/android-testify',
+//             gitUrl            : 'https://github.com/ndtp/android-testify.git',
+//             licenseName       : 'The MIT License',
+//             licenseUrl        : 'https://opensource.org/licenses/MIT',
+//             author            : 'ndtp'
+//     ]
+// }
+
+// version = "$project.versions.testify"
+// group = pom.publishedGroupId
+// archivesBaseName = pom.artifact
 
 // Not able to upgrade gradle android plugin with this in place, Java 11 works, not sure if safe
 sourceCompatibility = JavaVersion.VERSION_11
@@ -69,43 +83,43 @@ jar {
     }
 }
 
-task configureLocal {
-    doFirst {
-        version = "local"
-        jar.manifest.attributes.put("Implementation-Version", version)
-    }
-}
+// task configureLocal {
+//     doFirst {
+//         version = "local"
+//         jar.manifest.attributes.put("Implementation-Version", version)
+//     }
+// }
 
-task copyLocal(type: Copy) {
-    from "$buildDir/libs/${project.name}-local.jar"
-    into 'jar'
-}
+// task copyLocal(type: Copy) {
+//     from "$buildDir/libs/${project.name}-local.jar"
+//     into 'jar'
+// }
 
-task assembleLocal(description: 'Assembles the outputs of this project for use locally.', group: 'Build') {
-    dependsOn configureLocal
-    dependsOn build
-    dependsOn copyLocal
+// task assembleLocal(description: 'Assembles the outputs of this project for use locally.', group: 'Build') {
+//     dependsOn configureLocal
+//     dependsOn build
+//     dependsOn copyLocal
 
-    build.mustRunAfter configureLocal
-    copyLocal.mustRunAfter build
-}
+//     build.mustRunAfter configureLocal
+//     copyLocal.mustRunAfter build
+// }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.groovy.srcDirs
-    classifier = 'sources'
-}
+// task sourcesJar(type: Jar) {
+//     from sourceSets.main.groovy.srcDirs
+//     classifier = 'sources'
+// }
 
-apply from: "../../publish.build.gradle"
+// apply from: "../../publish.build.gradle"
 apply from: '../../ktlint.gradle'
 
-gradlePlugin {
-    plugins {
-        simplePlugin {
-            id = "dev.testify"
-            implementationClass = "dev.testify.TestifyPlugin"
-        }
-    }
-}
+// gradlePlugin {
+//     plugins {
+//         simplePlugin {
+//             id = "dev.testify"
+//             implementationClass = "dev.testify.TestifyPlugin"
+//         }
+//     }
+// }
 
 jacoco {
     toolVersion = "0.8.8"

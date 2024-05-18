@@ -39,7 +39,7 @@ buildscript {
                 'mockk'              : '1.13.5',            // https://central.sonatype.com/artifact/io.mockk/mockk/1.13.4/versions
                 'slf4j'              : '2.0.6',
                 'truth'              : '1.1.5',             // https://github.com/google/truth
-                'testify'            : '2.0.0',            // https://github.com/ndtp/android-testify/releases
+                'testify'            : '2.1.0',            // https://github.com/ndtp/android-testify/releases
         ]
         coreVersions = [
                 'compileSdk': 33,
