@@ -27,10 +27,13 @@ package dev.testify.core.processor.compare
 import android.graphics.Bitmap
 import android.graphics.Rect
 import dev.testify.core.TestifyConfiguration
-import dev.testify.core.processor._executorDispatcher
+import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.mockRect
+import dev.testify.internal.helpers.ManifestPlaceholder
+import dev.testify.internal.helpers.getMetaDataValue
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,7 +56,8 @@ class RegionCompareTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(mainThreadSurrogate)
-        _executorDispatcher = Dispatchers.Main
+        mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
+        every { any<ManifestPlaceholder>().getMetaDataValue() } returns null
     }
 
     @After
@@ -63,7 +67,12 @@ class RegionCompareTest {
     }
 
     private val rectSet = HashSet<Rect>()
-    private val regionCompare = FuzzyCompare(TestifyConfiguration(exclusionRects = rectSet))
+    private val regionCompare = FuzzyCompare(
+        configuration = TestifyConfiguration(exclusionRects = rectSet),
+        parallelProcessorConfiguration = ParallelProcessorConfiguration().apply {
+            _executorDispatcher = Dispatchers.Main
+        }
+    )
 
     @Test
     fun `compareBitmaps succeeds when bitmaps are identical`() {

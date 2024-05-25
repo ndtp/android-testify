@@ -32,7 +32,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -42,18 +41,16 @@ class ParallelPixelProcessorTest {
 
     private val mainThreadSurrogate = newSingleThreadContext("UI thread")
 
-    private lateinit var pixelProcessor: ParallelPixelProcessor
-
-    private fun forceSingleThreadedExecution() {
+    private fun forceSingleThreadedExecution(maxNumberOfChunkThreads: Int?): ParallelProcessorConfiguration {
         Dispatchers.setMain(mainThreadSurrogate)
-        _executorDispatcher = Dispatchers.Main
+        return ParallelProcessorConfiguration(maxNumberOfChunkThreads).apply {
+            _executorDispatcher = Dispatchers.Main
+        }
     }
 
-    @Before
-    fun setUp() {
-        forceSingleThreadedExecution()
-        pixelProcessor = ParallelPixelProcessor
-            .create()
+    fun setUp(maxNumberOfChunkThreads: Int? = null): ParallelPixelProcessor {
+        return ParallelPixelProcessor
+            .create(forceSingleThreadedExecution(maxNumberOfChunkThreads))
             .baseline(mockBitmap())
             .current(mockBitmap())
     }
@@ -66,7 +63,7 @@ class ParallelPixelProcessorTest {
 
     @Test
     fun default() {
-        maxNumberOfChunkThreads = 1
+        val pixelProcessor = setUp(maxNumberOfChunkThreads = 1)
 
         val index = AtomicInteger(0)
         pixelProcessor.analyze { _, _, _ ->
@@ -78,7 +75,7 @@ class ParallelPixelProcessorTest {
 
     @Test
     fun twoCores() {
-        maxNumberOfChunkThreads = 2
+        val pixelProcessor = setUp(maxNumberOfChunkThreads = 2)
 
         val index = AtomicInteger(0)
         pixelProcessor.analyze { _, _, _ ->
@@ -91,7 +88,7 @@ class ParallelPixelProcessorTest {
 
     @Test
     fun oddNumberOfCores() {
-        maxNumberOfChunkThreads = 7
+        val pixelProcessor = setUp(maxNumberOfChunkThreads = 7)
 
         val index = AtomicInteger(0)
         pixelProcessor.analyze { _, _, _ ->
@@ -104,10 +101,8 @@ class ParallelPixelProcessorTest {
 
     @Test
     fun oddNumberOfPixels() {
-        maxNumberOfChunkThreads = 2
-
-        pixelProcessor = ParallelPixelProcessor
-            .create()
+        val pixelProcessor = ParallelPixelProcessor
+            .create(ParallelProcessorConfiguration(requestedNumberOfChunkThreads = 2))
             .baseline(mockBitmap(3, 3))
             .current(mockBitmap(3, 3))
 
@@ -127,17 +122,18 @@ class ParallelPixelProcessorTest {
         assertTrue(expected.isEmpty())
     }
 
-    private fun assertPosition(index: Int, position: Pair<Int, Int>) {
-        val (x, y) = pixelProcessor.getPosition(index, DEFAULT_BITMAP_WIDTH)
+    private fun ParallelPixelProcessor.assertPosition(index: Int, position: Pair<Int, Int>) {
+        val (x, y) = this.getPosition(index, DEFAULT_BITMAP_WIDTH)
         assertEquals(position, x to y)
     }
 
     @Test
     fun multicoreChunks() {
-        maxNumberOfChunkThreads = 2
-        assertPosition(7, 7 to 0)
-        assertPosition(500, 500 to 0)
-        assertPosition(1500, 420 to 1)
-        assertPosition(2200, 40 to 2)
+        setUp(maxNumberOfChunkThreads = 2).run {
+            assertPosition(7, 7 to 0)
+            assertPosition(500, 500 to 0)
+            assertPosition(1500, 420 to 1)
+            assertPosition(2200, 40 to 2)
+        }
     }
 }

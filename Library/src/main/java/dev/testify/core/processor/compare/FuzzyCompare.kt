@@ -28,6 +28,7 @@ import android.graphics.Bitmap
 import com.github.ajalt.colormath.RGB
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.ParallelPixelProcessor
+import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.compare.colorspace.calculateDeltaE
 
 /**
@@ -38,9 +39,13 @@ import dev.testify.core.processor.compare.colorspace.calculateDeltaE
  *
  * [TestifyConfiguration.exclusionRects] are used to exclude pixels from the comparison.
  *
- * @param configuration The configuration to use for the comparison.
+ * @param configuration - The configuration to use for the comparison.
+ * @param parallelProcessorConfiguration - The configuration for the [ParallelPixelProcessor].
  */
-internal class FuzzyCompare(private val configuration: TestifyConfiguration) {
+internal class FuzzyCompare(
+    private val configuration: TestifyConfiguration,
+    private val parallelProcessorConfiguration: ParallelProcessorConfiguration = ParallelProcessorConfiguration()
+) {
 
     fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
         if (baselineBitmap.height != currentBitmap.height) {
@@ -56,7 +61,7 @@ internal class FuzzyCompare(private val configuration: TestifyConfiguration) {
         }
 
         return ParallelPixelProcessor
-            .create()
+            .create(parallelProcessorConfiguration)
             .baseline(baselineBitmap)
             .current(currentBitmap)
             .analyze { baselinePixel, currentPixel, (x, y) ->

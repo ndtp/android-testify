@@ -41,7 +41,9 @@ import kotlin.math.ceil
  * Used by [BitmapComparator] to compare two bitmaps in parallel.
  * Used by [BitmapTransformer] to transform two bitmaps in parallel.
  */
-class ParallelPixelProcessor private constructor() {
+class ParallelPixelProcessor private constructor(
+    private val configuration: ParallelProcessorConfiguration
+) {
 
     private var baselineBitmap: Bitmap? = null
     private var currentBitmap: Bitmap? = null
@@ -87,7 +89,7 @@ class ParallelPixelProcessor private constructor() {
      */
     private fun getChunkData(width: Int, height: Int): ChunkData {
         val size = width * height
-        val chunkSize = (size / maxNumberOfChunkThreads).coerceAtLeast(1)
+        val chunkSize = (size / configuration.maxNumberOfChunkThreads).coerceAtLeast(1)
         val chunks = ceil(size.toFloat() / chunkSize.toFloat()).toInt()
         return ChunkData(size, chunks, chunkSize)
     }
@@ -97,7 +99,7 @@ class ParallelPixelProcessor private constructor() {
      */
     private fun runBlockingInChunks(chunkData: ChunkData, fn: CoroutineScope.(chunk: Int, index: Int) -> Boolean) {
         runBlocking {
-            launch(executorDispatcher) {
+            launch(configuration.executorDispatcher) {
                 (0 until chunkData.chunks).map { chunk ->
                     async {
                         val start = chunk * chunkData.wholeChunkSize
@@ -234,8 +236,10 @@ class ParallelPixelProcessor private constructor() {
         /**
          * Factory method to create a new [ParallelPixelProcessor].
          */
-        fun create(): ParallelPixelProcessor {
-            return ParallelPixelProcessor()
+        fun create(
+            configuration: ParallelProcessorConfiguration
+        ): ParallelPixelProcessor {
+            return ParallelPixelProcessor(configuration)
         }
     }
 }

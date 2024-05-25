@@ -26,10 +26,14 @@ package dev.testify.core.processor.compare
 import com.google.common.truth.Truth.assertThat
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.ParallelPixelProcessor
-import dev.testify.core.processor._executorDispatcher
+import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.mockBitmap
+import dev.testify.internal.helpers.ManifestPlaceholder
+import dev.testify.internal.helpers.getMetaDataValue
 import io.mockk.clearAllMocks
+import io.mockk.every
 import io.mockk.mockkObject
+import io.mockk.mockkStatic
 import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -51,9 +55,9 @@ class FuzzyCompareTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(mainThreadSurrogate)
-        _executorDispatcher = Dispatchers.Main
-
         mockkObject(ParallelPixelProcessor.Companion)
+        mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
+        every { any<ManifestPlaceholder>().getMetaDataValue() } returns null
     }
 
     @After
@@ -64,7 +68,9 @@ class FuzzyCompareTest {
         mainThreadSurrogate.close()
     }
 
-    private val subject = FuzzyCompare(TestifyConfiguration())
+    private val subject = FuzzyCompare(
+        TestifyConfiguration(),
+        ParallelProcessorConfiguration().apply { _executorDispatcher = Dispatchers.Main })
 
     @Test
     fun `WHEN bitmaps are identical THEN succeed fast`() {
@@ -75,7 +81,7 @@ class FuzzyCompareTest {
                     mockBitmap(2, 2)
                 )
         ).isTrue()
-        verify(exactly = 0) { ParallelPixelProcessor.Companion.create() }
+        verify(exactly = 0) { ParallelPixelProcessor.Companion.create(any()) }
     }
 
     @Test
@@ -87,7 +93,7 @@ class FuzzyCompareTest {
                     mockBitmap(4, 2)
                 )
         ).isFalse()
-        verify(exactly = 0) { ParallelPixelProcessor.Companion.create() }
+        verify(exactly = 0) { ParallelPixelProcessor.Companion.create(any()) }
     }
 
     @Test
@@ -99,7 +105,7 @@ class FuzzyCompareTest {
                     mockBitmap(2, 4)
                 )
         ).isFalse()
-        verify(exactly = 0) { ParallelPixelProcessor.Companion.create() }
+        verify(exactly = 0) { ParallelPixelProcessor.Companion.create(any()) }
     }
 
     @Test
@@ -112,7 +118,7 @@ class FuzzyCompareTest {
                     mockBitmap(2, 2) { _, _ -> 0xFF0000FE.toInt() }
                 )
         ).isTrue()
-        verify { ParallelPixelProcessor.Companion.create() }
+        verify { ParallelPixelProcessor.Companion.create(any()) }
     }
 
     @Test
@@ -125,6 +131,6 @@ class FuzzyCompareTest {
                     mockBitmap(2, 2) { _, _ -> 0xFF0000EE.toInt() }
                 )
         ).isFalse()
-        verify { ParallelPixelProcessor.Companion.create() }
+        verify { ParallelPixelProcessor.Companion.create(any()) }
     }
 }

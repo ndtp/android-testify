@@ -16,6 +16,10 @@
         <meta-data
             android:name="dev.testify.recordMode"
             android:value="@string/isRecordMode" />
+
+        <meta-data
+            android:name="dev.testify.parallelThreads"
+            android:value="@string/parallelThreads" />
     </application>
 
 </manifest>

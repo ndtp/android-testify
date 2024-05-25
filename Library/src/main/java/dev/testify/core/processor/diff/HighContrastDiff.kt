@@ -28,6 +28,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
 import dev.testify.core.processor.ParallelPixelProcessor
+import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.compare.colorspace.calculateDeltaE
 import dev.testify.core.processor.createBitmap
 import dev.testify.output.getDestination
@@ -49,7 +50,10 @@ import dev.testify.saveBitmapToDestination
  * @param exclusionRects A set of [Rect]s that should be excluded from the diff.
  *
  */
-class HighContrastDiff private constructor(private val exclusionRects: Set<Rect>) {
+class HighContrastDiff private constructor(
+    private val exclusionRects: Set<Rect>,
+    private val parallelProcessorConfiguration: ParallelProcessorConfiguration
+) {
 
     private var fileName: String? = null
     private var baselineBitmap: Bitmap? = null
@@ -67,7 +71,7 @@ class HighContrastDiff private constructor(private val exclusionRects: Set<Rect>
         val currentBitmap = this.currentBitmap ?: throw IllegalArgumentException("call current() to set currentBitmap")
 
         val transformResult = ParallelPixelProcessor
-            .create()
+            .create(parallelProcessorConfiguration)
             .baseline(baselineBitmap)
             .current(currentBitmap)
             .transform { baselinePixel, currentPixel, (x, y) ->
@@ -151,9 +155,13 @@ class HighContrastDiff private constructor(private val exclusionRects: Set<Rect>
          *
          * @param exclusionRects A set of [Rect]s that should be excluded from the diff.
          */
-        fun create(exclusionRects: Set<Rect>) =
+        fun create(
+            exclusionRects: Set<Rect>,
+            parallelProcessorConfiguration: ParallelProcessorConfiguration = ParallelProcessorConfiguration()
+        ): HighContrastDiff =
             HighContrastDiff(
-                exclusionRects
+                exclusionRects,
+                parallelProcessorConfiguration
             )
     }
 }
