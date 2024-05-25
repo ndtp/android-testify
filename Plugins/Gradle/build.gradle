@@ -8,7 +8,7 @@ plugins {
 ext {
     pom = [
             publishedGroupId  : 'dev.testify',
-            artifact          : 'plugin',
+            artifact          : 'dev.testify.gradle.plugin',
             libraryName       : 'testify-plugin',
             libraryDescription: 'Android screenshot instrumentation tests plugin.',
             siteUrl           : 'https://github.com/ndtp/android-testify',

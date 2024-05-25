@@ -11,7 +11,7 @@ An Android library is structurally the same as an Android app module. It include
 **Root build.gradle**
 ```groovy
 plugins {
-    id("dev.testify") version "3.0.0-preview04" apply false
+    id("dev.testify") version "2.0.0" apply false
 }
 ```
 
