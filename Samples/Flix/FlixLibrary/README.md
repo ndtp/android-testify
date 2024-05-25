@@ -8,17 +8,16 @@ An Android library is structurally the same as an Android app module. It include
 
 ## Setting Up Testify with an Android Library Project
 
-**Root build.gradle**:
+**Root build.gradle**
 ```groovy
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "dev.testify:plugin:2.0.0"
-    }
+plugins {
+    id("dev.testify") version "3.0.0-preview04" apply false
 }
 ```
+
+**settings.gradle**
+
+Ensure that `mavenCentral()` is available to both `pluginManagement` and `dependencyResolutionManagement`.
 
 **Library module build.gradle**:
 ```groovy
