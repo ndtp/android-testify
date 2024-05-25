@@ -1,10 +1,9 @@
 buildscript {
     dependencies {
-        classpath "dev.testify:plugin:2.0.0"
+        classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
     }
     ext {
         versions = [
-                'testify': '2.0.0',
                 'compose': [
                         'compilerExt': '1.4.7',
                         'core'       : '1.4.3',
@@ -26,7 +25,7 @@ apply plugin: 'dev.testify'
 
 android {
     namespace 'dev.testify.samples.flix.library'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 24
@@ -92,6 +91,8 @@ dependencies {
     androidTestImplementation composeBom
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
     androidTestImplementation "androidx.test:rules:1.5.0"
-    androidTestImplementation "dev.testify:testify-compose:${versions.testify}"
+
+    androidTestImplementation project(":Library")
+    androidTestImplementation project(":ComposeExtensions")
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
 }
