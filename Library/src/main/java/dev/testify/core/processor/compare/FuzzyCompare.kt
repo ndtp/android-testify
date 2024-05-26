@@ -25,6 +25,7 @@
 package dev.testify.core.processor.compare
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 import com.github.ajalt.colormath.RGB
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.ParallelPixelProcessor
@@ -43,9 +44,30 @@ import dev.testify.core.processor.compare.colorspace.calculateDeltaE
  * @param parallelProcessorConfiguration - The configuration for the [ParallelPixelProcessor].
  */
 internal class FuzzyCompare(
-    private val configuration: TestifyConfiguration,
+    configuration: TestifyConfiguration,
     private val parallelProcessorConfiguration: ParallelProcessorConfiguration = ParallelProcessorConfiguration()
 ) {
+    private val exclusionRects: Set<Rect> = configuration.exclusionRects
+    private val exactness: Float = configuration.exactness ?: 1f
+
+    private val analyzePixelFunction: (baselinePixel: Int, currentPixel: Int) -> Boolean =
+        if (configuration.hasExactness) { baselinePixel, currentPixel ->
+            val baselineLab = RGB.fromInt(baselinePixel).toLAB()
+            val currentLab = RGB.fromInt(currentPixel).toLAB()
+
+            val deltaE = calculateDeltaE(
+                baselineLab.l,
+                baselineLab.a,
+                baselineLab.b,
+                currentLab.l,
+                currentLab.a,
+                currentLab.b
+            )
+            ((100.0 - deltaE) / 100.0f >= exactness)
+        }
+        else { baselinePixel, currentPixel ->
+            baselinePixel == currentPixel
+        }
 
     fun compareBitmaps(baselineBitmap: Bitmap, currentBitmap: Bitmap): Boolean {
         if (baselineBitmap.height != currentBitmap.height) {
@@ -69,31 +91,13 @@ internal class FuzzyCompare(
                     /* return  */ true
                 } else {
                     var exclude = false
-                    for (rect in configuration.exclusionRects) {
+                    for (rect in exclusionRects) {
                         if (rect.contains(x, y)) {
                             exclude = true
                             break
                         }
                     }
-                    when {
-                        exclude -> true // return ^analyze
-                        configuration.hasExactness -> {
-                            val baselineLab = RGB.fromInt(baselinePixel).toLAB()
-                            val currentLab = RGB.fromInt(currentPixel).toLAB()
-
-                            val deltaE = calculateDeltaE(
-                                baselineLab.l,
-                                baselineLab.a,
-                                baselineLab.b,
-                                currentLab.l,
-                                currentLab.a,
-                                currentLab.b
-                            )
-                            ((100.0 - deltaE) / 100.0f >= configuration.exactness!!) // return ^analyze
-                        }
-
-                        else -> baselinePixel == currentPixel // return ^analyze
-                    }
+                    exclude || analyzePixelFunction(baselinePixel, currentPixel)
                 }
             }
     }

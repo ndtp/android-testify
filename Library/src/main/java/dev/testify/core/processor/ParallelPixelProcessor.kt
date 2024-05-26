@@ -34,6 +34,8 @@ import java.nio.IntBuffer
 import java.util.BitSet
 import kotlin.math.ceil
 
+typealias AnalyzePixelFunction = (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Boolean
+
 /**
  * A class that allows for parallel processing of pixels in a bitmap.
  *
@@ -136,7 +138,7 @@ class ParallelPixelProcessor private constructor(
      * @param analyzer The analyzer function to call for each pixel.
      * @return True if all pixels pass the analyzer function, false otherwise.
      */
-    fun analyze(analyzer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Boolean): Boolean {
+    fun analyze(analyzer: AnalyzePixelFunction): Boolean {
         val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
 
         val chunkData = getChunkData(width, height)
