@@ -32,8 +32,10 @@ import dev.testify.core.processor.mockRect
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.runs
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -141,6 +143,7 @@ class RegionCompareTest {
             every { this@mockk.height } returns 100
             every { this@mockk.width } returns 100
             every { this@mockk.sameAs(any()) } returns false
+            every { this@mockk.recycle() } just runs
             every { copyPixelsToBuffer(any()) } answers {
                 val buffer = args[0] as IntBuffer
 

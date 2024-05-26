@@ -45,8 +45,8 @@ class ParallelPixelProcessor private constructor(
     private val configuration: ParallelProcessorConfiguration
 ) {
 
-    private var baselineBitmap: Bitmap? = null
-    private var currentBitmap: Bitmap? = null
+    private lateinit var baselineBitmap: Bitmap
+    private lateinit var currentBitmap: Bitmap
 
     /**
      * Set the [Bitmap] to use as the baseline.
@@ -68,8 +68,8 @@ class ParallelPixelProcessor private constructor(
      * Prepare the bitmaps for parallel processing.
      */
     private fun prepareBuffers(): ImageBuffers {
-        val width = currentBitmap!!.width
-        val height = currentBitmap!!.height
+        val width = currentBitmap.width
+        val height = currentBitmap.height
 
         return ImageBuffers(
             width = width,
@@ -77,10 +77,10 @@ class ParallelPixelProcessor private constructor(
             baselineBuffer = IntBuffer.allocate(width * height),
             currentBuffer = IntBuffer.allocate(width * height)
         ).apply {
-            baselineBitmap!!.copyPixelsToBuffer(baselineBuffer)
-            currentBitmap!!.copyPixelsToBuffer(currentBuffer)
-            baselineBitmap = null
-            currentBitmap = null
+            baselineBitmap.copyPixelsToBuffer(baselineBuffer)
+            currentBitmap.copyPixelsToBuffer(currentBuffer)
+            baselineBitmap.recycle()
+            currentBitmap.recycle()
         }
     }
 
