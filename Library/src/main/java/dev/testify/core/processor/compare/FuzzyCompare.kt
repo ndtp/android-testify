@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -87,18 +87,10 @@ internal class FuzzyCompare(
             .baseline(baselineBitmap)
             .current(currentBitmap)
             .analyze { baselinePixel, currentPixel, (x, y) ->
-                if (baselinePixel == currentPixel) {
-                    /* return  */ true
-                } else {
-                    var exclude = false
-                    for (rect in exclusionRects) {
-                        if (rect.contains(x, y)) {
-                            exclude = true
-                            break
-                        }
-                    }
-                    exclude || analyzePixelFunction(baselinePixel, currentPixel)
-                }
+                (baselinePixel == currentPixel) || exclusionRects.any { it.contains(x, y) } || analyzePixelFunction(
+                    baselinePixel,
+                    currentPixel
+                )
             }
     }
 }
