@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,9 +24,13 @@
  */
 package dev.testify.core.exception
 
+import dev.testify.ScreenshotRule
+
 /**
  * Exception thrown to safeguard against accidentally omitting the call to `assertSame`.
  * `assertSame` must be called in the test method.
+ *
+ * @param parent the name of the parent class
  */
-class MissingAssertSameException :
-    TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the ScreenshotRule *\n")
+class MissingAssertSameException(parent: String? = ScreenshotRule::class.simpleName) :
+    TestifyException("NO_ASSERT", "\n\n* You must call assertSame on the $parent *\n")

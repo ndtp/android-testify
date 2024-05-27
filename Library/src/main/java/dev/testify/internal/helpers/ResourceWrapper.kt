@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,6 +32,7 @@ import androidx.annotation.VisibleForTesting
 import dev.testify.core.exception.ActivityMustImplementResourceOverrideException
 import dev.testify.core.exception.TestMustWrapContextException
 import dev.testify.resources.TestifyResourcesOverride
+import java.util.Locale
 
 /**
  * An interface for wrapping (transforming or overriding) a resources.
@@ -194,4 +195,26 @@ object ResourceWrapper {
         isWrapped = false
         wrappedResources.clear()
     }
+}
+
+/**
+ * Override a resource (font scale, locale) of the application under test.
+ * This is required to be able to test the application in different languages and font scales.
+ * This method must be called before the activity is launched.
+ * This is useful for testing the application with a ScenarioRule.
+ *
+ * @param fontScale The font scale to override. If null, the font scale will not be overridden.
+ * @param locale The locale to override. If null, the locale will not be overridden.
+ */
+fun <A : Activity> overrideResourceConfiguration(
+    fontScale: Float? = null,
+    locale: Locale? = null
+) {
+    if (fontScale != null)
+        ResourceWrapper.addOverride(WrappedFontScale(fontScale))
+
+    if (locale != null)
+        ResourceWrapper.addOverride(WrappedLocale(locale))
+
+    ResourceWrapper.beforeActivityLaunched()
 }

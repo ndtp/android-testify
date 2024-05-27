@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2023-2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60,6 +60,7 @@ import dev.testify.core.processor.compare.sameAsCompare
 import dev.testify.core.processor.diff.HighContrastDiff
 import dev.testify.internal.extensions.TestInstrumentationRegistry
 import dev.testify.internal.helpers.EspressoHelper
+import dev.testify.internal.helpers.closeSoftKeyboard
 import dev.testify.internal.helpers.findRootView
 import dev.testify.internal.helpers.isRunningOnUiThread
 import dev.testify.output.DataDirectoryDestination
@@ -139,6 +140,7 @@ class ScreenshotRuleTest {
         mockkStatic(::getDestination)
         mockkStatic(::isRunningOnUiThread)
         mockkStatic(::pauseForInspection)
+        mockkStatic(::closeSoftKeyboard)
         mockkStatic(InstrumentationRegistry::class)
         mockkStatic(Looper::class)
         mockkStatic("dev.testify.internal.helpers.FindRootViewKt")
@@ -176,7 +178,7 @@ class ScreenshotRuleTest {
         every { pauseForInspection() } just runs
         every { HighContrastDiff.create(any()) } returns mockHighContrastDiff
         every { mockEspressoHelper.syncUiThread() } just runs
-        every { mockEspressoHelper.closeSoftKeyboard() } just runs
+        every { closeSoftKeyboard() } just runs
 
         val slot = slot<Runnable>()
         every { mockActivity.runOnUiThread(capture(slot)) } answers {

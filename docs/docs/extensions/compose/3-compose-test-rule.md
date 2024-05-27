@@ -1,3 +1,6 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Interoperability with ComposeTestRule
 
 
@@ -12,6 +15,9 @@ You have access to the `ComposeRule` instance through the `setComposeActions()` 
 
 ### Example
 
+<Tabs>
+<TabItem value="test" label="ComposableScreenshotRule">
+
 ```kotlin
 class ComposableScreenshotTest {
     @get:Rule
@@ -20,22 +26,59 @@ class ComposableScreenshotTest {
     @ScreenshotInstrumentation
     @Test
     fun default() {
-      rule
-          .setCompose {
-              var text by remember { mutableStateOf("") }
-              TextField(
-                  value = text,
-                  onValueChange = { text = it },
-                  modifier = Modifier.testTag("field")
-              )
-          }
-          .setComposeActions { composeTestRule ->
-              composeTestRule.onNodeWithTag("field").performTextInput("testify")
-          }
-          .assertSame()
+        rule
+            .setCompose {
+                var text by remember { mutableStateOf("") }
+                TextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    modifier = Modifier.testTag("field")
+                )
+            }
+            .setComposeActions { composeTestRule ->
+                composeTestRule.onNodeWithTag("field").performTextInput("testify")
+            }
+            .assertSame()
     }
 }
 ```
+
+</TabItem>
+<TabItem value="scenario" label="ComposableScreenshotScenarioRule">
+
+```kotlin
+class ComposableScreenshotTest {
+    @get:Rule
+    val rule = ComposableScreenshotRule(composeTestRule = createAndroidComposeRule(ComposableTestActivity::class.java))
+
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        launchComposableTestActivity().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .setCompose {
+                    var text by remember { mutableStateOf("") }
+                    TextField(
+                        value = text,
+                        onValueChange = { text = it },
+                        modifier = Modifier.testTag("field")
+                    )
+                }
+                .setComposeActions { composeTestRule ->
+                    composeTestRule.onNodeWithTag("field").performTextInput("testify")
+                }
+                .assertSame()
+        }
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+
+
 
 
 

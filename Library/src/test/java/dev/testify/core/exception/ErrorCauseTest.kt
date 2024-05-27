@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -55,7 +55,7 @@ class ErrorCauseTest {
             "NO_ANNOTATION",
             describeErrorCause(MissingScreenshotInstrumentationAnnotationException("", "")).name
         )
-        assertEquals("NO_ASSERT", describeErrorCause(MissingAssertSameException()).name)
+        assertEquals("NO_ASSERT", describeErrorCause(MissingAssertSameException("")).name)
         assertEquals("NO_BASELINE", describeErrorCause(ScreenshotBaselineNotDefinedException("", "", "", "")).name)
         assertEquals("NO_DIRECTORY", describeErrorCause(DataDirectoryDestinationNotFoundException("")).name)
         assertEquals("NO_SD_CARD", describeErrorCause(SdCardDestinationNotFoundException("")).name)
@@ -71,5 +71,10 @@ class ErrorCauseTest {
         assertEquals("NO_TEST_STORAGE", describeErrorCause(TestStorageNotFoundException()).name)
         assertEquals("FINALIZE_DESTINATION", describeErrorCause(FinalizeDestinationException("")).name)
         assertEquals("UNEXPECTED_ORIENTATION", describeErrorCause(UnexpectedOrientationException("")).name)
+        assertEquals("ILLEGAL_SCENARIO", describeErrorCause(IllegalScenarioException()).name)
+        assertEquals(
+            "INVALID_RESOURCE_CONFIGURATION",
+            describeErrorCause(NoResourceConfigurationOnScenarioException("", "", "")).name
+        )
     }
 }

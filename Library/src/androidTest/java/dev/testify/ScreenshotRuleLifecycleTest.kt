@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -47,30 +47,37 @@ class ScreenshotRuleLifecycleTest {
     ) {
 
         override fun beforeActivityLaunched() {
+            super.beforeActivityLaunched()
             methodOrder.add("beforeActivityLaunched")
         }
 
         override fun afterActivityLaunched() {
+            super.afterActivityLaunched()
             methodOrder.add("afterActivityLaunched")
         }
 
         override fun beforeAssertSame() {
+            super.beforeAssertSame()
             methodOrder.add("beforeAssertSame")
         }
 
         override fun beforeInitializeView(activity: Activity) {
+            super.beforeInitializeView(activity)
             methodOrder.add("beforeInitializeView")
         }
 
         override fun afterInitializeView(activity: Activity) {
+            super.afterInitializeView(activity)
             methodOrder.add("afterInitializeView")
         }
 
         override fun beforeScreenshot(activity: Activity) {
+            super.beforeScreenshot(activity)
             methodOrder.add("beforeScreenshot")
         }
 
         override fun afterScreenshot(activity: Activity, currentBitmap: Bitmap?) {
+            super.afterScreenshot(activity, currentBitmap)
             assertNotNull(currentBitmap)
             methodOrder.add("afterScreenshot")
         }

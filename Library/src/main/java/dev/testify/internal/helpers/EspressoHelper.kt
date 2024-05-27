@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Copyright (c) 2022-2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -83,11 +83,9 @@ class EspressoHelper(private val configuration: TestifyConfiguration) : Screensh
     @VisibleForTesting
     internal fun syncUiThread() =
         Espresso.onIdle()
-
-    /**
-     * Wrapper for [Espresso.closeSoftKeyboard], used to allow mocking.
-     */
-    @VisibleForTesting
-    internal fun closeSoftKeyboard() =
-        Espresso.closeSoftKeyboard()
 }
+
+/**
+ * Wrapper for [Espresso.closeSoftKeyboard], used to allow mocking.
+ */
+fun closeSoftKeyboard() = Espresso.closeSoftKeyboard()

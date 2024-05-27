@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- https://github.com/ndtp/android-testify/pull/201 - Added ScreenshotScenarioRule which works in conjunction with Android's ActivityScenario.
+    - Added tests demonstrating the usage of ScreenshotScenarioRule.
+    - Major overhaul of all documentation to include alternative instructions for using ScreenshotScenarioRule.
 - https://github.com/ndtp/android-testify/pull/198- Fixes https://github.com/ndtp/android-testify/issues/79: Testify incompatible with gradle configuration cache
     - The Testify Gradle Plugin now supports [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html).
     - Gradle Plugin now uses Junit5 tests.

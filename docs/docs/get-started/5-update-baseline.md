@@ -6,8 +6,8 @@ Testify works by referencing a PNG baseline found in your `androidTest/assets` d
 
 Run all the screenshot tests in your app and update the local baseline.
 
-```bash
-./gradlew screenshotRecord
+```shell-session
+$ ./gradlew app:screenshotRecord
 ```
 
 ## Pull images from the device
@@ -15,8 +15,8 @@ Run all the screenshot tests in your app and update the local baseline.
 Copy images from the `app_images` directory on your emulator to your local `androidTest/assets`
 directory.
 
-```bash
-./gradlew screenshotPull
+```shell-session
+$ ./gradlew app:screenshotPull
 ```
 
 ## Record a new baseline using Testify settings
@@ -27,7 +27,7 @@ instruct Testify to generate new baselines. There are two options.
 
 ### Enable record mode in Testify settings
 
-Just set `recordMode = true` in the `testify` block inside `build.gradle` file:
+To enable record mode, you can also set `recordMode = true` in the `testify` block inside your `build.gradle` file:
 
 ```groovy
 testify {
@@ -47,5 +47,5 @@ val screenshotRule = ScreenshotRule(ClientListActivity::class.java)
 screenshotRule.setRecordModeEnabled(true)
 ```
 
-With `ScreenshotRule` record mode could be enabled only for specific test and disabled for all
+With `ScreenshotRule` record mode can be enabled only for a specific test and disabled for all
 others.

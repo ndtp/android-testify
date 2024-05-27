@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Copyright (c) 2022-2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,11 +30,12 @@ import android.view.View
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
 import dev.testify.ScreenshotRule
-import dev.testify.exception.FailedToCaptureFullscreenBitmapException
-import dev.testify.exception.FailedToLoadCapturedBitmapException
 import dev.testify.core.DEFAULT_NAME_FORMAT
 import dev.testify.core.DeviceStringFormatter
+import dev.testify.core.TestifyConfigurable
 import dev.testify.core.formatDeviceString
+import dev.testify.exception.FailedToCaptureFullscreenBitmapException
+import dev.testify.exception.FailedToLoadCapturedBitmapException
 import dev.testify.loadBitmapFromFile
 import dev.testify.output.Destination
 import dev.testify.output.getDestination
@@ -111,9 +112,13 @@ private fun getFileName(testContext: Context): String {
 }
 
 /**
- * Helper method to invoke [ScreenshotRule.setCaptureMethod] with the fullscreen capture method.
+ * Helper method to configure the capture method to the fullscreen capture method.
+ *
+ * Examples of TestifyConfigurable are ScreenshotRule, ScreenshotScenarioRule, and ComposableScreenshotRule.
+ *
+ * @return The current [TestifyConfigurable] instance
  */
-fun ScreenshotRule<*>.captureFullscreen(): ScreenshotRule<*> {
+fun <TConfigurable : TestifyConfigurable> TConfigurable.captureFullscreen(): TConfigurable {
     configure { captureMethod = ::fullscreenCapture }
     return this
 }

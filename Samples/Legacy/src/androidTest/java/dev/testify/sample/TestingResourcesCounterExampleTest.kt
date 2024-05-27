@@ -43,7 +43,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.spy
 import java.util.Locale
 
 /**
