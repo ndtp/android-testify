@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,17 +26,38 @@ package dev.testify.tasks.main
 
 import dev.testify.tasks.internal.TaskDependencyProvider
 import dev.testify.tasks.internal.TaskNameProvider
+import dev.testify.tasks.internal.TestifyDefaultTask
+import dev.testify.tasks.main.internal.InternalScreenshotTestRecordTask
 import org.gradle.api.Project
 
-open class ScreenshotRecordTask : ScreenshotTestTask() {
+open class ScreenshotRecordTask : TestifyDefaultTask() {
 
     override fun getDescription() = "Run the screenshot tests and record a new baseline"
 
-    override val isRecordMode = true
+    override fun taskAction() {
+        // no-op
+        // Public task is just a placeholder for the internal task
+    }
 
     companion object : TaskNameProvider, TaskDependencyProvider {
         override fun setDependencies(taskNameProvider: TaskNameProvider, project: Project) {
+            val screenshotClearTask = project.tasks.getByName(ScreenshotClearTask.taskName()) as ScreenshotClearTask
+            val screenshotPullTask = project.tasks.getByName(ScreenshotPullTask.taskName()) as ScreenshotPullTask
+            val recordTask = project.tasks.getByName(taskNameProvider.taskName())
+            val recordInternalTask =
+                project.tasks.getByName(InternalScreenshotTestRecordTask.taskName()) as InternalScreenshotTestRecordTask
+
+            recordTask.dependsOn(screenshotClearTask)
+            recordTask.dependsOn(recordInternalTask)
+            recordTask.dependsOn(screenshotPullTask)
+
+            recordInternalTask.mustRunAfter(screenshotClearTask)
+            screenshotPullTask.mustRunAfter(recordInternalTask)
+
             ScreenshotTestTask.setDependencies(taskNameProvider, project)
+
+            screenshotClearTask.mustRunAfter(getInstallDebugAndroidTestTask(project))
+            screenshotPullTask.mustRunAfter(getInstallDebugAndroidTestTask(project))
         }
 
         override fun taskName() = "screenshotRecord"

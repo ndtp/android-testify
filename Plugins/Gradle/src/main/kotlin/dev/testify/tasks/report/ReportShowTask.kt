@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,16 +35,27 @@ import dev.testify.tasks.internal.DEFAULT_REPORT_FILE_NAME
 import dev.testify.tasks.internal.ReportTask
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.testifySettings
+import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 
 open class ReportShowTask : ReportTask() {
 
+    @get:Input lateinit var reportFilePath: String
+    @get:Input lateinit var targetPackageId: String
+
     override fun getDescription() = "Print the test result report to the console"
 
+    override fun provideInput(project: Project) {
+        super.provideInput(project)
+        reportFilePath = project.reportFilePath
+        targetPackageId = project.testifySettings.targetPackageId
+    }
+
     override fun taskAction() {
-        val reportFilePath = project.reportFilePath
+        val reportFilePath = reportFilePath
         val files = Adb()
             .shell()
-            .runAs(project.testifySettings.targetPackageId)
+            .runAs(targetPackageId)
             .listFiles(reportFilePath)
 
         val file = files.find { it.endsWith(DEFAULT_REPORT_FILE_NAME) }
@@ -59,7 +70,7 @@ open class ReportShowTask : ReportTask() {
     private fun show(sourceFilePath: String) {
         Adb()
             .execOut()
-            .runAs(project.testifySettings.targetPackageId)
+            .runAs(targetPackageId)
             .argument("cat")
             .argument(sourceFilePath)
             .stream(StreamData.ConsoleStream)
