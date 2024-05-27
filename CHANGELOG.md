@@ -2,28 +2,12 @@
 
 ## Unreleased
 
-### Library
-
-#### Added
-
-- Added additional method documentation.
-
-### Flix Sample
-
-#### Changed
-
-- Flix Sample now uses Hilt instead of Koin for dependency injection.
-
-### Gradle Plugin
-
-#### Fixed
-
-- Fixes https://github.com/ndtp/android-testify/issues/79: Testify incompatible with gradle configuration cache
-    The Testify Gradle Plugin now supports [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html).
-
-#### Changed
-
-- Gradle Plugin now uses Junit5 tests.
+- https://github.com/ndtp/android-testify/pull/198- Fixes https://github.com/ndtp/android-testify/issues/79: Testify incompatible with gradle configuration cache
+    - The Testify Gradle Plugin now supports [Gradle Configuration Cache](https://docs.gradle.org/current/userguide/configuration_cache.html).
+    - Gradle Plugin now uses Junit5 tests.
+- https://github.com/ndtp/android-testify/pull/196 - Flix Library sample added
+- https://github.com/ndtp/android-testify/pull/192 - Flix Sample now uses Hilt instead of Koin for dependency injection
+- https://github.com/ndtp/android-testify/pull/191 - Added additional method documentation.
 
 ---
 
