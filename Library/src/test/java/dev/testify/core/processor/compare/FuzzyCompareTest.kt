@@ -70,7 +70,8 @@ class FuzzyCompareTest {
 
     private val subject = FuzzyCompare(
         TestifyConfiguration(),
-        ParallelProcessorConfiguration().apply { _executorDispatcher = Dispatchers.Main })
+        ParallelProcessorConfiguration().apply { _executorDispatcher = Dispatchers.Main }
+    )
 
     @Test
     fun `WHEN bitmaps are identical THEN succeed fast`() {
