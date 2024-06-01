@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- https://github.com/ndtp/android-testify/pull/208 - Redefine plugin artifact to work with gradle plugin DSL
 - https://github.com/ndtp/android-testify/pull/201 - Added ScreenshotScenarioRule which works in conjunction with Android's ActivityScenario.
     - Added tests demonstrating the usage of ScreenshotScenarioRule.
     - Major overhaul of all documentation to include alternative instructions for using ScreenshotScenarioRule.
