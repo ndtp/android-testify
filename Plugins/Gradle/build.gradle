@@ -23,8 +23,7 @@ version = "$project.versions.testify"
 group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
-// Not able to upgrade gradle android plugin with this in place, Java 11 works, not sure if safe
-sourceCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
 
 test {
     jacoco {
@@ -57,13 +56,13 @@ tasks.named('test', Test) {
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
 }
 
@@ -98,7 +97,7 @@ task assembleLocal(description: 'Assembles the outputs of this project for use l
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.groovy.srcDirs
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 apply from: "../../publish.build.gradle"

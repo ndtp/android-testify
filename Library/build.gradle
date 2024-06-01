@@ -28,6 +28,13 @@ jacoco { toolVersion = "0.8.10" }
 android {
     compileSdkVersion coreVersions.compileSdk
 
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
     defaultConfig {
         minSdkVersion coreVersions.minSdk
@@ -36,7 +43,7 @@ android {
         multiDexEnabled = true
         kotlinOptions {
             allWarningsAsErrors = true
-            freeCompilerArgs = [ "-Xcontext-receivers" ]
+            freeCompilerArgs = ["-Xcontext-receivers"]
         }
     }
 
@@ -104,11 +111,14 @@ android {
         }
     }
     namespace 'dev.testify'
-}
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    publishing {
+        singleVariant("release") {
+            // if you don't want sources/javadoc, remove these lines
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 afterEvaluate {

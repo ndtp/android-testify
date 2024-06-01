@@ -23,6 +23,7 @@ group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
 android {
+    namespace "dev.testify.compose"
     compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
@@ -66,7 +67,11 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = '17'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     composeOptions {
         kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
@@ -87,11 +92,14 @@ android {
         implementation "androidx.test:runner:${versions.androidx.test.runner}"
         implementation "androidx.test:core-ktx:${versions.androidx.test.coreKtx}"
     }
-}
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    publishing {
+        singleVariant("release") {
+            // if you don't want sources/javadoc, remove these lines
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 afterEvaluate {
