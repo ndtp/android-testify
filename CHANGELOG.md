@@ -1,6 +1,6 @@
 # Testify Change Log
 
-## Unreleased
+## 3.0.0
 
 - https://github.com/ndtp/android-testify/pull/212 - Bug fixes and performance improvements for the ParallelPixelProcessor
     - Add parallelThreads extension property to the Gradle plugin. This allows for customization of the number of worker threads to be used by the ParallelProcessor. Set limits on the thread pool to a minimum of 1 and a maximum of 4.
