@@ -24,10 +24,10 @@ buildscript {
                 ],
                 'colormath'          : '1.4.1',             // https://github.com/ajalt/colormath/releases
                 'compose'            : [                    // https://developer.android.com/jetpack/androidx/releases/compose
-                    'compilerExt': '1.4.7',
-                    'core'       : '1.4.3',
-                    'material'   : '1.4.3',
-                    'ui'         : '1.4.3',
+                                                            'compilerExt': '1.4.7',
+                                                            'core'       : '1.4.3',
+                                                            'material'   : '1.4.3',
+                                                            'ui'         : '1.4.3',
                 ],
                 'dokka'              : '1.8.10',            // https://github.com/Kotlin/dokka/releases
                 'gson'               : '2.9.0',             // https://github.com/google/gson/releases
@@ -50,13 +50,13 @@ buildscript {
 }
 
 plugins {
-    id 'com.android.application' version '8.4.1' apply false
-    id 'com.android.library' version '8.4.1' apply false
-    id 'org.jetbrains.kotlin.android' version '1.8.21' apply false
-    id 'org.jetbrains.dokka' version '1.8.10' apply false
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
-    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1' apply false
-    id 'com.google.dagger.hilt.android' version '2.44' apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets) apply false
+    alias(libs.plugins.google.dagger.hilt.android) apply false
+    alias(libs.plugins.jetbrains.dokka) apply false
+    alias(libs.plugins.jetbrains.kotlin.android) apply false
+    alias(libs.plugins.jetbrains.kotlin.plugin.serialization) apply false
 }
 
 task clean(type: Delete) {
