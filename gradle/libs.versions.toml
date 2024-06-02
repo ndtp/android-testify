@@ -3,9 +3,12 @@ activityCompose = "1.7.1"
 appcompat = "1.6.1"
 colormath = "1.4.1"
 coreKtxVersion = "1.10.0"
+gradle = "7.4.1"
 gson = "2.9.0"
 guava = "30.0-android"
 junit = "1.1.5"
+junitJupiter = "5.8.2"
+kotlinStdlibJdk8 = "1.8.21"
 kotlinxCoroutinesAndroid = "1.6.4"
 coreKtx = "1.4.0"
 lifecycleRuntimeKtx = "2.6.1"
@@ -20,6 +23,7 @@ runner = "1.5.2"
 slf4jJdk14 = "2.0.6"
 truth = "1.1.5"
 mockk = "1.13.5"
+truthVersion = "1.2.0"
 uiautomator = "2.3.0"
 uiTestJunit4 = "1.4.3"
 
@@ -42,8 +46,13 @@ androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", versi
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiTestJunit4" }
 androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitJupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlinStdlibJdk8" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 colormath = { module = "com.github.ajalt:colormath", version.ref = "colormath" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
@@ -52,6 +61,7 @@ truth = { module = "com.google.truth:truth", version.ref = "truth" }
 slf4j-jdk14 = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4jJdk14" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesAndroid"}
+truth-v120 = { module = "com.google.truth:truth", version.ref = "truthVersion" }
 
 [plugins]
 
