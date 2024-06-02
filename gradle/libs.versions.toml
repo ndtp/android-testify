@@ -1,0 +1,38 @@
+[versions]
+appcompat = "1.6.1"
+colormath = "1.4.1"
+junit = "1.1.5"
+kotlinxCoroutinesAndroid = "1.6.4"
+coreKtx = "1.4.0"
+lifecycleRuntimeKtx = "2.6.1"
+espressoCore = "3.5.1"
+material = "1.9.0"
+mockkAndroid = "1.13.5"
+multidex = "2.0.1"
+rules = "1.5.0"
+runner = "1.5.2"
+slf4jJdk14 = "2.0.6"
+truth = "1.1.5"
+mockk = "1.13.5"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtx" }
+androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espressoCore" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junit" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
+androidx-rules = { module = "androidx.test:rules", version.ref = "rules" }
+androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+colormath = { module = "com.github.ajalt:colormath", version.ref = "colormath" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
+truth = { module = "com.google.truth:truth", version.ref = "truth" }
+slf4j-jdk14 = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4jJdk14" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesAndroid"}
+
+[plugins]
+
