@@ -1,6 +1,7 @@
 [versions]
 appcompat = "1.6.1"
 colormath = "1.4.1"
+coreKtxVersion = "1.10.0"
 junit = "1.1.5"
 kotlinxCoroutinesAndroid = "1.6.4"
 coreKtx = "1.4.0"
@@ -8,12 +9,14 @@ lifecycleRuntimeKtx = "2.6.1"
 espressoCore = "3.5.1"
 material = "1.9.0"
 mockkAndroid = "1.13.5"
+monitor = "1.6.1"
 multidex = "2.0.1"
 rules = "1.5.0"
 runner = "1.5.2"
 slf4jJdk14 = "2.0.6"
 truth = "1.1.5"
 mockk = "1.13.5"
+uiautomator = "2.3.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -22,9 +25,12 @@ androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib"
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junit" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-monitor = { module = "androidx.test:monitor", version.ref = "monitor" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 androidx-rules = { module = "androidx.test:rules", version.ref = "rules" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
+androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 colormath = { module = "com.github.ajalt:colormath", version.ref = "colormath" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
