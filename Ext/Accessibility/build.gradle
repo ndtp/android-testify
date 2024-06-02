@@ -72,12 +72,12 @@ android {
     dependencies {
         implementation project(":Library")
 
-        implementation "androidx.core:core-ktx:${versions.androidx.core}"
-        implementation "androidx.test.espresso:espresso-accessibility:${versions.androidx.test.a11y}"
-        implementation "androidx.test:monitor:${versions.androidx.test.monitor}"
-        implementation "androidx.test:rules:${versions.androidx.test.rules}"
-        implementation "com.google.code.gson:gson:${versions.gson}"
-        implementation "com.google.guava:guava:${versions.guava}"
+        implementation libs.androidx.espresso.accessibility
+        implementation libs.androidx.monitor
+        implementation libs.androidx.rules
+        implementation libs.core.ktx
+        implementation libs.gson
+        implementation libs.guava
     }
 
     publishing {
