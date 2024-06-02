@@ -31,6 +31,8 @@ publishing {
                 from components.release
             } else {
                 from components.java
+                artifact javadocJar
+                artifact sourcesJar
             }
 
             afterEvaluate {

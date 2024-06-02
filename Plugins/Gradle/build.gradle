@@ -100,6 +100,12 @@ task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
 }
 
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.set('javadoc')
+    archiveBaseName.set('testify')
+    from dokkaJavadoc.outputDirectory
+}
+
 apply from: "../../publish.build.gradle"
 apply from: '../../ktlint.gradle'
 
