@@ -80,17 +80,17 @@ android {
     dependencies {
         implementation project(":Library")
 
-        implementation "androidx.activity:activity-compose:${versions.androidx.activityCompose}"
-        implementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
-        implementation "androidx.compose.material:material:${versions.compose.material}"
-        implementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
-        implementation "androidx.compose.ui:ui-tooling-preview:${versions.compose.ui}"
-        implementation "androidx.compose.ui:ui:${versions.compose.ui}"
-        implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidx.lifecycleKtx}"
-        implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
-        implementation "androidx.test:rules:${versions.androidx.test.rules}"
-        implementation "androidx.test:runner:${versions.androidx.test.runner}"
-        implementation "androidx.test:core-ktx:${versions.androidx.test.coreKtx}"
+        implementation libs.androidx.activity.compose
+        implementation libs.androidx.appcompat
+        implementation libs.androidx.core.ktx
+        implementation libs.androidx.espresso.core
+        implementation libs.androidx.lifecycle.runtime.ktx
+        implementation libs.androidx.material
+        implementation libs.androidx.rules
+        implementation libs.androidx.runner
+        implementation libs.androidx.ui
+        implementation libs.androidx.ui.test.junit4
+        implementation libs.androidx.ui.tooling.preview
     }
 
     publishing {
