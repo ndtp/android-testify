@@ -74,7 +74,7 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
+        kotlinCompilerExtensionVersion "1.4.7"
     }
 
     dependencies {
