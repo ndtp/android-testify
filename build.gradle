@@ -4,9 +4,9 @@ buildscript {
                 'testify': '3.0.0' // https://github.com/ndtp/android-testify/releases
         ]
         coreVersions = [
-                'compileSdk': 33,
+                'compileSdk': 34,
                 'minSdk'    : 21,
-                'targetSdk' : 30
+                'targetSdk' : 34
         ]
     }
 }
