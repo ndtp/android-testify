@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2023-2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,12 @@ import android.app.Activity
 import android.graphics.Color
 import com.google.common.truth.Truth.assertThat
 import dev.testify.core.processor.ParallelPixelProcessor
-import dev.testify.core.processor._executorDispatcher
+import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.createBitmap
 import dev.testify.core.processor.mockBitmap
 import dev.testify.core.processor.mockRect
+import dev.testify.internal.helpers.ManifestPlaceholder
+import dev.testify.internal.helpers.getMetaDataValue
 import dev.testify.output.DataDirectoryDestination
 import dev.testify.output.getDestination
 import dev.testify.saveBitmapToDestination
@@ -63,7 +65,6 @@ class HighContrastDiffTest {
 
     private fun forceSingleThreadedExecution() {
         Dispatchers.setMain(mainThreadSurrogate)
-        _executorDispatcher = Dispatchers.Main
     }
 
     @Before
@@ -72,6 +73,7 @@ class HighContrastDiffTest {
         mockkStatic(::getDestination)
         mockkStatic(::saveBitmapToDestination)
         mockkStatic("dev.testify.core.processor.BitmapExtentionsKt")
+        mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
 
         every { any<ParallelPixelProcessor.TransformResult>().createBitmap() } answers {
             val receiver = firstArg<ParallelPixelProcessor.TransformResult>()
@@ -84,8 +86,14 @@ class HighContrastDiffTest {
         }
         every { getDestination(any(), any(), any(), any(), any()) } returns mockDestination
         every { saveBitmapToDestination(any(), any(), any()) } returns true
+        every { any<ManifestPlaceholder>().getMetaDataValue() } returns null
 
-        subject = HighContrastDiff.create(emptySet())
+        subject = HighContrastDiff.create(
+            exclusionRects = emptySet(),
+            parallelProcessorConfiguration = ParallelProcessorConfiguration().apply {
+                _executorDispatcher = Dispatchers.Main
+            }
+        )
     }
 
     @After

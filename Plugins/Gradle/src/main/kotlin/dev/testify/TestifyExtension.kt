@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -96,7 +96,16 @@ internal data class TestifySettings(
     /**
      * Allows to record new baseline images.
      */
-    val isRecordMode: Boolean
+    val isRecordMode: Boolean,
+
+    /**
+     * Gets the number of threads to create in the parallel pixel processor thread pool.
+     * If parallelThreads is not set then defaults to the number of available CPU cores.
+     * If parallelThreads is less than 1, then defaults to the number of available CPU cores.
+     * Minimum is 1.
+     * Maximum is 4.
+     */
+    val parallelThreads: Int? = null
 ) {
 
     internal companion object {
@@ -122,6 +131,7 @@ internal data class TestifySettings(
             val screenshotAnnotation = extension.screenshotAnnotation
             val rootDestinationDirectory = extension.rootDestinationDirectory
             val isRecordMode = extension.isRecordMode ?: false
+            val parallelThreads = extension.parallelThreads ?: 0
 
             return TestifySettings(
                 baselineSourceDir = baselineSourceDir,
@@ -138,7 +148,8 @@ internal data class TestifySettings(
                 autoImplementLibrary = autoImplementLibrary,
                 screenshotAnnotation = screenshotAnnotation,
                 rootDestinationDirectory = rootDestinationDirectory,
-                isRecordMode = isRecordMode
+                isRecordMode = isRecordMode,
+                parallelThreads = parallelThreads
             )
         }
     }
@@ -202,6 +213,7 @@ open class TestifyExtension {
     var screenshotAnnotation: String? = null
     var rootDestinationDirectory: String? = null
     var isRecordMode: Boolean? = null
+    var parallelThreads: Int? = null
 
     companion object {
         const val NAME = "testify"

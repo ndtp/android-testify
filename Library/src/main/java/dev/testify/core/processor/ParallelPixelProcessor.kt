@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2023-2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,6 +34,8 @@ import java.nio.IntBuffer
 import java.util.BitSet
 import kotlin.math.ceil
 
+typealias AnalyzePixelFunction = (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Boolean
+
 /**
  * A class that allows for parallel processing of pixels in a bitmap.
  *
@@ -41,10 +43,12 @@ import kotlin.math.ceil
  * Used by [BitmapComparator] to compare two bitmaps in parallel.
  * Used by [BitmapTransformer] to transform two bitmaps in parallel.
  */
-class ParallelPixelProcessor private constructor() {
+class ParallelPixelProcessor private constructor(
+    private val configuration: ParallelProcessorConfiguration
+) {
 
-    private var baselineBitmap: Bitmap? = null
-    private var currentBitmap: Bitmap? = null
+    private lateinit var baselineBitmap: Bitmap
+    private lateinit var currentBitmap: Bitmap
 
     /**
      * Set the [Bitmap] to use as the baseline.
@@ -66,8 +70,8 @@ class ParallelPixelProcessor private constructor() {
      * Prepare the bitmaps for parallel processing.
      */
     private fun prepareBuffers(): ImageBuffers {
-        val width = currentBitmap!!.width
-        val height = currentBitmap!!.height
+        val width = currentBitmap.width
+        val height = currentBitmap.height
 
         return ImageBuffers(
             width = width,
@@ -75,10 +79,8 @@ class ParallelPixelProcessor private constructor() {
             baselineBuffer = IntBuffer.allocate(width * height),
             currentBuffer = IntBuffer.allocate(width * height)
         ).apply {
-            baselineBitmap!!.copyPixelsToBuffer(baselineBuffer)
-            currentBitmap!!.copyPixelsToBuffer(currentBuffer)
-            baselineBitmap = null
-            currentBitmap = null
+            baselineBitmap.copyPixelsToBuffer(baselineBuffer)
+            currentBitmap.copyPixelsToBuffer(currentBuffer)
         }
     }
 
@@ -87,7 +89,7 @@ class ParallelPixelProcessor private constructor() {
      */
     private fun getChunkData(width: Int, height: Int): ChunkData {
         val size = width * height
-        val chunkSize = (size / maxNumberOfChunkThreads).coerceAtLeast(1)
+        val chunkSize = (size / configuration.maxNumberOfChunkThreads).coerceAtLeast(1)
         val chunks = ceil(size.toFloat() / chunkSize.toFloat()).toInt()
         return ChunkData(size, chunks, chunkSize)
     }
@@ -97,7 +99,7 @@ class ParallelPixelProcessor private constructor() {
      */
     private fun runBlockingInChunks(chunkData: ChunkData, fn: CoroutineScope.(chunk: Int, index: Int) -> Boolean) {
         runBlocking {
-            launch(executorDispatcher) {
+            launch(configuration.executorDispatcher) {
                 (0 until chunkData.chunks).map { chunk ->
                     async {
                         val start = chunk * chunkData.wholeChunkSize
@@ -134,7 +136,7 @@ class ParallelPixelProcessor private constructor() {
      * @param analyzer The analyzer function to call for each pixel.
      * @return True if all pixels pass the analyzer function, false otherwise.
      */
-    fun analyze(analyzer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Boolean): Boolean {
+    fun analyze(analyzer: AnalyzePixelFunction): Boolean {
         val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
 
         val chunkData = getChunkData(width, height)
@@ -234,8 +236,10 @@ class ParallelPixelProcessor private constructor() {
         /**
          * Factory method to create a new [ParallelPixelProcessor].
          */
-        fun create(): ParallelPixelProcessor {
-            return ParallelPixelProcessor()
+        fun create(
+            configuration: ParallelProcessorConfiguration
+        ): ParallelPixelProcessor {
+            return ParallelPixelProcessor(configuration)
         }
     }
 }

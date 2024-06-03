@@ -26,6 +26,7 @@ package dev.testify.core.logic
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry
@@ -104,6 +105,8 @@ internal fun <TActivity : Activity> assertSame(
     }
 
     var activity: TActivity? = null
+    var currentBitmap: Bitmap? = null
+    var baselineBitmap: Bitmap? = null
 
     try {
         activity = activityProvider.getActivity()
@@ -121,7 +124,7 @@ internal fun <TActivity : Activity> assertSame(
         configuration.beforeScreenshot(rootView)
         screenshotLifecycleHost.notifyObservers { it.beforeScreenshot(activity) }
 
-        val currentBitmap = takeScreenshot(
+        currentBitmap = takeScreenshot(
             activity,
             outputFileName,
             screenshotView,
@@ -139,7 +142,7 @@ internal fun <TActivity : Activity> assertSame(
 
         val destination = getDestination(activity, outputFileName)
 
-        val baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
+        baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
             ?: if (isRecordMode) {
                 TestInstrumentationRegistry.instrumentationPrintln(
                     "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
@@ -192,6 +195,8 @@ internal fun <TActivity : Activity> assertSame(
             }
         }
     } finally {
+        currentBitmap?.recycle()
+        baselineBitmap?.recycle()
         activity?.let { ResourceWrapper.afterTestFinished(activity) }
         configuration.afterTestFinished()
         TestifyFeatures.reset()

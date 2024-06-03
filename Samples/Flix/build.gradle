@@ -31,7 +31,7 @@ secrets {
 
 android {
     namespace 'dev.testify.samples.flix'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "dev.testify.samples.flix"

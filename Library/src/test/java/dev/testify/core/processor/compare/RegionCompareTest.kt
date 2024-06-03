@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,10 +27,15 @@ package dev.testify.core.processor.compare
 import android.graphics.Bitmap
 import android.graphics.Rect
 import dev.testify.core.TestifyConfiguration
-import dev.testify.core.processor._executorDispatcher
+import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.mockRect
+import dev.testify.internal.helpers.ManifestPlaceholder
+import dev.testify.internal.helpers.getMetaDataValue
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.runs
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,7 +58,8 @@ class RegionCompareTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(mainThreadSurrogate)
-        _executorDispatcher = Dispatchers.Main
+        mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
+        every { any<ManifestPlaceholder>().getMetaDataValue() } returns null
     }
 
     @After
@@ -63,7 +69,12 @@ class RegionCompareTest {
     }
 
     private val rectSet = HashSet<Rect>()
-    private val regionCompare = FuzzyCompare(TestifyConfiguration(exclusionRects = rectSet))
+    private val regionCompare = FuzzyCompare(
+        configuration = TestifyConfiguration(exclusionRects = rectSet),
+        parallelProcessorConfiguration = ParallelProcessorConfiguration().apply {
+            _executorDispatcher = Dispatchers.Main
+        }
+    )
 
     @Test
     fun `compareBitmaps succeeds when bitmaps are identical`() {
@@ -132,6 +143,7 @@ class RegionCompareTest {
             every { this@mockk.height } returns 100
             every { this@mockk.width } returns 100
             every { this@mockk.sameAs(any()) } returns false
+            every { this@mockk.recycle() } just runs
             every { copyPixelsToBuffer(any()) } answers {
                 val buffer = args[0] as IntBuffer
 

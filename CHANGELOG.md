@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- https://github.com/ndtp/android-testify/pull/212 - Bug fixes and performance improvements for the ParallelPixelProcessor
+    - Add parallelThreads extension property to the Gradle plugin. This allows for customization of the number of worker threads to be used by the ParallelProcessor. Set limits on the thread pool to a minimum of 1 and a maximum of 4.
+    - Refactor the ParallelPixelProcessor and introduce a new configuration class to wrap the thread configuration variables and the CoroutineDispatcher configuration.
+    - Several small improvements to the FuzzyCompare method to perform fewer allocations inside the analyze function
+    - Upgrade UiAutomator dependency to 2.3.0 https://developer.android.com/jetpack/androidx/releases/test-uiautomator
+    - Recycle the bitmaps in the finalize block of assertSame()
+    - Add several new tests and enhancements to the existing ParallelProcessor tests
+    - Upgrade the compile SDK for the samples to 34
 - https://github.com/ndtp/android-testify/pull/208 - Redefine plugin artifact to work with gradle plugin DSL
 - https://github.com/ndtp/android-testify/pull/201 - Added ScreenshotScenarioRule which works in conjunction with Android's ActivityScenario.
     - Added tests demonstrating the usage of ScreenshotScenarioRule.

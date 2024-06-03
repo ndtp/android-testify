@@ -18,16 +18,16 @@ buildscript {
                                 'monitor'    : '1.6.1',     // https://developer.android.com/jetpack/androidx/releases/test
                                 'rules'      : '1.5.0',     // https://developer.android.com/jetpack/androidx/releases
                                 'runner'     : '1.5.2',     // https://developer.android.com/jetpack/androidx/releases
-                                'uiautomator': '2.2.0',     // https://mvnrepository.com/artifact/androidx.test.uiautomator/uiautomator
+                                'uiautomator': '2.3.0',     // https://developer.android.com/jetpack/androidx/releases/test-uiautomator
                         ],
                         'fragment'        : '1.3.6',        // https://developer.android.com/jetpack/androidx/releases/fragment
                 ],
                 'colormath'          : '1.4.1',             // https://github.com/ajalt/colormath/releases
                 'compose'            : [                    // https://developer.android.com/jetpack/androidx/releases/compose
-                        'compilerExt'   : '1.4.7',
-                        'core'          : '1.4.3',
-                        'material'      : '1.4.3',
-                        'ui'            : '1.4.3',
+                    'compilerExt': '1.4.7',
+                    'core'       : '1.4.3',
+                    'material'   : '1.4.3',
+                    'ui'         : '1.4.3',
                 ],
                 'dokka'              : '1.8.10',            // https://github.com/Kotlin/dokka/releases
                 'gson'               : '2.9.0',             // https://github.com/google/gson/releases

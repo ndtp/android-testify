@@ -22,7 +22,7 @@ plugins {
 apply plugin: 'dev.testify'
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility 1.8

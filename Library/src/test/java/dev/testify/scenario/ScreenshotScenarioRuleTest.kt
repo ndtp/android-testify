@@ -185,7 +185,7 @@ class ScreenshotScenarioRuleTest {
         every { sameAsCompare(any(), any()) } returns true
         every { isRunningOnUiThread() } returns false
         every { pauseForInspection() } just runs
-        every { HighContrastDiff.create(any()) } returns mockHighContrastDiff
+        every { HighContrastDiff.create(any(), any()) } returns mockHighContrastDiff
         every { mockEspressoHelper.syncUiThread() } just runs
         every { closeSoftKeyboard() } just runs
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2023-2024 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,7 @@ import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 private const val MANIFEST_DESTINATION_KEY = "dev.testify.destination"
 private const val MANIFEST_MODULE_KEY = "dev.testify.module"
 private const val MANIFEST_IS_RECORD_MODE = "dev.testify.recordMode"
+private const val MANIFEST_PARALLEL_THREADS = "dev.testify.parallelThreads"
 
 sealed class ManifestPlaceholder(val key: String) {
 
@@ -55,6 +56,14 @@ sealed class ManifestPlaceholder(val key: String) {
      * Whether or not the test is running in record mode.
      */
     object RecordMode : ManifestPlaceholder(MANIFEST_IS_RECORD_MODE)
+
+    /**
+     * The requested number of parallel threads to use for the ParallelPixelProcessor.
+     * Default, or if 0 is set, is equal to the number of CPU cores.
+     * Minimum is 1.
+     * Maximum is 4.
+     */
+    object ParallelThreads : ManifestPlaceholder(MANIFEST_PARALLEL_THREADS)
 }
 
 /**
