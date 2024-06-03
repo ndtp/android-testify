@@ -28,6 +28,7 @@ package dev.testify
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Instrumentation
 import android.content.Intent
 import android.os.Bundle
 import android.view.View.NO_ID
@@ -37,6 +38,7 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.VisibleForTesting
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.annotation.findAnnotation
 import dev.testify.annotation.getScreenshotAnnotationName
@@ -247,7 +249,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     /**
      * Set the Espresso actions to run on the Activity under test before taking a screenshot.
      *
-     * @see https://developer.android.com/training/testing/espresso
+     * @see "https://developer.android.com/training/testing/espresso"
      *
      *     @ScreenshotInstrumentation
      *     @Test
@@ -519,7 +521,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * This override of ActivityTestRule.getActivityIntent() allows Testify to set up a custom Intent as if supplied to
      * android.content.Context.startActivity.
      */
-    public final override fun getActivityIntent(): Intent? {
+    public final override fun getActivityIntent(): Intent {
         var intent: Intent? = super.getActivityIntent()
         if (intent == null) {
             intent = getIntent()
@@ -635,7 +637,7 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     /**
      * Represents one or more actions to be taken at runtime in the course of running a JUnit test suite.
      */
-    private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
+    private inner class ScreenshotStatement(private val base: Statement) : Statement() {
 
         override fun evaluate() {
             try {

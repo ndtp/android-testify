@@ -74,12 +74,13 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
     composeOptions {
-        kotlinCompilerExtensionVersion "1.4.7"
+        kotlinCompilerExtensionVersion "1.5.14"
     }
 
     dependencies {
         implementation project(":Library")
 
+        implementation(platform(libs.androidx.compose.bom))
         implementation libs.androidx.activity.compose
         implementation libs.androidx.appcompat
         implementation libs.androidx.core.ktx

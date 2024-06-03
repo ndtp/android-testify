@@ -25,6 +25,7 @@ package dev.testify.scenario
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Instrumentation
 import android.content.Intent
 import android.view.View
 import androidx.annotation.CallSuper
@@ -39,6 +40,7 @@ import dev.testify.TestDescription
 import dev.testify.TestifyFeatures
 import dev.testify.ViewModification
 import dev.testify.ViewProvider
+import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
 import dev.testify.annotation.findAnnotation
 import dev.testify.annotation.getScreenshotAnnotationName
@@ -528,7 +530,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
     /**
      * Represents one or more actions to be taken at runtime in the course of running a JUnit test suite.
      */
-    private inner class ScreenshotStatement constructor(private val base: Statement) : Statement() {
+    private inner class ScreenshotStatement(private val base: Statement) : Statement() {
 
         override fun evaluate() {
             try {

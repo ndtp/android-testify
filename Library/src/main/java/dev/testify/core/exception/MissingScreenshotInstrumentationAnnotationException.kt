@@ -25,7 +25,7 @@
 package dev.testify.core.exception
 
 /**
- * Exception thrown when [annotationName] annotation is missing.
+ * Exception thrown when `annotationName` annotation is missing.
  *
  * Use of the Gradle plugin requires the specified annotation.
  */

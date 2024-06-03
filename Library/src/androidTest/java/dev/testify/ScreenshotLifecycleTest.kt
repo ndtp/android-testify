@@ -59,7 +59,7 @@ class ScreenshotLifecycleTest {
 
         try {
             rule.assertSame()
-        } catch (e: ScreenshotBaselineNotDefinedException) {
+        } catch (_: ScreenshotBaselineNotDefinedException) {
         }
 
         assertEquals(6, observer.log.size)

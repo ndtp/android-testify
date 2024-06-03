@@ -27,6 +27,7 @@ package dev.testify.core
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
@@ -279,7 +280,7 @@ data class TestifyConfiguration(
     /**
      * Returns true if the test has defined any exclusion rects.
      */
-    internal fun hasExclusionRect() = exclusionRects.isNotEmpty()
+    private fun hasExclusionRect() = exclusionRects.isNotEmpty()
 
     /**
      * Get the CaptureMethod that should be used to capture the bitmap.
