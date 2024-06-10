@@ -27,6 +27,7 @@ package dev.testify.internal.modification
 import android.text.InputType
 import android.view.View
 import android.widget.EditText
+import dev.testify.core.TestifyConfiguration
 
 /**
  * A [ViewModification] that hides the text suggestions on an [EditText].

@@ -3,7 +3,8 @@ configurations {
 }
 
 dependencies {
-    ktlint "com.pinterest:ktlint:${versions.ktlint}"
+    //noinspection UseTomlInstead
+    ktlint "com.pinterest:ktlint:0.45.2"
     // additional 3rd party ruleset(s) can be specified here
     // just add them to the classpath (e.g. ktlint 'groupId:artifactId:version') and
     // ktlint will pick them up

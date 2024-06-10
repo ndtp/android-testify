@@ -35,8 +35,8 @@ import java.util.Locale
 /**
  * A typealias for the test class and test name.
  *
- * @param first - The test class name
- * @param second - The test method name
+ * @param `first` - The test class name
+ * @param `second` - The test method name
  */
 typealias TestName = Pair<String, String>
 
@@ -70,7 +70,7 @@ fun getDeviceDescription(context: Context): String {
 /**
  * Returns a string representing the device description.
  *
- * @param testName - The name of the currently running test
+ * @param formatter - Utility class for formatting device description strings
  * @param format - The format of the device description string
  *  The following values will be substituted:
  *     a: API level (ex. 21)

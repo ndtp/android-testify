@@ -11,16 +11,10 @@ dokkaJavadoc {
     }
 }
 
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
-    archiveClassifier.set('javadoc')
-    archiveBaseName.set('testify')
-    from dokkaJavadoc.outputDirectory
-}
-
 publishing {
     repositories {
         maven {
-            def release =  "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def release = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             def snapshot = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             url = version.endsWith('SNAPSHOT') ? snapshot : release
 
@@ -37,6 +31,8 @@ publishing {
                 from components.release
             } else {
                 from components.java
+                artifact javadocJar
+                artifact sourcesJar
             }
 
             afterEvaluate {
@@ -44,9 +40,6 @@ publishing {
                 artifactId = project.ext.pom.artifact
                 version = project.version
             }
-
-            artifact javadocJar
-            artifact sourcesJar
 
             pom {
                 name = project.ext.pom.libraryName

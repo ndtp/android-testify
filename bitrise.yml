@@ -28,6 +28,9 @@ workflows:
       test report.
     steps:
     - git-clone@8: {}
+    - set-java-version@1:
+        inputs:
+        - set_java_version: '17'
     - install-missing-android-tools@3:
         inputs:
         - gradlew_path: "$PROJECT_LOCATION/gradlew"

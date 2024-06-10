@@ -30,6 +30,8 @@ import android.view.View
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.uiautomator.UiDevice
 import dev.testify.ScreenshotRule
+import dev.testify.capture.fullscreen.provider.excludeNavigationBar
+import dev.testify.capture.fullscreen.provider.excludeStatusBar
 import dev.testify.core.DEFAULT_NAME_FORMAT
 import dev.testify.core.DeviceStringFormatter
 import dev.testify.core.TestifyConfigurable
@@ -47,8 +49,8 @@ import dev.testify.testDescription
  * The bitmap will be generated from a PNG at 1:1 scale and 100% quality. The bitmap's size will match the full
  * device resolution and include all system UI such as the status bar and navigation bar.
  *
- * As the system UI content is highly variable, you can use [ScreenshotRule.excludeStatusBar] and/or
- * [ScreenshotRule.excludeNavigationBar] to ignore the status bar and navigation bar, respectively.
+ * As the system UI content is highly variable, you can use [excludeStatusBar] and/or
+ * [excludeNavigationBar] to ignore the status bar and navigation bar, respectively.
  *
  * Though the PNG is intended to be lossless, some compression artifacts or GPU-related variance can occur. As such,
  * it is recommended to use a small tolerance when capturing fullscreen images.
@@ -80,7 +82,7 @@ fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap {
     if (!device.takeScreenshot(file, 1f, 100)) throw FailedToCaptureFullscreenBitmapException()
 
     /**
-     * The screenshot is written as a PNG to [file] on the emulator. We can use [loadBitmapFromFile]
+     * The screenshot is written as a PNG to the [Destination] file on the emulator. We can use [loadBitmapFromFile]
      * to load it from a file into memory as a [Bitmap].
      */
 

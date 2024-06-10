@@ -42,7 +42,7 @@ sealed class ManifestPlaceholder(val key: String) {
      *
      * For example, if the test is running in the `app` module, this will be `app`.
      */
-    object Module : ManifestPlaceholder(MANIFEST_MODULE_KEY)
+    data object Module : ManifestPlaceholder(MANIFEST_MODULE_KEY)
 
     /**
      * The name of the destination to use for the test.
@@ -50,12 +50,12 @@ sealed class ManifestPlaceholder(val key: String) {
      * For example, this would be `sdcard` if the test output is to be saved to the SD card.
      *
      */
-    object Destination : ManifestPlaceholder(MANIFEST_DESTINATION_KEY)
+    data object Destination : ManifestPlaceholder(MANIFEST_DESTINATION_KEY)
 
     /**
      * Whether or not the test is running in record mode.
      */
-    object RecordMode : ManifestPlaceholder(MANIFEST_IS_RECORD_MODE)
+    data object RecordMode : ManifestPlaceholder(MANIFEST_IS_RECORD_MODE)
 
     /**
      * The requested number of parallel threads to use for the ParallelPixelProcessor.
@@ -63,7 +63,7 @@ sealed class ManifestPlaceholder(val key: String) {
      * Minimum is 1.
      * Maximum is 4.
      */
-    object ParallelThreads : ManifestPlaceholder(MANIFEST_PARALLEL_THREADS)
+    data object ParallelThreads : ManifestPlaceholder(MANIFEST_PARALLEL_THREADS)
 }
 
 /**
@@ -77,7 +77,6 @@ internal fun getMetaDataBundle(context: Context): Bundle? {
     val applicationInfo = if (buildVersionSdkInt() >= android.os.Build.VERSION_CODES.TIRAMISU) {
         context.packageManager?.getApplicationInfo(context.packageName, PackageManager.ApplicationInfoFlags.of(0))
     } else {
-        @Suppress("DEPRECATION")
         context.packageManager?.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
     }
     return applicationInfo?.metaData
