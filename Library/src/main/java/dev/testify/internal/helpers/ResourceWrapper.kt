@@ -206,7 +206,7 @@ object ResourceWrapper {
  * @param fontScale The font scale to override. If null, the font scale will not be overridden.
  * @param locale The locale to override. If null, the locale will not be overridden.
  */
-fun <A : Activity> overrideResourceConfiguration(
+fun <@Suppress("unused") A : Activity> overrideResourceConfiguration(
     fontScale: Float? = null,
     locale: Locale? = null
 ) {

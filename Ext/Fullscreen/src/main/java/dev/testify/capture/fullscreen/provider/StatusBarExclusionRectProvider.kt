@@ -61,6 +61,7 @@ val statusBarExclusionRectProvider: ExclusionRectProvider = { rootView, exclusio
  * Extension method for [TestifyConfiguration] that will add the rectangle covering the system status bar to the
  * exclusion area.
  */
+@Suppress("unused")
 fun TestifyConfiguration.excludeStatusBar() {
     defineExclusionRects(statusBarExclusionRectProvider)
 }

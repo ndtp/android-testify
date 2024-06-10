@@ -2,6 +2,10 @@
 
 ## 3.0.0
 
+- https://github.com/ndtp/android-testify/pull/224 - Upgrade to Kotlin 1.9.24 and Compose to 2024.05.00
+    - Fix several warnings
+    - Upgrade dependencies on sample apps
+    - Warning: The January '24 update to Compose introduces changes to the default font padding which impacts any Compose-base tests that use text. https://android-developers.googleblog.com/2024/01/whats-new-in-jetpack-compose-january-24-release.html
 - https://github.com/ndtp/android-testify/pull/219 - Upgrade to Gradle 8.6 and AGP 8.4.1
     - Define namespace in build.gradle for library projects
     - jvmTarget, sourceCompatibility and targetCompatibility set to Java 17

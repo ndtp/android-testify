@@ -25,6 +25,7 @@
 package dev.testify.internal.modification
 
 import android.view.View
+import dev.testify.core.TestifyConfiguration
 
 /**
  * A [ViewModification] that sets the layer type to [View.LAYER_TYPE_SOFTWARE].

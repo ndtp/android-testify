@@ -23,6 +23,8 @@
  */
 package dev.testify.core.exception
 
+import dev.testify.scenario.ScreenshotScenarioRule
+
 /**
  * Exception thrown when no ActivityScenario instance is provided to the ScreenshotScenarioRule.
  * The ActivityScenario instance is required to take screenshots.
