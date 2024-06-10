@@ -40,8 +40,8 @@ typealias AnalyzePixelFunction = (baselinePixel: Int, currentPixel: Int, positio
  * A class that allows for parallel processing of pixels in a bitmap.
  *
  * Uses coroutines to process pixels in two [Bitmap] objects in parallel.
- * Used by [BitmapComparator] to compare two bitmaps in parallel.
- * Used by [BitmapTransformer] to transform two bitmaps in parallel.
+ * [analyze] is used to compare two bitmaps in parallel.
+ * [transform] is used to transform two bitmaps in parallel.
  */
 class ParallelPixelProcessor private constructor(
     private val configuration: ParallelProcessorConfiguration

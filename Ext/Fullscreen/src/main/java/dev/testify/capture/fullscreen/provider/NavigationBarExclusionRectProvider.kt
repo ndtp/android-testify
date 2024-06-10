@@ -60,6 +60,7 @@ val navigationBarExclusionRectProvider: ExclusionRectProvider = { rootView, excl
  * Extension method for [TestifyConfiguration] that will add the rectangle covering the system navigation bar to the
  * exclusion area.
  */
+@Suppress("unused")
 fun TestifyConfiguration.excludeNavigationBar() {
     defineExclusionRects(navigationBarExclusionRectProvider)
 }

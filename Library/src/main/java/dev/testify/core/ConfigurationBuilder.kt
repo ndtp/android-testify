@@ -28,6 +28,8 @@ package dev.testify.core
 import android.app.Activity
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+import android.graphics.Bitmap
+import android.graphics.Rect
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.VisibleForTesting

@@ -28,6 +28,7 @@ package dev.testify.internal.helpers
 import android.app.Activity
 import android.content.Context
 import dev.testify.internal.extensions.updateLocale
+import dev.testify.resources.TestifyResourcesOverride
 import java.util.Locale
 
 /**

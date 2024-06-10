@@ -42,7 +42,7 @@ import dev.testify.accessibility.internal.AccessibilityScreenshotLifecycleObserv
  * collects various accessibility-related checks on [View] objects as well as AccessibilityNodeInfo objects (which the
  * Android framework derives from Views and sends to AccessibilityServices).
  *
- * @see https://developer.android.com/training/testing/espresso/accessibility-checking
+ * @see "https://developer.android.com/training/testing/espresso/accessibility-checking"
  *
  * All elements within the hierarchy defined by [android.R.id.content] will be available to the check.
  *
