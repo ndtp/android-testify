@@ -25,6 +25,7 @@
 package dev.testify.internal.modification
 
 import android.view.View
+import dev.testify.core.TestifyConfiguration
 
 /**
  * A [ViewModification] that hides the scrollbars on a view.

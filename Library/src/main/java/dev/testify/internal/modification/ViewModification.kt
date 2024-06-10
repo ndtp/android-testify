@@ -32,7 +32,6 @@ import android.view.ViewGroup
  *
  * Modifications are applied recursively to all views in the view hierarchy.
  *
- * @see TestifyConfiguration.viewModifications
  */
 abstract class ViewModification {
 

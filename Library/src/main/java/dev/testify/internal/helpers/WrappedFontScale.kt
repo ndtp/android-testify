@@ -31,6 +31,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.VisibleForTesting
+import dev.testify.resources.TestifyResourcesOverride
 
 /**
  * A wrapped resource that allows for overriding the font scale of the device.

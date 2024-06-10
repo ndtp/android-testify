@@ -65,33 +65,28 @@ android {
     }
 
     dependencies {
-        implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.androidx.lifecycleKtx}"
-        implementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
-        implementation "androidx.test:rules:${versions.androidx.test.rules}"
-        implementation "androidx.test:runner:${versions.androidx.test.runner}"
-        implementation "com.github.ajalt:colormath:${versions.colormath}"
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.kotlinx}") {
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
-            exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-common'
-        }
-        implementation "androidx.test:core-ktx:${versions.androidx.test.coreKtx}"
+        implementation libs.androidx.core.ktx
+        implementation libs.androidx.espresso.core
+        implementation libs.androidx.lifecycle.runtime.ktx
+        implementation libs.androidx.rules
+        implementation libs.androidx.runner
+        implementation libs.colormath
+        implementation libs.kotlinx.coroutines.android
 
-        testImplementation "io.mockk:mockk:${versions.mockk}"
-        testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.kotlinx}"
-        testImplementation "org.slf4j:slf4j-jdk14:${versions.slf4j}"
-        testImplementation "com.google.truth:truth:${versions.truth}"
+        testImplementation libs.kotlinx.coroutines.test
+        testImplementation libs.mockk
+        testImplementation libs.slf4j.jdk14
+        testImplementation libs.truth
 
-        androidTestImplementation "androidx.test.ext:junit:${versions.androidx.test.junit}"
-        androidTestImplementation "androidx.test:runner:${versions.androidx.test.runner}"
-        androidTestImplementation "androidx.test:rules:${versions.androidx.test.rules}"
-        androidTestImplementation "androidx.test.espresso:espresso-core:${versions.androidx.test.espresso}"
-        androidTestImplementation "androidx.test.espresso:espresso-contrib:${versions.androidx.test.espresso}"
-        androidTestImplementation "com.google.android.material:material:${versions.material}"
-        androidTestImplementation "androidx.appcompat:appcompat:${versions.androidx.appCompat}"
-        androidTestImplementation "androidx.multidex:multidex:2.0.1"
-        androidTestImplementation "io.mockk:mockk-android:${versions.mockk}"
+        androidTestImplementation libs.androidx.appcompat
+        androidTestImplementation libs.androidx.espresso.contrib
+        androidTestImplementation libs.androidx.espresso.core
+        androidTestImplementation libs.androidx.junit
+        androidTestImplementation libs.androidx.multidex
+        androidTestImplementation libs.androidx.rules
+        androidTestImplementation libs.androidx.runner
+        androidTestImplementation libs.material
+        androidTestImplementation libs.mockk.android
     }
     lint {
         abortOnError true

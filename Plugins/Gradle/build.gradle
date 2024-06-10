@@ -38,16 +38,16 @@ test {
 }
 
 dependencies {
-    implementation "com.android.tools.build:gradle:${versions.androidGradlePlugin}"
     implementation gradleApi()
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${versions.kotlin}"
+    implementation libs.gradle
+    implementation libs.kotlin.stdlib.jdk8
 
-    testImplementation "com.google.truth:truth:1.2.0"
-    testImplementation "io.mockk:mockk:1.13.5"
-    testImplementation(gradleTestKit())
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.2")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly libs.junit.platform.launcher
+    testImplementation gradleTestKit()
+    testImplementation libs.junit.jupiter
+    testImplementation libs.junit.jupiter.params
+    testImplementation libs.mockk
+    testImplementation libs.truth.v120
 }
 
 tasks.named('test', Test) {
@@ -98,6 +98,12 @@ task assembleLocal(description: 'Assembles the outputs of this project for use l
 task sourcesJar(type: Jar) {
     from sourceSets.main.groovy.srcDirs
     archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    archiveClassifier.set('javadoc')
+    archiveBaseName.set('testify')
+    from dokkaJavadoc.outputDirectory
 }
 
 apply from: "../../publish.build.gradle"

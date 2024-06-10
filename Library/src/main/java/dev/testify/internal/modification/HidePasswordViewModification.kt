@@ -27,6 +27,7 @@ package dev.testify.internal.modification
 import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.EditText
+import dev.testify.core.TestifyConfiguration
 
 /**
  * A [ViewModification] that hides the password on an [EditText].
@@ -35,7 +36,7 @@ import android.widget.EditText
  * dots. This is useful for hiding passwords in screenshots and ensures that screenshots do not accidentally capture
  * the characters mid-transformation.
  *
- * @see TestifyConfiguration.hidePassword
+ * @see TestifyConfiguration.hidePasswords
  */
 class HidePasswordViewModification : ViewModification() {
 

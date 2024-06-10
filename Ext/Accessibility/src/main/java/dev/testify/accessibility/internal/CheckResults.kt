@@ -29,7 +29,7 @@ import java.io.Reader
 
 internal class CheckResults(other: List<CheckResult>) : ArrayList<CheckResult>(other) {
 
-    val hasErrors: Boolean
+    private val hasErrors: Boolean
         get() {
             return this.any { it.type == "ERROR" }
         }

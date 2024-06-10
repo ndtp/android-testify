@@ -34,6 +34,7 @@ import dev.testify.core.exception.TestifyException
 import dev.testify.core.formatDeviceString
 import java.io.File
 import java.io.FileOutputStream
+import java.io.OutputStream
 
 /**
  * A [Destination] that writes to the device's internal storage.

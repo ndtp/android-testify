@@ -30,6 +30,7 @@ import android.os.Looper
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.WorkerThread
+import dev.testify.core.TestifyConfiguration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 

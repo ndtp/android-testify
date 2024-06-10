@@ -42,6 +42,7 @@ import dev.testify.output.getDestination
 import dev.testify.output.getFileRelativeToRoot
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.io.File
 
 /**
  * The default, preferred [BitmapFactory.Options] to use when decoding a [Bitmap].
@@ -62,7 +63,7 @@ val preferredBitmapOptions: BitmapFactory.Options
  * @param bitmap The [Bitmap] to write to disk. If null, this function will return false.
  * @param destination The [Destination] to write the bitmap to.
  *
- * @throws DestinationNotFoundException if the destination cannot be found.
+ * @throws Exception if the destination cannot be found.
  *
  * @return true if the bitmap was successfully written to the destination, false otherwise.
  */

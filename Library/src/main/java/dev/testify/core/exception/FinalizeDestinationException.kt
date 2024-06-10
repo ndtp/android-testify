@@ -23,6 +23,8 @@
  */
 package dev.testify.core.exception
 
+import dev.testify.output.Destination
+
 /**
  * Exception thrown when the [Destination] could not be finalized.
  */
