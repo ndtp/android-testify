@@ -55,7 +55,7 @@ interface ScreenshotLifecycleHost {
  */
 class ScreenshotLifecycleObserver : ScreenshotLifecycleHost {
 
-    private val screenshotLifecycleObservers = HashSet<ScreenshotLifecycle>()
+    private val screenshotLifecycleObservers = mutableListOf<ScreenshotLifecycle>()
 
     override fun addScreenshotObserver(observer: ScreenshotLifecycle) =
         this.screenshotLifecycleObservers.add(observer)

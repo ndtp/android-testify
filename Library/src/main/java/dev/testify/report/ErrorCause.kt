@@ -44,10 +44,7 @@ data class ErrorCause(
  * Determine the cause of a test failure based on the given [Throwable].
  * Used to create a YAML report.
  *
- * @param name The name of the test
- * @param status The status of the test
- * @param duration The duration of the test
- * @param errorCause The cause of the test failure
+ * @param throwable The cause of the test failure
  */
 internal fun describeErrorCause(throwable: Throwable) = ErrorCause(
     name = when (throwable) {

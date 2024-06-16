@@ -23,6 +23,7 @@ group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
 android {
+    namespace "dev.testify.accessibility"
     compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
@@ -61,24 +62,31 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = '17'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     dependencies {
         implementation project(":Library")
 
-        implementation "androidx.core:core-ktx:${versions.androidx.core}"
-        implementation "androidx.test.espresso:espresso-accessibility:${versions.androidx.test.a11y}"
-        implementation "androidx.test:monitor:${versions.androidx.test.monitor}"
-        implementation "androidx.test:rules:${versions.androidx.test.rules}"
-        implementation "com.google.code.gson:gson:${versions.gson}"
-        implementation "com.google.guava:guava:${versions.guava}"
+        implementation libs.androidx.espresso.accessibility
+        implementation libs.androidx.monitor
+        implementation libs.androidx.rules
+        implementation libs.core.ktx
+        implementation libs.gson
+        implementation libs.guava
     }
-}
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    publishing {
+        singleVariant("release") {
+            // if you don't want sources/javadoc, remove these lines
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 afterEvaluate {

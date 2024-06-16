@@ -7,16 +7,17 @@
 In order to use the Android Testify Compose extension, you must first configure the Testify Plugin on your project. To set up Testify for your project, please refer to the [Getting Started](../../get-started/1-setup.md) guide.
 
 **Root build.gradle**
+
 ```groovy
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "dev.testify:plugin:2.0.0"
-    }
+plugins {
+    id("dev.testify") version "3.0.0" apply false
 }
 ```
+
+**settings.gradle**
+
+Ensure that `mavenCentral()` is available to both `pluginManagement` and `dependencyResolutionManagement`.
+
 
 ### Project configuration
 

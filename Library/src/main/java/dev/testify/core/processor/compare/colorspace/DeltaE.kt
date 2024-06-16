@@ -58,6 +58,7 @@ import kotlin.math.sqrt
  * @param b2 second colour's b component
  * @return the CIE 2000 colour difference
  */
+@Suppress("LocalVariableName")
 fun calculateDeltaE(L1: Double, a1: Double, b1: Double, L2: Double, a2: Double, b2: Double): Double {
     val lMean = (L1 + L2) / 2.0
     val c1 = sqrt(a1 * a1 + b1 * b1)

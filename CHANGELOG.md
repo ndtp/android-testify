@@ -1,7 +1,15 @@
 # Testify Change Log
 
-## Unreleased
+## 3.0.0
 
+- https://github.com/ndtp/android-testify/pull/224 - Upgrade to Kotlin 1.9.24 and Compose to 2024.05.00
+    - Fix several warnings
+    - Upgrade dependencies on sample apps
+    - Warning: The January '24 update to Compose introduces changes to the default font padding which impacts any Compose-base tests that use text. https://android-developers.googleblog.com/2024/01/whats-new-in-jetpack-compose-january-24-release.html
+- https://github.com/ndtp/android-testify/pull/219 - Upgrade to Gradle 8.6 and AGP 8.4.1
+    - Define namespace in build.gradle for library projects
+    - jvmTarget, sourceCompatibility and targetCompatibility set to Java 17
+    - Replace sourcesJar task with android publishing closure
 - https://github.com/ndtp/android-testify/pull/212 - Bug fixes and performance improvements for the ParallelPixelProcessor
     - Add parallelThreads extension property to the Gradle plugin. This allows for customization of the number of worker threads to be used by the ParallelProcessor. Set limits on the thread pool to a minimum of 1 and a maximum of 4.
     - Refactor the ParallelPixelProcessor and introduce a new configuration class to wrap the thread configuration variables and the CoroutineDispatcher configuration.

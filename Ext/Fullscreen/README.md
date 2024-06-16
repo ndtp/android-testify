@@ -17,16 +17,16 @@ You can set a comparison tolerance using [ScreenshotRule.setExactness](../../Lib
 # Set up testify-fullscreen
 
 **Root build.gradle**
+
 ```groovy
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "dev.testify:plugin:2.0.0"
-    }
+plugins {
+    id("dev.testify") version "3.0.0" apply false
 }
 ```
+
+**settings.gradle**
+
+Ensure that `mavenCentral()` is available to both `pluginManagement` and `dependencyResolutionManagement`.
 
 **Application build.gradle**
 ```groovy

@@ -67,9 +67,6 @@ class OrientationHelper(
      *
      * If the activity was launched in a different orientation than the requested orientation, perform a rotation.
      *
-     * @param activity The activity to change the orientation of.
-     * @param requestedOrientation The orientation to change to.
-     *  The value must be one of [SCREEN_ORIENTATION_LANDSCAPE] or [SCREEN_ORIENTATION_PORTRAIT].
      */
     fun afterActivityLaunched() {
         //

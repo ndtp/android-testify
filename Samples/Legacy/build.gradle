@@ -5,10 +5,10 @@ buildscript {
     ext {
         versions = [
                 'compose': [
-                        'compilerExt': '1.4.7',
-                        'core'       : '1.4.3',
-                        'material'   : '1.4.3',
-                        'ui'         : '1.4.3',
+                        'compilerExt': '1.5.14',
+                        'core'       : '1.5.14',
+                        'material'   : '1.6.7',
+                        'ui'         : '1.6.7',
                 ]
         ]
     }
@@ -24,11 +24,14 @@ apply plugin: 'dev.testify'
 android {
     compileSdk 34
 
-    compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+    kotlinOptions {
+        jvmTarget = '17'
+        freeCompilerArgs = ["-Xcontext-receivers"]
     }
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
     defaultConfig {
         applicationId "dev.testify.sample"
@@ -55,10 +58,6 @@ android {
         compose true
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = [ "-Xcontext-receivers" ]
-    }
     composeOptions {
         kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
     }
