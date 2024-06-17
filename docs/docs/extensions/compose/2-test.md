@@ -20,7 +20,7 @@ Screenshot test integration with `ActivityScenario` is achieved via the `withSce
 
 :::tip
 
-To enable [Android Studio Plugin](set-up-intellij-plugin) integration with your tests, each test method should be annotated with the `@ScreenshotInstrumentation` annotation.
+To enable [Android Studio Plugin](../../get-started/set-up-intellij-plugin) integration with your tests, each test method should be annotated with the `@ScreenshotInstrumentation` annotation.
 
 :::
 
