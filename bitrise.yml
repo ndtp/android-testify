@@ -279,6 +279,59 @@ workflows:
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
+  publish:
+    summary: Publish to Sonatype
+    steps:
+    - git-clone@8:
+        inputs:
+        - fetch_tags: "yes"
+        - merge_pr: "no"
+    - set-java-version@1:
+        inputs:
+        - set_java_version: "17"
+    - install-missing-android-tools@3:
+        inputs:
+        - gradlew_path: $PROJECT_LOCATION/gradlew
+    - script@1:
+        is_always_run: true
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -e
+            set -x
+            if [ "$RELEASE_TAG" == "" ]; then
+                echo "RELEASE_TAG required"
+                exit 1
+            fi
+            git fetch origin
+            git tag | grep $RELEASE_TAG
+            git checkout $RELEASE_TAG
+        title: Verify preconditions
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Library:publish
+        title: Publish Library
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Plugin:publish
+        title: Publish Plugin
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: ComposeExtensions:publish
+        title: Publish ComposeExtensions
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Accessibility:publish
+        title: Publish Accessibility
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: FullscreenCaptureMethod:publish
+        title: Publish FullscreenCaptureMethod
 meta:
   bitrise.io:
     stack: linux-docker-android-20.04
