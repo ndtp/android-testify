@@ -25,11 +25,13 @@ package dev.testify.core.processor
 
 import android.graphics.Bitmap
 import androidx.annotation.VisibleForTesting
+import dev.testify.core.exception.ImageBufferAllocationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.nio.ByteBuffer
 import java.nio.IntBuffer
 import java.util.BitSet
 import kotlin.math.ceil
@@ -69,20 +71,11 @@ class ParallelPixelProcessor private constructor(
     /**
      * Prepare the bitmaps for parallel processing.
      */
-    private fun prepareBuffers(): ImageBuffers {
-        val width = currentBitmap.width
-        val height = currentBitmap.height
-
-        return ImageBuffers(
-            width = width,
-            height = height,
-            baselineBuffer = IntBuffer.allocate(width * height),
-            currentBuffer = IntBuffer.allocate(width * height)
-        ).apply {
+    private fun prepareBuffers(): ImageBuffers =
+        ImageBuffers.allocate(currentBitmap.width, currentBitmap.height).apply {
             baselineBitmap.copyPixelsToBuffer(baselineBuffer)
             currentBitmap.copyPixelsToBuffer(currentBuffer)
         }
-    }
 
     /**
      * Get the chunk data for the given width and height.
@@ -137,20 +130,22 @@ class ParallelPixelProcessor private constructor(
      * @return True if all pixels pass the analyzer function, false otherwise.
      */
     fun analyze(analyzer: AnalyzePixelFunction): Boolean {
-        val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
-
-        val chunkData = getChunkData(width, height)
+        val buffers = prepareBuffers()
+        val chunkData = getChunkData(buffers.width, buffers.height)
         val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
 
         runBlockingInChunks(chunkData) { chunk, index ->
-            val position = getPosition(index, width)
-            if (!analyzer(baselineBuffer[index], currentBuffer[index], position)) {
+            val position = getPosition(index, buffers.width)
+            val baselinePixel = buffers.baselineBuffer[index]
+            val currentPixel = buffers.currentBuffer[index]
+            if (!analyzer(baselinePixel, currentPixel, position)) {
                 results.clear(chunk)
                 false
             } else {
                 true
             }
         }
+        buffers.free()
         return results.cardinality() == chunkData.chunks
     }
 
@@ -164,22 +159,42 @@ class ParallelPixelProcessor private constructor(
     fun transform(
         transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int
     ): TransformResult {
-        val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
+        val buffers = prepareBuffers()
 
-        val chunkData = getChunkData(width, height)
-        val diffBuffer = IntBuffer.allocate(chunkData.size)
+        val chunkData = getChunkData(buffers.width, buffers.height)
+
+        data class DiffBuffer(private var diffBuffer: IntBuffer?) {
+
+            operator fun set(index: Int, pixel: Int) = diffBuffer?.put(index, pixel)
+
+            fun toArray(): IntArray = diffBuffer!!.array()
+
+            fun free() {
+                diffBuffer?.clear()
+                diffBuffer = null
+            }
+        }
+
+        val diffBuffer = DiffBuffer(ByteBuffer.allocateDirect(chunkData.size * INTEGER_BYTES).asIntBuffer())
 
         runBlockingInChunks(chunkData) { _, index ->
-            val position = getPosition(index, width)
-            diffBuffer.put(index, transformer(baselineBuffer[index], currentBuffer[index], position))
+            val position = getPosition(index, buffers.width)
+            val baselinePixel = buffers.baselineBuffer[index]
+            val currentPixel = buffers.currentBuffer[index]
+            diffBuffer[index] = transformer(baselinePixel, currentPixel, position)
             true
         }
 
-        return TransformResult(
-            width,
-            height,
-            diffBuffer.array()
+        val result = TransformResult(
+            buffers.width,
+            buffers.height,
+            diffBuffer.toArray()
         )
+
+        diffBuffer.free()
+        buffers.free()
+
+        return result
     }
 
     /**
@@ -215,10 +230,36 @@ class ParallelPixelProcessor private constructor(
      */
     private data class ImageBuffers(
         val width: Int,
-        val height: Int,
-        val baselineBuffer: IntBuffer,
+        val height: Int
+    ) {
+        private var _baselineBuffer: IntBuffer? = null
+        private var _currentBuffer: IntBuffer? = null
+
+        val baselineBuffer: IntBuffer
+            get() = _baselineBuffer ?: throw ImageBufferAllocationException(width, height)
+
         val currentBuffer: IntBuffer
-    )
+            get() = _currentBuffer ?: throw ImageBufferAllocationException(width, height)
+
+        fun free() {
+            _baselineBuffer?.clear()
+            _baselineBuffer = null
+            _currentBuffer?.clear()
+            _currentBuffer = null
+        }
+
+        companion object {
+            fun allocate(width: Int, height: Int): ImageBuffers =
+                ImageBuffers(
+                    width = width,
+                    height = height
+                ).apply {
+                    val capacity = width * height * INTEGER_BYTES
+                    _baselineBuffer = ByteBuffer.allocateDirect(capacity).asIntBuffer()
+                    _currentBuffer = ByteBuffer.allocateDirect(capacity).asIntBuffer()
+                }
+        }
+    }
 
     /**
      * The result of a transform operation.
@@ -243,3 +284,5 @@ class ParallelPixelProcessor private constructor(
         }
     }
 }
+
+private const val INTEGER_BYTES: Int = 4

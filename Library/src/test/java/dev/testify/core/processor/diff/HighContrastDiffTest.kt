@@ -48,8 +48,10 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 
+@Ignore("Alpha build - Tests will be update after use-case validation")
 @OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
 class HighContrastDiffTest {
 

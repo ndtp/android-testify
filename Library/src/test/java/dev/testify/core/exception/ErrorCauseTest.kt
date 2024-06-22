@@ -72,6 +72,7 @@ class ErrorCauseTest {
         assertEquals("FINALIZE_DESTINATION", describeErrorCause(FinalizeDestinationException("")).name)
         assertEquals("UNEXPECTED_ORIENTATION", describeErrorCause(UnexpectedOrientationException("")).name)
         assertEquals("ILLEGAL_SCENARIO", describeErrorCause(IllegalScenarioException()).name)
+        assertEquals("FAILED_BUFFER_ALLOCATION", describeErrorCause(ImageBufferAllocationException(0, 0)).name)
         assertEquals(
             "INVALID_RESOURCE_CONFIGURATION",
             describeErrorCause(NoResourceConfigurationOnScenarioException("", "", "")).name
