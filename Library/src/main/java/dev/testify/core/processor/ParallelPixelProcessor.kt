@@ -24,6 +24,7 @@
 package dev.testify.core.processor
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.annotation.VisibleForTesting
 import dev.testify.core.exception.ImageBufferAllocationException
 import kotlinx.coroutines.CoroutineScope
@@ -67,15 +68,6 @@ class ParallelPixelProcessor private constructor(
         this.currentBitmap = currentBitmap
         return this
     }
-
-    /**
-     * Prepare the bitmaps for parallel processing.
-     */
-    private fun prepareBuffers(): ImageBuffers =
-        ImageBuffers.allocate(currentBitmap.width, currentBitmap.height).apply {
-            baselineBitmap.copyPixelsToBuffer(baselineBuffer)
-            currentBitmap.copyPixelsToBuffer(currentBuffer)
-        }
 
     /**
      * Get the chunk data for the given width and height.
@@ -130,7 +122,12 @@ class ParallelPixelProcessor private constructor(
      * @return True if all pixels pass the analyzer function, false otherwise.
      */
     fun analyze(analyzer: AnalyzePixelFunction): Boolean {
-        val buffers = prepareBuffers()
+        val buffers = prepareBuffers(
+            width = currentBitmap.width,
+            height = currentBitmap.height,
+            baselineBitmap = baselineBitmap,
+            currentBitmap = currentBitmap
+        )
         val chunkData = getChunkData(buffers.width, buffers.height)
         val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
 
@@ -145,7 +142,6 @@ class ParallelPixelProcessor private constructor(
                 true
             }
         }
-        buffers.free()
         return results.cardinality() == chunkData.chunks
     }
 
@@ -159,8 +155,12 @@ class ParallelPixelProcessor private constructor(
     fun transform(
         transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int
     ): TransformResult {
-        val buffers = prepareBuffers()
-
+        val buffers = prepareBuffers(
+            width = currentBitmap.width,
+            height = currentBitmap.height,
+            baselineBitmap = baselineBitmap,
+            currentBitmap = currentBitmap
+        )
         val chunkData = getChunkData(buffers.width, buffers.height)
 
         data class DiffBuffer(private var diffBuffer: IntBuffer?) {
@@ -192,7 +192,6 @@ class ParallelPixelProcessor private constructor(
         )
 
         diffBuffer.free()
-        buffers.free()
 
         return result
     }
@@ -235,6 +234,8 @@ class ParallelPixelProcessor private constructor(
         private var _baselineBuffer: IntBuffer? = null
         private var _currentBuffer: IntBuffer? = null
 
+        val capacity: Int = (width * height)
+
         val baselineBuffer: IntBuffer
             get() = _baselineBuffer ?: throw ImageBufferAllocationException(width, height)
 
@@ -273,6 +274,37 @@ class ParallelPixelProcessor private constructor(
     )
 
     companion object {
+
+        private const val LOG_TAG = "ParallelPixelProcessor"
+        private var allocatedBuffer: ImageBuffers? = null
+
+        /**
+         * Prepare the bitmaps for parallel processing.
+         */
+        private fun prepareBuffers(
+            width: Int,
+            height: Int,
+            baselineBitmap: Bitmap,
+            currentBitmap: Bitmap
+        ): ImageBuffers {
+            val requestedCapacity = width * height
+
+            if (allocatedBuffer?.capacity != requestedCapacity) {
+                Log.v(LOG_TAG, "Allocating new ImageBuffers at $width x $height")
+                allocatedBuffer?.free()
+                allocatedBuffer = ImageBuffers.allocate(currentBitmap.width, currentBitmap.height)
+            } else {
+                Log.v(LOG_TAG, "Reusing existing ImageBuffers")
+            }
+
+            return allocatedBuffer?.apply {
+                baselineBuffer.clear()
+                baselineBitmap.copyPixelsToBuffer(baselineBuffer)
+
+                currentBuffer.clear()
+                currentBitmap.copyPixelsToBuffer(currentBuffer)
+            } ?: throw ImageBufferAllocationException(width, height)
+        }
 
         /**
          * Factory method to create a new [ParallelPixelProcessor].
