@@ -1,7 +1,7 @@
 buildscript {
     ext {
         versions = [
-                'testify': '3.0.0' // https://github.com/ndtp/android-testify/releases
+                'testify': '3.0.1-alpha01' // https://github.com/ndtp/android-testify/releases
         ]
         coreVersions = [
                 'compileSdk': 34,
