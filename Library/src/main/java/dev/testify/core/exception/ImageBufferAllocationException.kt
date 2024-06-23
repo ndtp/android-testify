@@ -23,7 +23,7 @@
  */
 package dev.testify.core.exception
 
-class ImageBufferAllocationException(width: Int, height: Int) : TestifyException(
+class ImageBufferAllocationException(capacity: Int) : TestifyException(
     "FAILED_BUFFER_ALLOCATION",
-    "Failed to allocate image buffer of size $width x $height"
+    "Failed to allocate image buffer of size $capacity"
 )

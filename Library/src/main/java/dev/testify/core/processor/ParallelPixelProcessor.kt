@@ -23,9 +23,13 @@
  */
 package dev.testify.core.processor
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.os.Debug
+import android.text.format.Formatter
 import android.util.Log
 import androidx.annotation.VisibleForTesting
+import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.core.exception.ImageBufferAllocationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -175,7 +179,7 @@ class ParallelPixelProcessor private constructor(
             }
         }
 
-        val diffBuffer = DiffBuffer(ByteBuffer.allocateDirect(chunkData.size * INTEGER_BYTES).asIntBuffer())
+        val diffBuffer = DiffBuffer(allocateSafely(chunkData.size * INTEGER_BYTES))
 
         runBlockingInChunks(chunkData) { _, index ->
             val position = getPosition(index, buffers.width)
@@ -237,10 +241,10 @@ class ParallelPixelProcessor private constructor(
         val capacity: Int = (width * height)
 
         val baselineBuffer: IntBuffer
-            get() = _baselineBuffer ?: throw ImageBufferAllocationException(width, height)
+            get() = _baselineBuffer ?: throw ImageBufferAllocationException(width * height)
 
         val currentBuffer: IntBuffer
-            get() = _currentBuffer ?: throw ImageBufferAllocationException(width, height)
+            get() = _currentBuffer ?: throw ImageBufferAllocationException(width * height)
 
         fun free() {
             _baselineBuffer?.clear()
@@ -256,8 +260,8 @@ class ParallelPixelProcessor private constructor(
                     height = height
                 ).apply {
                     val capacity = width * height * INTEGER_BYTES
-                    _baselineBuffer = ByteBuffer.allocateDirect(capacity).asIntBuffer()
-                    _currentBuffer = ByteBuffer.allocateDirect(capacity).asIntBuffer()
+                    _baselineBuffer = allocateSafely(capacity)
+                    _currentBuffer = allocateSafely(capacity * 10000)
                 }
         }
     }
@@ -275,7 +279,6 @@ class ParallelPixelProcessor private constructor(
 
     companion object {
 
-        private const val LOG_TAG = "ParallelPixelProcessor"
         private var allocatedBuffer: ImageBuffers? = null
 
         /**
@@ -303,7 +306,7 @@ class ParallelPixelProcessor private constructor(
 
                 currentBuffer.clear()
                 currentBitmap.copyPixelsToBuffer(currentBuffer)
-            } ?: throw ImageBufferAllocationException(width, height)
+            } ?: throw ImageBufferAllocationException(width * height)
         }
 
         /**
@@ -317,4 +320,67 @@ class ParallelPixelProcessor private constructor(
     }
 }
 
+private const val LOG_TAG = "ParallelPixelProcessor"
 private const val INTEGER_BYTES: Int = 4
+
+/**
+ * Formats a Long size to be in the form of bytes, kilobytes, megabytes, etc.
+ */
+private fun Long.format(context: Context) = Formatter.formatShortFileSize(context, this)
+
+/**
+ * Use ByteBuffer.allocateDirect to allocate a new direct byte buffer.
+ * An IntBuffer view of this byte buffer is returned.
+ *
+ * If the allocation fails due to an OutOfMemoryError, the a gc is requested and
+ * another allocation is attempted.
+ *
+ * If the allocation fails a second time, throws ImageBufferAllocationException
+ */
+private fun allocateSafely(capacity: Int, retry: Boolean = true): IntBuffer {
+    return try {
+        val memoryState = formatMemoryState()
+        Log.v(LOG_TAG, "Allocating $capacity bytes\n$memoryState")
+        ByteBuffer.allocateDirect(capacity).asIntBuffer()
+    } catch (e: OutOfMemoryError) {
+        val memoryState = formatMemoryState()
+        Log.e(LOG_TAG, "Error allocating $capacity bytes\n$memoryState", e)
+        if (retry) {
+            Runtime.getRuntime().gc()
+            allocateSafely(capacity, retry = false)
+        } else {
+            throw ImageBufferAllocationException(capacity)
+        }
+    }
+}
+
+/**
+ * Returns a print-friendly string representation of the current system memory state
+ */
+private fun formatMemoryState(): String {
+    val runtime = Runtime.getRuntime()
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    // the maximum amount of memory that the virtual machine will attempt to use, measured in bytes
+    val heapSize = runtime.maxMemory().format(context)
+
+    // the total amount of memory currently available for current and future objects, measured in bytes.
+    val totalMemory = runtime.totalMemory().format(context)
+
+    // an approximation to the total amount of memory currently available for future allocated objects, measured in bytes
+    val freeMemory = runtime.freeMemory().format(context)
+
+    val usedMemory = (runtime.totalMemory() - runtime.freeMemory()).format(context)
+
+    // The size of the native heap in bytes.
+    val nativeHeapSize = Debug.getNativeHeapSize().format(context)
+
+    // Returns the amount of free memory in the native heap.
+    val nativeFreeMemory = Debug.getNativeHeapFreeSize().format(context)
+
+    // Returns the amount of allocated memory in the native heap.
+    val nativeUsedMemory = Debug.getNativeHeapAllocatedSize().format(context)
+
+    return "- Heap: $heapSize, Total: $totalMemory, Free: $freeMemory, Used: $usedMemory\n" +
+        "- Native Heap: $nativeHeapSize, Native Free: $nativeFreeMemory, Native Used: $nativeUsedMemory"
+}
