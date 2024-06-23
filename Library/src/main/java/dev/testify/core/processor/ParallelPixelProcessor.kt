@@ -261,7 +261,7 @@ class ParallelPixelProcessor private constructor(
                 ).apply {
                     val capacity = width * height * INTEGER_BYTES
                     _baselineBuffer = allocateSafely(capacity)
-                    _currentBuffer = allocateSafely(capacity * 10000)
+                    _currentBuffer = allocateSafely(capacity)
                 }
         }
     }
