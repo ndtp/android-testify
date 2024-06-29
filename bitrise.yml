@@ -2,21 +2,93 @@
 format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: android
+
+pipelines:
+  default:
+    stages:
+    - setup: {}
+    - verify: {}
+
+stages:
+  setup:
+    abort_on_fail: true
+    workflows:
+    - evaluate_build: {}
+  verify:
+    abort_on_fail: true
+    workflows:
+    - test_library: {}
+    - test_plugin: {}
+    - test_legacy_sample: {}
+    - test_flix: {}
+    - test_accessibility_ext: {}
+    - test_compose_ext: {}
+    - test_fullscreen_ext: {}
+
 workflows:
-  verify_pr:
-    before_run:
-    - _globalSetup
-    - _emulatorSetup
-    after_run:
-    - _testLibrary
-    - _testPlugin
-    - _testLegacySample
-    - _testFlixSample
-    - _testFlixLibrary
-    - _testAccessibility
-    - _testComposeExtensions
-    - _testFullscreenCaptureMethod
-    - _report
+  evaluate_build:
+    steps:
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Library"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Plugin"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Legacy Sample"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Flix Sample App"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Flix Sample Library"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Accessibility Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Compose Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Fullscreen Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    meta:
+      bitrise.io:
+        stack: linux-docker-android-22.04
+        machine_type_id: standard
+
   _emulatorSetup:
     summary: Run your Android unit tests and get the test report.
     description: The workflow will first clone your Git repository, cache your Gradle
@@ -35,6 +107,7 @@ workflows:
     - wait-for-android-emulator@1:
         timeout: 300
         title: 'Emulator: Wait'
+
   _globalSetup:
     summary: Run your Android unit tests and get the test report.
     description: The workflow will first clone your Git repository, cache your Gradle
@@ -48,7 +121,8 @@ workflows:
     - install-missing-android-tools@3:
         inputs:
         - gradlew_path: "$PROJECT_LOCATION/gradlew"
-  _testLegacySample:
+
+  test_legacy_sample:
     summary: Run your Android unit tests and get the test report.
     description: The workflow will first clone your Git repository, cache your Gradle
       dependencies, install Android tools, run your Android unit tests and save the
@@ -82,35 +156,20 @@ workflows:
         inputs:
         - test_name: Legacy Sample Screenshot Test
         - search_pattern: "**test_result_**.xml**"
-    - script@1:
-        is_always_run: true
+    - deploy-to-bitrise-io@2:
         inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            set -e
-            set -x
-            if [ "$BITRISE_BUILD_STATUS" == 0 ]; then
-                STATUS=":white_check_mark: Success!"
-                MESSAGE=""
-            else
-                STATUS=":x: Failed!"
-                MESSAGE="Please verify the screenshot tests and update them as necessary"
-            fi
-            envman add --key LAST_COMMIT --value `git log --format="%H" -n 1`
-            envman add --key TESTIFY_STATUS --value "$STATUS"
-            envman add --key TESTIFY_MESSAGE --value "$MESSAGE"
-        title: Prepare PR comment
-    - comment-on-github-pull-request@0:
-        is_always_run: true
+        - notify_user_groups: none
+    - github-status@3:
+        run_if: .IsCI
         inputs:
-        - body: |-
-            ### $TESTIFY_STATUS - <a href="https://app.bitrise.io/app/8bee1dcb-c321-4d26-a54e-0123ee4df70f/addon/addons-testing/login_page?build_slug=$BITRISE_BUILD_SLUG">Legacy Sample screenshot test results</a>
-            $TESTIFY_MESSAGE
-            ###### [View build](https://app.bitrise.io/build/$BITRISE_BUILD_SLUG) for commit $LAST_COMMIT
-            <!--
-        - update_comment_tag: testify-legacy
-        - personal_access_token: "$GITHUB_TOKEN"
-  _testLibrary:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Legacy Sample"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    - _emulatorSetup
+
+  test_library:
     summary: Run your Android unit tests and get the test report.
     description: The workflow will first clone your Git repository, cache your Gradle
       dependencies, install Android tools, run your Android unit tests and save the
@@ -136,59 +195,123 @@ workflows:
         inputs:
         - test_apk_path: "./Library/build/outputs/apk/androidTest/debug/testify-debug-androidTest.apk"
         - main_apk_path: "./Library/build/outputs/apk/androidTest/debug/testify-debug-androidTest.apk"
-  _testPlugin:
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Library"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    - _emulatorSetup
+
+  test_plugin:
     steps:
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: Plugin:ktlint
-          title: KtLint
-      - gradle-unit-test@1:
-          inputs:
-            - gradlew_file_path: ./gradlew
-            - unit_test_task: Plugin:test
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: Plugin:assemble Plugin:assembleLocal
-          title: Validate build
-  _testAccessibility:
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: Plugin:ktlint
+        title: KtLint
+    - gradle-unit-test@1:
+        inputs:
+          - gradlew_file_path: ./gradlew
+          - unit_test_task: Plugin:test
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: Plugin:assemble Plugin:assembleLocal
+        title: Validate build
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Plugin"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+
+  test_accessibility_ext:
     steps:
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: Accessibility:ktlint
-          title: KtLint
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: Accessibility:assemble
-          title: Validate build
-  _testComposeExtensions:
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: Accessibility:ktlint
+        title: KtLint
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: Accessibility:assemble
+        title: Validate build
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Accessibility Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    meta:
+      bitrise.io:
+        stack: linux-docker-android-22.04
+        machine_type_id: standard
+
+  test_compose_ext:
     steps:
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: ComposeExtensions:ktlint
-          title: KtLint
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: ComposeExtensions:assemble
-          title: Validate build
-  _testFullscreenCaptureMethod:
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: ComposeExtensions:ktlint
+        title: KtLint
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: ComposeExtensions:assemble
+        title: Validate build
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Compose Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    meta:
+      bitrise.io:
+        stack: linux-docker-android-22.04
+        machine_type_id: standard
+
+  test_fullscreen_ext:
     steps:
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: FullscreenCaptureMethod:ktlint
-          title: KtLint
-      - gradle-runner@2:
-          inputs:
-            - gradlew_path: "./gradlew"
-            - gradle_task: FullscreenCaptureMethod:assemble
-          title: Validate build
-  _testFlixSample:
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: FullscreenCaptureMethod:ktlint
+        title: KtLint
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: FullscreenCaptureMethod:assemble
+        title: Validate build
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Fullscreen Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    meta:
+      bitrise.io:
+        stack: linux-docker-android-22.04
+        machine_type_id: standard
+
+  test_flix:
     summary: Run your Android unit tests and get the test report.
     description: The workflow will first clone your Git repository, cache your Gradle
       dependencies, install Android tools, run your Android unit tests and save the
@@ -199,6 +322,12 @@ workflows:
         - project_location: "$PROJECT_LOCATION"
         - variant: Debug
         - module: FlixSample
+        - cache_level: none
+    - android-unit-test@1:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: FlixLibrary
         - cache_level: none
     - android-build-for-ui-testing@0:
         inputs:
@@ -216,52 +345,12 @@ workflows:
         - test_package: dev.testify.samples.flix.test
         - test_runner: androidx.test.runner.AndroidJUnitRunner
         - verbose: false
-    - custom-test-results-export@1.0:
-        is_always_run: true
-        timeout: 120
+    - github-status@3:
+        run_if: .IsCI
         inputs:
-        - test_name: Flix Screenshot Test
-        - search_pattern: "**test_result_**.xml**"
-    - script@1:
-        is_always_run: true
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            set -e
-            set -x
-            if [ "$BITRISE_BUILD_STATUS" == 0 ]; then
-                STATUS=":white_check_mark: Success!"
-                MESSAGE=""
-            else
-                STATUS=":x: Failed!"
-                MESSAGE="Please verify the screenshot tests and update them as necessary"
-            fi
-            envman add --key LAST_COMMIT --value `git log --format="%H" -n 1`
-            envman add --key TESTIFY_STATUS --value "$STATUS"
-            envman add --key TESTIFY_MESSAGE --value "$MESSAGE"
-        title: Prepare PR comment
-    - comment-on-github-pull-request@0:
-        is_always_run: true
-        inputs:
-        - body: |-
-            ### $TESTIFY_STATUS - <a href="https://app.bitrise.io/app/8bee1dcb-c321-4d26-a54e-0123ee4df70f/addon/addons-testing/login_page?build_slug=$BITRISE_BUILD_SLUG">Flix Sample screenshot test results</a>
-            $TESTIFY_MESSAGE
-            ###### [View build](https://app.bitrise.io/build/$BITRISE_BUILD_SLUG) for commit $LAST_COMMIT
-            <!--
-        - update_comment_tag: testify-flix
-        - personal_access_token: "$GITHUB_TOKEN"
-  _testFlixLibrary:
-    summary: Run your Android unit tests and get the test report.
-    description: The workflow will first clone your Git repository, cache your Gradle
-      dependencies, install Android tools, run your Android unit tests and save the
-      test report.
-    steps:
-    - android-unit-test@1:
-        inputs:
-        - project_location: "$PROJECT_LOCATION"
-        - variant: Debug
-        - module: FlixLibrary
-        - cache_level: none
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Flix Sample App"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
     - android-build@1:
         inputs:
         - variant: DebugAndroidTest
@@ -282,42 +371,22 @@ workflows:
         is_always_run: true
         timeout: 120
         inputs:
-        - test_name: Flix Libray Screenshot Test
+        - test_name: Flix Screenshot Test
         - search_pattern: "**test_result_**.xml**"
-    - script@1:
-        is_always_run: true
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            set -e
-            set -x
-            if [ "$BITRISE_BUILD_STATUS" == 0 ]; then
-                STATUS=":white_check_mark: Success!"
-                MESSAGE=""
-            else
-                STATUS=":x: Failed!"
-                MESSAGE="Please verify the screenshot tests and update them as necessary"
-            fi
-            envman add --key LAST_COMMIT --value `git log --format="%H" -n 1`
-            envman add --key TESTIFY_STATUS --value "$STATUS"
-            envman add --key TESTIFY_MESSAGE --value "$MESSAGE"
-        title: Prepare PR comment
-    - comment-on-github-pull-request@0:
-        is_always_run: true
-        inputs:
-        - body: |-
-            ### $TESTIFY_STATUS - <a href="https://app.bitrise.io/app/8bee1dcb-c321-4d26-a54e-0123ee4df70f/addon/addons-testing/login_page?build_slug=$BITRISE_BUILD_SLUG">Flix Library screenshot test results</a>
-            $TESTIFY_MESSAGE
-            ###### [View build](https://app.bitrise.io/build/$BITRISE_BUILD_SLUG) for commit $LAST_COMMIT
-            <!--
-        - update_comment_tag: testify-flix-library
-        - personal_access_token: "$GITHUB_TOKEN"
-  _report:
-    summary: Collect test reports.
-    steps:
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Flix Sample Library"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    - _emulatorSetup
+
+
 meta:
   bitrise.io:
     stack: linux-docker-android-22.04
@@ -335,4 +404,4 @@ app:
     VARIANT: Debug
 trigger_map:
 - pull_request_source_branch: "*"
-  workflow: verify_pr
+  pipeline: default
