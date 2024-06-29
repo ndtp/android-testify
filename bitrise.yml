@@ -320,7 +320,7 @@ workflows:
         - notify_user_groups: none
 meta:
   bitrise.io:
-    stack: linux-docker-android-20.04
+    stack: linux-docker-android-22.04
     machine_type_id: elite
 app:
   envs:
