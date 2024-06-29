@@ -1,5 +1,9 @@
 # Testify Change Log
 
+## 3.1.0
+
+- https://github.com/ndtp/android-testify/pull/225 - Testify will now throw a `LowMemoryException` when attempts to allocate an `IntBuffer` fail. This can help users diagnose AVD configuration problems and reports on the state of the device.
+
 ## 3.0.0
 
 - https://github.com/ndtp/android-testify/pull/224 - Upgrade to Kotlin 1.9.24 and Compose to 2024.05.00
