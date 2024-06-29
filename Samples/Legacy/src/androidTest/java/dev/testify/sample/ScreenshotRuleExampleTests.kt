@@ -302,7 +302,6 @@ class ScreenshotRuleExampleTests {
     fun setOrientation() {
         rule
             .setOrientation(requestedOrientation = SCREEN_ORIENTATION_LANDSCAPE)
-            .configure { pauseForInspection = true }
             .assertSame()
     }
 

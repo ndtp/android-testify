@@ -24,6 +24,8 @@
 package dev.testify.core.processor
 
 import android.graphics.Bitmap
+import io.mockk.every
+import io.mockk.mockkStatic
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,6 +35,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -58,6 +61,12 @@ class ParallelPixelProcessorTest {
             .create(forceSingleThreadedExecution(maxNumberOfChunkThreads))
             .baseline(baseline)
             .current(current)
+    }
+
+    @Before
+    fun setUp() {
+        mockkStatic(::formatMemoryState)
+        every { formatMemoryState() } returns ""
     }
 
     @After

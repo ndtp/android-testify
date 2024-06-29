@@ -27,6 +27,7 @@ import com.google.common.truth.Truth.assertThat
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.ParallelPixelProcessor
 import dev.testify.core.processor.ParallelProcessorConfiguration
+import dev.testify.core.processor.formatMemoryState
 import dev.testify.core.processor.mockBitmap
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
@@ -57,7 +58,9 @@ class FuzzyCompareTest {
         Dispatchers.setMain(mainThreadSurrogate)
         mockkObject(ParallelPixelProcessor.Companion)
         mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
+        mockkStatic(::formatMemoryState)
         every { any<ManifestPlaceholder>().getMetaDataValue() } returns null
+        every { formatMemoryState() } returns ""
     }
 
     @After

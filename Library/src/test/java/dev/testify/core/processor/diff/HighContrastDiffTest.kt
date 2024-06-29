@@ -29,6 +29,7 @@ import com.google.common.truth.Truth.assertThat
 import dev.testify.core.processor.ParallelPixelProcessor
 import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.createBitmap
+import dev.testify.core.processor.formatMemoryState
 import dev.testify.core.processor.mockBitmap
 import dev.testify.core.processor.mockRect
 import dev.testify.internal.helpers.ManifestPlaceholder
@@ -74,7 +75,9 @@ class HighContrastDiffTest {
         mockkStatic(::saveBitmapToDestination)
         mockkStatic("dev.testify.core.processor.BitmapExtentionsKt")
         mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
+        mockkStatic(::formatMemoryState)
 
+        every { formatMemoryState() } returns ""
         every { any<ParallelPixelProcessor.TransformResult>().createBitmap() } answers {
             val receiver = firstArg<ParallelPixelProcessor.TransformResult>()
             diffPixels = IntArray(receiver.width * receiver.height)
