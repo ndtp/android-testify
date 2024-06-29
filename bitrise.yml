@@ -99,9 +99,7 @@ workflows:
         timeout: 240
         inputs:
         - api_level: '29'
-        - start_command_flags: "-camera-back none -camera-front none -no-window -gpu
-            swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -partition-size
-            6144"
+        - start_command_flags: "-camera-back none -camera-front none -no-snapshot -noaudio -no-boot-anim -partition-size 6144"
         - profile: pixel_3a
         title: 'Emulator: Launch'
     - wait-for-android-emulator@1:
