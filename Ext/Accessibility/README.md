@@ -18,7 +18,7 @@ For more information about _Accessibility Checking_, please see https://develope
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.0.0" apply false
+    id("dev.testify") version "3.1.0" apply false
 }
 ```
 
