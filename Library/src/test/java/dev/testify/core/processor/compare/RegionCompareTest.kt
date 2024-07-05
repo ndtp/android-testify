@@ -28,6 +28,7 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.ParallelProcessorConfiguration
+import dev.testify.core.processor.formatMemoryState
 import dev.testify.core.processor.mockRect
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
@@ -59,7 +60,9 @@ class RegionCompareTest {
     fun setUp() {
         Dispatchers.setMain(mainThreadSurrogate)
         mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
+        mockkStatic(::formatMemoryState)
         every { any<ManifestPlaceholder>().getMetaDataValue() } returns null
+        every { formatMemoryState() } returns ""
     }
 
     @After

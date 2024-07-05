@@ -26,12 +26,17 @@ package dev.testify.core.exception
 
 import android.app.Activity
 import android.content.Context
+import dev.testify.core.formatDeviceString
+import dev.testify.core.processor.formatMemoryState
 import dev.testify.output.DataDirectoryDestinationNotFoundException
 import dev.testify.output.SdCardDestinationNotFoundException
 import dev.testify.output.TestStorageNotFoundException
 import dev.testify.report.describeErrorCause
 import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
+import io.mockk.mockkStatic
 import org.junit.Assert.assertEquals
 import org.junit.AssumptionViolatedException
 import org.junit.Before
@@ -43,7 +48,14 @@ class ErrorCauseTest {
     private lateinit var mockContext: Context
 
     @Before
-    fun setUp() = MockKAnnotations.init(this)
+    fun setUp() {
+        MockKAnnotations.init(this)
+        mockkStatic(::formatMemoryState)
+        mockkStatic(::formatDeviceString)
+
+        every { formatMemoryState() } returns ""
+        every { formatDeviceString(any(), any()) } returns ""
+    }
 
     @Test
     fun `all exceptions match their cause`() {
@@ -72,6 +84,11 @@ class ErrorCauseTest {
         assertEquals("FINALIZE_DESTINATION", describeErrorCause(FinalizeDestinationException("")).name)
         assertEquals("UNEXPECTED_ORIENTATION", describeErrorCause(UnexpectedOrientationException("")).name)
         assertEquals("ILLEGAL_SCENARIO", describeErrorCause(IllegalScenarioException()).name)
+        assertEquals("FAILED_BUFFER_ALLOCATION", describeErrorCause(ImageBufferAllocationException(0)).name)
+        assertEquals(
+            "LOW_MEMORY",
+            describeErrorCause(LowMemoryException(mockk(relaxed = true), 0, "", OutOfMemoryError())).name
+        )
         assertEquals(
             "INVALID_RESOURCE_CONFIGURATION",
             describeErrorCause(NoResourceConfigurationOnScenarioException("", "", "")).name

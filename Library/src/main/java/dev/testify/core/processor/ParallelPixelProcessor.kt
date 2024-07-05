@@ -30,7 +30,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.nio.IntBuffer
 import java.util.BitSet
 import kotlin.math.ceil
 
@@ -69,15 +68,11 @@ class ParallelPixelProcessor private constructor(
     /**
      * Prepare the bitmaps for parallel processing.
      */
-    private fun prepareBuffers(): ImageBuffers {
-        val width = currentBitmap.width
-        val height = currentBitmap.height
-
-        return ImageBuffers(
-            width = width,
-            height = height,
-            baselineBuffer = IntBuffer.allocate(width * height),
-            currentBuffer = IntBuffer.allocate(width * height)
+    private fun prepareBuffers(allocateDiffBuffer: Boolean = false): ImageBuffers {
+        return ImageBuffers.allocate(
+            width = currentBitmap.width,
+            height = currentBitmap.height,
+            allocateDiffBuffer = allocateDiffBuffer
         ).apply {
             baselineBitmap.copyPixelsToBuffer(baselineBuffer)
             currentBitmap.copyPixelsToBuffer(currentBuffer)
@@ -137,20 +132,23 @@ class ParallelPixelProcessor private constructor(
      * @return True if all pixels pass the analyzer function, false otherwise.
      */
     fun analyze(analyzer: AnalyzePixelFunction): Boolean {
-        val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
-
-        val chunkData = getChunkData(width, height)
+        val buffers = prepareBuffers()
+        val chunkData = getChunkData(buffers.width, buffers.height)
         val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
 
         runBlockingInChunks(chunkData) { chunk, index ->
-            val position = getPosition(index, width)
-            if (!analyzer(baselineBuffer[index], currentBuffer[index], position)) {
+            val position = getPosition(index, buffers.width)
+            val baselinePixel = buffers.baselineBuffer[index]
+            val currentPixel = buffers.currentBuffer[index]
+            if (!analyzer(baselinePixel, currentPixel, position)) {
                 results.clear(chunk)
                 false
             } else {
                 true
             }
         }
+
+        buffers.free()
         return results.cardinality() == chunkData.chunks
     }
 
@@ -164,22 +162,26 @@ class ParallelPixelProcessor private constructor(
     fun transform(
         transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int
     ): TransformResult {
-        val (width, height, baselineBuffer, currentBuffer) = prepareBuffers()
-
-        val chunkData = getChunkData(width, height)
-        val diffBuffer = IntBuffer.allocate(chunkData.size)
+        val buffers = prepareBuffers(allocateDiffBuffer = true)
+        val chunkData = getChunkData(buffers.width, buffers.height)
+        val diffBuffer = buffers.diffBuffer
 
         runBlockingInChunks(chunkData) { _, index ->
-            val position = getPosition(index, width)
-            diffBuffer.put(index, transformer(baselineBuffer[index], currentBuffer[index], position))
+            val position = getPosition(index, buffers.width)
+            val baselinePixel = buffers.baselineBuffer[index]
+            val currentPixel = buffers.currentBuffer[index]
+            diffBuffer.put(index, transformer(baselinePixel, currentPixel, position))
             true
         }
 
-        return TransformResult(
-            width,
-            height,
-            diffBuffer.array()
+        val result = TransformResult(
+            width = buffers.width,
+            height = buffers.height,
+            pixels = diffBuffer.array()
         )
+
+        buffers.free()
+        return result
     }
 
     /**
@@ -209,16 +211,6 @@ class ParallelPixelProcessor private constructor(
          */
         private fun isUnevenChunkSize(): Boolean = (size % wholeChunkSize != 0)
     }
-
-    /**
-     * A class that contains the buffers for the two bitmaps.
-     */
-    private data class ImageBuffers(
-        val width: Int,
-        val height: Int,
-        val baselineBuffer: IntBuffer,
-        val currentBuffer: IntBuffer
-    )
 
     /**
      * The result of a transform operation.

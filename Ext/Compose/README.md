@@ -12,7 +12,7 @@ Easily create screenshot tests for `@Composable` functions.
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.0.0" apply false
+    id("dev.testify") version "3.1.0" apply false
 }
 ```
 

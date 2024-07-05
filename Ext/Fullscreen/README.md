@@ -20,7 +20,7 @@ You can set a comparison tolerance using [ScreenshotRule.setExactness](../../Lib
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.0.0" apply false
+    id("dev.testify") version "3.1.0" apply false
 }
 ```
 
