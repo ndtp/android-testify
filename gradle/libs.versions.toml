@@ -1,6 +1,6 @@
 [versions]
 activityCompose = "1.7.1"
-agp = "8.4.1"
+agp = "8.5.0"
 appcompat = "1.6.1"
 colormath = "1.4.1"
 coreKtx = "1.4.0"
