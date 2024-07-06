@@ -32,6 +32,7 @@ truthVersion = "1.2.0"
 uiTestJunit4 = "1.4.3"
 uiautomator = "2.3.0"
 composeBom = "2024.05.00"
+screenshot = "0.0.1-alpha01"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -69,6 +70,7 @@ slf4j-jdk14 = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4jJdk14" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
 truth-v120 = { module = "com.google.truth:truth", version.ref = "truthVersion" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -78,3 +80,4 @@ google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.re
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPluginSerialization" }
+screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot"}
