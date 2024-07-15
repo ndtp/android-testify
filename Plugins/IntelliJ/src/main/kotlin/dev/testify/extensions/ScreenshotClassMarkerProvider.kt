@@ -30,8 +30,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
-import org.jetbrains.kotlin.name.FqName
+import dev.testify.hasScreenshotAnnotation
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
@@ -52,13 +51,7 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
 
         val functions = PsiTreeUtil.findChildrenOfType(this, KtNamedFunction::class.java)
         if (functions.isEmpty()) return null
-
-        if (
-            functions.none {
-                it.descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) != null ||
-                    it.descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION_LEGACY)) != null
-            }
-        ) return null
+        if (functions.none(KtNamedFunction::hasScreenshotAnnotation)) return null
 
         val anchorElement = this.nameIdentifier ?: return null
 
