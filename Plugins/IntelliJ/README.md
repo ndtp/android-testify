@@ -1,5 +1,7 @@
 # Android Testify - IntelliJ Platform Plugin
 
+<a href="https://plugins.jetbrains.com/plugin/19166">![Version](https://img.shields.io/jetbrains/plugin/v/19166)</a> <a href="https://plugins.jetbrains.com/plugin/19166">![Downloads](https://img.shields.io/jetbrains/plugin/d/19166)</a> <a href="https://plugins.jetbrains.com/plugin/19166">![Rating](https://img.shields.io/jetbrains/plugin/r/rating/19166)</a>
+
 <img width="720px" src="./marketplace/screenshot_19166.jpg"/>
 
 <!-- Plugin description -->

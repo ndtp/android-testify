@@ -1,5 +1,21 @@
 # Android Testify - IntelliJ Platform Plugin - Change Log
 
+## [2.3.0]
+
+  - Added a 'Go To Source' popup menu item to baseline image asset files. This action will navigate you from the PNG baseline image to the test source code.
+  - Added a 'Baseline Image' destination in the `Go To` popup menu when right-clicking on the test source code. This action will navigate you to the baseline image for the current test.
+
+## [2.2.0]
+
+  - Added support for Android Studio Koala | 2024.1.1 Canary 6 | 241.+
+
+## [2.1.0]
+
+  - Added support for Android Studio Jellyfish | 2023.3.1 Canary 10 | 233.+
+  - Replaced deprecated API calls.
+  
+    - Dropped support for Android Studio versions 221.* and earlier (Electric Eel, Dolphin, Chipmunk, Bumblebee)
+
 ## [2.0.0]
 
 - Added support for Android Studio Iguana | 2023.2.1.16 Canary 16 | 232.+
