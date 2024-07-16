@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,7 +34,7 @@ import java.awt.event.ActionEvent
 class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
 
     override val menuText: String
-        get() = "Delete ${shortDisplayName()}"
+        get() = "Delete ${shortDisplayName(anchorElement)}"
 
     override val icon = "delete"
 

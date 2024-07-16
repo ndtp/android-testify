@@ -1,10 +1,10 @@
 <idea-plugin require-restart="false">
-  <id>dev.testify</id>
-  <name>Android Testify - Screenshot Instrumentation Tests</name>
-  <vendor email="testifyscreenshots@gmail.com" url="http://testify.dev">ndtp</vendor>
+    <id>dev.testify</id>
+    <name>Android Testify - Screenshot Instrumentation Tests</name>
+    <vendor email="testifyscreenshots@gmail.com" url="http://testify.dev">ndtp</vendor>
 
-  <!-- Text to display as description on Preferences/Settings | Plugin page -->
-  <description><![CDATA[
+    <!-- Text to display as description on Preferences/Settings | Plugin page -->
+    <description><![CDATA[
 <p>Expand your test coverage by including the View layer.</p>
 
 <p><b>Testify</b> allows you to easily set up a variety of screenshot tests in your application. Capturing a screenshot of your view gives you a new tool for monitoring the quality of your UI experience. It's also an easy way to review changes to your UI. Once you've established a comprehensive set of screenshots for your application, you can use them as a "visual dictionary". In this case, a picture really is worth a thousand words; it's easy to catch unintended changes in your view rendering by watching for differences in your captured images.</p>
@@ -25,8 +25,20 @@
 Copyright (c) 2023-2024 ndtp
 ]]></description>
 
-  <change-notes>
-    <![CDATA[
+    <change-notes>
+        <![CDATA[
+
+      <h3>2.3.0</h3>
+      <ul>
+        <li>Added a 'Go To Source' popup menu item to baseline image asset files. This action will navigate you from the PNG baseline image to the test source code.</li>
+        <li>Added a 'Baseline Image' destination in the `Go To` popup menu when right-clicking on the test source code. This action will navigate you to the baseline image for the current test.</li>
+      </ul>
+
+      <h3>2.2.0</h3>
+      <ul>
+        <li>Added support for Android Studio Koala | 2024.1.1 Canary 6 | 241.+</li>
+      </ul>
+
       <h3>2.1.0</h3>
       <ul>
         <li>Added support for Android Studio Jellyfish | 2023.3.1 Canary 10 | 233.+</li>
@@ -62,24 +74,53 @@ Copyright (c) 2023-2024 ndtp
         <li>Added support for Android Studio Bumblebee | 2021.1.1 Canary 9 | 211.+</li>
       </ul>
     ]]>
-  </change-notes>
+    </change-notes>
 
-  <depends>com.intellij.modules.androidstudio</depends>
-  <depends>org.jetbrains.kotlin</depends>
-  <depends>org.jetbrains.android</depends>
+    <depends>com.intellij.modules.androidstudio</depends>
+    <depends>org.jetbrains.kotlin</depends>
+    <depends>org.jetbrains.android</depends>
 
-  <!-- Declare the default resource location for localizing menu strings -->
-  <resource-bundle>messages.MyBundle</resource-bundle>
+    <!-- Declare the default resource location for localizing menu strings -->
+    <resource-bundle>messages.MyBundle</resource-bundle>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <codeInsight.lineMarkerProvider
-            language="kotlin"
-            implementationClass="dev.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
+    <extensions defaultExtensionNs="com.intellij">
+        <codeInsight.lineMarkerProvider
+                language="kotlin"
+                implementationClass="dev.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
 
-    <codeInsight.lineMarkerProvider
-            language="kotlin"
-            implementationClass="dev.testify.extensions.ScreenshotClassMarkerProvider"/>
+        <codeInsight.lineMarkerProvider
+                language="kotlin"
+                implementationClass="dev.testify.extensions.ScreenshotClassMarkerProvider"/>
 
-  </extensions>
+    </extensions>
 
+    <actions>
+        <action
+                id="dev.testify.actions.utility.GoToSourceAction"
+                class="dev.testify.actions.utility.GoToSourceAction"
+                text="Go To Source"
+                description="Navigate to the test source for this baseline image"
+                icon="/icons/camera.svg">
+            <keyboard-shortcut
+                    keymap="$default"
+                    first-keystroke="meta shift T"
+            />
+            <add-to-group group-id="Images.EditorPopupMenu"
+                          anchor="before"
+                          relative-to-action="FindUsages"/>
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="FindUsages"/>
+        </action>
+        <action id="dev.testify.actions.utility.GoToBaselineAction"
+                class="dev.testify.actions.utility.GoToBaselineAction"
+                text="Baseline Image"
+                description="Navigate to the baseline image associated with this screenshot test">
+            <add-to-group group-id="EditorPopupMenu.GoTo"
+                          anchor="after"
+                          relative-to-action="GotoTest"/>
+            <keyboard-shortcut
+                    keymap="$default"
+                    first-keystroke="meta shift T"
+            />
+        </action>
+    </actions>
 </idea-plugin>

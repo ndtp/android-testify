@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2024 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,13 +24,21 @@
  */
 package dev.testify
 
+import com.intellij.ide.projectView.impl.nodes.PsiFileNode
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
+import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
+import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
 import org.jetbrains.kotlin.idea.util.projectStructure.module
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
@@ -78,3 +86,18 @@ val KtClass.testifyClassInvocationPath: String
     get() {
         return "${this.fqName?.parent()}.${this.name}"
     }
+
+val KtNamedFunction.hasScreenshotAnnotation: Boolean
+    get() = descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) != null ||
+        descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION_LEGACY)) != null
+
+fun AnActionEvent.findScreenshotAnnotatedFunction(): KtNamedFunction? {
+    val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return null
+    val offset = this.getData(PlatformDataKeys.EDITOR)?.caretModel?.offset ?: return null
+    val elementAtCaret = psiFile.findElementAt(offset)
+    return elementAtCaret?.parents?.filterIsInstance<KtNamedFunction>()?.find { it.hasScreenshotAnnotation }
+}
+
+fun AnActionEvent.getVirtualFile(): VirtualFile? =
+    this.getData(PlatformDataKeys.VIRTUAL_FILE) ?: (this.getData(CommonDataKeys.NAVIGATABLE_ARRAY)
+        ?.first() as? PsiFileNode)?.virtualFile

@@ -1,9 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
- *
+ * Copyright (c) 2024 ndtp
+  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -24,21 +23,28 @@
  */
 package dev.testify.actions.utility
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiElement
-import java.awt.event.ActionEvent
+import dev.testify.baselineImageName
+import dev.testify.findScreenshotAnnotatedFunction
 
-class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+class GoToBaselineAction : BaseUtilityAction() {
 
-    override val icon = "reveal"
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-    override val menuText: String
-        get() = "Reveal ${shortDisplayName(anchorElement)}"
+    override fun update(event: AnActionEvent) {
+        event.presentation.isEnabledAndVisible = event.findScreenshotAnnotatedFunction()?.let { function ->
+            isBaselineInProject(function)
+        } ?: false
+    }
 
-    override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
-        val focusEditor: Boolean = (modifiers and ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK
-        FileEditorManager.getInstance(project).openFile(virtualFile, focusEditor)
+    override fun actionPerformed(event: AnActionEvent) {
+        val project = event.project ?: return
+        event.findScreenshotAnnotatedFunction()?.let { function ->
+            findBaselineImage(function.containingFile, function.baselineImageName)?.let { virtualFile ->
+                FileEditorManager.getInstance(project).openFile(virtualFile, true)
+            }
+        }
     }
 }

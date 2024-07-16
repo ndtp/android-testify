@@ -25,28 +25,23 @@
 package dev.testify.actions.utility
 
 import com.intellij.openapi.actionSystem.ActionUpdateThread
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import com.intellij.psi.search.FilenameIndex
 import dev.testify.baselineImageName
-import org.jetbrains.kotlin.idea.util.projectStructure.module
-import org.jetbrains.kotlin.psi.KtFile
 
-abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnAction() {
+abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseUtilityAction() {
 
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
-    private val baselineImageName = anchorElement.baselineImageName
     abstract val menuText: String
     abstract val icon: String
 
     final override fun update(anActionEvent: AnActionEvent) {
 
-        val isInProject = anActionEvent.isBaselineInProject
+        val isInProject = isBaselineInProject(anchorElement)
 
         anActionEvent.presentation.apply {
             text = menuText
@@ -57,37 +52,10 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : AnActio
     }
 
     final override fun actionPerformed(event: AnActionEvent) {
-        event.findBaselineImage()?.let {
+        findBaselineImage(anchorElement.containingFile, anchorElement.baselineImageName)?.let {
             performActionOnVirtualFile(it, event.project!!, event.modifiers)
         }
     }
 
-    private fun AnActionEvent.findBaselineImage(): VirtualFile? {
-        val psiFile = anchorElement.containingFile
-        if (psiFile is KtFile && psiFile.module != null) {
-            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, psiFile.module!!.moduleContentScope)
-            if (files.isNotEmpty()) {
-                return files.first()
-            }
-        }
-        return null
-    }
-
-    private val AnActionEvent.isBaselineInProject: Boolean
-        get() {
-            return findBaselineImage() != null
-        }
-
     abstract fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int)
-
-    protected fun shortDisplayName(): String {
-        val fullName = anchorElement.baselineImageName.replace("_", "__")
-
-        return if (fullName.length > 43) {
-            val names = fullName.split("__")
-            "${names[0].take(18)}...${names[1].takeLast(22)}"
-        } else {
-            fullName
-        }
-    }
 }

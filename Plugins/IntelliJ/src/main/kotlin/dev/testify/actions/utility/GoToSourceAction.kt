@@ -1,9 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
- *
+ * Copyright (c) 2024 ndtp
+  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -24,21 +23,26 @@
  */
 package dev.testify.actions.utility
 
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiElement
-import java.awt.event.ActionEvent
+import dev.testify.getVirtualFile
 
-class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+class GoToSourceAction : BaseUtilityAction() {
 
-    override val icon = "reveal"
-
-    override val menuText: String
-        get() = "Reveal ${shortDisplayName(anchorElement)}"
-
-    override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
-        val focusEditor: Boolean = (modifiers and ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK
-        FileEditorManager.getInstance(project).openFile(virtualFile, focusEditor)
+    override fun update(event: AnActionEvent) {
+        val virtualFile: VirtualFile? = event.getVirtualFile()
+        event.presentation.isEnabledAndVisible = virtualFile?.let { file ->
+            isImageFile(file) && (event.findSourceFile() != null)
+        } ?: false
     }
+
+    override fun actionPerformed(event: AnActionEvent) {
+        event.project?.let { project ->
+            event.findSourceFile()?.let { method ->
+                navigateToMethod(method, project)
+            }
+        }
+    }
+
+    private fun isImageFile(file: VirtualFile): Boolean = file.extension.equals("png", ignoreCase = true)
 }
