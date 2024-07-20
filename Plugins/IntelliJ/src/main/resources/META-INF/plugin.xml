@@ -28,7 +28,7 @@ Copyright (c) 2023-2024 ndtp
     <change-notes>
         <![CDATA[
 
-      <h3>2.3.0</h3>
+      <h3>2.3.1</h3>
       <ul>
         <li>Added a 'Go To Source' popup menu item to baseline image asset files. This action will navigate you from the PNG baseline image to the test source code.</li>
         <li>Added a 'Baseline Image' destination in the `Go To` popup menu when right-clicking on the test source code. This action will navigate you to the baseline image for the current test.</li>
@@ -77,6 +77,7 @@ Copyright (c) 2023-2024 ndtp
     </change-notes>
 
     <depends>com.intellij.modules.androidstudio</depends>
+    <depends>com.intellij.modules.java</depends>
     <depends>org.jetbrains.kotlin</depends>
     <depends>org.jetbrains.android</depends>
 

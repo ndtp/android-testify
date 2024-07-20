@@ -32,7 +32,8 @@ intellij {
         listOf(
             "Kotlin",
             "gradle",
-            "android"
+            "android",
+            "java"
         )
     )
 }
