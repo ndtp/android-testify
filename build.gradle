@@ -1,7 +1,7 @@
 buildscript {
     ext {
         versions = [
-                'testify': '3.1.0' // https://github.com/ndtp/android-testify/releases
+                'testify': '3.2.0' // https://github.com/ndtp/android-testify/releases
         ]
         coreVersions = [
                 'compileSdk': 34,
@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.jetbrains.dokka) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization) apply false
+    id "dev.testify" apply false
 }
 
 task clean(type: Delete) {

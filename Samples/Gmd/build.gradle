@@ -1,17 +1,10 @@
 import com.android.build.api.dsl.ManagedVirtualDevice
 
-buildscript {
-    dependencies {
-        classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
-    }
-}
-
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'dev.testify'
 }
-
-apply plugin: 'dev.testify'
 
 android {
     compileSdk 33
@@ -70,6 +63,7 @@ android {
 
 testify {
     useTestStorage true
+    autoImplementLibrary false
 }
 
 dependencies {

@@ -1,7 +1,4 @@
 buildscript {
-    dependencies {
-        classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
-    }
     ext {
         versions = [
                 'compose': [
@@ -17,9 +14,8 @@ buildscript {
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'dev.testify'
 }
-
-apply plugin: 'dev.testify'
 
 android {
     compileSdk 34
@@ -109,4 +105,8 @@ dependencies {
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     androidTestImplementation "androidx.test:core-ktx:1.4.0"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
+}
+
+testify {
+    autoImplementLibrary false
 }
