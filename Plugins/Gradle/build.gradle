@@ -20,7 +20,7 @@ ext {
     ]
 }
 
-version = '3.2.0'
+version = '3.2.0-alpha01'
 group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
