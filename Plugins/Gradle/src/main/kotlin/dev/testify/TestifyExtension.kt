@@ -120,8 +120,8 @@ internal data class TestifySettings(
             val testPackageId = extension.testPackageId ?: project.inferredDefaultTestVariantId
             val targetPackageId = extension.applicationPackageId ?: project.inferredTargetPackageId
             val version = TestifySettings::class.java.getPackage().implementationVersion
-            val autoImplementLibrary = extension.autoImplementLibrary
-                ?: version?.contains("local", ignoreCase = true) == false
+            val isSnapshot = version?.contains("SNAPSHOT", ignoreCase = true) ?: false
+            val autoImplementLibrary = extension.autoImplementLibrary ?: !isSnapshot
             val useSdCard = extension.useSdCard ?: false
             val useTestStorage = extension.useTestStorage ?: false
             val installTask = extension.installTask ?: project.inferredInstallTask

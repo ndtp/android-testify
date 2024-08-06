@@ -21,13 +21,12 @@ include ':LegacySample'
 include ':FlixSample'
 include ':FlixLibrary'
 include ':GmdSample'
-include ':Plugin'
+includeBuild("./Plugins/Gradle") { name = "Plugin" }
 include ':Library'
 include ':ComposeExtensions'
 include ':FullscreenCaptureMethod'
 include ':Accessibility'
 
-project(':Plugin').projectDir = new File("./Plugins/Gradle")
 project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
 project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':Accessibility').projectDir = new File("./Ext/Accessibility")
