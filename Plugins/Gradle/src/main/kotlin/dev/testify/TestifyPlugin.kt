@@ -27,7 +27,10 @@ package dev.testify
 
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
 import dev.testify.internal.Adb
+import dev.testify.internal.AnsiFormat
 import dev.testify.internal.android
+import dev.testify.internal.isVerbose
+import dev.testify.internal.println
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyDefaultTask
 import dev.testify.tasks.main.ScreenshotClearTask
@@ -69,8 +72,10 @@ class TestifyPlugin : Plugin<Project> {
             project.addDependencies()
 
             if (settings.autoImplementLibrary) {
-                val version = javaClass.getPackage().implementationVersion
-                project.dependencies.add("androidTestImplementation", "dev.testify:testify:$version")
+                val version = javaClass.getPackage().implementationVersion.orEmpty()
+                val dependency = "dev.testify:testify:$version"
+                if (project.isVerbose) println(AnsiFormat.Purple, "Adding androidTestImplementation($dependency)")
+                project.dependencies.add("androidTestImplementation", dependency)
             }
 
             Adb.init(project)
