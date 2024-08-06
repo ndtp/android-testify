@@ -1,5 +1,5 @@
 <!--
-Need help in filling this out? See the [guide](https://github.com/Shopify/android-testify/blob/main/CONTRIBUTING.md).
+Need help in filling this out? See the [guide](https://github.com/ndtp/android-testify/blob/main/CONTRIBUTING.md).
 -->
 
 ### What does this change accomplish?
