@@ -1,0 +1,25 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    plugins {
+        id 'org.jetbrains.kotlin.jvm' version '1.9.24'
+        id 'org.jetbrains.dokka' version '1.8.10'
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'dev.testify.gradle.plugin'

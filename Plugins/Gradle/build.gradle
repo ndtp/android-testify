@@ -2,8 +2,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
+    id 'java-gradle-plugin'
     id 'groovy'
-    id 'kotlin'
+    id 'org.jetbrains.kotlin.jvm'
     id 'org.jetbrains.dokka'
     id 'jacoco'
 }
@@ -22,11 +23,20 @@ ext {
     ]
 }
 
-version = "$project.versions.testify"
+version = '3.2.0'
 group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
 sourceCompatibility = JavaVersion.VERSION_17
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'dev.testify'
+            implementationClass = 'dev.testify.TestifyPlugin'
+        }
+    }
+}
 
 test {
     jacoco {
@@ -73,26 +83,8 @@ jar {
 }
 
 tasks.register('configureLocal') {
-    doFirst {
-        version = "local"
-        jar.manifest.attributes.put("Implementation-Version", version)
-    }
-}
-
 tasks.register('copyLocal', Copy) {
-    from "$buildDir/libs/${project.name}-local.jar"
-    into 'jar'
-}
-
 tasks.register('assembleLocal') {
-    dependsOn configureLocal
-    dependsOn build
-    dependsOn copyLocal
-
-    build.mustRunAfter configureLocal
-    copyLocal.mustRunAfter build
-}
-
 tasks.register('sourcesJar', Jar) {
     from sourceSets.main.groovy.srcDirs
     archiveClassifier = 'sources'

@@ -1,0 +1,15 @@
+[versions]
+gradle = "7.4.1"
+junitJupiter = "5.8.2"
+kotlin = "1.9.24"
+mockk = "1.13.5"
+truthVersion = "1.2.0"
+
+[libraries]
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitJupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+truth-v120 = { module = "com.google.truth:truth", version.ref = "truthVersion" }
