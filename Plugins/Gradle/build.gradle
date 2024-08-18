@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     id 'groovy'
     id 'kotlin'
@@ -54,15 +57,10 @@ tasks.named('test', Test) {
     useJUnitPlatform()
 }
 
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "17"
+tasks.withType(KotlinJvmCompile).configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
 }
 
@@ -74,19 +72,19 @@ jar {
     }
 }
 
-task configureLocal {
+tasks.register('configureLocal') {
     doFirst {
         version = "local"
         jar.manifest.attributes.put("Implementation-Version", version)
     }
 }
 
-task copyLocal(type: Copy) {
+tasks.register('copyLocal', Copy) {
     from "$buildDir/libs/${project.name}-local.jar"
     into 'jar'
 }
 
-task assembleLocal(description: 'Assembles the outputs of this project for use locally.', group: 'Build') {
+tasks.register('assembleLocal') {
     dependsOn configureLocal
     dependsOn build
     dependsOn copyLocal
@@ -95,12 +93,13 @@ task assembleLocal(description: 'Assembles the outputs of this project for use l
     copyLocal.mustRunAfter build
 }
 
-task sourcesJar(type: Jar) {
+tasks.register('sourcesJar', Jar) {
     from sourceSets.main.groovy.srcDirs
     archiveClassifier = 'sources'
 }
 
-task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn dokkaJavadoc
     archiveClassifier.set('javadoc')
     archiveBaseName.set('testify')
     from dokkaJavadoc.outputDirectory
