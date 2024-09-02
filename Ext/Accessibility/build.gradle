@@ -18,7 +18,7 @@ ext {
     ]
 }
 
-version = "$project.versions.testify"
+version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
 group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 

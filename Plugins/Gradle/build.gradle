@@ -9,6 +9,9 @@ plugins {
     id 'jacoco'
 }
 
+def gradleProperties = new Properties()
+file("../../gradle.properties").withInputStream { gradleProperties.load(it) }
+
 ext {
     pom = [
             publishedGroupId  : 'dev.testify',
@@ -23,11 +26,8 @@ ext {
     ]
 }
 
-version = '3.2.0'
+version = gradleProperties.getProperty('testify_version')
 group = pom.publishedGroupId
-archivesBaseName = pom.artifact
-
-sourceCompatibility = JavaVersion.VERSION_17
 
 gradlePlugin {
     automatedPublishing = false
