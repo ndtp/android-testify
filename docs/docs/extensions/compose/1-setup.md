@@ -10,7 +10,7 @@ In order to use the Android Testify Compose extension, you must first configure 
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.1.0" apply false
+    id("dev.testify") version "3.2.0" apply false
 }
 ```
 

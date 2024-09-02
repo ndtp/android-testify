@@ -1,5 +1,9 @@
 # Testify Change Log
 
+## 3.2.0
+
+- https://github.com/ndtp/android-testify/pull/231 - Replace Plugin-Local with Composite Build
+
 ## 3.1.0
 
 - https://github.com/ndtp/android-testify/pull/226 - Testify will now throw a `LowMemoryException` when attempts to allocate an `IntBuffer` fail. This can help users diagnose AVD configuration problems and reports on the state of the device.
