@@ -23,15 +23,13 @@ ext {
     ]
 }
 
-version = '3.2.0'
+version = '3.2.0-alpha05' // TODO: Move to properties so shared with libraries
 group = pom.publishedGroupId
-archivesBaseName = pom.artifact
-
-sourceCompatibility = JavaVersion.VERSION_17
 
 gradlePlugin {
+    automatedPublishing = false
     plugins {
-        simplePlugin {
+        testifyPlugin {
             id = 'dev.testify'
             implementationClass = 'dev.testify.TestifyPlugin'
         }
@@ -82,9 +80,6 @@ jar {
     }
 }
 
-tasks.register('configureLocal') {
-tasks.register('copyLocal', Copy) {
-tasks.register('assembleLocal') {
 tasks.register('sourcesJar', Jar) {
     from sourceSets.main.groovy.srcDirs
     archiveClassifier = 'sources'
