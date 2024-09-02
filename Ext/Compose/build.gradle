@@ -24,7 +24,6 @@ archivesBaseName = pom.artifact
 
 android {
     namespace "dev.testify.compose"
-    compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
         abortOnError true
@@ -35,8 +34,9 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion coreVersions.minSdk
-        targetSdkVersion coreVersions.targetSdk
+        compileSdk libs.versions.compileSdk.get().toInteger()
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         kotlinOptions {

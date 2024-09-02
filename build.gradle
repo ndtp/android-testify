@@ -1,13 +1,3 @@
-buildscript {
-    ext {
-        coreVersions = [
-                'compileSdk': 34,
-                'minSdk'    : 21,
-                'targetSdk' : 34
-        ]
-    }
-}
-
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
@@ -19,12 +9,12 @@ plugins {
     id "dev.testify" apply false
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 
 allprojects {
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy.force 'org.objenesis:objenesis:2.6'
     }
 }

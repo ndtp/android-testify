@@ -24,7 +24,6 @@ archivesBaseName = pom.artifact
 
 android {
     namespace "dev.testify.accessibility"
-    compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
         abortOnError true
@@ -35,8 +34,9 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion coreVersions.minSdk
-        targetSdkVersion coreVersions.targetSdk
+        compileSdk libs.versions.compileSdk.get().toInteger()
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         kotlinOptions {
@@ -44,7 +44,7 @@ android {
         }
     }
 
-    libraryVariants.all { variant ->
+    libraryVariants.configureEach { variant ->
         variant.outputs.all {
             outputFileName = "${archivesBaseName}-${version}.aar"
         }

@@ -26,8 +26,6 @@ archivesBaseName = pom.artifact
 jacoco { toolVersion = "0.8.10" }
 
 android {
-    compileSdkVersion coreVersions.compileSdk
-
     kotlinOptions {
         jvmTarget = '17'
     }
@@ -37,8 +35,9 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion coreVersions.minSdk
-        targetSdkVersion coreVersions.targetSdk
+        compileSdk libs.versions.compileSdk.get().toInteger()
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         kotlinOptions {
@@ -47,7 +46,7 @@ android {
         }
     }
 
-    libraryVariants.all { variant ->
+    libraryVariants.configureEach { variant ->
         variant.outputs.all {
             outputFileName = "${archivesBaseName}-${version}.aar"
         }

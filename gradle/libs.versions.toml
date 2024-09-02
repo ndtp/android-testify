@@ -1,4 +1,7 @@
 [versions]
+compileSdk = "34"
+minSdk = "21"
+targetSdk = "34"
 activityCompose = "1.7.1"
 agp = "8.4.1"
 appcompat = "1.6.1"
