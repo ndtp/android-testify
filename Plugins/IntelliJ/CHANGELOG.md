@@ -1,5 +1,9 @@
 # Android Testify - IntelliJ Platform Plugin - Change Log
 
+## [2.4.0]
+
+  - Added support for Android Studio Ladybug | 2024.2.1 Canary 9 | 242.+
+
 ## [2.3.0]
 
   - Added a 'Go To Source' popup menu item to baseline image asset files. This action will navigate you from the PNG baseline image to the test source code.
