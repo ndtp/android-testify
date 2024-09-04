@@ -1,7 +1,4 @@
 buildscript {
-    dependencies {
-        classpath files("${project.rootDir.path}/Plugins/Gradle/jar/Plugin-local.jar")
-    }
     ext {
         versions = [
                 'compose': [
@@ -21,9 +18,8 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'dev.testify'
 }
-
-apply plugin: 'dev.testify'
 
 secrets {
     defaultPropertiesFileName = 'local.defaults.properties'
@@ -127,4 +123,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.test:rules:1.5.0"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
+}
+
+testify {
+    autoImplementLibrary false
 }

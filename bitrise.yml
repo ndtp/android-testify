@@ -222,7 +222,7 @@ workflows:
     - gradle-runner@2:
         inputs:
           - gradlew_path: "./gradlew"
-          - gradle_task: Plugin:assemble Plugin:assembleLocal
+          - gradle_task: Plugin:assemble
         title: Validate build
     - deploy-to-bitrise-io@2:
         inputs:

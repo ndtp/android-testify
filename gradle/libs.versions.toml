@@ -1,4 +1,7 @@
 [versions]
+compileSdk = "34"
+minSdk = "21"
+targetSdk = "34"
 activityCompose = "1.7.1"
 agp = "8.4.1"
 appcompat = "1.6.1"
@@ -7,12 +10,10 @@ coreKtx = "1.4.0"
 coreKtxVersion = "1.10.0"
 dokka = "1.8.10"
 espressoCore = "3.5.1"
-gradle = "7.4.1"
 gson = "2.9.0"
 guava = "30.0-android"
 hilt = "2.48"
 junit = "1.1.5"
-junitJupiter = "5.8.2"
 kotlin = "1.9.24"
 kotlinPluginSerialization = "1.8.10"
 kotlinxCoroutinesAndroid = "1.6.4"
@@ -28,7 +29,6 @@ rules = "1.5.0"
 runner = "1.5.2"
 slf4jJdk14 = "2.0.6"
 truth = "1.1.5"
-truthVersion = "1.2.0"
 uiTestJunit4 = "1.4.3"
 uiautomator = "2.3.0"
 composeBom = "2024.05.00"
@@ -36,6 +36,7 @@ composeBom = "2024.05.00"
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "coreKtx" }
 androidx-espresso-accessibility = { module = "androidx.test.espresso:espresso-accessibility", version.ref = "espressoCore" }
 androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espressoCore" }
@@ -53,13 +54,8 @@ androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview
 androidx-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
 colormath = { module = "com.github.ajalt:colormath", version.ref = "colormath" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junitJupiter" }
-junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junitJupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
-kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesAndroid" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
@@ -67,8 +63,6 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
 slf4j-jdk14 = { module = "org.slf4j:slf4j-jdk14", version.ref = "slf4jJdk14" }
 truth = { module = "com.google.truth:truth", version.ref = "truth" }
-truth-v120 = { module = "com.google.truth:truth", version.ref = "truthVersion" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

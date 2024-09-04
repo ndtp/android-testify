@@ -18,13 +18,12 @@ ext {
     ]
 }
 
-version = "$project.versions.testify"
+version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
 group = pom.publishedGroupId
 archivesBaseName = pom.artifact
 
 android {
     namespace "dev.testify.fullscreen"
-    compileSdkVersion coreVersions.compileSdk
 
     lintOptions {
         abortOnError true
@@ -35,8 +34,9 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion coreVersions.minSdk
-        targetSdkVersion coreVersions.targetSdk
+        compileSdk libs.versions.compileSdk.get().toInteger()
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
         kotlinOptions {
