@@ -10,3 +10,7 @@ report.yml
 Plugins/Intellij/out
 Plugins/.idea/
 docs/yarn.lock
+Plugins/Gradle/.idea/
+Plugins/Gradle/gradle/wrapper/
+Plugins/Gradle/gradlew
+Plugins/Gradle/gradlew.bat

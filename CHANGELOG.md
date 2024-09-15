@@ -1,5 +1,9 @@
 # Testify Change Log
 
+## Unreleased
+
+- Add NO_COLOR support to Gradle plugin. See https://no-color.org/ for more information.
+
 ## 3.2.0
 
 - https://github.com/ndtp/android-testify/pull/231 - Replace Plugin-Local with Composite Build

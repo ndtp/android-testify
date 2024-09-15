@@ -26,7 +26,10 @@
 package dev.testify.tasks.utility
 
 import dev.testify.internal.Adb
+import dev.testify.internal.AnsiFormat
 import dev.testify.internal.Device
+import dev.testify.internal.ENV_NO_COLOR
+import dev.testify.internal.isEnvSet
 import dev.testify.internal.reportFilePath
 import dev.testify.internal.screenshotDirectory
 import dev.testify.tasks.internal.TaskNameProvider
@@ -40,21 +43,55 @@ open class SettingsTask : TestifyUtilityTask() {
 
     override val isDeviceRequired = false
 
-    @get:Input lateinit var baselineSourceDir: String
-    @get:Input lateinit var moduleName: String
-    @get:Input lateinit var screenshotDirectory: String
-    @get:Input lateinit var targetPackageId: String
-    @get:Input lateinit var testPackageId: String
-    @get:Input lateinit var testRunner: String
-    @get:Input var isRecordMode: Boolean = false
-    @get:Input var pullWaitTime: Long = 0L
-    @get:Input var useSdCard: Boolean = false
-    @get:Input var useTestStorage: Boolean = false
-    @get:Optional @get:Input var installAndroidTestTask: String? = null
-    @get:Optional @get:Input var installTask: String? = null
-    @get:Optional @get:Input var outputFileNameFormat: String? = null
-    @get:Optional @get:Input var reportFilePath: String? = null
-    @get:Optional @get:Input var screenshotAnnotation: String? = null
+    @get:Input
+    lateinit var baselineSourceDir: String
+
+    @get:Input
+    lateinit var moduleName: String
+
+    @get:Input
+    lateinit var screenshotDirectory: String
+
+    @get:Input
+    lateinit var targetPackageId: String
+
+    @get:Input
+    lateinit var testPackageId: String
+
+    @get:Input
+    lateinit var testRunner: String
+
+    @get:Input
+    var isRecordMode: Boolean = false
+
+    @get:Input
+    var pullWaitTime: Long = 0L
+
+    @get:Input
+    var useSdCard: Boolean = false
+
+    @get:Input
+    var useTestStorage: Boolean = false
+
+    @get:Optional
+    @get:Input
+    var installAndroidTestTask: String? = null
+
+    @get:Optional
+    @get:Input
+    var installTask: String? = null
+
+    @get:Optional
+    @get:Input
+    var outputFileNameFormat: String? = null
+
+    @get:Optional
+    @get:Input
+    var reportFilePath: String? = null
+
+    @get:Optional
+    @get:Input
+    var screenshotAnnotation: String? = null
 
     override fun getDescription() = "Displays the Testify gradle extension settings"
 
@@ -85,6 +122,7 @@ open class SettingsTask : TestifyUtilityTask() {
         println("  baselineSourceDir      = $baselineSourceDir")
         println("  installAndroidTestTask = $installAndroidTestTask")
         println("  installTask            = $installTask")
+        println("  isRecordMode           = $isRecordMode")
         println("  moduleName             = $moduleName")
         println("  outputFileNameFormat   = $outputFileNameFormat")
         println("  pullWaitTime           = $pullWaitTime")
@@ -96,8 +134,11 @@ open class SettingsTask : TestifyUtilityTask() {
         println("  testRunner             = $testRunner")
         println("  useSdCard              = $useSdCard")
         println("  useTestStorage         = $useTestStorage")
-        println("  isRecordMode           = $isRecordMode")
         println("  user                   = $userId")
+
+        val notSet = "${AnsiFormat.Bold}${AnsiFormat.Green}Not set${AnsiFormat.Reset}"
+        val noColorVal = notSet.takeUnless { isEnvSet(ENV_NO_COLOR) } ?: System.getenv(ENV_NO_COLOR)
+        println("  NO_COLOR               = $noColorVal")
     }
 
     companion object : TaskNameProvider {
