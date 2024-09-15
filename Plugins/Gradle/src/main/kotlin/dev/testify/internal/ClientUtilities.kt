@@ -116,9 +116,13 @@ fun println(format: AnsiFormat, message: Any?) {
 }
 
 fun print(format: AnsiFormat, message: Any?) {
-    print(format)
-    print(message)
-    print(AnsiFormat.Reset)
+    if (isEnvSet(ENV_NO_COLOR)) {
+        print(message)
+    } else {
+        print(format)
+        print(message)
+        print(AnsiFormat.Reset)
+    }
 }
 
 internal fun File.assurePath() {
@@ -131,15 +135,14 @@ internal fun File.assurePath() {
 }
 
 internal fun File.deleteFilesWithSubstring(substring: String) {
-    listFiles().filter {
+    listFiles()?.filter {
         it.nameWithoutExtension.contains(substring)
-    }.forEach {
+    }?.forEach {
         println("    Deleting ${it.name}")
         it.delete()
     }
 }
 
-@Suppress("UNCHECKED_CAST")
 internal inline fun <reified T> String.fromEnv(defaultValue: T): T {
     val envVal: String? = System.getenv(this)
     return if (envVal?.isNotEmpty() == true) {
@@ -151,3 +154,9 @@ internal inline fun <reified T> String.fromEnv(defaultValue: T): T {
         defaultValue
     }
 }
+
+internal fun isEnvSet(env: String): Boolean = runCatching {
+    System.getenv(env).isNotEmpty()
+}.getOrDefault(false)
+
+internal const val ENV_NO_COLOR = "NO_COLOR"
