@@ -116,8 +116,8 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
         screenshotAnnotation = project.testifySettings.screenshotAnnotation.notEmptyOrDefault(
             default = "dev.testify.annotation.ScreenshotInstrumentation"
         )
-        shardCount = project.properties["shardCount"] as Int?
-        shardIndex = project.properties["shardIndex"] as Int?
+        shardCount = (project.properties["shardCount"] as String?)?.toIntOrNull()
+        shardIndex = (project.properties["shardIndex"] as String?)?.toIntOrNull()
         testClass = project.properties["testClass"] as String?
         testName = project.properties["testName"] as String?
         testPackageId = project.testifySettings.testPackageId

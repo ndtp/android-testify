@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Add NO_COLOR support to Gradle plugin. See https://no-color.org/ for more information.
+- Fix #203 - Add NO_COLOR support to Gradle plugin. See https://no-color.org/ for more information.
+- Fix 
 
 ## 3.2.0
 
