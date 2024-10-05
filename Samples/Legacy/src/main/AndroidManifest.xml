@@ -12,6 +12,11 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
+            android:name=".a11y.compose.ComposeAccessibilityActivity"
+            android:exported="false"
+            android:label="@string/title_activity_compose_accessibility"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".a11y.CounterActivity"
             android:exported="false" />
         <activity

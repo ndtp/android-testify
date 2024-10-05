@@ -123,6 +123,9 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "androidx.test:rules:1.5.0"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"
+
+    debugImplementation "androidx.test:rules:1.5.0"
+    debugImplementation project(path: ":ComposeExtensions")
 }
 
 testify {

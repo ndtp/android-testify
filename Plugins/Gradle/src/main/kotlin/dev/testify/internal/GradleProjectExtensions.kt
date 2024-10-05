@@ -29,13 +29,18 @@ import com.android.build.gradle.AppExtension
 import com.android.build.gradle.TestedExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.logging.configuration.ConsoleOutput
 
 val Project.android: TestedExtension
     get() = this.properties["android"] as? TestedExtension
         ?: throw GradleException("Gradle project must contain an `android` closure")
 
 val Project.isVerbose: Boolean
-    get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
+    get() = (gradle.startParameter.consoleOutput == ConsoleOutput.Verbose) ||
+        (this.properties["verbose"] as? String)?.toBoolean() ?: false
+
+val Project.isPlain: Boolean
+    get() = (gradle.startParameter.consoleOutput == ConsoleOutput.Plain)
 
 val Project.useLocale: Boolean
     get() = (this.properties["useLocale"] as? String)?.toBoolean() ?: false

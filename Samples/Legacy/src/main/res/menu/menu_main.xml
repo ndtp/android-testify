@@ -18,9 +18,9 @@
         android:title="@string/action_counter"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_espresso"
+        android:id="@+id/action_compose_accessibility"
         android:orderInCategory="100"
-        android:title="@string/action_espresso"
+        android:title="@string/action_compose_accessibility"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_about"
