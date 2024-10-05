@@ -33,7 +33,7 @@ class MainActivityScreenshotTest {
     @Test
     fun default() {
         launchActivity<MainActivity>().use { scenario ->
-            screenshotRule.withScenario(scenario).assertSame()
+            rule.withScenario(scenario).assertSame()
         }
     }
 }

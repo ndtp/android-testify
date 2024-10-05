@@ -42,9 +42,9 @@ Bear in mind that this setting will enable generating of new baselines for all t
 It's also possible to enable record mode inside the test:
 
 ```kotlin
-val screenshotRule = ScreenshotRule(ClientListActivity::class.java)
+val rule = ScreenshotRule(ClientListActivity::class.java)
 
-screenshotRule.setRecordModeEnabled(true)
+rule.setRecordModeEnabled(true)
 ```
 
 With `ScreenshotRule` record mode can be enabled only for a specific test and disabled for all
