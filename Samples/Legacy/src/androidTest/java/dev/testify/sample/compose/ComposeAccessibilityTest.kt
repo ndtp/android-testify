@@ -2,6 +2,7 @@ package dev.testify.sample.compose
 
 import androidx.test.core.app.launchActivity
 import dev.testify.ScreenshotRule
+import dev.testify.accessibility.assertAccessibility
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.a11y.compose.ComposeAccessibilityActivity
 import dev.testify.scenario.ScreenshotScenarioRule
@@ -16,8 +17,10 @@ class ComposeAccessibilityTest {
     @Test
     fun default() {
         launchActivity<ComposeAccessibilityActivity>().use { scenario ->
-            screenshotRule.withScenario(scenario).assertSame()
+            rule
+                .withScenario(scenario)
+                .assertAccessibility()
+                .assertSame()
         }
     }
 }
-

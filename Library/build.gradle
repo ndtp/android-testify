@@ -71,6 +71,7 @@ android {
         implementation libs.androidx.runner
         implementation libs.colormath
         implementation libs.kotlinx.coroutines.android
+        implementation libs.androidx.storage
 
         testImplementation libs.kotlinx.coroutines.test
         testImplementation libs.mockk

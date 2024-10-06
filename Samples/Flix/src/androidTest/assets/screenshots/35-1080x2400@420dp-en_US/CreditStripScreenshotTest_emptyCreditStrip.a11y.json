@@ -1,0 +1,10 @@
+[
+  {
+    "check": "SpeakableTextPresentCheck",
+    "elementClass": "androidx.compose.ui.platform.AndroidComposeView",
+    "id": 4,
+    "message": "This item may not have a label readable by screen readers.",
+    "resourceName": "null",
+    "type": "ERROR"
+  }
+]

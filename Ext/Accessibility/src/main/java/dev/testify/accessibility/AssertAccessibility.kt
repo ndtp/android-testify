@@ -30,6 +30,7 @@ import dev.testify.ScreenshotRule
 import dev.testify.accessibility.exception.AccessibilityErrorsException
 import dev.testify.accessibility.exception.MalformedBaselineException
 import dev.testify.accessibility.internal.AccessibilityScreenshotLifecycleObserver
+import dev.testify.scenario.ScreenshotScenarioRule
 
 /**
  * To help people with disabilities access Android apps, developers of those apps need to consider how their apps will
@@ -50,6 +51,15 @@ import dev.testify.accessibility.internal.AccessibilityScreenshotLifecycleObserv
  * @throws [MalformedBaselineException] - The baseline json file is corrupt or cannot be loaded.
  */
 fun <T : Activity> ScreenshotRule<T>.assertAccessibility(): ScreenshotRule<T> {
+    val observer = AccessibilityScreenshotLifecycleObserver(getInstrumentation().context)
+    this.addScreenshotObserver(observer)
+    return this
+}
+
+/**
+ * Extension method for [ScreenshotScenarioRule] of [assertAccessibility]
+ */
+fun ScreenshotScenarioRule.assertAccessibility(): ScreenshotScenarioRule {
     val observer = AccessibilityScreenshotLifecycleObserver(getInstrumentation().context)
     this.addScreenshotObserver(observer)
     return this

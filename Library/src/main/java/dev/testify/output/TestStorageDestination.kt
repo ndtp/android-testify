@@ -26,6 +26,7 @@ package dev.testify.output
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
+import androidx.test.platform.io.PlatformTestStorageRegistry
 import androidx.test.services.storage.TestStorage
 import dev.testify.core.DEFAULT_FOLDER_FORMAT
 import dev.testify.core.DeviceStringFormatter
@@ -67,7 +68,7 @@ class TestStorageDestination(
     @SuppressLint("UnsafeOptInUsageError")
     private fun isTestStorageEnabled(): Boolean =
         try {
-            val testStorage = TestStorage()
+            val testStorage = PlatformTestStorageRegistry.getInstance()
             testStorage.outputProperties.isNotEmpty()
         } catch (e: Exception) {
             false
@@ -109,7 +110,8 @@ class TestStorageDestination(
             return true
         }
 
-        val testStorageUri = TestStorage.getOutputFileUri(getTestStoragePath(context, fileName, extension))
+        val testStorage = PlatformTestStorageRegistry.getInstance()
+        val testStorageUri = testStorage.getOutputFileUri(getTestStoragePath(context, fileName, extension))
         return copyToTestStorage(pathTo = testStorageUri)
     }
 

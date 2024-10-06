@@ -1,6 +1,7 @@
 package dev.testify.samples.flix.ui.common.composables
 
 import dev.testify.ComposableScreenshotRule
+import dev.testify.accessibility.assertAccessibility
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.samples.flix.ui.common.composeables.CastMember
 import dev.testify.samples.flix.ui.common.composeables.CastMemberPresentationModel
@@ -27,6 +28,7 @@ class CastMemberScreenshotTest {
                     )
                 )
             }
+            .assertAccessibility()
             .assertSame()
     }
 }
