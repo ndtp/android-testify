@@ -26,6 +26,7 @@
 package dev.testify.internal
 
 import dev.testify.internal.StreamData.BufferedStream
+import dev.testify.internal.Style.Description
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
@@ -103,7 +104,7 @@ class Adb {
         val command = (listOf(adbPath) + arguments).joinToString(" ")
 
         if (verbose) {
-            println(AnsiFormat.Purple, command)
+            println(Description, command)
         }
 
         return runProcess(command, streamData ?: BufferedStream())

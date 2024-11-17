@@ -25,9 +25,10 @@
 package dev.testify.tasks.main
 
 import dev.testify.internal.Adb
-import dev.testify.internal.AnsiFormat
 import dev.testify.internal.SCREENSHOT_DIR
 import dev.testify.internal.StreamData.BinaryStream
+import dev.testify.internal.Style.Info
+import dev.testify.internal.Style.Success
 import dev.testify.internal.assurePath
 import dev.testify.internal.destinationImageDirectory
 import dev.testify.internal.isVerbose
@@ -77,7 +78,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
             isVerbose = isVerbose
         )
         if (failedScreenshots.isEmpty()) {
-            println(AnsiFormat.Green, "  No failed screenshots found")
+            println(Success, "  No failed screenshots found")
             return
         }
 
@@ -111,7 +112,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
             val localPath = it.toLocalPath()
 
             if (isVerbose) {
-                println(AnsiFormat.Purple, "Copying $it to ${it.toLocalPath()}")
+                println(Info, "Copying $it to ${it.toLocalPath()}")
             }
 
             File(localPath).parentFile.assurePath()
@@ -136,7 +137,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
             isVerbose = isVerbose
         )
         failedScreenshots.forEach {
-            println(AnsiFormat.Green, "    Copying ${File(it).nameWithoutExtension}...")
+            println(Success, "    Copying ${File(it).nameWithoutExtension}...")
             Thread.sleep(SYNC_SLEEP)
         }
 
