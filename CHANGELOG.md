@@ -1,5 +1,9 @@
 # Testify Change Log
 
+## Unreleased
+
+- Respect Gradle console mode. See https://docs.gradle.org/current/userguide/command_line_interface.html#sec:command_line_customizing_log_format for more information.
+
 ## 3.2.0
 
 - https://github.com/ndtp/android-testify/pull/231 - Replace Plugin-Local with Composite Build

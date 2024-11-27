@@ -25,8 +25,8 @@
 
 package dev.testify.tasks.internal
 
-import dev.testify.internal.AnsiFormat
 import dev.testify.internal.Device
+import dev.testify.internal.Style.Header
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -72,7 +72,7 @@ abstract class TestifyDefaultTask : DefaultTask() {
 
         println()
         println(divider)
-        dev.testify.internal.println(AnsiFormat.Bold, description)
+        dev.testify.internal.println(Header, description)
         println(divider)
         println()
 

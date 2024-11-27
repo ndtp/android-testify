@@ -24,11 +24,12 @@
  */
 package dev.testify.tasks.main
 
-import dev.testify.internal.AnsiFormat
+import dev.testify.internal.Style.Failure
+import dev.testify.internal.Style.FailureHeader
+import dev.testify.internal.Style.Success
 import dev.testify.internal.deleteOnDevice
 import dev.testify.internal.isVerbose
 import dev.testify.internal.listFailedScreenshotsWithPath
-import dev.testify.internal.print
 import dev.testify.internal.println
 import dev.testify.internal.screenshotDirectory
 import dev.testify.tasks.internal.TaskNameProvider
@@ -61,15 +62,14 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
         )
 
         if (failedScreenshots.isEmpty()) {
-            println(AnsiFormat.Green, "  No failed screenshots found")
+            println(Success, "  No failed screenshots found")
             return
         }
 
-        println("  ${failedScreenshots.size} images to be deleted:")
+        println(FailureHeader, "  ${failedScreenshots.size} images to be deleted:")
         failedScreenshots.forEach {
             val file = File(it)
-            print(AnsiFormat.Red, "    x ")
-            println(AnsiFormat.Red, file.nameWithoutExtension)
+            println(Failure, "    x ${file.nameWithoutExtension}")
             file.deleteOnDevice(targetPackageId)
         }
     }

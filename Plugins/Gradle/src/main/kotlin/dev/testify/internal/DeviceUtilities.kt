@@ -26,6 +26,7 @@
 package dev.testify.internal
 
 import dev.testify.internal.StreamData.ConsoleStream
+import dev.testify.internal.Style.Description
 import dev.testify.testifySettings
 import org.gradle.api.Project
 import java.io.File
@@ -65,7 +66,7 @@ internal fun listFailedScreenshotsWithPath(src: String, targetPackageId: String,
     }
 
     if (isVerbose) {
-        files.forEach { println(AnsiFormat.Purple, "\t$it") }
+        files.forEach { println(Description, "\t$it") }
     }
     return files
 }

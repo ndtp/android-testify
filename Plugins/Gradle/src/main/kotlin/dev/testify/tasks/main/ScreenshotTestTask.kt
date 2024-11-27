@@ -26,8 +26,8 @@ package dev.testify.tasks.main
 
 import dev.testify.internal.Adb
 import dev.testify.internal.AdbParam
-import dev.testify.internal.AnsiFormat
 import dev.testify.internal.StreamData.ConsoleStream
+import dev.testify.internal.Style.Failure
 import dev.testify.internal.TestOptionsBuilder
 import dev.testify.internal.fromEnv
 import dev.testify.internal.println
@@ -150,7 +150,7 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             log.contains("INSTRUMENTATION_CODE: 0") ||
             log.contains("Process crashed while executing")
         ) {
-            println(AnsiFormat.Red, "SCREENSHOT TESTS HAVE FAILED!!!")
+            println(Failure, "SCREENSHOT TESTS HAVE FAILED!!!")
             throw RuntimeException("Screenshot tests have failed")
         }
     }
