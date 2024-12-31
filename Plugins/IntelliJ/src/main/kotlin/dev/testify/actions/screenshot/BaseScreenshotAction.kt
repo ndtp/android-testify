@@ -71,6 +71,19 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
             return if (isClass()) (anchorElement as? KtClass)?.name else null
         }
 
+//    private fun String.toFullGradleCommand(event: AnActionEvent): String {
+//        val arguments = when (anchorElement) {
+//            is KtNamedFunction -> anchorElement.testifyMethodInvocationPath
+//            is KtClass -> anchorElement.testifyClassInvocationPath
+//            else -> null
+//        }
+//        val command = ":${event.moduleName}:$this"
+//        return if (arguments != null) "$command -PtestClass=$arguments" else command
+//    }
+
+    protected open val argumentFlag: String
+        get() = "--rerun-tasks --tests"
+
     private fun String.toFullGradleCommand(event: AnActionEvent): String {
         val arguments = when (anchorElement) {
             is KtNamedFunction -> anchorElement.testifyMethodInvocationPath
@@ -78,8 +91,9 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
             else -> null
         }
         val command = ":${event.moduleName}:$this"
-        return if (arguments != null) "$command -PtestClass=$arguments" else command
+        return if (arguments != null) "$command $argumentFlag '$arguments'" else command
     }
+
 
     private fun isClass(): Boolean {
         return anchorElement is KtClass

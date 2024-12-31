@@ -23,11 +23,14 @@
  */
 package dev.testify.actions.utility
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.VirtualFile
 import dev.testify.getVirtualFile
 
 class GoToSourceAction : BaseUtilityAction() {
+
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(event: AnActionEvent) {
         val virtualFile: VirtualFile? = event.getVirtualFile()

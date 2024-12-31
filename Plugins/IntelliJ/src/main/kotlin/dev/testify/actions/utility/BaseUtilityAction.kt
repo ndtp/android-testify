@@ -41,6 +41,9 @@ import dev.testify.baselineImageName
 import dev.testify.getVirtualFile
 import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtFile
+import com.intellij.psi.search.FileTypeIndex
+import com.intellij.openapi.fileTypes.FileTypeManager
+import org.intellij.images.fileTypes.impl.ImageFileType
 
 abstract class BaseUtilityAction : AnAction() {
 
@@ -72,8 +75,19 @@ abstract class BaseUtilityAction : AnAction() {
         val imageFile = this.getVirtualFile()
         val project = this.project
         if (imageFile != null && project != null) {
+
+            // AndroidTest:
+//            imageFile.nameWithoutExtension.let { imageName ->
+//                val (className, methodName) = imageName.split("_")
+//                findClassByName(className, project)?.let { psiClass ->
+//                    return findMethod(methodName, psiClass)
+//                }
+//            }
+
+            // screenshotTest:
+            val className = imageFile.parent.name
             imageFile.nameWithoutExtension.let { imageName ->
-                val (className, methodName) = imageName.split("_")
+                val methodName = imageName.split("_").first()
                 findClassByName(className, project)?.let { psiClass ->
                     return findMethod(methodName, psiClass)
                 }
@@ -82,9 +96,53 @@ abstract class BaseUtilityAction : AnAction() {
         return null
     }
 
+    fun findFilesByPartialNameOrRegex(
+        project: Project,
+        partialName: String? = null,
+        regex: Regex? = null,
+        scope: GlobalSearchScope = GlobalSearchScope.projectScope(project)
+    ): List<VirtualFile> {
+        // Retrieve all files in the specified scope
+
+        val ft = FileTypeManager.getInstance()
+            .getStdFileType("Image") // Add file type filters if needed (e.g., Java, Kotlin only)
+
+//        val i = ImageFileType()
+
+        val allFiles = FileTypeIndex.getFiles(
+            ft,
+            scope
+        )
+        // Filter files based on partial name or regex
+
+        allFiles.forEach { file ->
+            if (partialName != null) {
+                val n = file.path
+                val a = n.contains(partialName, ignoreCase = true)
+                println("$n $a")
+            }
+        }
+
+        val f = allFiles.filter { file ->
+            when {
+                partialName != null && file.path.contains(partialName, ignoreCase = true) -> true
+                regex != null && regex.matches(file.path) -> true
+                else -> false
+            }
+        }
+
+        return f
+    }
+
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
         if (currentFile is KtFile && currentFile.module != null) {
-            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
+
+            val files = findFilesByPartialNameOrRegex(
+                project = currentFile.project,
+                partialName = baselineImageName
+            )
+
+//            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
             if (files.isNotEmpty()) {
                 return files.first()
             }

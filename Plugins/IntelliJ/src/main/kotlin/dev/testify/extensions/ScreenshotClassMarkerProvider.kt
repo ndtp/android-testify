@@ -43,8 +43,13 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element !is KtClass) return null
-        if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
-        return element.getLineMarkerInfo()
+        if (
+            element.containingKtFile.virtualFilePath.contains("androidTest") ||
+            element.containingKtFile.virtualFilePath.contains("screenshotTest")
+        ) {
+            return element.getLineMarkerInfo()
+        }
+        return null
     }
 
     private fun KtClass.getLineMarkerInfo(): LineMarkerInfo<PsiElement>? {

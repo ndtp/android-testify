@@ -29,13 +29,13 @@ import com.intellij.psi.PsiElement
 class ScreenshotTestAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
     override val classGradleCommand: String
-        get() = "screenshotTest"
+        get() = "validateDebugScreenshotTest"
 
     override val classMenuText: String
         get() = "Run all '$className' screenshot tests"
 
     override val methodGradleCommand: String
-        get() = "screenshotTest"
+        get() = "validateDebugScreenshotTest"
 
     override val methodMenuText: String
         get() = "Test '$methodName()'"

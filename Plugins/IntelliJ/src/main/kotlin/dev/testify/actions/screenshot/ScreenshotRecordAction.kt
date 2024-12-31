@@ -29,16 +29,19 @@ import com.intellij.psi.PsiElement
 class ScreenshotRecordAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
 
     override val classGradleCommand: String
-        get() = "screenshotRecord"
+        get() = "updateDebugScreenshotTest"
 
     override val classMenuText: String
         get() = "Record baseline for all '$className' tests"
 
     override val methodGradleCommand: String
-        get() = "screenshotRecord"
+        get() = "updateDebugScreenshotTest"
 
     override val methodMenuText: String
         get() = "Record baseline for '$methodName()'"
 
     override val icon = "record"
+
+    override val argumentFlag: String
+        get() = "--updateFilter"
 }

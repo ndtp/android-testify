@@ -43,7 +43,12 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element !is KtNamedFunction) return null
-        if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
+        if (
+            element.containingKtFile.virtualFilePath.contains("androidTest") ||
+            element.containingKtFile.virtualFilePath.contains("screenshotTest")
+        ) {
+            return element.getLineMarkerInfo()
+        }
         return element.getLineMarkerInfo()
     }
 
@@ -57,6 +62,9 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
             ?: descriptor
                 ?.annotations
                 ?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION_LEGACY))
+            ?: descriptor
+                ?.annotations
+                ?.findAnnotation(FqName(PREVIEW_ANNOTATION))
             ?: return null
 
         val anchorElement = annotation.source.getPsi() ?: return null
