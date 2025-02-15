@@ -1,5 +1,9 @@
 # Android Testify - IntelliJ Platform Plugin - Change Log
 
+## [2.5.0]
+
+  - Added support for Support Android Studio Meerkat | 2024.3.1 Canary 7 | 243.+
+
 ## [2.4.0]
 
   - Added support for Android Studio Ladybug | 2024.2.1 Canary 9 | 242.+
