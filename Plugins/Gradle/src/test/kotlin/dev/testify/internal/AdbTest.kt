@@ -25,7 +25,7 @@ package dev.testify.internal
 
 import com.android.build.gradle.TestedExtension
 import com.google.common.truth.Truth.assertThat
-import dev.testify.test.BaseTest
+import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockkObject
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.File
 
-class AdbTest : BaseTest() {
+class AdbTest {
 
     @RelaxedMockK
     lateinit var project: Project
@@ -61,23 +61,21 @@ class AdbTest : BaseTest() {
     private lateinit var subject: Adb
 
     @BeforeEach
-    override fun setUp() {
-        super.setUp()
+    fun setUp() {
+        MockKAnnotations.init(this)
 
         every { extension.adbExecutable } returns adbExecutable
 
-        mockkStatic("dev.testify.internal.ClientUtilitiesKt")
         mockkStatic(Project::android)
         mockkStatic(Project::isVerbose)
         mockkStatic(Project::user)
-        mockkStatic(::println)
-        mockkStatic(::runProcess)
         mockkObject(Device)
 
         every { any<Project>().android } returns extension
         every { any<Project>().isVerbose } returns false
         every { any<Project>().user } returns null
-        every { println(any(), any()) } returns Unit
+
+        mockkStatic(::runProcess)
 
         configureRunProcessCapture(defaultResultMap)
         Adb.init(project)

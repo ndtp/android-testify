@@ -26,10 +26,8 @@
 package dev.testify.tasks.report
 
 import dev.testify.internal.Adb
+import dev.testify.internal.AnsiFormat
 import dev.testify.internal.StreamData
-import dev.testify.internal.Style.Failure
-import dev.testify.internal.Style.ProgressStatus
-import dev.testify.internal.Style.Success
 import dev.testify.internal.assurePath
 import dev.testify.internal.isVerbose
 import dev.testify.internal.listFiles
@@ -81,7 +79,7 @@ open class ReportPullTask : ReportTask() {
         println()
 
         if (file.isNullOrEmpty()) {
-            println(Failure, "  No report found")
+            println(AnsiFormat.Red, "  No report found")
             return
         }
 
@@ -98,7 +96,7 @@ open class ReportPullTask : ReportTask() {
         val destinationFile = File(destinationPath, reportName)
 
         if (isVerbose) {
-            println(ProgressStatus, "Copying $sourceFilePath to ${destinationFile.absolutePath}")
+            println(AnsiFormat.Purple, "Copying $sourceFilePath to ${destinationFile.absolutePath}")
         }
 
         Adb()
@@ -113,7 +111,7 @@ open class ReportPullTask : ReportTask() {
     }
 
     private fun sync() {
-        println(Success, "    Copying $DEFAULT_REPORT_FILE_NAME...")
+        println(AnsiFormat.Green, "    Copying $DEFAULT_REPORT_FILE_NAME...")
         Thread.sleep(ScreenshotPullTask.SYNC_SLEEP)
         println("")
     }

@@ -25,11 +25,9 @@
 
 package dev.testify.internal
 
-import dev.testify.TestifyPlugin
 import dev.testify.internal.StreamData.BufferedStream
 import dev.testify.testifySettings
 import org.gradle.api.Project
-import org.gradle.internal.logging.text.StyledTextOutput
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
@@ -95,38 +93,32 @@ fun runProcess(command: String, streamData: StreamData = BufferedStream()): Stri
     return result
 }
 
-enum class Style {
-    Description,
-    Identifier,
-    Info,
-    Error,
-    Normal,
-    ProgressStatus,
-    Success,
-    SuccessHeader,
-    Failure,
-    FailureHeader,
-    Header,
+sealed class AnsiFormat(private val code: String) {
+    object Reset : AnsiFormat("\u001B[0m")
+    object Black : AnsiFormat("\u001B[30m")
+    object Red : AnsiFormat("\u001B[31m")
+    object Green : AnsiFormat("\u001B[32m")
+    object Yellow : AnsiFormat("\u001B[33m")
+    object Blue : AnsiFormat("\u001B[34m")
+    object Purple : AnsiFormat("\u001B[35m")
+    object Cyan : AnsiFormat("\u001B[36m")
+    object White : AnsiFormat("\u001B[37m")
+    object Bold : AnsiFormat("\u001B[1m")
+
+    override fun toString(): String {
+        return code
+    }
 }
 
-fun println(style: Style = Style.Normal, message: String?) {
-    with(TestifyPlugin.styledTextOutput) {
-        val textStyle = when (style) {
-            Style.Description -> StyledTextOutput.Style.Description
-            Style.Failure -> StyledTextOutput.Style.Failure
-            Style.FailureHeader -> StyledTextOutput.Style.FailureHeader
-            Style.Header -> StyledTextOutput.Style.Header
-            Style.Info -> StyledTextOutput.Style.Info
-            Style.ProgressStatus -> StyledTextOutput.Style.ProgressStatus
-            Style.Success -> StyledTextOutput.Style.Success
-            Style.Identifier -> StyledTextOutput.Style.Identifier
-            Style.Error -> StyledTextOutput.Style.Error
-            Style.Normal -> StyledTextOutput.Style.Normal
-            Style.SuccessHeader -> StyledTextOutput.Style.SuccessHeader
-        }
+fun println(format: AnsiFormat, message: Any?) {
+    print(format, message)
+    println()
+}
 
-        this?.style(textStyle)?.println(message) ?: println(message)
-    }
+fun print(format: AnsiFormat, message: Any?) {
+    print(format)
+    print(message)
+    print(AnsiFormat.Reset)
 }
 
 internal fun File.assurePath() {
@@ -139,14 +131,15 @@ internal fun File.assurePath() {
 }
 
 internal fun File.deleteFilesWithSubstring(substring: String) {
-    listFiles()?.filter {
+    listFiles().filter {
         it.nameWithoutExtension.contains(substring)
-    }?.forEach {
+    }.forEach {
         println("    Deleting ${it.name}")
         it.delete()
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 internal inline fun <reified T> String.fromEnv(defaultValue: T): T {
     val envVal: String? = System.getenv(this)
     return if (envVal?.isNotEmpty() == true) {

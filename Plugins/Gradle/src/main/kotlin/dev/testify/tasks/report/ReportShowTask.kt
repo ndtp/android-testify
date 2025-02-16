@@ -26,8 +26,8 @@
 package dev.testify.tasks.report
 
 import dev.testify.internal.Adb
+import dev.testify.internal.AnsiFormat
 import dev.testify.internal.StreamData
-import dev.testify.internal.Style.Failure
 import dev.testify.internal.listFiles
 import dev.testify.internal.println
 import dev.testify.internal.reportFilePath
@@ -60,7 +60,7 @@ open class ReportShowTask : ReportTask() {
 
         val file = files.find { it.endsWith(DEFAULT_REPORT_FILE_NAME) }
         if (file.isNullOrEmpty()) {
-            println(Failure, "  No report found")
+            println(AnsiFormat.Red, "  No report found")
             return
         }
 

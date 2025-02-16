@@ -27,7 +27,7 @@ package dev.testify
 
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
 import dev.testify.internal.Adb
-import dev.testify.internal.Style.Description
+import dev.testify.internal.AnsiFormat
 import dev.testify.internal.android
 import dev.testify.internal.isVerbose
 import dev.testify.internal.println
@@ -51,15 +51,11 @@ import dev.testify.tasks.utility.VersionTask
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.configurationcache.extensions.serviceOf
-import org.gradle.internal.logging.text.StyledTextOutput
-import org.gradle.internal.logging.text.StyledTextOutputFactory
 
 class TestifyPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         with(project) {
-            styledTextOutput = project.serviceOf<StyledTextOutputFactory>().create("testifyOutput")
             extensions.create(TestifyExtension.NAME, TestifyExtension::class.java)
             createTasks()
             afterEvaluate(AfterEvaluate)
@@ -78,7 +74,7 @@ class TestifyPlugin : Plugin<Project> {
             if (settings.autoImplementLibrary) {
                 val version = javaClass.getPackage().implementationVersion.orEmpty()
                 val dependency = "dev.testify:testify:$version"
-                if (project.isVerbose) println(Description, "Adding androidTestImplementation($dependency)")
+                if (project.isVerbose) println(AnsiFormat.Purple, "Adding androidTestImplementation($dependency)")
                 project.dependencies.add("androidTestImplementation", dependency)
             }
 
@@ -131,7 +127,6 @@ class TestifyPlugin : Plugin<Project> {
     }
 
     companion object {
-        var styledTextOutput: StyledTextOutput? = null
         const val EVALUATED_SETTINGS = "testify_evaluated_settings"
     }
 }

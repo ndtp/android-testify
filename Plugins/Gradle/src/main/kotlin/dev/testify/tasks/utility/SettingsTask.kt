@@ -40,55 +40,21 @@ open class SettingsTask : TestifyUtilityTask() {
 
     override val isDeviceRequired = false
 
-    @get:Input
-    lateinit var baselineSourceDir: String
-
-    @get:Input
-    lateinit var moduleName: String
-
-    @get:Input
-    lateinit var screenshotDirectory: String
-
-    @get:Input
-    lateinit var targetPackageId: String
-
-    @get:Input
-    lateinit var testPackageId: String
-
-    @get:Input
-    lateinit var testRunner: String
-
-    @get:Input
-    var isRecordMode: Boolean = false
-
-    @get:Input
-    var pullWaitTime: Long = 0L
-
-    @get:Input
-    var useSdCard: Boolean = false
-
-    @get:Input
-    var useTestStorage: Boolean = false
-
-    @get:Optional
-    @get:Input
-    var installAndroidTestTask: String? = null
-
-    @get:Optional
-    @get:Input
-    var installTask: String? = null
-
-    @get:Optional
-    @get:Input
-    var outputFileNameFormat: String? = null
-
-    @get:Optional
-    @get:Input
-    var reportFilePath: String? = null
-
-    @get:Optional
-    @get:Input
-    var screenshotAnnotation: String? = null
+    @get:Input lateinit var baselineSourceDir: String
+    @get:Input lateinit var moduleName: String
+    @get:Input lateinit var screenshotDirectory: String
+    @get:Input lateinit var targetPackageId: String
+    @get:Input lateinit var testPackageId: String
+    @get:Input lateinit var testRunner: String
+    @get:Input var isRecordMode: Boolean = false
+    @get:Input var pullWaitTime: Long = 0L
+    @get:Input var useSdCard: Boolean = false
+    @get:Input var useTestStorage: Boolean = false
+    @get:Optional @get:Input var installAndroidTestTask: String? = null
+    @get:Optional @get:Input var installTask: String? = null
+    @get:Optional @get:Input var outputFileNameFormat: String? = null
+    @get:Optional @get:Input var reportFilePath: String? = null
+    @get:Optional @get:Input var screenshotAnnotation: String? = null
 
     override fun getDescription() = "Displays the Testify gradle extension settings"
 
@@ -119,7 +85,6 @@ open class SettingsTask : TestifyUtilityTask() {
         println("  baselineSourceDir      = $baselineSourceDir")
         println("  installAndroidTestTask = $installAndroidTestTask")
         println("  installTask            = $installTask")
-        println("  isRecordMode           = $isRecordMode")
         println("  moduleName             = $moduleName")
         println("  outputFileNameFormat   = $outputFileNameFormat")
         println("  pullWaitTime           = $pullWaitTime")
@@ -131,6 +96,7 @@ open class SettingsTask : TestifyUtilityTask() {
         println("  testRunner             = $testRunner")
         println("  useSdCard              = $useSdCard")
         println("  useTestStorage         = $useTestStorage")
+        println("  isRecordMode           = $isRecordMode")
         println("  user                   = $userId")
     }
 
