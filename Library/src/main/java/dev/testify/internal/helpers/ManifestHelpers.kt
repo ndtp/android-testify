@@ -23,7 +23,6 @@
  */
 package dev.testify.internal.helpers
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -72,13 +71,8 @@ sealed class ManifestPlaceholder(val key: String) {
  * @return The [Bundle] of meta data, or null if it does not exist.
  */
 @ExcludeFromJacocoGeneratedReport
-@SuppressLint("NewApi")
 internal fun getMetaDataBundle(context: Context): Bundle? {
-    val applicationInfo = if (buildVersionSdkInt() >= android.os.Build.VERSION_CODES.TIRAMISU) {
-        context.packageManager?.getApplicationInfo(context.packageName, PackageManager.ApplicationInfoFlags.of(0))
-    } else {
-        context.packageManager?.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-    }
+    val applicationInfo = context.packageManager?.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
     return applicationInfo?.metaData
 }
 
@@ -93,8 +87,8 @@ internal fun getMetaDataBundle(context: Context): Bundle? {
 @ExcludeFromJacocoGeneratedReport
 fun ManifestPlaceholder.getMetaDataValue(): String? {
     val metaData = getMetaDataBundle(InstrumentationRegistry.getInstrumentation().context)
-    return if (metaData?.containsKey(this.key) == true)
-        metaData.getString(this.key)
-    else
-        null
+    return when {
+        metaData?.containsKey(this.key) == true -> metaData.getString(this.key)
+        else -> null
+    }
 }
