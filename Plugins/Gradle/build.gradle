@@ -75,6 +75,10 @@ tasks.withType(KotlinJvmCompile).configureEach {
     }
 }
 
+java {
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 jar {
     manifest {
         attributes "Implementation-Title": "Testify"

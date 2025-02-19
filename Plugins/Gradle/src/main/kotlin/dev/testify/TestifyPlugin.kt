@@ -51,7 +51,7 @@ import dev.testify.tasks.utility.VersionTask
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.configurationcache.extensions.serviceOf
+import org.gradle.internal.extensions.core.serviceOf
 import org.gradle.internal.logging.text.StyledTextOutput
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 
@@ -93,10 +93,12 @@ class TestifyPlugin : Plugin<Project> {
             }
             val module = settings.moduleName
             val isRecordMode = settings.isRecordMode.toString()
+            val parallelThreads = settings.parallelThreads.toString()
             android.defaultConfig {
                 it.resValue("string", "testifyDestination", destination)
                 it.resValue("string", "testifyModule", module)
                 it.resValue("string", "isRecordMode", isRecordMode)
+                it.resValue("string", "parallelThreads", parallelThreads)
             }
         }
 

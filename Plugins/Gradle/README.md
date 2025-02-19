@@ -14,7 +14,7 @@ To set a dependency reference to the Testify plugin:
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.2.0" apply false
+    id("dev.testify") version "3.2.1" apply false
 }
 ```
 

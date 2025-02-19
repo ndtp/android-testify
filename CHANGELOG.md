@@ -1,7 +1,9 @@
 # Testify Change Log
 
-## Unreleased
+## 3.2.1
 
+- Fix #244 "GMD recordMode not working as expected" 
+    - https://github.com/ndtp/android-testify/pull/248 - Update ManifestHelper to use alternate version of getApplicationInfo 
 - Respect Gradle console mode. See https://docs.gradle.org/current/userguide/command_line_interface.html#sec:command_line_customizing_log_format for more information.
 
 ## 3.2.0
