@@ -6,7 +6,7 @@ Before building your screenshot test with Testify, make sure to set a dependency
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.2.0" apply false
+    id("dev.testify") version "3.2.1" apply false
 }
 ```
 
@@ -21,6 +21,6 @@ plugins {
 }
 
 dependencies {
-    androidTestImplementation "androidx.test:rules:1.5.0"
+    androidTestImplementation "androidx.test:rules:1.10.0"
 }
 ```
