@@ -44,7 +44,7 @@ android {
 }
 
 dependencies {
-    androidTestUtil("androidx.test.services:test-services:1.4.2")
+    androidTestUtil("androidx.test.services:test-services:1.5.0")
 }
 ```
 

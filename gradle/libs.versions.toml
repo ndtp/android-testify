@@ -28,6 +28,7 @@ multidex = "2.0.1"
 rules = "1.5.0"
 runner = "1.5.2"
 slf4jJdk14 = "2.0.6"
+testStorage = "1.5.0"
 truth = "1.1.5"
 uiTestJunit4 = "1.4.3"
 uiautomator = "2.3.0"
@@ -48,6 +49,7 @@ androidx-monitor = { module = "androidx.test:monitor", version.ref = "monitor" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 androidx-rules = { module = "androidx.test:rules", version.ref = "rules" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
+androidx-test-storage = { module = "androidx.test.services:storage", version.ref = "testStorage" }
 androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "uiTestJunit4" }
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiTestJunit4" }
