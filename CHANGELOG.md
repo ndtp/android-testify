@@ -4,6 +4,7 @@
 
 - https://github.com/ndtp/android-testify/pull/251 - A collection of updates to allow the tests to run on modern Apple hardware.
 - https://github.com/ndtp/android-testify/pull/249 - Fix for #243, `expected to be of type static` errors related to TestStorage API changes
+- https://github.com/ndtp/android-testify/pull/252 - Fix for #250: Correct error in GMD documentation
 
 ## 3.2.1
 

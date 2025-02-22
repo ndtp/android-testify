@@ -20,9 +20,32 @@ Gradle Managed Devices is a powerful capability that allows you to manage and co
 
 ## Updating Baseline
 
-When execution completed go to the module's `build/outputs/managed_device_android_test_additional_output/tester` and copy recorded
-baseline into folder named after your device configuration inside `androidTest/assets/screenshots/`
-directory, for example: `androidTest/assets/screenshots/30-1080x1920@420dp-en_US`
+Since Gradle Managed Devices requires the use of their specific Gradle tasks, we cannot use the normal `screenshotRecord` task to udate our baselines. To generate a new baseline, you now have two options:
+
+1. **Enable Record Mode on the ScreenshotRule:** Apply necessary settings to the ScreenshotRule in Kotlin.
+
+```kotlin
+@get:Rule val rule = ScreenshotRule(TestActivity::class.java)
+
+@ScreenshotInstrumentation
+@Test
+fun default() {
+    rule
+        .setRecordModeEnabled(true)
+        .assertSame()
+}
+```
+
+2. **Enable the Testify Gradle Setting:** Enable record mode in the `build.gradle` file:
+
+```groovy
+testify {
+    recordMode true
+}
+```
+
+Once again, due to the specific Gradle task requirement, the `screenshotPull` task cannot be used. After execution, navigate to the module's `build/outputs/managed_device_android_test_additional_output/` folder and copy the recorded baseline into a folder named after your device configuration inside `androidTest/assets/screenshots/` directory.
+
 
 ---
 
@@ -30,7 +53,7 @@ directory, for example: `androidTest/assets/screenshots/30-1080x1920@420dp-en_US
 
     MIT License
     
-    Copyright (c) 2023 ndtp
+    Copyright (c) 2025 ndtp
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
