@@ -25,6 +25,7 @@ package dev.testify.sample.scenario.clients.index
 
 import androidx.test.core.app.launchActivity
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.core.TestifyConfiguration
 import dev.testify.sample.R
 import dev.testify.sample.clients.index.ClientListActivity
 import dev.testify.scenario.ScreenshotScenarioRule
@@ -33,7 +34,7 @@ import org.junit.Test
 
 class ScenarioClientListActivityScreenshotTest {
 
-    @get:Rule val rule = ScreenshotScenarioRule()
+    @get:Rule val rule = ScreenshotScenarioRule(configuration = TestifyConfiguration().copy(exactness = 0.95f))
 
     @ScreenshotInstrumentation
     @Test

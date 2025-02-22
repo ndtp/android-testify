@@ -53,6 +53,7 @@ import dev.testify.sample.test.TestHarnessActivity.Companion.EXTRA_TITLE
 import dev.testify.sample.test.clientDetailsView
 import dev.testify.sample.test.getViewState
 import dev.testify.testDescription
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.random.Random
@@ -67,11 +68,17 @@ class ScreenshotRuleExampleTests {
      * this root.
      */
     @get:Rule
-    var rule = ScreenshotRule(
+    val rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
         rootViewId = R.id.harness_root
     )
+
+    @Before
+    fun setUp() {
+        // Account for hardware rendering differences between Intel and Apple hardware
+        rule.configure { exactness = 0.95f }
+    }
 
     /**
      * Demonstrates the default Testify configuration for a simple layout test.

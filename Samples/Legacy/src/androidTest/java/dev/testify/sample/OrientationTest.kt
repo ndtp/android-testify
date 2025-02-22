@@ -38,6 +38,7 @@ import dev.testify.sample.test.TestHarnessActivity
 import dev.testify.sample.test.getViewState
 import dev.testify.testDescription
 import org.junit.Assert.assertFalse
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.io.File
@@ -51,11 +52,16 @@ import java.io.File
 class OrientationTest {
 
     @get:Rule
-    var rule = ScreenshotRule(
+    val rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         launchActivity = false,
         rootViewId = R.id.harness_root
     )
+
+    @Before
+    fun setUp() {
+        rule.configure { exactness = 0.95f }
+    }
 
     @Test
     @ScreenshotInstrumentation

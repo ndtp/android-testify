@@ -27,6 +27,7 @@ package dev.testify.sample.clients.index
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.core.TestifyConfiguration
 import dev.testify.sample.R
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +36,11 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ClientListActivityScreenshotTest {
 
-    @get:Rule var rule = ScreenshotRule(ClientListActivity::class.java)
+    @get:Rule
+    val rule = ScreenshotRule(
+        activityClass = ClientListActivity::class.java,
+        configuration = TestifyConfiguration().copy(exactness = 0.95f)
+    )
 
     @ScreenshotInstrumentation
     @Test

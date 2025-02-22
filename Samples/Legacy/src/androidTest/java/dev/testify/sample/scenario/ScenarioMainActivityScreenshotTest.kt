@@ -26,6 +26,7 @@ package dev.testify.sample.scenario
 import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.core.TestifyConfiguration
 import dev.testify.sample.MainActivity
 import dev.testify.scenario.ScreenshotScenarioRule
 import dev.testify.scenario.test
@@ -36,7 +37,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class ScenarioMainActivityScreenshotTest {
 
-    @get:Rule val rule = ScreenshotScenarioRule()
+    @get:Rule val rule = ScreenshotScenarioRule(configuration = TestifyConfiguration().copy(exactness = 0.99f))
 
     @ScreenshotInstrumentation
     @Test

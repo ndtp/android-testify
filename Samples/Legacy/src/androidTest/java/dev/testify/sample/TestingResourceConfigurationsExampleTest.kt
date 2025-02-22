@@ -33,6 +33,7 @@ import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.sample.test.TestLocaleHarnessActivity
 import dev.testify.sample.test.clientDetailsView
 import dev.testify.sample.test.getViewState
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.Locale
@@ -44,11 +45,17 @@ import java.util.Locale
 @SdkSuppress(minSdkVersion = Build.VERSION_CODES.N)
 class TestingResourceConfigurationsExampleTest {
 
-    @get:Rule var rule = ScreenshotRule(
+    @get:Rule
+    val rule = ScreenshotRule(
         activityClass = TestLocaleHarnessActivity::class.java,
         launchActivity = false,
         rootViewId = R.id.harness_root
     )
+
+    @Before
+    fun setUp() {
+        rule.configure { exactness = 0.95f }
+    }
 
     /**
      * Test the Activity in French

@@ -26,6 +26,7 @@ package dev.testify.sample.scenario.clients.details
 import androidx.test.core.app.launchActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
+import dev.testify.core.TestifyConfiguration
 import dev.testify.sample.R
 import dev.testify.sample.clients.details.ClientDetailsView
 import dev.testify.sample.clients.details.ClientDetailsViewState
@@ -39,7 +40,8 @@ class ScenarioClientDetailsViewScreenshotTest {
     @get:Rule
     val rule = ScreenshotScenarioRule(
         rootViewId = R.id.harness_root,
-        enableReporter = true
+        enableReporter = true,
+        configuration = TestifyConfiguration().copy(exactness = 0.95f)
     )
 
     @TestifyLayout(R.layout.view_client_details)

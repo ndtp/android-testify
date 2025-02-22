@@ -39,13 +39,13 @@ import org.junit.Test
 class ScenarioComposeActivityScreenshotTest {
 
     @get:Rule
-    var rule = ScreenshotScenarioRule(
+    val rule = ScreenshotScenarioRule(
         /**
          * It is important to enable PixelCopy as your capture method for Jetpack Compose-based UI.
          * PixelCopy will accurately capture elevation, shadows and any GPU-accelerated features.
          */
         configuration = TestifyConfiguration(
-            exactness = 0.95f,
+            exactness = 0.9f,
             captureMethod = ::pixelCopyCapture
         )
     )
