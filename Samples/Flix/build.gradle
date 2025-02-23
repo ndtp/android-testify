@@ -67,6 +67,10 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+
+    lintOptions {
+        disable 'UseTomlInstead'
+    }
 }
 
 // Allow references to generated code
@@ -80,7 +84,7 @@ dependencies {
 
     // Core Android
     implementation 'androidx.core:core-ktx:1.10.1'
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.8.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.8.7"
     implementation "androidx.appcompat:appcompat:1.7.0"
 
     // UI Layer
