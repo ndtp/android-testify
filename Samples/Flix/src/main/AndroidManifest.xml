@@ -18,7 +18,7 @@
 
         <!-- TMDB_API_KEY must be specified in local.properties -->
         <!-- TMDB_API_KEY = "Bearer ..." -->
-        <meta-data android:name="com.flix.tmdb.api.key" android:value="${TMDB_API_KEY}" />
+        <meta-data android:name="com.flix.tmdb.api.key" android:value="${TMDB_API_READ_ACCESS_BEARER_TOKEN}" />
 
         <activity
             android:name=".main.MainActivity"

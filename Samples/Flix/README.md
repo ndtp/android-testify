@@ -9,7 +9,8 @@ The information and images displayed are provided by themoviedb.org.
    There are two types of API keys. This app makes use of the V4 style key that has the format:
    "Bearer keymaterial".
 2. Create or edit `local.properties`
-3. Add `TMDB_API_KEY=<<your-api-key>>`
+3. Update the `defaultPropertiesFileName` value in the `build.gradle` to point to your `local.properties` file
+3. Add `TMDB_API_READ_ACCESS_BEARER_TOKEN=Bearer <<your-api-read-access-token>>`
 
 ## Building
 
