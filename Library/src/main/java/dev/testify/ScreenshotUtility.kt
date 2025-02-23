@@ -111,13 +111,17 @@ private fun loadBitmapFromAsset(context: Context, filePath: String): Bitmap? {
  *
  * @return The decoded asset as a Bitmap.
  */
-fun loadBaselineBitmapForComparison(context: Context, testName: String): Bitmap? {
+fun loadBaselineBitmapForComparison(
+    testContext: Context,
+    targetContext: Context,
+    testName: String
+): Bitmap? {
     val filePath = getFileRelativeToRoot(
-        subpath = getDeviceDescription(context),
+        subpath = getDeviceDescription(targetContext),
         fileName = testName,
         extension = PNG_EXTENSION
     )
-    return loadBitmapFromAsset(context, filePath)
+    return loadBitmapFromAsset(testContext, filePath)
 }
 
 /**

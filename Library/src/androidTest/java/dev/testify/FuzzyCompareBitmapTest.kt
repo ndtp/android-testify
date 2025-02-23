@@ -28,6 +28,7 @@ package dev.testify
 
 import android.graphics.Bitmap
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.compare.FuzzyCompare
@@ -44,7 +45,11 @@ class FuzzyCompareBitmapTest {
     var testActivityRule = ActivityTestRule(TestActivity::class.java)
 
     private fun loadBitmap(name: String): Bitmap {
-        return loadBaselineBitmapForComparison(testActivityRule.activity, name)!!
+        return loadBaselineBitmapForComparison(
+            testContext = InstrumentationRegistry.getInstrumentation().context,
+            targetContext = testActivityRule.activity,
+            testName = name
+        )!!
     }
 
     @Test

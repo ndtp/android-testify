@@ -45,11 +45,14 @@ const val DEFAULT_NAME_FORMAT = "c_n"
 
 /**
  * Returns the device dimensions in pixels.
+ *
+ * @param targetContext - A [Context] for the target application being instrumented.
+ *
  * @return Pair<Int, Int> - width and height in pixels
  */
 @Suppress("DEPRECATION")
-fun getDeviceDimensions(context: Context): Pair<Int, Int> {
-    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+fun getDeviceDimensions(targetContext: Context): Pair<Int, Int> {
+    val windowManager = targetContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     val metrics = DisplayMetrics()
     val display = windowManager.defaultDisplay
 
@@ -62,9 +65,11 @@ fun getDeviceDimensions(context: Context): Pair<Int, Int> {
 
 /**
  * Returns a string representing the device description.
+ *
+ * @param targetContext - A [Context] for the target application being instrumented.
  */
-fun getDeviceDescription(context: Context): String {
-    return formatDeviceString(DeviceStringFormatter(context, null), DEFAULT_FOLDER_FORMAT)
+fun getDeviceDescription(targetContext: Context): String {
+    return formatDeviceString(DeviceStringFormatter(targetContext, null), DEFAULT_FOLDER_FORMAT)
 }
 
 /**
@@ -114,11 +119,13 @@ fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String
 
 /**
  * Utility class for formatting device description strings.
+ *
+ * @param targetContext - A [Context] for the target application being instrumented.
  */
-open class DeviceStringFormatter(private val context: Context, private val testName: TestName?) {
+open class DeviceStringFormatter(private val targetContext: Context, private val testName: TestName?) {
 
     internal open val dimensions: Pair<Int, Int>
-        get() = getDeviceDimensions(context)
+        get() = getDeviceDimensions(targetContext)
 
     internal open val androidVersion: String
         get() = buildVersionSdkInt().toString()
@@ -130,7 +137,7 @@ open class DeviceStringFormatter(private val context: Context, private val testN
         get() = dimensions.second.toString()
 
     internal open val deviceDensity: String
-        get() = context.resources.displayMetrics.densityDpi.toString() + "dp"
+        get() = targetContext.resources.displayMetrics.densityDpi.toString() + "dp"
 
     internal open val locale: String
         get() = Locale.getDefault().languageTag

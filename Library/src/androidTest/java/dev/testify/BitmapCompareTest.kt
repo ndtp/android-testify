@@ -27,9 +27,11 @@
 package dev.testify
 
 import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.capture.createBitmapFromDrawingCache
@@ -51,11 +53,17 @@ class BitmapCompareTest {
 
     private lateinit var baselineBitmap: Bitmap
     private lateinit var activity: Activity
+    private lateinit var testContext: Context
 
     @Before
     fun setUp() {
         activity = testActivityRule.activity
-        baselineBitmap = loadBaselineBitmapForComparison(activity, "test")!!
+        testContext = InstrumentationRegistry.getInstrumentation().context
+        baselineBitmap = loadBaselineBitmapForComparison(
+            testContext = testContext,
+            targetContext = activity,
+            testName = "test"
+        )!!
     }
 
     @Test

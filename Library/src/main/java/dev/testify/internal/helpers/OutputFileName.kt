@@ -46,7 +46,7 @@ fun Context.outputFileName(
     format: String = DEFAULT_NAME_FORMAT
 ) = formatDeviceString(
     formatter = DeviceStringFormatter(
-        context = this,
+        targetContext = this,
         testName = description.nameComponents
     ),
     format = format

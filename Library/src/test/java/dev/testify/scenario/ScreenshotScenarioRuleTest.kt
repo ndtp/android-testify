@@ -180,7 +180,7 @@ class ScreenshotScenarioRuleTest {
         every { BitmapFactory.decodeFile(any(), any()) } returns mockCapturedBitmap
         every { createBitmapFromDrawingCache(any(), any()) } returns mockCapturedBitmap
         every { deleteBitmap(any()) } returns true
-        every { loadBaselineBitmapForComparison(any(), any()) } returns mockBaselineBitmap
+        every { loadBaselineBitmapForComparison(any(), any(), any()) } returns mockBaselineBitmap
         every { loadBitmapFromFile(any(), any()) } returns mockCurrentBitmap
         every { sameAsCompare(any(), any()) } returns true
         every { isRunningOnUiThread() } returns false
@@ -267,7 +267,7 @@ class ScreenshotScenarioRuleTest {
 
     @Test(expected = ScreenshotBaselineNotDefinedException::class)
     fun `WHEN no baseline bitmap THEN throw ScreenshotBaselineNotDefinedException`() {
-        every { loadBaselineBitmapForComparison(any(), any()) } returns null
+        every { loadBaselineBitmapForComparison(any(), any(), any()) } returns null
         subject.test()
         verify { mockDestination.finalize() }
         verifyReporter()
@@ -276,7 +276,7 @@ class ScreenshotScenarioRuleTest {
     @Test(expected = DataDirectoryDestinationNotFoundException::class)
     fun `WHEN invalid destination THEN throw DataDirectoryDestinationNotFoundException`() {
         every { mockDestination.assureDestination(any()) } returns false
-        every { loadBaselineBitmapForComparison(any(), any()) } returns null
+        every { loadBaselineBitmapForComparison(any(), any(), any()) } returns null
         subject.test()
         verifyReporter()
     }
@@ -301,8 +301,8 @@ class ScreenshotScenarioRuleTest {
         subject.test()
 
         verify { takeScreenshot(any(), any(), any(), any()) }
-        verify { assertExpectedDevice(any(), any(), any()) }
-        verify { loadBaselineBitmapForComparison(any(), any()) }
+        verify { assertExpectedDevice(any(), any(), any(), any()) }
+        verify { loadBaselineBitmapForComparison(any(), any(), any()) }
         verify { compareBitmaps(any(), any(), any()) }
         verify(exactly = 0) { mockDestination.finalize() }
 
@@ -367,7 +367,7 @@ class ScreenshotScenarioRuleTest {
     @Test(expected = FinalizeDestinationException::class)
     fun `WHEN finalize fails THEN throw FinalizeDestinationException`() {
         every { mockDestination.finalize() } returns false
-        every { loadBaselineBitmapForComparison(any(), any()) } returns null
+        every { loadBaselineBitmapForComparison(any(), any(), any()) } returns null
 
         subject
             .withScenario(mockScenario)
@@ -423,7 +423,7 @@ class ScreenshotScenarioRuleTest {
 
     @Test
     fun `WHEN isRecordMode THEN is always successful`() {
-        every { loadBaselineBitmapForComparison(any(), any()) } returns null
+        every { loadBaselineBitmapForComparison(any(), any(), any()) } returns null
 
         subject
             .withScenario(mockScenario)

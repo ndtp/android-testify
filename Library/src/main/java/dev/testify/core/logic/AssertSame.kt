@@ -138,11 +138,20 @@ internal fun <TActivity : Activity> assertSame(
 
         val isRecordMode = isRecordMode()
 
-        assertExpectedDevice(testContext, description.name, isRecordMode)
+        assertExpectedDevice(
+            targetContext = activity,
+            assetManager = testContext.assets,
+            testName = description.name,
+            isRecordMode = isRecordMode
+        )
 
         val destination = getDestination(activity, outputFileName)
 
-        baselineBitmap = loadBaselineBitmapForComparison(testContext, description.name)
+        baselineBitmap = loadBaselineBitmapForComparison(
+            testContext = testContext,
+            targetContext = activity,
+            testName = description.name
+        )
             ?: if (isRecordMode) {
                 TestInstrumentationRegistry.instrumentationPrintln(
                     "\n\t✓ " + "Recording baseline for ${description.name}".cyan()

@@ -44,11 +44,15 @@ import dev.testify.internal.extensions.TestInstrumentationRegistry.isRecordMode 
  * @param testName - The name of the currently running test
  */
 @ExcludeFromJacocoGeneratedReport
-fun assertExpectedDevice(context: Context, testName: String, isRecordMode: Boolean) {
+fun assertExpectedDevice(
+    targetContext: Context,
+    assetManager: AssetManager,
+    testName: String,
+    isRecordMode: Boolean
+) {
     if (isRecordMode || recordMode) return
 
-    val currentDeviceDescription = getDeviceDescription(context)
-    val assetManager: AssetManager = context.assets
+    val currentDeviceDescription = getDeviceDescription(targetContext)
     val root: String = SCREENSHOT_DIR
 
     var expectedDevice: String? = null
