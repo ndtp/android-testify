@@ -48,7 +48,7 @@ jobs:
           script: |
             echo "Emulator is loaded"
 
-      - name: Unit Tests
+      - name: Screenshot Tests
         uses: ./.github/actions/android-testify-action
         with:
           animations: false
