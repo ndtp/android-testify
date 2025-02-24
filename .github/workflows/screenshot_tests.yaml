@@ -1,0 +1,63 @@
+name: "Screenshot Tests"
+on:
+  pull_request:
+  push:
+
+jobs:
+  screenshot_test:
+    name: "Screenshot Tests"
+    runs-on:
+      labels: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ndtp/android-testify-action
+          path: ./.github/actions/android-testify-action
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: |
+          ./gradlew LegacySample:assembleDebug
+          ./gradlew LegacySample:assembleDebugAndroidTest
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run screenshot tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          target: google_apis
+          profile: pixel_3a
+          script: |
+            echo "Emulator is loaded"
+
+      - name: Unit Tests
+        uses: ./.github/actions/android-testify-action
+        with:
+          animations: false
+          app_apk: './Samples/Legacy/build/outputs/apk/debug/LegacySample-debug.apk'
+          app_package: 'dev.testify.sample'
+          module: 'LegacySample'
+          show_ime_with_hard_keyboard: false
+          show_passwords: false
+          test_apk: './Samples/Legacy/build/outputs/apk/androidTest/debug/LegacySample-debug-androidTest.apk'
+          test_package: 'dev.testify.sample.test'
+          test_runner: 'androidx.test.runner.AndroidJUnitRunner'
+          verbose: false
