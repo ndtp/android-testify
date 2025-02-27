@@ -29,6 +29,7 @@ jobs:
 
       - name: Build
         run: |
+          echo "Building ..."
           ./gradlew LegacySample:assembleDebug
           ./gradlew LegacySample:assembleDebugAndroidTest
 
