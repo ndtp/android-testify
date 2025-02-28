@@ -45,4 +45,4 @@ jobs:
           test_apk: './Samples/Legacy/build/outputs/apk/androidTest/debug/LegacySample-debug-androidTest.apk'
           test_package: 'dev.testify.sample.test'
           test_runner: 'androidx.test.runner.AndroidJUnitRunner'
-          verbose: false
+          verbose: true
