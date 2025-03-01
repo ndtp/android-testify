@@ -12,7 +12,7 @@ Easily create screenshot tests for `@Composable` functions.
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.2.1" apply false
+    id("dev.testify") version "3.2.2" apply false
 }
 ```
 
@@ -24,7 +24,7 @@ Ensure that `mavenCentral()` is available to both `pluginManagement` and `depend
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-compose:2.0.0"
+    androidTestImplementation "dev.testify:testify-compose:3.2.2"
     androidTestImplementation "androidx.test:rules:1.5.0"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.4.3"
 }
