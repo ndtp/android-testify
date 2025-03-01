@@ -20,7 +20,7 @@ You can set a comparison tolerance using [ScreenshotRule.setExactness](../../Lib
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.2.1" apply false
+    id("dev.testify") version "3.2.2" apply false
 }
 ```
 
@@ -31,7 +31,7 @@ Ensure that `mavenCentral()` is available to both `pluginManagement` and `depend
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-fullscreen:2.0.0"
+    androidTestImplementation "dev.testify:testify-fullscreen:3.2.2"
 }
 ```
 

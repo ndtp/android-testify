@@ -27,6 +27,7 @@ package dev.testify.sample
 import dev.testify.ScreenshotRule
 import dev.testify.accessibility.assertAccessibility
 import dev.testify.annotation.ScreenshotInstrumentation
+import dev.testify.core.TestifyConfiguration
 import dev.testify.sample.a11y.CounterActivity
 import dev.testify.sample.a11y.CounterActivity.Companion.EXTRA_LAYOUT
 import org.junit.Rule
@@ -35,7 +36,10 @@ import org.junit.Test
 class AccessibilityExampleTest {
 
     @get:Rule
-    var rule = ScreenshotRule(CounterActivity::class.java)
+    val rule = ScreenshotRule(
+        activityClass = CounterActivity::class.java,
+        configuration = TestifyConfiguration().copy(exactness = 0.99f)
+    )
 
     @ScreenshotInstrumentation
     @Test

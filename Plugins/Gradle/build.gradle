@@ -103,7 +103,7 @@ apply from: "../../publish.build.gradle"
 apply from: '../../ktlint.gradle'
 
 jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = "0.8.12"
     reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 

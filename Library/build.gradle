@@ -69,6 +69,7 @@ android {
         implementation libs.androidx.lifecycle.runtime.ktx
         implementation libs.androidx.rules
         implementation libs.androidx.runner
+        implementation libs.androidx.test.storage
         implementation libs.colormath
         implementation libs.kotlinx.coroutines.android
 

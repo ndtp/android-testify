@@ -43,7 +43,7 @@ public class JavaExampleTest {
     @ScreenshotInstrumentation
     @Test
     public void testJava() {
-        rule.assertSame();
+        rule.setExactness(0.95f).assertSame();
     }
 
     @ScreenshotInstrumentation

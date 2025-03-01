@@ -43,7 +43,11 @@ class ExperimentalPixelCopyTest {
     @ScreenshotInstrumentation
     @Test
     fun withoutPixelCopy() {
-        rule.assertSame()
+        rule
+            .configure {
+                exactness = 0.99f // Required due to difference with CI GPU architecture
+            }
+            .assertSame()
     }
 
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)

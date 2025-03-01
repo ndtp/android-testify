@@ -28,7 +28,7 @@ class ClientListActivityScreenshotTest {
     @Test
     fun testRecorded() {
         rule
-            .setRecordModeEnabled(false)
+            .configure { isRecordMode = false }
             .assertSame()
     }
 
@@ -38,7 +38,7 @@ class ClientListActivityScreenshotTest {
     @Test
     fun testMissingBaseline() {
         rule
-            .setRecordModeEnabled(true)
+            .configure { isRecordMode = true }
             .assertSame()
     }
 }

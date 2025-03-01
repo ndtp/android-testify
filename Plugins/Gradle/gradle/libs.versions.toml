@@ -1,8 +1,8 @@
 [versions]
-gradle = "7.4.1"
+gradle = "7.4.2"
 junitJupiter = "5.8.2"
 kotlin = "1.9.24"
-mockk = "1.13.5"
+mockk = "1.13.16"
 truthVersion = "1.2.0"
 
 [libraries]

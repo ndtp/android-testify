@@ -1,5 +1,10 @@
 # Testify Change Log
 
+## 3.2.2
+
+- https://github.com/ndtp/android-testify/pull/251 - A collection of updates to allow the tests to run on modern Apple hardware.
+- https://github.com/ndtp/android-testify/pull/249 - Fix for #243, `expected to be of type static` errors related to TestStorage API changes
+
 ## 3.2.1
 
 - Fix #244 "GMD recordMode not working as expected" 

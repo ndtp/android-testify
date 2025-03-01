@@ -28,6 +28,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.testify.ScreenshotRule
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
+import dev.testify.core.TestifyConfiguration
 import dev.testify.sample.R
 import dev.testify.sample.test.TestHarnessActivity
 import org.junit.Rule
@@ -38,10 +39,11 @@ import org.junit.runner.RunWith
 class ClientDetailsViewScreenshotTest {
 
     @get:Rule
-    var rule = ScreenshotRule(
+    val rule = ScreenshotRule(
         activityClass = TestHarnessActivity::class.java,
         rootViewId = R.id.harness_root,
-        enableReporter = true
+        enableReporter = true,
+        configuration = TestifyConfiguration().copy(exactness = 0.95f)
     )
 
     @TestifyLayout(R.layout.view_client_details)

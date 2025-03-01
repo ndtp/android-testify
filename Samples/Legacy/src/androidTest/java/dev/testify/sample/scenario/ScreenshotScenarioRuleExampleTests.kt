@@ -46,6 +46,7 @@ import dev.testify.annotation.BitmapComparisonExactness
 import dev.testify.annotation.IgnoreScreenshot
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.annotation.TestifyLayout
+import dev.testify.core.TestifyConfiguration
 import dev.testify.core.exception.ScreenshotIsDifferentException
 import dev.testify.core.processor.capture.createBitmapFromDrawingCache
 import dev.testify.core.processor.capture.pixelCopyCapture
@@ -67,7 +68,10 @@ import kotlin.random.Random
 class ScreenshotScenarioRuleExampleTests {
 
     @get:Rule
-    val rule = ScreenshotScenarioRule(rootViewId = R.id.harness_root)
+    val rule = ScreenshotScenarioRule(
+        rootViewId = R.id.harness_root,
+        configuration = TestifyConfiguration().copy(exactness = 0.95f)
+    )
 
     /**
      * Demonstrates the default Testify configuration for a simple layout test.
