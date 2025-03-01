@@ -28,6 +28,7 @@ package dev.testify
 
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import dev.testify.core.processor.capture.createBitmapFromDrawingCache
 import dev.testify.output.getDestination
@@ -46,9 +47,14 @@ class ScreenshotUtilityTest {
 
     @Test
     fun loadBaselineBitmapForComparison() {
-        val context = testActivityRule.activity
+        val targetContext = testActivityRule.activity
+        val testContext = InstrumentationRegistry.getInstrumentation().context
 
-        val baselineBitmap = loadBaselineBitmapForComparison(context, "test")
+        val baselineBitmap = loadBaselineBitmapForComparison(
+            testContext = testContext,
+            targetContext = targetContext,
+            testName = "test"
+        )
         assertNotNull(baselineBitmap)
     }
 
