@@ -43,9 +43,10 @@ import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtFile
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.openapi.fileTypes.FileTypeManager
-import org.intellij.images.fileTypes.impl.ImageFileType
 
 abstract class BaseUtilityAction : AnAction() {
+
+    private var isAndroidTest = false
 
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
@@ -75,28 +76,29 @@ abstract class BaseUtilityAction : AnAction() {
         val imageFile = this.getVirtualFile()
         val project = this.project
         if (imageFile != null && project != null) {
-
             // AndroidTest:
-//            imageFile.nameWithoutExtension.let { imageName ->
-//                val (className, methodName) = imageName.split("_")
-//                findClassByName(className, project)?.let { psiClass ->
-//                    return findMethod(methodName, psiClass)
-//                }
-//            }
-
-            // screenshotTest:
-            val className = imageFile.parent.name
-            imageFile.nameWithoutExtension.let { imageName ->
-                val methodName = imageName.split("_").first()
-                findClassByName(className, project)?.let { psiClass ->
-                    return findMethod(methodName, psiClass)
+            if (isAndroidTest) {
+                imageFile.nameWithoutExtension.let { imageName ->
+                    val (className, methodName) = imageName.split("_")
+                    findClassByName(className, project)?.let { psiClass ->
+                        return findMethod(methodName, psiClass)
+                    }
+                }
+            } else {
+                // screenshotTest:
+                val className = imageFile.parent.name
+                imageFile.nameWithoutExtension.let { imageName ->
+                    val methodName = imageName.split("_").first()
+                    findClassByName(className, project)?.let { psiClass ->
+                        return findMethod(methodName, psiClass)
+                    }
                 }
             }
         }
         return null
     }
 
-    fun findFilesByPartialNameOrRegex(
+    private fun findFilesByPartialNameOrRegex(
         project: Project,
         partialName: String? = null,
         regex: Regex? = null,
@@ -136,13 +138,14 @@ abstract class BaseUtilityAction : AnAction() {
 
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
         if (currentFile is KtFile && currentFile.module != null) {
-
-            val files = findFilesByPartialNameOrRegex(
-                project = currentFile.project,
-                partialName = baselineImageName
-            )
-
-//            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
+            val files = if (isAndroidTest) {
+                FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
+            } else {
+                findFilesByPartialNameOrRegex(
+                    project = currentFile.project,
+                    partialName = baselineImageName
+                )
+            }
             if (files.isNotEmpty()) {
                 return files.first()
             }

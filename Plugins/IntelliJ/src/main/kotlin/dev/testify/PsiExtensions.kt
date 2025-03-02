@@ -67,7 +67,7 @@ val PsiElement.baselineImageName: String
         var imageName = "unknown"
         (this as? KtNamedFunction)?.let {
             val a: Map<Name, ConstantValue<*>>? = (this as? KtNamedFunction)?.descriptor?.annotations?.findAnnotation(FqName(PREVIEW_ANNOTATION))?.allValueArguments
-            val nameKey = a?.keys?.find { it.asString() == "name" }
+            val nameKey = a?.keys?.find { annotation -> annotation.asString() == "name" }
 
             val previewName = nameKey?.let { a[nameKey] }?.value?.toString()
 

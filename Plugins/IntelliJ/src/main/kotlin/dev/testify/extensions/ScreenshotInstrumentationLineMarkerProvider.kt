@@ -72,15 +72,11 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
         return LineMarkerInfo(
             anchorElement.firstChild,
             anchorElement.textRange,
-            ICON,
+            IconHelper.ICON_CAMERA,
             { "Android Testify Commands" },
             ScreenshotInstrumentationAnnotationNavHandler(this),
             GutterIconRenderer.Alignment.RIGHT,
             { "" }
         )
-    }
-
-    companion object {
-        private val ICON = IconLoader.getIcon("/icons/camera.svg", this@Companion::class.java)
     }
 }
