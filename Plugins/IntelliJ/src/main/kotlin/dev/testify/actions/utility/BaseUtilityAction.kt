@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 ndtp
+ * Copyright (c) 2024-2025 ndtp
   *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -73,9 +73,12 @@ abstract class BaseUtilityAction : AnAction() {
         val project = this.project
         if (imageFile != null && project != null) {
             imageFile.nameWithoutExtension.let { imageName ->
-                val (className, methodName) = imageName.split("_")
-                findClassByName(className, project)?.let { psiClass ->
-                    return findMethod(methodName, psiClass)
+                val parts = imageName.split("_")
+                if (parts.size == 2) {
+                    val (className, methodName) = parts
+                    findClassByName(className, project)?.let { psiClass ->
+                        return findMethod(methodName, psiClass)
+                    }
                 }
             }
         }

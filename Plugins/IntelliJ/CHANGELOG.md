@@ -1,27 +1,35 @@
+<!-- Keep a Changelog guide -> https://keepachangelog.com -->
+
 # Android Testify - IntelliJ Platform Plugin - Change Log
+
+## [3.0.0]
+
+- Added support for Support Android Studio Narwhal | 2025.1.1 Canary 9 | 251.+
+- Raised minimum supported Android Studio version to Ladybug 2024.2.1 | 242.+
+- K2 supported
 
 ## [2.5.0]
 
-  - Added support for Support Android Studio Meerkat | 2024.3.1 Canary 7 | 243.+
+- Added support for Support Android Studio Meerkat | 2024.3.1 Canary 7 | 243.+
 
 ## [2.4.0]
 
-  - Added support for Android Studio Ladybug | 2024.2.1 Canary 9 | 242.+
+- Added support for Android Studio Ladybug | 2024.2.1 Canary 9 | 242.+
 
 ## [2.3.0]
 
-  - Added a 'Go To Source' popup menu item to baseline image asset files. This action will navigate you from the PNG baseline image to the test source code.
-  - Added a 'Baseline Image' destination in the `Go To` popup menu when right-clicking on the test source code. This action will navigate you to the baseline image for the current test.
+- Added a 'Go To Source' popup menu item to baseline image asset files. This action will navigate you from the PNG baseline image to the test source code.
+- Added a 'Baseline Image' destination in the `Go To` popup menu when right-clicking on the test source code. This action will navigate you to the baseline image for the current test.
 
 ## [2.2.0]
 
-  - Added support for Android Studio Koala | 2024.1.1 Canary 6 | 241.+
+- Added support for Android Studio Koala | 2024.1.1 Canary 6 | 241.+
 
 ## [2.1.0]
 
-  - Added support for Android Studio Jellyfish | 2023.3.1 Canary 10 | 233.+
-  - Replaced deprecated API calls.
-  
+- Added support for Android Studio Jellyfish | 2023.3.1 Canary 10 | 233.+
+- Replaced deprecated API calls.
+
     - Dropped support for Android Studio versions 221.* and earlier (Electric Eel, Dolphin, Chipmunk, Bumblebee)
 
 ## [2.0.0]
@@ -53,7 +61,7 @@
 - Added support for IntelliJ platform 213+ (Dolphin)
 - Added support for IntelliJ platform 212.+ (Chipmunk)
 - Added support for Android Studio Bumblebee | 2021.1.1 Canary 9 | 211.+
- 
+
 ## [1.2.0-alpha01]
 
 - Unified version scheme with the core Testify library.

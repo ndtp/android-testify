@@ -16,6 +16,10 @@ This plugin will enhance the developer experience by adding fully integrated IDE
 - Reveal the baseline image in Android Studio
 - Delete the baseline image from your project
 
+Learn more at <a href="https://testify.dev/">testify.dev</a>
+
+Copyright (c) 2023-2025 ndtp
+
 <!-- Plugin description end -->
 
 ---
@@ -38,5 +42,5 @@ This plugin will enhance the developer experience by adding fully integrated IDE
 
 ### License
 
-[MIT License -- Modified work copyright (c) 2022-2024 ndtp](LICENSE)<br/>
+[MIT License -- Modified work copyright (c) 2022-2025 ndtp](LICENSE)<br/>
 [MIT License -- Original work copyright (c) 2020 Shopify](LICENSE)

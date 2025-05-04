@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -102,7 +102,10 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         anActionEvent.presentation.apply {
             text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
-            icon = IconLoader.getIcon("/icons/${this@BaseScreenshotAction.icon}.svg", this@BaseScreenshotAction::class.java)
+            icon = IconLoader.getIcon(
+                "/icons/${this@BaseScreenshotAction.icon}.svg",
+                this@BaseScreenshotAction::class.java
+            )
         }
     }
 

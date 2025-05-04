@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,17 +28,22 @@ import com.intellij.ide.projectView.impl.nodes.PsiFileNode
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
-import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
+import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.name
 import org.jetbrains.kotlin.idea.util.projectStructure.module
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import java.util.concurrent.Callable
 
 private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
@@ -60,13 +65,18 @@ val AnActionEvent.moduleName: String
 
 val PsiElement.baselineImageName: String
     get() {
-        var imageName = "unknown"
-        (this as? KtNamedFunction)?.let {
-            val c = it.fqName?.parent()?.shortName()
-            val m = it.fqName?.shortName()
-            imageName = "${c}_$m.png"
-        }
-        return imageName
+        val ktElement = this as? KtElement ?: return "unknown"
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<String, Throwable> {
+                analyze(ktElement) {
+                    (ktElement as? KtNamedFunction)?.symbol?.let { functionSymbol ->
+                        val className = (functionSymbol.containingSymbol as? KaClassSymbol)?.name?.asString()
+                        val methodName = functionSymbol.name?.asString()
+                        "${className}_$methodName.png"
+                    }
+                }
+            }
+        }).get() ?: "unknown"
     }
 
 val PsiElement.methodName: String
@@ -77,19 +87,48 @@ val PsiElement.methodName: String
 
 val KtNamedFunction.testifyMethodInvocationPath: String
     get() {
-        val className = this.fqName?.parent().toString()
-        val methodName = this.fqName?.shortName().toString()
-        return "$className#$methodName"
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<String, Throwable> {
+                analyze(this@testifyMethodInvocationPath) {
+                    val functionSymbol = this@testifyMethodInvocationPath.symbol
+                    val className =
+                        (functionSymbol.containingSymbol as? KaClassSymbol)?.classId?.asSingleFqName()?.asString()
+                    val methodName = functionSymbol.name?.asString()
+                    "$className#$methodName"
+                }
+            }
+        }).get() ?: "unknown"
     }
 
 val KtClass.testifyClassInvocationPath: String
     get() {
-        return "${this.fqName?.parent()}.${this.name}"
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<String, Throwable> {
+                analyze(this@testifyClassInvocationPath) {
+                    val classSymbol = this@testifyClassInvocationPath.symbol as? KaClassSymbol
+                    classSymbol?.classId?.asSingleFqName()?.asString() ?: "unknown"
+                }
+            }
+        }).get() ?: "unknown"
     }
 
 val KtNamedFunction.hasScreenshotAnnotation: Boolean
-    get() = descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION)) != null ||
-        descriptor?.annotations?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION_LEGACY)) != null
+    get() {
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<Boolean, Throwable> {
+                analyze(this@hasScreenshotAnnotation) {
+                    this@hasScreenshotAnnotation.symbol
+                        .annotations
+                        .any {
+                            it.classId?.asSingleFqName()?.asString() in listOf(
+                                SCREENSHOT_INSTRUMENTATION,
+                                SCREENSHOT_INSTRUMENTATION_LEGACY
+                            )
+                        }
+                }
+            }
+        }).get() ?: false
+    }
 
 fun AnActionEvent.findScreenshotAnnotatedFunction(): KtNamedFunction? {
     val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return null

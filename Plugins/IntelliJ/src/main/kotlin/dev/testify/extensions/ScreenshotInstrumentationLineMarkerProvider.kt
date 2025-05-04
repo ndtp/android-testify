@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,12 +27,10 @@ package dev.testify.extensions
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.idea.search.usagesSearch.descriptor
+import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
-import org.jetbrains.kotlin.resolve.source.getPsi
 
 // Reference https://github.com/square/dagger-intellij-plugin/blob/master/src/com/squareup/ideaplugin/dagger/InjectionLineMarkerProvider.java
 
@@ -48,31 +46,21 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
     }
 
     private fun KtNamedFunction.getLineMarkerInfo(): LineMarkerInfo<PsiElement>? {
-
-        if (descriptor == null) return null
-        if (descriptor?.annotations == null) return null
-        val annotation = descriptor
-            ?.annotations
-            ?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION))
-            ?: descriptor
-                ?.annotations
-                ?.findAnnotation(FqName(SCREENSHOT_INSTRUMENTATION_LEGACY))
-            ?: return null
-
-        val anchorElement = annotation.source.getPsi() ?: return null
-
-        return LineMarkerInfo(
-            anchorElement.firstChild,
-            anchorElement.textRange,
-            ICON,
-            { "Android Testify Commands" },
-            ScreenshotInstrumentationAnnotationNavHandler(this),
-            GutterIconRenderer.Alignment.RIGHT,
-            { "" }
-        )
-    }
-
-    companion object {
-        private val ICON = IconLoader.getIcon("/icons/camera.svg", this@Companion::class.java)
+        analyze(this) {
+            val annotation = symbol.annotations.firstOrNull {
+                it.classId?.asSingleFqName() == FqName(SCREENSHOT_INSTRUMENTATION) ||
+                        it.classId?.asSingleFqName() == FqName(SCREENSHOT_INSTRUMENTATION_LEGACY)
+            }
+            val anchorElement = annotation?.psi ?: return null
+            return LineMarkerInfo(
+                anchorElement.firstChild,
+                anchorElement.textRange,
+                IconHelper.ICON_CAMERA,
+                { "Android Testify Commands" },
+                ScreenshotInstrumentationAnnotationNavHandler(this@getLineMarkerInfo),
+                GutterIconRenderer.Alignment.RIGHT,
+                { "" }
+            )
+        }
     }
 }

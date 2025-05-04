@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,6 +38,10 @@ class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorEle
         get() = "Reveal ${shortDisplayName(anchorElement)}"
 
     override fun performActionOnVirtualFile(virtualFile: VirtualFile, project: Project, modifiers: Int) {
+        if (!virtualFile.isValid) {
+            println("File is no longer valid: ${virtualFile.path}")
+            return
+        }
         val focusEditor: Boolean = (modifiers and ActionEvent.CTRL_MASK) != ActionEvent.CTRL_MASK
         FileEditorManager.getInstance(project).openFile(virtualFile, focusEditor)
     }
