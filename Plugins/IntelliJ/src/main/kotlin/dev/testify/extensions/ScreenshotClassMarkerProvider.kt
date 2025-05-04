@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,7 +27,6 @@ package dev.testify.extensions
 import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
-import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import dev.testify.hasScreenshotAnnotation
@@ -58,15 +57,11 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
         return LineMarkerInfo(
             anchorElement,
             anchorElement.textRange,
-            ICON,
+            IconHelper.ICON_CAMERA,
             { "Android Testify Commands" },
             ScreenshotClassNavHandler(this),
             GutterIconRenderer.Alignment.RIGHT,
             { "" }
         )
-    }
-
-    companion object {
-        private val ICON = IconLoader.getIcon("/icons/camera.svg", this@Companion::class.java)
     }
 }
