@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -51,9 +51,13 @@ class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorEle
         }
     }
 
-    private fun VirtualFile.deleteSafely(requestor: Any) {
+    private fun VirtualFile.deleteSafely(requester: Any) {
+        if (!isValid) {
+            println("File is no longer valid: ${this.path}")
+            return
+        }
         ApplicationManager.getApplication().runWriteAction {
-            this.delete(requestor)
+            this.delete(requester)
         }
     }
 }
