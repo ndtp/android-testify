@@ -4,10 +4,23 @@
         <title>Android Testify Blog</title>
         <link>https://ndtp.github.io/android-testify/blog</link>
         <description>Android Testify Blog</description>
-        <lastBuildDate>Mon, 04 Dec 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 01 Feb 2025 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[How Android Testify improves Visual Regression Testing reliability with Bitrise]]></title>
+            <link>https://ndtp.github.io/android-testify/blog/bitrise</link>
+            <guid>bitrise</guid>
+            <pubDate>Sat, 01 Feb 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[Android Testify (or Testify for short) is an open-source tool for visual regression testing that helps Android developers ensure UI quality to build great user experiences. By partnering with Bitrise and using its CI/CD platform, it has been able to streamline its testing workflows, improve its stability, and accelerate its build and regression testing processes. As a result, Bitrise is helping boost developer efficiency, so the Testify team can focus on what they do best: creating exceptional mobile apps.
+]]></description>
+            <content:encoded><![CDATA[<p>Android Testify (or Testify for short) is an open-source tool for visual regression testing that helps Android developers ensure UI quality to build great user experiences. By partnering with Bitrise and using its CI/CD platform, it has been able to streamline its testing workflows, improve its stability, and accelerate its build and regression testing processes. As a result, Bitrise is helping boost developer efficiency, so the Testify team can focus on what they do best: creating exceptional mobile apps.</p><p><a href="https://bitrise.io/case-studies/android-testify" target="_blank" rel="noopener noreferrer">Read more on bitrise.io <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path style="stroke:none;fill-rule:nonzero;fill:#9e80b5;fill-opacity:1" d="M3 14a.947.947 0 0 1-.7-.3.947.947 0 0 1-.3-.7V3c0-.266.098-.5.3-.7.2-.202.434-.3.7-.3h4.652v1H3v10h10V8.348h1V13c0 .266-.098.5-.3.7-.2.202-.434.3-.7.3Zm3.367-3.652-.699-.715L12.301 3H8.652V2H14v5.348h-1V3.715Zm0 0"></path></svg></a></p>]]></content:encoded>
+            <category>android</category>
+            <category>testing</category>
+            <category>CI</category>
+            <category>Bitrise</category>
+        </item>
         <item>
             <title><![CDATA[Testify 2.0 — A New Era of Android Screenshot Testing]]></title>
             <link>https://ndtp.github.io/android-testify/blog/testify-2</link>

@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[4492],{3272:s=>{s.exports=JSON.parse('{"label":"Bitrise","permalink":"/android-testify/blog/tags/bitrise","allTagsPath":"/android-testify/blog/tags","count":1}')}}]);
