@@ -43,7 +43,7 @@ class ComposableScreenshotTest {
     fun default() {
         rule
             .setCompose {
-                Text(text = "Hello, Flix!")
+                Text(text = "Hello, Flix?")
             }
             .assertSame()
     }
