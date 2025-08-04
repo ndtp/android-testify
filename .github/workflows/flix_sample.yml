@@ -85,7 +85,7 @@ jobs:
           echo "test_apk=$(find ./Samples/Flix/build/outputs/apk/androidTest/debug/*.apk)" >> $GITHUB_ENV
 
       - name: Screenshot Tests
-        uses: ndtp/android-testify-action@main
+        uses: ndtp/android-testify-action@test-nested-actions
         with:
           api-level: 29
           target: google_apis
