@@ -11,49 +11,49 @@ concurrency:
 
 jobs:
 
-  build:
-    name: "Build APKs for testing"
-    timeout-minutes: 25
-    runs-on:
-      labels: ubuntu-latest
+  # build:
+  #   name: "Build APKs for testing"
+  #   timeout-minutes: 25
+  #   runs-on:
+  #     labels: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: "temurin"
-          java-version: 21
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         distribution: "temurin"
+  #         java-version: 21
 
-      - name: Build
-        run: |
-          echo "Building ..."
-          ./gradlew FlixSample:assembleDebug
-          ./gradlew FlixSample:assembleDebugAndroidTest
+  #     - name: Build
+  #       run: |
+  #         echo "Building ..."
+  #         ./gradlew FlixSample:assembleDebug
+  #         ./gradlew FlixSample:assembleDebugAndroidTest
 
-      - name: Upload app apk
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-app
-          path: ./Samples/Flix/build/outputs/apk/debug/FlixSample-debug.apk
+  #     - name: Upload app apk
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: android-app
+  #         path: ./Samples/Flix/build/outputs/apk/debug/FlixSample-debug.apk
 
-      - name: Upload test runner apk
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-test-app
-          path: ./Samples/Flix/build/outputs/apk/androidTest/debug/FlixSample-debug-androidTest.apk
+  #     - name: Upload test runner apk
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: android-test-app
+  #         path: ./Samples/Flix/build/outputs/apk/androidTest/debug/FlixSample-debug-androidTest.apk
 
   screenshot_test:
     name: Run Screenshot Tests ${{ matrix.shard_index }}
-    timeout-minutes: 25
-    needs: build
+    timeout-minutes: 8
+    # needs: build
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        shard_index: [0, 1]
+        shard_index: [0]
 
     steps:
       - uses: actions/checkout@v4
@@ -64,25 +64,25 @@ jobs:
           distribution: "temurin"
           java-version: 21
 
-      - name: Download app apk
-        uses: actions/download-artifact@v4
-        with:
-          name: android-app
-          path: ./Samples/Flix/build/outputs/apk/debug/
+      # - name: Download app apk
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: android-app
+      #     path: ./Samples/Flix/build/outputs/apk/debug/
 
-      - name: Determine apk path
-        run: |
-          echo "app_apk=$(find ./Samples/Flix/build/outputs/apk/debug/*.apk)" >> $GITHUB_ENV
+      # - name: Determine apk path
+      #   run: |
+      #     echo "app_apk=$(find ./Samples/Flix/build/outputs/apk/debug/*.apk)" >> $GITHUB_ENV
 
-      - name: Download test runner apk
-        uses: actions/download-artifact@v4
-        with:
-          name: android-test-app
-          path: ./Samples/Flix/build/outputs/apk/androidTest/debug/
+      # - name: Download test runner apk
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: android-test-app
+      #     path: ./Samples/Flix/build/outputs/apk/androidTest/debug/
 
-      - name: Determine test apk path
-        run: |
-          echo "test_apk=$(find ./Samples/Flix/build/outputs/apk/androidTest/debug/*.apk)" >> $GITHUB_ENV
+      # - name: Determine test apk path
+      #   run: |
+      #     echo "test_apk=$(find ./Samples/Flix/build/outputs/apk/androidTest/debug/*.apk)" >> $GITHUB_ENV
 
       - name: Screenshot Tests
         uses: ndtp/android-testify-action@test-nested-actions
