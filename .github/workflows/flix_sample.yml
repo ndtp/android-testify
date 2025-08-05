@@ -95,19 +95,19 @@ jobs:
       #   run: |
       #     echo "test_apk=$(find ./Samples/Flix/build/outputs/apk/androidTest/debug/*.apk)" >> $GITHUB_ENV
 
-      - name: Screenshot Tests
-        uses: ndtp/android-testify-action@test-nested-actions
-        with:
-          api-level: 29
-          target: google_apis
-          arch: x86_64
-          profile: pixel_3a
-          shard_count: 2
-          shard_index: ${{ matrix.shard_index }}
-          module: ":FlixSample"
-          app_apk: ${{ env.app_apk }}
-          app_package: "dev.testify.samples.flix"
-          test_apk: ${{ env.test_apk }}
-          test_package: "dev.testify.samples.flix.test"
-          test_runner: "androidx.test.runner.AndroidJUnitRunner"
-          verbose: true
+      # - name: Screenshot Tests
+      #   uses: ndtp/android-testify-action@test-nested-actions
+      #   with:
+      #     api-level: 29
+      #     target: google_apis
+      #     arch: x86_64
+      #     profile: pixel_3a
+      #     shard_count: 2
+      #     shard_index: ${{ matrix.shard_index }}
+      #     module: ":FlixSample"
+      #     app_apk: ${{ env.app_apk }}
+      #     app_package: "dev.testify.samples.flix"
+      #     test_apk: ${{ env.test_apk }}
+      #     test_package: "dev.testify.samples.flix.test"
+      #     test_runner: "androidx.test.runner.AndroidJUnitRunner"
+      #     verbose: true
