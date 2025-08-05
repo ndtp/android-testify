@@ -64,6 +64,17 @@ jobs:
           distribution: "temurin"
           java-version: 21
 
+      - name: Test Action
+        id: test-action
+        uses: ndtp/android-avd-manager-action@main
+        with:
+          milliseconds: 1000
+
+      - name: Print Output
+        id: output
+        run: echo "${{ steps.test-action.outputs.time }}"
+
+
       # - name: Download app apk
       #   uses: actions/download-artifact@v4
       #   with:
