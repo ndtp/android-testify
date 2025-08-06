@@ -402,6 +402,6 @@ app:
   - opts:
       is_expand: false
     VARIANT: Debug
-trigger_map:
-- pull_request_source_branch: "*"
-  pipeline: default
+# trigger_map:
+# - pull_request_source_branch: "*"
+#   pipeline: default
