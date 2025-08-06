@@ -68,7 +68,9 @@ jobs:
         id: test-action
         uses: ndtp/android-avd-manager-action@main
         with:
-          milliseconds: 1000
+          api-level: 29
+          target: google_apis
+          arch: x86_64
 
       - name: Print Output
         id: output
