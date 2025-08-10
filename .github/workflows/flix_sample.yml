@@ -82,6 +82,8 @@ jobs:
         uses: ndtp/android-emulator-runner@main
         with:
           avd-name: baz
+          enable-hw-keyboard: true
+          disable-spellchecker: true
           verbose: true
 
       - name: Print Output
