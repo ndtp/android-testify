@@ -81,7 +81,7 @@ jobs:
         id: test-action-2
         uses: ndtp/android-emulator-runner@main
         with:
-          avd-name: foo
+          verbose: true
 
       - name: Print Output
         id: output
