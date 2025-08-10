@@ -68,7 +68,7 @@ jobs:
         id: test-action-1
         uses: ndtp/android-avd-manager-action@main
         with:
-          avd-name: foo
+          avd-name: baz
           api-level: 29
           target: google_apis
           arch: x86_64
@@ -81,6 +81,7 @@ jobs:
         id: test-action-2
         uses: ndtp/android-emulator-runner@main
         with:
+          avd-name: baz
           verbose: true
 
       - name: Print Output
