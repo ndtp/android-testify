@@ -64,7 +64,7 @@ jobs:
           distribution: "temurin"
           java-version: 21
 
-      - name: Test Action
+      - name: Create AVD
         id: test-action-1
         uses: ndtp/android-avd-manager-action@main
         with:
@@ -74,21 +74,26 @@ jobs:
           arch: x86_64
           profile: pixel_3a
 
-      - name: Enable KVM group perms
+      - name: Enable kernel-based virtual machine (KVM)
         uses: ndtp/enable-kvm-action@v1
 
-      - name: Test Action
+      - name: Launch and configure emulator
         id: test-action-2
         uses: ndtp/android-emulator-runner@main
         with:
           avd-name: baz
+          emulator-options: -camera-back emulated -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          emulator-boot-timeout: 120
           enable-hw-keyboard: true
           disable-spellchecker: true
           verbose: true
 
-      - name: Print Output
+      - name: Test Emulator
         id: output
         run: adb devices
+
+      - name: Kill Emulator
+        run: adb -s emulator-5554 emu kill
 
 
       # - name: Download app apk
