@@ -74,6 +74,9 @@ jobs:
           arch: x86_64
           profile: pixel_3a
 
+      - name: Enable KVM group perms
+        uses: ndtp/enable-kvm-action@v1
+
       - name: Test Action
         id: test-action-2
         uses: ndtp/android-emulator-runner@main
