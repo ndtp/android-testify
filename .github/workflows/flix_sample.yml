@@ -79,7 +79,7 @@ jobs:
 
       - name: Test Action
         id: test-action-2
-        uses: ndtp/android-emulator-runner@main
+        uses: ndtp/android-emulator-runner@t1
         with:
           avd-name: foo
 
