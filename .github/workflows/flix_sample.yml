@@ -65,7 +65,7 @@ jobs:
           java-version: 21
 
       - name: Create AVD
-        id: test-action-1
+        id: create
         uses: ndtp/android-avd-manager-action@main
         with:
           avd-name: baz
@@ -78,7 +78,7 @@ jobs:
         uses: ndtp/enable-kvm-action@v1
 
       - name: Launch and configure emulator
-        id: test-action-2
+        id: launch
         uses: ndtp/android-emulator-runner@main
         with:
           avd-name: baz
@@ -93,7 +93,7 @@ jobs:
         run: adb devices
 
       - name: Kill Emulator
-        run: adb -s emulator-5554 emu kill
+        run: adb -s emulator-${{ steps.launch.outputs.emulator-port }} emu kill
 
 
       # - name: Download app apk
