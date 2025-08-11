@@ -13,7 +13,7 @@ jobs:
 
   build:
     name: "Build APKs for testing"
-    timeout-minutes: 25
+    timeout-minutes: 10
     runs-on:
       labels: ubuntu-latest
 
@@ -46,7 +46,7 @@ jobs:
 
   screenshot_test:
     name: Run Screenshot Tests ${{ matrix.shard_index }}
-    timeout-minutes: 25
+    timeout-minutes: 10
     needs: build
     runs-on: ubuntu-latest
 
@@ -58,11 +58,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - name: Create AVD
+        id: create
+        uses: ndtp/android-avd-manager-action@main
         with:
-          distribution: "temurin"
-          java-version: 21
+          api-level: 29
+          target: google_apis
+          arch: x86_64
+          profile: pixel_3a
+
+      - name: Enable kernel-based virtual machine (KVM)
+        uses: ndtp/enable-kvm-action@v1
+
+      - name: Launch and configure emulator
+        id: launch
+        uses: ndtp/android-emulator-runner@main
+        with:
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          verbose: true
 
       - name: Download app apk
         uses: actions/download-artifact@v4
@@ -84,19 +97,19 @@ jobs:
         run: |
           echo "test_apk=$(find ./Samples/Flix/build/outputs/apk/androidTest/debug/*.apk)" >> $GITHUB_ENV
 
-      - name: Screenshot Tests
-        uses: ndtp/android-testify-action@v1
+      - name: Run instrumentation tests
+        uses: ndtp/android-instrumentation-test-runner@main
         with:
-          api-level: 29
-          target: google_apis
-          arch: x86_64
-          profile: pixel_3a
-          shard_count: 2
-          shard_index: ${{ matrix.shard_index }}
-          module: ":FlixSample"
           app_apk: ${{ env.app_apk }}
           app_package: "dev.testify.samples.flix"
           test_apk: ${{ env.test_apk }}
           test_package: "dev.testify.samples.flix.test"
           test_runner: "androidx.test.runner.AndroidJUnitRunner"
+          shard_count: 2
+          shard_index: ${{ matrix.shard_index }}
+          annotation: dev.testify.annotation.ScreenshotInstrumentation
           verbose: true
+
+      - name: Kill Emulator
+        if: always()
+        run: adb -s emulator-${{ steps.launch.outputs.emulator-port }} emu kill
