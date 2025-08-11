@@ -56,6 +56,7 @@ jobs:
         shard_index: [0]
 
     steps:
+      - uses: actions/checkout@v4
 
       - name: Create AVD
         id: create
@@ -110,4 +111,5 @@ jobs:
           verbose: true
 
       - name: Kill Emulator
+        if: always()
         run: adb -s emulator-${{ steps.launch.outputs.emulator-port }} emu kill
