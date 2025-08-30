@@ -32,8 +32,9 @@ android {
 
     defaultConfig {
         applicationId "dev.testify.sample"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdkVersion 26
+        compileSdkVersion 35
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
 
