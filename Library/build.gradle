@@ -5,6 +5,8 @@ plugins {
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
     id 'jacoco'
+    id 'maven-publish'
+    id 'signing'
 }
 
 ext {
