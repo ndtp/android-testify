@@ -87,7 +87,7 @@ class BitmapCompareTest {
 
     @Test
     fun fuzzy() {
-        val similarBitmap = baselineBitmap.copy(baselineBitmap.config, true)!!
+        val similarBitmap = baselineBitmap.copy(baselineBitmap.config!!, true)!!
         similarBitmap.setPixel(0, 0, similarBitmap.getPixel(0, 0) + 1)
 
         assertFalse(FuzzyCompare(TestifyConfiguration(exactness = 1.0f)).compareBitmaps(similarBitmap, baselineBitmap))
