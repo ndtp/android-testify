@@ -33,13 +33,14 @@ import dev.testify.samples.flix.data.remote.tmdb.entity.MovieDetail
 import dev.testify.samples.flix.data.remote.tmdb.entity.MovieReleaseDates
 import dev.testify.samples.flix.data.remote.tmdb.entity.Page
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ResponseException
-import io.ktor.client.features.ServerResponseException
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
-import io.ktor.http.pathComponents
+import io.ktor.http.appendPathSegments
+import kotlinx.serialization.SerializationException
 import java.io.IOException
 import java.util.concurrent.CancellationException
-import kotlinx.serialization.SerializationException
 import javax.inject.Inject
 
 class TheMovieDbApi @Inject constructor(
@@ -141,9 +142,9 @@ class TheMovieDbApi @Inject constructor(
                             add(apiVersion.toString())
                             addAll(getSubstitutedPathSegments())
                         }
-                        pathComponents(allUrlComponents)
+                        appendPathSegments(allUrlComponents)
                     }
-                }
+                }.body()
             )
         } catch (t: CancellationException) {
             Log.d(LOG_TAG, "Cancellation exception $t")

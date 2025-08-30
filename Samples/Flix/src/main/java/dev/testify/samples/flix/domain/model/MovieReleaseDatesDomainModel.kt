@@ -25,7 +25,7 @@
 
 package dev.testify.samples.flix.domain.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 data class MovieReleaseDatesDomainModel(
     val releaseDateMap: Map<String, List<MovieReleaseDateDomainModel>>

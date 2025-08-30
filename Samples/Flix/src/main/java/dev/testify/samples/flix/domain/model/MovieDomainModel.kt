@@ -25,8 +25,10 @@
 
 package dev.testify.samples.flix.domain.model
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
+@OptIn(ExperimentalTime::class)
 data class MovieDomainModel(
     val id: Int,
     val title: String,
