@@ -31,8 +31,9 @@ import dev.testify.samples.flix.data.remote.tmdb.TheMovieDbUrlResolver
 import dev.testify.samples.flix.data.remote.tmdb.entity.Person
 import dev.testify.samples.flix.data.translator.toFlixPerson
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.http.pathComponents
+import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -53,20 +54,23 @@ class CastMemberRepository @Inject constructor(
                 val apiConfigurationDeferred = async { configurationApi.getApiConfiguration() }
 
                 val personApiSpec = GetApiSpec("person", id.toString())
+
                 val person: Person = client.get {
                     url {
                         val allUrlComponents: List<String> = buildList {
                             add(personApiSpec.apiVersion.toString())
                             addAll(personApiSpec.pathSegments)
                         }
-                        pathComponents(allUrlComponents)
+                        appendPathSegments(allUrlComponents)
                     }
-                }
+                }.body()
 
                 val apiConfiguration = apiConfigurationDeferred.await()
                 val urlResolver = TheMovieDbUrlResolver(apiConfiguration.baseUrl, apiConfiguration.headlineImageSizeKey)
 
                 person.toFlixPerson(urlResolver)
+
+                null // TODO?
             }
                 .onFailure {
                     when (it) {
