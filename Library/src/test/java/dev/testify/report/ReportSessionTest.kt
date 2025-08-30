@@ -105,7 +105,10 @@ class ReportSessionTest {
         val context: Context = mockk()
 
         every { instrumentation.context } returns context
-        every { thread.id } returns 123L
+        every {
+            @Suppress("DEPRECATION")
+            thread.id
+        } returns 123L
 
         val id = ReportSession.getSessionId(instrumentation, thread)
         assertTrue("^[0-9a-fA-F]{8}-123".toRegex().containsMatchIn(id))

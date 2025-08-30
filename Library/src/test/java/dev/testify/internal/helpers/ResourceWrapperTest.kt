@@ -139,7 +139,7 @@ class ResourceWrapperTest {
         }
 
         overrideResourceConfiguration<Activity>(
-            locale = Locale("fr_CA")
+            locale = Locale.of("fr_CA")
         )
         verify(exactly = 1) { ResourceWrapper.addOverride(any()) }
         verify { wrappedResource.beforeActivityLaunched() }
@@ -171,7 +171,7 @@ class ResourceWrapperTest {
         }
 
         overrideResourceConfiguration<Activity>(
-            locale = Locale("fr_CA"),
+            locale = Locale.of("fr_CA"),
             fontScale = 1.5f
         )
         verify(exactly = 2) { ResourceWrapper.addOverride(any()) }

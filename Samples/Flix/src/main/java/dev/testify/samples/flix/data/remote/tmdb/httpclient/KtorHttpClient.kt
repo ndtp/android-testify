@@ -25,22 +25,29 @@
 
 package dev.testify.samples.flix.data.remote.tmdb.httpclient
 
+//import io.ktor.client.features.DefaultRequest
+//import io.ktor.client.features.defaultRequest
+//import io.ktor.client.features.json.JsonFeature
+//import io.ktor.client.features.json.serializer.KotlinxSerializer
+//import io.ktor.client.features.logging.LogLevel
+//import io.ktor.client.features.logging.Logger
+//import io.ktor.client.features.logging.Logging
 import android.util.Log
 import dev.testify.samples.flix.application.foundation.secret.SecretsProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
-import io.ktor.client.features.DefaultRequest
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.client.request.headers
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 private const val TIME_OUT = 60_000
@@ -67,9 +74,9 @@ internal fun buildKtorHttpClient(
         }
     }
 
-    install(JsonFeature) {
-        serializer = KotlinxSerializer(
-            json = Json(Json) {
+    install(ContentNegotiation) { // Replace JsonFeature with ContentNegotiation
+        json( // Use the json() extension function
+            Json {
                 prettyPrint = true
                 isLenient = true
                 ignoreUnknownKeys = true

@@ -108,9 +108,9 @@ import kotlin.contracts.contract
  * @param configuration The [TestifyConfiguration] for the current test
  */
 open class ScreenshotScenarioRule @JvmOverloads constructor(
-    @IdRes override var rootViewId: Int = android.R.id.content,
+    @field:IdRes override var rootViewId: Int = android.R.id.content,
     enableReporter: Boolean = false,
-    @LayoutRes override var targetLayoutId: Int = View.NO_ID,
+    @field:LayoutRes override var targetLayoutId: Int = View.NO_ID,
     override val configuration: TestifyConfiguration = TestifyConfiguration()
 ) :
     TestWatcher(),
@@ -501,10 +501,10 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         } ?: throw ScenarioRequiredException()
     }
 
-    context (ActivityScenario<*>)
+    context (scenario: ActivityScenario<*>)
     @JvmName("assertSameContext")
     fun assertSame() {
-        assertSame(this@ActivityScenario)
+        assertSame(scenario)
     }
 
     private fun assertSame(scenario: ActivityScenario<*>) {
