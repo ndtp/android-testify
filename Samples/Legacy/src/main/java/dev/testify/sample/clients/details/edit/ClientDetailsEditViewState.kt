@@ -27,7 +27,7 @@ import androidx.annotation.DrawableRes
 
 data class ClientDetailsEditViewState(
     val name: String,
-    @DrawableRes val avatar: Int,
+    @field:DrawableRes val avatar: Int,
     val heading: String,
     val address: String?,
     val phoneNumber: String?

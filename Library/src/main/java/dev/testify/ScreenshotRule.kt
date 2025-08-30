@@ -109,7 +109,7 @@ import org.junit.runners.model.Statement
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
     protected val activityClass: Class<T>,
-    @IdRes override var rootViewId: Int = android.R.id.content,
+    @field:IdRes override var rootViewId: Int = android.R.id.content,
     initialTouchMode: Boolean = false,
     enableReporter: Boolean = false,
     override val configuration: TestifyConfiguration = TestifyConfiguration()

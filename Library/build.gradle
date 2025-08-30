@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
@@ -26,23 +28,23 @@ archivesBaseName = pom.artifact
 jacoco { toolVersion = "0.8.10" }
 
 android {
-    kotlinOptions {
-        jvmTarget = '17'
-    }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     defaultConfig {
-        compileSdk libs.versions.compileSdk.get().toInteger()
+        compileSdkVersion libs.versions.compileSdk.get().toInteger()
         minSdkVersion libs.versions.minSdk.get().toInteger()
         targetSdkVersion libs.versions.targetSdk.get().toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
-        kotlinOptions {
-            allWarningsAsErrors = true
-            freeCompilerArgs = ["-Xcontext-receivers"]
+        kotlin {
+            compilerOptions {
+                allWarningsAsErrors.set(true)
+                jvmTarget.set(JvmTarget.JVM_21)
+                freeCompilerArgs.addAll("-Xcontext-parameters")
+            }
         }
     }
 

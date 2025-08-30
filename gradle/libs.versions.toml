@@ -14,8 +14,8 @@ gson = "2.9.0"
 guava = "30.0-android"
 hilt = "2.48"
 junit = "1.1.5"
-kotlin = "1.9.24"
-kotlinPluginSerialization = "1.8.10"
+kotlin = "2.2.10"
+kotlinPluginSerialization = "2.2.10"
 kotlinxCoroutinesAndroid = "1.6.4"
 lifecycleRuntimeKtx = "2.6.1"
 mapsplatformSecrets = "2.0.1"
@@ -74,3 +74,4 @@ google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.re
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPluginSerialization" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
