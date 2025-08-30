@@ -25,6 +25,7 @@
 package dev.testify.report
 
 import android.app.Instrumentation
+import android.os.Build
 import androidx.annotation.VisibleForTesting
 import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import java.io.BufferedReader
@@ -214,7 +215,13 @@ internal open class ReportSession {
          */
         @VisibleForTesting
         internal fun getSessionId(instrumentation: Instrumentation, thread: Thread): String {
-            return "${instrumentation.context.hashCode().toString(16).padStart(8, '0')}-${thread.id}"
+            val id = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                thread.threadId()
+            } else {
+                @Suppress("DEPRECATION")
+                thread.id
+            }
+            return "${instrumentation.context.hashCode().toString(16).padStart(8, '0')}-$id"
         }
     }
 }
