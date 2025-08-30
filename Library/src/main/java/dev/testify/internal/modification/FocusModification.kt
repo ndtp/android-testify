@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit
  *
  * @param focusTargetId the id of the view to request focus on. If [View.NO_ID] is provided, the root view will be used.
  */
-class FocusModification(@IdRes var focusTargetId: Int) : ViewModification() {
+class FocusModification(@field:IdRes var focusTargetId: Int) : ViewModification() {
 
     /**
      * Returns the view to request focus on.

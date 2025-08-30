@@ -78,7 +78,7 @@ data class TestifyConfiguration(
      * Set the exactness of the bitmap comparison. The exactness is a value between 0.0 and 1.0, where 0.0 is the least
      * exact and 1.0 is the most exact. The default value is 0.0.
      */
-    @FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null,
+    @field:FloatRange(from = 0.0, to = 1.0) var exactness: Float? = null,
 
     /**
      * Install an activity monitor and set the requested orientation. Blocks and waits for the orientation change to
@@ -140,7 +140,7 @@ data class TestifyConfiguration(
      * Set the @IdRes of the view that should be focused before the bitmap is captured.
      * Allows Testify to deliberately set the keyboard focus to the specified view ID.
      */
-    @IdRes var focusTargetId: Int = View.NO_ID,
+    @field:IdRes var focusTargetId: Int = View.NO_ID,
 
     /**
      * Pause the test execution after the bitmap is captured.
