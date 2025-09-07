@@ -50,8 +50,9 @@ class MovieRepository @Inject constructor(
     private val remoteApi: TheMovieDbApi,
     private val configurationApi: TheMovieDbConfigurationApi,
     private val dataModelEntityToDomainModelMapper: DataLayerEntityToDomainModelMapper,
-    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO
 )  {
+
+    private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO // TODO I dunno
 
     companion object {
         val LOG_TAG = MovieRepository::class.simpleName

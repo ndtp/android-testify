@@ -2,13 +2,14 @@ package dev.testify.samples.flix.application.foundation.di
 
 import android.content.Context
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
-import coil.ImageLoader
+import coil3.ImageLoader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.testify.samples.flix.BuildConfig
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
@@ -21,32 +22,33 @@ import javax.inject.Singleton
 @InstallIn(value = [SingletonComponent::class])
 class FoundationModule {
 
-    // A Coroutine dispatcher built from an Espresso IdlingThreadPoolExecutor.
-    // Using this dispatcher, Coil will participate with Espresso's IdlingResource system allowing screenshot tests
-    // to block while Coil is loading images.
-    @Provides
-    @Singleton
-    fun provideCoroutineDispatcher(): CoroutineDispatcher =
-        IdlingThreadPoolExecutor(
-            "coilImageLoaderThreadPool",
-            Runtime.getRuntime().availableProcessors(),
-            Runtime.getRuntime().availableProcessors(),
-            0L,
-            TimeUnit.MILLISECONDS,
-            LinkedBlockingQueue(),
-            Executors.defaultThreadFactory()
-        ).asCoroutineDispatcher()
+//    // A Coroutine dispatcher built from an Espresso IdlingThreadPoolExecutor.
+//    // Using this dispatcher, Coil will participate with Espresso's IdlingResource system allowing screenshot tests
+//    // to block while Coil is loading images.
+//    @Provides
+//    @Singleton
+//    fun provideCoroutineDispatcher(): CoroutineDispatcher =
+//        IdlingThreadPoolExecutor(
+//            "coilImageLoaderThreadPool",
+//            Runtime.getRuntime().availableProcessors(),
+//            Runtime.getRuntime().availableProcessors(),
+//            0L,
+//            TimeUnit.MILLISECONDS,
+//            LinkedBlockingQueue(),
+//            Executors.defaultThreadFactory()
+//        ).asCoroutineDispatcher()
 
     @Provides
     @Singleton
     fun provideImageLoader(
         @ApplicationContext context: Context,
-        dispatcher: CoroutineDispatcher
+//        httpClient: HttpClient
+//        dispatcher: CoroutineDispatcher
     ): ImageLoader =
-        if (BuildConfig.DEBUG) {
-            ImageLoader.Builder(context).dispatcher(dispatcher).build()
-        } else {
+//        if (BuildConfig.DEBUG) {
+//            ImageLoader.Builder(context).dispatcher(dispatcher).build()
+//        } else {
             ImageLoader.Builder(context).build()
-        }
+//        }
 }
 
