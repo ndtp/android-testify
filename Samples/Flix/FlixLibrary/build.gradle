@@ -75,6 +75,7 @@ testify {
 }
 
 dependencies {
+    implementation libs.androidx.compose.ui.tooling
     kapt "com.google.dagger:dagger-compiler:2.57.1"
     kapt "com.google.dagger:hilt-compiler:2.57.1"
 
@@ -90,6 +91,8 @@ dependencies {
     implementation 'io.ktor:ktor-client-android:3.2.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0'
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
 
     androidTestImplementation composeBom
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"

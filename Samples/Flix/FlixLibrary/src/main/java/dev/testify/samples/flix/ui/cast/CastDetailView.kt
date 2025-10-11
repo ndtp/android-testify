@@ -45,6 +45,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,11 +54,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import coil3.compose.LocalAsyncImagePreviewHandler
 import dev.testify.samples.flix.data.model.FlixPerson
 import dev.testify.samples.flix.library.R
 import dev.testify.samples.flix.ui.base.InitializeViewModel
@@ -69,6 +73,8 @@ import dev.testify.samples.flix.ui.cast.CastDetailState.Loaded
 import dev.testify.samples.flix.ui.cast.CastDetailState.Loading
 import dev.testify.samples.flix.ui.cast.CastDetailState.Uninitialized
 import dev.testify.samples.flix.ui.common.AsynchronousImage
+import dev.testify.samples.flix.ui.common.createPreviewHandler
+import dev.testify.samples.flix.ui.common.util.imagePromise
 import dev.testify.samples.flix.ui.theme.Spacing
 
 @Composable
@@ -117,6 +123,12 @@ private fun CastDetailLoading() {
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
     }
+}
+
+@Preview(apiLevel = 33, showBackground = true)
+@Composable
+private fun CastDetailLoadingPreview() {
+    CastDetailLoading()
 }
 
 @Composable
@@ -190,6 +202,43 @@ private fun CastDetailLoaded(
     }
 }
 
+@Preview(apiLevel = 33, showBackground = true)
+@Composable
+private fun CastDetailLoadedPreview() {
+    val context = LocalContext.current // Get the context
+    val previewHandler = createPreviewHandler(context)
+    CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CastDetailView(
+                state = Loaded(
+                    FlixPerson(
+                        id = 0,
+                        name = "Isaac Newton",
+                        popularity = 92.4f,
+                        knownFor = "Newtonian mechanics, universal gravitation, calculus",
+                        biography = "Sir Isaac Newton FRS (25 December 1642 – 20 March 1726/27) was an English" +
+                            " polymath active as a mathematician, physicist, astronomer, alchemist, theologian, " +
+                            "and author who was described in his time as a natural philosopher. He was a key " +
+                            "figure in the Scientific Revolution and the Enlightenment that followed. " +
+                            "His pioneering book Philosophiæ Naturalis Principia Mathematica (Mathematical " +
+                            "Principles of Natural Philosophy), first published in 1687, consolidated many " +
+                            "previous results and established classical mechanics. Newton also made seminal " +
+                            "contributions to optics, and shares credit with German mathematician " +
+                            "Gottfried Wilhelm Leibniz for developing infinitesimal calculus, though he " +
+                            "developed calculus years before Leibniz. He is considered one of the greatest and " +
+                            "most influential scientists in history." +
+                            "• Isaac Newton. In Wikipedia. Retrieved Dec 3, 2023, from https://en.wikipedia.org/wiki/Isaac_Newton",
+                        placeOfBirth = "Woolsthorpe-by-Colsterworth, Lincolnshire, England",
+                        birthday = "4 January 1643",
+                        deathday = "31 March 1727",
+                        image = imagePromise("file:///android_asset/images/headshots/Newton.png")
+                    )
+                )
+            )
+        }
+    }
+}
+
 @Composable
 private fun ShowMore(content: String, isMore: Boolean, onClick: () -> Unit) {
     Column(modifier = Modifier.animateContentSize()) {
@@ -210,6 +259,48 @@ private fun ShowMore(content: String, isMore: Boolean, onClick: () -> Unit) {
             color = MaterialTheme.colorScheme.primary
         )
     }
+}
+
+@Preview(apiLevel = 33, showBackground = true)
+@Composable
+fun ShowMorePreview() {
+    ShowMore(
+        content = "Sir Isaac Newton FRS (25 December 1642 – 20 March 1726/27) was an English" +
+            " polymath active as a mathematician, physicist, astronomer, alchemist, theologian, " +
+            "and author who was described in his time as a natural philosopher. He was a key " +
+            "figure in the Scientific Revolution and the Enlightenment that followed. " +
+            "His pioneering book Philosophiæ Naturalis Principia Mathematica (Mathematical " +
+            "Principles of Natural Philosophy), first published in 1687, consolidated many " +
+            "previous results and established classical mechanics. Newton also made seminal " +
+            "contributions to optics, and shares credit with German mathematician " +
+            "Gottfried Wilhelm Leibniz for developing infinitesimal calculus, though he " +
+            "developed calculus years before Leibniz. He is considered one of the greatest and " +
+            "most influential scientists in history." +
+            "• Isaac Newton. In Wikipedia. Retrieved Dec 3, 2023, from https://en.wikipedia.org/wiki/Isaac_Newton",
+        isMore = false,
+        onClick = {}
+    )
+}
+
+@Preview(apiLevel = 33, showBackground = true)
+@Composable
+fun ShowMoreExpandedPreview() {
+    ShowMore(
+        content = "Sir Isaac Newton FRS (25 December 1642 – 20 March 1726/27) was an English" +
+            " polymath active as a mathematician, physicist, astronomer, alchemist, theologian, " +
+            "and author who was described in his time as a natural philosopher. He was a key " +
+            "figure in the Scientific Revolution and the Enlightenment that followed. " +
+            "His pioneering book Philosophiæ Naturalis Principia Mathematica (Mathematical " +
+            "Principles of Natural Philosophy), first published in 1687, consolidated many " +
+            "previous results and established classical mechanics. Newton also made seminal " +
+            "contributions to optics, and shares credit with German mathematician " +
+            "Gottfried Wilhelm Leibniz for developing infinitesimal calculus, though he " +
+            "developed calculus years before Leibniz. He is considered one of the greatest and " +
+            "most influential scientists in history." +
+            "• Isaac Newton. In Wikipedia. Retrieved Dec 3, 2023, from https://en.wikipedia.org/wiki/Isaac_Newton",
+        isMore = true,
+        onClick = {}
+    )
 }
 
 @Composable
@@ -242,5 +333,15 @@ private fun CastDetailsError(onRetryClick: () -> Unit) {
             Text("Retry")
         }
         Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Preview(apiLevel = 33, showBackground = true)
+@Composable
+private fun CastDetailsErrorPreview() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CastDetailView(
+            state = Error(0)
+        )
     }
 }
