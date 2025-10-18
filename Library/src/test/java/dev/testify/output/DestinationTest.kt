@@ -77,6 +77,10 @@ class DestinationTest {
             File("/data/user/0/dev.testify.sample/app_images/" + getDirSlot.captured)
         }
 
+        every { mockContext.contentResolver } returns mockk(relaxed = true) {
+            every { openOutputStream(any<android.net.Uri>()) } throws Exception()
+        }
+
         every { formatDeviceString(any(), any()) } returns "33-1080x2200@420dp-en_CA"
     }
 

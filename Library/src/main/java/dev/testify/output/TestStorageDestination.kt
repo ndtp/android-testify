@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2023-2025 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,8 +68,13 @@ class TestStorageDestination(
     @SuppressLint("UnsafeOptInUsageError")
     private fun isTestStorageEnabled(): Boolean =
         try {
-            val testStorage = PlatformTestStorageRegistry.getInstance()
-            testStorage.outputProperties.isNotEmpty()
+            val testStorageUri = PlatformTestStorageRegistry.getInstance().getOutputFileUri(
+                getTestStoragePath(context, "test", "txt")
+            )
+            context.contentResolver.openOutputStream(testStorageUri).use { outputStream ->
+                outputStream?.close()
+            }
+            true
         } catch (e: Exception) {
             false
         }
@@ -155,8 +160,7 @@ internal class TestStorageNotFoundException :
         "NO_TEST_STORAGE",
         """
 
-* TestStorage service not found.
-* Please ensure that `testInstrumentationRunnerArguments useTestStorageService: "true"` is added to your build.gradle.
+* TestStorage service not found. Please ensure that `testInstrumentationRunnerArguments useTestStorageService: "true"` is added to your build.gradle.
 
         """.trimIndent()
     )
