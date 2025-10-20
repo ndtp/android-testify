@@ -30,6 +30,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
+import java.util.regex.Pattern
 
 class BitmapExtensionsTest {
 
@@ -48,20 +50,31 @@ class BitmapExtensionsTest {
             return dispatcher.substringAfter("pool size = ").substringBefore(",").toInt()
         }
 
+    private fun getCPUCoreNum(): Int {
+        val pattern = Pattern.compile("cpu[0-9]+")
+        return File("/sys/devices/system/cpu/")
+            .walk()
+            .maxDepth(1)
+            .count { pattern.matcher(it.name).matches() }
+            .coerceAtLeast(Runtime.getRuntime().availableProcessors())
+    }
+
     @Test
     fun default_thread_configuration() {
         val configuration = ParallelProcessorConfiguration()
+        val coreCount = getCPUCoreNum()
 
-        assertEquals(4, configuration.numberOfAvailableCores)
-        assertEquals(4, configuration.maxNumberOfChunkThreads)
-        assertEquals(4, configuration.threadPoolSize)
+        assertEquals(coreCount, configuration.numberOfAvailableCores)
+        assertEquals(coreCount, configuration.maxNumberOfChunkThreads)
+        assertEquals(coreCount, configuration.threadPoolSize)
         getSubject(configuration).analyze { _, _, _ -> true }
         assertNotNull(configuration._executorDispatcher)
-        assertEquals(4, configuration.poolSize)
+        assertEquals(coreCount, configuration.poolSize)
     }
 
     @Test
     fun default_thread_configuration_visits_all_cells() {
+        val coreCount = getCPUCoreNum()
         val configuration = ParallelProcessorConfiguration()
         val visits = Array(8) { Array(8) { false } }
 
@@ -71,7 +84,7 @@ class BitmapExtensionsTest {
         }
 
         assertTrue(visits.all { row -> row.all { col -> col } })
-        assertEquals(4, configuration.poolSize)
+        assertEquals(coreCount, configuration.poolSize)
     }
 
     @Test
