@@ -10,7 +10,7 @@ In order to use the Android Testify Compose extension, you must first configure 
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.2.2" apply false
+    id("dev.testify") version "3.2.3" apply false
 }
 ```
 
@@ -26,7 +26,7 @@ The Android Testify Compose extension is packaged as a separate artifact. You mu
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-compose:3.2.2"
+    androidTestImplementation "dev.testify:testify-compose:3.2.3"
     androidTestImplementation "androidx.test:rules:1.10.0"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.4.3"
 }

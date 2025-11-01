@@ -1,5 +1,9 @@
 # Testify Change Log
 
+## 3.2.3
+
+- https://github.com/ndtp/android-testify/pull/268 - Fix GMD TestStorage service not found
+
 ## 3.2.2
 
 - https://github.com/ndtp/android-testify/pull/251 - A collection of updates to allow the tests to run on modern Apple hardware.
