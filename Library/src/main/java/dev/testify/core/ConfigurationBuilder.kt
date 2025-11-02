@@ -73,10 +73,11 @@ class ConfigurationBuilder<T : Activity> internal constructor(private val rule: 
         enabled: Boolean = true,
         @IdRes focusTargetId: Int = android.R.id.content
     ): ConfigurationBuilder<T> {
-        if (enabled)
+        if (enabled) {
             innerConfiguration.focusTargetId = focusTargetId
-        else
+        } else {
             innerConfiguration.focusTargetId = View.NO_ID
+        }
         return this
     }
 

@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2023-2024 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -133,8 +133,9 @@ internal fun <TActivity : Activity> assertSame(
 
         screenshotLifecycleHost.notifyObservers { it.afterScreenshot(activity, currentBitmap) }
 
-        if (configuration.pauseForInspection)
+        if (configuration.pauseForInspection) {
             pauseForInspection()
+        }
 
         val isRecordMode = isRecordMode()
 
@@ -156,8 +157,9 @@ internal fun <TActivity : Activity> assertSame(
                 TestInstrumentationRegistry.instrumentationPrintln(
                     "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
                 )
-                if (!destination.finalize())
+                if (!destination.finalize()) {
                     throw FinalizeDestinationException(destination.description)
+                }
                 return
             } else {
                 throw ScreenshotBaselineNotDefinedException(
@@ -180,8 +182,9 @@ internal fun <TActivity : Activity> assertSame(
                 deleteBitmap(destination)
             )
         } else {
-            if (!destination.finalize())
+            if (!destination.finalize()) {
                 throw FinalizeDestinationException(destination.description)
+            }
 
             if (TestifyFeatures.GenerateDiffs.isEnabled(activity)) {
                 HighContrastDiff

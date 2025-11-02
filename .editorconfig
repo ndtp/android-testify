@@ -1,5 +1,6 @@
 [*.{kt,kts}]
-disabled_rules=import-ordering
+ktlint_standard_trailing-comma-on-call-site = disabled
+ktlint_standard_trailing-comma-on-declaration-site = disabled
 indent_size=4
 insert_final_newline=true
 max_line_length=120
@@ -7,3 +8,4 @@ trim_trailing_whitespace=true
 end_of_line=lf
 ij_kotlin_name_count_to_use_star_import = 2147483647
 ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
+

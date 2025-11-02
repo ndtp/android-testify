@@ -56,9 +56,7 @@ class TestStorageDestination(
     private val extension: String,
     key: String?,
     root: String? = null
-) : DataDirectoryDestination(
-    context, fileName, extension, key, root
-) {
+) : DataDirectoryDestination(context, fileName, extension, key, root) {
     override val LOG_TAG: String = "TestStorageDestination"
 
     /**
@@ -89,10 +87,11 @@ class TestStorageDestination(
      * Get the exception to throw when the destination is not found.
      */
     override fun getScreenshotDestinationNotFoundException(): Exception {
-        return if (isTestStorageEnabled())
+        return if (isTestStorageEnabled()) {
             super.getScreenshotDestinationNotFoundException()
-        else
+        } else {
             TestStorageNotFoundException()
+        }
     }
 
     /**

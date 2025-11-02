@@ -85,7 +85,8 @@ class ScenarioTestRuleLifecycleTest {
     }
 
     @Suppress("DEPRECATION")
-    @get:Rule val thrown: ExpectedException = ExpectedException.none()
+    @get:Rule
+    val thrown: ExpectedException = ExpectedException.none()
 
     @ScreenshotInstrumentation
     @Test

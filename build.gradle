@@ -12,9 +12,3 @@ plugins {
 tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
-
-//allprojects {
-//    configurations.configureEach {
-//        resolutionStrategy.force 'org.objenesis:objenesis:2.6'
-//    }
-//}

@@ -119,14 +119,9 @@ dependencies {
     // Network Stack
     implementation("io.ktor:ktor-client-core:3.2.3")
     implementation("io.ktor:ktor-client-android:3.2.3")
-//    implementation 'io.ktor:ktor-client-serialization:3.2.3'
-//    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0'
     implementation("io.ktor:ktor-client-logging:3.2.3")
-    implementation("io.ktor:ktor-client-content-negotiation:3.2.3") // Or your specific Ktor version
-    implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3") // Or your specific Ktor version
-
-//    implementation 'io.ktor:ktor-client-logging-jvm:3.2.3'
-
+    implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
 
     // Test Support
     testImplementation 'junit:junit:4.13.2'

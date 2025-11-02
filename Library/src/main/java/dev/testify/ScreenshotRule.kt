@@ -127,10 +127,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * @deprecated Use ScreenshotRule(activityClass, rootViewId, initialTouchMode, enableReporter, configuration)
      * Provided for backwards compatibility with the Testify 1.* architecture
      */
+    @Suppress("ktlint:standard:max-line-length", "ktlint:standard:argument-list-wrapping")
     @ExcludeFromJacocoGeneratedReport
     @Deprecated(
         message = "Parameter launchActivity is deprecated and no longer required",
-        replaceWith = ReplaceWith("ScreenshotRule(activityClass = activityClass, rootViewId = rootViewId, initialTouchMode = initialTouchMode, enableReporter = enableReporter, configuration = TestifyConfiguration())") // ktlint-disable max-line-length
+        replaceWith = ReplaceWith("ScreenshotRule(activityClass = activityClass, rootViewId = rootViewId, initialTouchMode = initialTouchMode, enableReporter = enableReporter, configuration = TestifyConfiguration())")
     )
     constructor(
         activityClass: Class<T>,
@@ -496,11 +497,12 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
             methodAnnotations
         )
 
-        if (annotation == null)
+        if (annotation == null) {
             this.throwable = MissingScreenshotInstrumentationAnnotationException(
                 annotationName = getScreenshotAnnotationName(),
                 methodName = methodName
             )
+        }
     }
 
     /**
@@ -685,10 +687,11 @@ open class ScreenshotRule<T : Activity> @JvmOverloads constructor(
      * Called by the [ScreenshotStatement] when a test method throws an exception.
      */
     protected fun handleTestException(throwable: Throwable) {
-        if (throwable is ScreenshotTestIgnoredException || throwable is AssumptionViolatedException)
+        if (throwable is ScreenshotTestIgnoredException || throwable is AssumptionViolatedException) {
             reporter?.skip()
-        else
+        } else {
             reporter?.fail(throwable)
+        }
         throw throwable
     }
 }

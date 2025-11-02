@@ -47,6 +47,7 @@ import dev.testify.core.formatDeviceString
  * @param memoryInfo - a string log of the device's current memory state.
  * @param cause - The OutOfMemoryError exception originally thrown
  */
+@Suppress("ktlint:standard:argument-list-wrapping")
 class LowMemoryException(
     targetContext: Context,
     requestedAllocation: Int,

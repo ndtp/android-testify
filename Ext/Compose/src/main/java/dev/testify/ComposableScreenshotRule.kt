@@ -185,11 +185,12 @@ open class ComposableScreenshotRule(
      */
     override fun beforeScreenshot(activity: Activity) {
         val targetView = activity.findRootView(rootViewId).getChildAt(0)
-        if (targetView.width == 0 && targetView.height == 0)
+        if (targetView.width == 0 && targetView.height == 0) {
             throw IllegalStateException(
                 "Target view has 0 size. " +
                     "Verify if you have provided a ComposeTestRule instance to ComposableScreenshotRule."
             )
+        }
 
         super.beforeScreenshot(activity)
     }
