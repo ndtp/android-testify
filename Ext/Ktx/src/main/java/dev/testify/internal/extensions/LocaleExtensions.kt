@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,11 +26,11 @@
 package dev.testify.internal.extensions
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
+import androidx.annotation.RequiresApi
 import androidx.annotation.VisibleForTesting
 import dev.testify.internal.helpers.buildVersionSdkInt
 import java.util.Locale
@@ -41,7 +41,8 @@ import java.util.Locale
  * @param locale The locale to update to.
  * @return The updated context.
  */
-internal fun Context.updateLocale(locale: Locale?): Context {
+@SuppressLint("NewApi")
+fun Context.updateLocale(locale: Locale?): Context {
     if (locale == null) return this
 
     return if (buildVersionSdkInt() >= Build.VERSION_CODES.N) {
@@ -60,7 +61,7 @@ internal fun Context.updateLocale(locale: Locale?): Context {
  * @return The updated context.
  */
 @VisibleForTesting
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 internal fun Context.updateResources(locale: Locale): Context {
     val configuration = Configuration(this.resources.configuration)
     val localeList = LocaleList(locale)

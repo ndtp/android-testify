@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023-2024 ndtp
+ * Copyright (c) 2023-2025 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ sealed class ManifestPlaceholder(val key: String) {
  * @return The [Bundle] of meta data, or null if it does not exist.
  */
 @ExcludeFromJacocoGeneratedReport
-internal fun getMetaDataBundle(context: Context): Bundle? {
+fun getMetaDataBundle(context: Context): Bundle? {
     val applicationInfo = context.packageManager?.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
     return applicationInfo?.metaData
 }

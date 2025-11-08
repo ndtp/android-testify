@@ -2,6 +2,8 @@ plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
+    id 'maven-publish'
+    id 'signing'
 }
 
 ext {
@@ -74,6 +76,7 @@ android {
         implementation libs.androidx.rules
         implementation libs.androidx.uiautomator
         implementation libs.core.ktx
+        implementation libs.androidx.test.storage
     }
 
     publishing {
@@ -88,5 +91,3 @@ android {
 afterEvaluate {
     apply from: "../../publish.build.gradle"
 }
-
-apply from: '../../ktlint.gradle'

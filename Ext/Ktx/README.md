@@ -1,20 +1,18 @@
-# Testify — Android Screenshot Testing — Fullscreen capture method
+# Testify — Android Screenshot Testing — Kotlin Extensions
 
-<a href="https://search.maven.org/artifact/dev.testify/testify-fullscreen"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify-fullscreen?color=%236e40ed&label=dev.testify%3Atestify-fullscreen"/></a>
+<a href="https://search.maven.org/artifact/dev.testify/testify-kts"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify-ktx?color=%236e40ed&label=dev.testify%3Atestify-ktx"/></a>
 
-**Capture the entire device screen, including system UI, dialogs and menus.**
+**Kotlin extensions for Android Testify, providing more idiomatic and helper APIs to work with screenshot testing in Android.**
 
-Use the [UiAutomator's](https://developer.android.com/training/testing/other-components/ui-automator) built-in [screenshotting](https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#takescreenshot) capability to capture a [Bitmap](https://developer.android.com/reference/android/graphics/Bitmap) of the entire device.
+The new KTX library packages up a set of foundational utilities that originally lived deep inside Testify’s screenshot testing engine. These components are broadly useful for any instrumentation test suite. By extracting and stabilizing these internals, the library provides a standalone toolkit that improves the reliability, predictability, and ergonomics of your androidTest environment, even if you never call a screenshot API.
 
-The bitmap will be generated from a PNG at 1:1 scale and 100% quality. The bitmap's size will match the full device resolution and include all system UI such as the status bar and navigation bar.
+Why Use Testify KTX?
 
-As the system UI content is highly variable, you can use [ScreenshotRule.excludeStatusBar](./src/main/java/dev/testify/capture/fullscreen/provider/StatusBarExclusionRectProvider.kt) and/or [ScreenshotRule.excludeNavigationBar](./src/main/java/dev/testify/capture/fullscreen/provider/NavigationBarExclusionRectProvider.kt) to ignore the status bar and navigation bar, respectively.
+- Adds idiomatic Kotlin helpers around core Testify APIs, reducing boilerplate.
+- Provides a simplified set of file I/O utilities for files on the emulator SD card, `data/data` directory, or Test Storage.
+- Includes utilities for working with annotations, device identification, and test instrumentation.
 
-Though the PNG is intended to be lossless, some compression artifacts or GPU-related variance can occur. As such, it is recommended to use a small tolerance when capturing fullscreen images.
-
-You can set a comparison tolerance using [ScreenshotRule.setExactness](../../Library/src/main/java/dev/testify/ScreenshotRule.kt).
-
-# Set up testify-fullscreen
+# Set up testify-ktx
 
 **Root build.gradle**
 
@@ -31,35 +29,12 @@ Ensure that `mavenCentral()` is available to both `pluginManagement` and `depend
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-fullscreen:3.2.3"
+    androidTestImplementation "dev.testify:testify-ktx:3.2.3"
 }
 ```
 
-# Write a test
+# Included API
 
-In order to capture the full device screen, you must set the capture method on `ScreenshotRule` to `fullscreenCapture()`.
-You can do this with either `setCaptureMethod(::fullscreenCapture)` or the helper extension method `captureFullscreen()`.
-
-Additonal examples can be found in [FullscreenCaptureExampleTest.kt](../../Samples/Legacy/src/androidTest/java/dev/testify/sample/FullscreenCaptureExampleTests.kt).
-
-```kotlin
-class FullscreenCaptureTest {
-
-    @get:Rule
-    var rule = ScreenshotRule(MainActivity::class.java)
-
-    @ScreenshotInstrumentation
-    @Test
-    fun fullscreen() {
-        rule
-            .captureFullscreen()    // Set the fullscreen capture method
-            .excludeSystemUi()      // Exclude the navigation bar and status bar areas from the comparison
-            .setExactness(0.95f)    // Allow a 5% variation in color
-            .assertSame()
-    }
-}
-
-```
 
 ---
 
@@ -67,7 +42,7 @@ class FullscreenCaptureTest {
 
     MIT License
     
-    Copyright (c) 2022 ndtp
+    Copyright (c) 2025 ndtp
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

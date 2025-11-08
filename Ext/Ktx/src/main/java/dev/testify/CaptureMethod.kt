@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2022-2025 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,16 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.internal.helpers
 
-import android.os.Looper
-import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
+package dev.testify
+
+import android.app.Activity
+import android.graphics.Bitmap
+import android.view.View
 
 /**
- * Helper extension method to determine if the current thread is the UI thread.
- *
- * @return True if the current thread is the UI thread, false otherwise.
+ * Returns a [Bitmap] from the provided [Activity] and [View].
+ * Invoked from the UI thread.
  */
-@ExcludeFromJacocoGeneratedReport
-fun isRunningOnUiThread(): Boolean =
-    Looper.getMainLooper().thread == Thread.currentThread()
+typealias CaptureMethod = (activity: Activity, targetView: View?) -> Bitmap?

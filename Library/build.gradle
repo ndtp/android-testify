@@ -30,6 +30,9 @@ archivesBaseName = pom.artifact
 jacoco { toolVersion = "0.8.10" }
 
 android {
+    kotlinOptions {
+        jvmTarget = '21'
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
@@ -68,12 +71,13 @@ android {
     }
 
     dependencies {
+        api project(":Ktx")
+
         implementation libs.androidx.core.ktx
         implementation libs.androidx.espresso.core
         implementation libs.androidx.lifecycle.runtime.ktx
         implementation libs.androidx.rules
         implementation libs.androidx.runner
-        implementation libs.androidx.test.storage
         implementation libs.colormath
         implementation libs.kotlinx.coroutines.android
 

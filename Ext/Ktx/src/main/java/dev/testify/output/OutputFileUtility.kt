@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,12 +27,12 @@ package dev.testify.output
 /**
  * The default screenshot directory name
  */
-internal const val SCREENSHOT_DIR = "screenshots"
+const val SCREENSHOT_DIR = "screenshots"
 
 /**
  * The default screenshot file extension
  */
-internal const val PNG_EXTENSION = ".png"
+const val PNG_EXTENSION = ".png"
 
 /**
  * Construct a path to the baseline image file

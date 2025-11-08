@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
+ * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +22,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.internal.helpers
+package dev.testify.extensions
 
-import android.os.Build
+import android.graphics.Rect
+import android.view.View
 
 /**
- * Provides a wrapper around [Build.VERSION.SDK_INT] to simplify mocking during tests.
+ * Helper extension method to return the bounding box of the view in screen coordinates.
  */
-fun buildVersionSdkInt() = Build.VERSION.SDK_INT
+val View.boundingBox
+    get(): Rect {
+        val screenLocation = IntArray(2)
+        getLocationOnScreen(screenLocation)
+        val (x, y) = screenLocation
+        return Rect(x, y, x + width, y + height)
+    }

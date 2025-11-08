@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,6 +31,7 @@ import android.view.WindowManager
 import dev.testify.internal.extensions.languageTag
 import dev.testify.internal.helpers.buildVersionSdkInt
 import java.util.Locale
+import kotlin.text.iterator
 
 /**
  * A typealias for the test class and test name.

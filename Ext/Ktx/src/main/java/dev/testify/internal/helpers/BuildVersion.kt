@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2019 Shopify Inc.
+ * Copyright (c) 2023-2025 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.core.exception
+package dev.testify.internal.helpers
 
-import android.content.Context
-import androidx.annotation.IdRes
+import android.os.Build
 
 /**
- * Exception thrown when the root view id cannot be found in the test harness Activity.
- *
- * @param context The context of the test harness Activity.
- * @param rootViewId The id of the root view.
- *
+ * Provides a wrapper around [Build.VERSION.SDK_INT] to simplify mocking during tests.
  */
-class RootViewNotFoundException(context: Context, @IdRes rootViewId: Int) :
-    TestifyException(
-        "NO_ROOT_VIEW",
-        "The provided RootViewId {R.id.${context.resources.getResourceEntryName(rootViewId)}} could " +
-            "not be found in the test harness Activity"
-    )
+fun buildVersionSdkInt() = Build.VERSION.SDK_INT

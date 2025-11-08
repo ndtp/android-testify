@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
+ * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,21 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.internal.helpers
+package dev.testify.core.exception
 
-import android.app.Activity
-import android.view.ViewGroup
+import android.content.Context
 import androidx.annotation.IdRes
-import dev.testify.core.exception.RootViewNotFoundException
-import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
 /**
- * Helper extension method to find the root view of an [Activity].
+ * Exception thrown when the root view id cannot be found in the test harness Activity.
  *
+ * @param context The context of the test harness Activity.
  * @param rootViewId The id of the root view.
- * @return The root view.
- * @throws RootViewNotFoundException If the root view is not found.
+ *
  */
-@ExcludeFromJacocoGeneratedReport
-fun Activity.findRootView(@IdRes rootViewId: Int): ViewGroup =
-    this.findViewById(rootViewId) ?: throw RootViewNotFoundException(this, rootViewId)
+class RootViewNotFoundException(context: Context, @IdRes rootViewId: Int) :
+    TestifyException(
+        "NO_ROOT_VIEW",
+        "The provided RootViewId {R.id.${context.resources.getResourceEntryName(rootViewId)}} could " +
+            "not be found in the test harness Activity"
+    )

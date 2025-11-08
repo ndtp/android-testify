@@ -1,8 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
+ * Modified work copyright (c) 2022-2025 ndtp
+ * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.extensions
-
-import android.graphics.Rect
-import android.view.View
+package dev.testify.core.exception
 
 /**
- * Helper extension method to return the bounding box of the view in screen coordinates.
+ * Base exception for Testify.
+ *
+ * @param tag The tag used to identify the exception in the Report.
+ * @param message The message to display in the Report.
  */
-val View.boundingBox
-    get(): Rect {
-        val screenLocation = IntArray(2)
-        getLocationOnScreen(screenLocation)
-        val (x, y) = screenLocation
-        return Rect(x, y, x + width, y + height)
-    }
+abstract class TestifyException(val tag: String, message: String) : RuntimeException(message)

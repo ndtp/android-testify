@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2023-2025 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.annotation.VisibleForTesting
 import dev.testify.core.DEFAULT_FOLDER_FORMAT
 import dev.testify.core.DeviceStringFormatter
 import dev.testify.core.exception.TestifyException
@@ -37,28 +36,27 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 
 /**
- * A [Destination] that writes to the device's internal storage.
- * Files using this destination will be stored in the app's internal data/data directory.
+ * A [Destination] that writes to the device's SD Card storage.
+ * Files using this destination will be stored in the device's SD Card.
+ * This is normally the /storage/emulated directory on the device.
  */
-open class DataDirectoryDestination(
+open class SdCardDestination(
     context: Context,
     override val fileName: String,
-    extension: String = PNG_EXTENSION,
-    val key: String? = null,
+    extension: String,
+    val key: String?,
     val root: String? = null
 ) : Destination {
 
     companion object {
-        private const val DATA_DESTINATION_DIR = "images"
+        private const val SDCARD_DESTINATION_DIR = "testify_images"
+        private const val LOG_TAG = "SdCardDestination"
     }
-
-    open val LOG_TAG = "DataDirectory"
 
     /**
      * The path to the output file
      */
-    @VisibleForTesting
-    val outputPath: String by lazy { getOutputFilePath(context, fileName, extension) }
+    private val outputPath: String by lazy { getOutputFilePath(context, fileName, extension) }
 
     /**
      * A user-facing string describing the destination
@@ -90,12 +88,16 @@ open class DataDirectoryDestination(
      * Exception to throw when the destination is not found
      */
     override fun getScreenshotDestinationNotFoundException(): Exception =
-        DataDirectoryDestinationNotFoundException(outputPath)
+        SdCardDestinationNotFoundException(outputPath)
 
     /**
-     * Get the path to the output file
+     * Construct a path to the output file
+     *
+     * @param context The [Context] to use
+     * @param fileName The name of the file
+     * @param extension The file extension
      */
-    protected open fun getOutputFilePath(
+    open fun getOutputFilePath(
         context: Context,
         fileName: String,
         extension: String = PNG_EXTENSION
@@ -105,17 +107,26 @@ open class DataDirectoryDestination(
 
     /**
      * Get the path to the output directory
+     * The default implementation uses the [dev.testify.core.DeviceStringFormatter] to format the device string
+     * as the directory name.
+     *
+     * @param context The [Context] to use
      */
     protected open fun getOutputDirectoryPath(context: Context): File {
-        val root = this.root ?: DATA_DESTINATION_DIR
-        val path: File = context.getDir(root, Context.MODE_PRIVATE)
-        val directory =
-            key ?: "$SCREENSHOT_DIR/${formatDeviceString(DeviceStringFormatter(context, null), DEFAULT_FOLDER_FORMAT)}"
+        val root = this.root ?: SDCARD_DESTINATION_DIR
+        val sdCard = context.getExternalFilesDir(null)
+        val path = File("${sdCard?.absolutePath}/$root")
+        val directory = key ?: formatDeviceString(
+            DeviceStringFormatter(context, null),
+            DEFAULT_FOLDER_FORMAT
+        )
         return File(path, directory)
     }
 
     /**
      * Ensure the output destination directory exists, create if necessary
+     *
+     * @param context The [Context] to use
      */
     override fun assureDestination(context: Context): Boolean {
         var created = true
@@ -134,7 +145,13 @@ open class DataDirectoryDestination(
 }
 
 /**
- * Exception to throw when the destination is not found or could not be created.
+ * Exception to throw when the destination is not found
  */
-internal class DataDirectoryDestinationNotFoundException(path: String) :
-    TestifyException("NO_DIRECTORY", "\n\n* Could not find or create path {$path}")
+internal class SdCardDestinationNotFoundException(path: String) :
+    TestifyException(
+        "NO_SD_CARD",
+        """
+    * Could not find or create path {$path}.
+    * Check that your emulator has an SD card image and try again.
+        """.trimIndent()
+    )

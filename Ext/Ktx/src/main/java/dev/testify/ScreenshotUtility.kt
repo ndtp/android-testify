@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60,7 +60,7 @@ val preferredBitmapOptions: BitmapFactory.Options
  *
  * @param context The [Context] to use when writing the bitmap to disk.
  * @param bitmap The [Bitmap] to write to disk. If null, this function will return false.
- * @param destination The [Destination] to write the bitmap to.
+ * @param destination The [dev.testify.output.Destination] to write the bitmap to.
  *
  * @throws Exception if the destination cannot be found.
  *
@@ -130,7 +130,7 @@ fun loadBaselineBitmapForComparison(
  *
  * @param activity The [Activity] instance to capture.
  * @param fileName The name to use when writing the captured image to disk.
- * @param captureMethod a [CaptureMethod] that will return a [Bitmap] from the provided [Activity] and [View]
+ * @param captureMethod a [dev.testify.CaptureMethod] that will return a [Bitmap] from the provided [Activity] and [View]
  * @param screenshotView A [View] found in the [activity]'s view hierarchy.
  *          If screenshotView is null, defaults to activity.window.decorView.
  *
@@ -182,7 +182,7 @@ fun loadBitmapFromFile(outputPath: String, preferredBitmapOptions: BitmapFactory
 /**
  * Delete the Bitmap [File] specified by [destination].
  *
- * @param destination The [Destination] to delete.
+ * @param destination The [dev.testify.output.Destination] to delete.
  *
  * @return true if the file was successfully deleted, false otherwise.
  */

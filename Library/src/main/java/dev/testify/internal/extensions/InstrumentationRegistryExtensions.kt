@@ -23,8 +23,6 @@
  */
 package dev.testify.internal.extensions
 
-import android.app.Instrumentation
-import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 import dev.testify.internal.helpers.ManifestPlaceholder
@@ -52,14 +50,7 @@ object TestInstrumentationRegistry {
      *
      * @param str - A string to print to the instrumentation stream.
      */
-    fun instrumentationPrintln(str: String) {
-        InstrumentationRegistry.getInstrumentation().sendStatus(
-            0,
-            Bundle().apply {
-                putString(Instrumentation.REPORT_KEY_STREAMRESULT, "\n" + str)
-            }
-        )
-    }
+    fun instrumentationPrintln(str: String) = dev.testify.extensions.instrumentationPrintln(str)
 
     /**
      * Get the gradle project name of the module which contains the currently running test.
@@ -70,11 +61,7 @@ object TestInstrumentationRegistry {
      *      Empty string otherwise.
      */
     @ExcludeFromJacocoGeneratedReport
-    fun getModuleName(): String {
-        val extras = InstrumentationRegistry.getArguments()
-        val name = if (extras.containsKey("moduleName")) extras.getString("moduleName")!! + ":" else ""
-        return name.ifEmpty { ManifestPlaceholder.Module.getMetaDataValue() ?: "" }
-    }
+    fun getModuleName(): String = dev.testify.extensions.getModuleName(InstrumentationRegistry.getArguments())
 }
 
 /**
@@ -82,11 +69,3 @@ object TestInstrumentationRegistry {
  */
 fun isInvokedFromPlugin(): Boolean =
     InstrumentationRegistry.getArguments().containsKey("annotation")
-
-private const val ESC_CYAN = "${27.toChar()}[36m"
-private const val ESC_RESET = "${27.toChar()}[0m"
-
-/**
- * Returns a string wrapped in ANSI cyan escape characters.
- */
-fun String.cyan() = "$ESC_CYAN$this$ESC_RESET"

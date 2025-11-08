@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2023-2025 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,12 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.core.exception
+package dev.testify.internal.helpers
+
+import android.app.Activity
+import android.view.ViewGroup
+import androidx.annotation.IdRes
+import dev.testify.core.exception.RootViewNotFoundException
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
 /**
- * Base exception for Testify.
+ * Helper extension method to find the root view of an [Activity].
  *
- * @param tag The tag used to identify the exception in the Report.
- * @param message The message to display in the Report.
+ * @param rootViewId The id of the root view.
+ * @return The root view.
+ * @throws dev.testify.core.exception.RootViewNotFoundException If the root view is not found.
  */
-abstract class TestifyException(val tag: String, message: String) : RuntimeException(message)
+@ExcludeFromJacocoGeneratedReport
+fun Activity.findRootView(@IdRes rootViewId: Int): ViewGroup =
+    this.findViewById(rootViewId) ?: throw RootViewNotFoundException(this, rootViewId)
