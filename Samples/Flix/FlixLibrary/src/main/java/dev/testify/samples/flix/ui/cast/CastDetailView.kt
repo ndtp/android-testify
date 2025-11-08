@@ -95,7 +95,7 @@ fun CastDetail(
 }
 
 @Composable
-internal fun CastDetailView(
+fun CastDetailView(
     state: CastDetailState,
     onRetryClick: () -> Unit = {}
 ) {
