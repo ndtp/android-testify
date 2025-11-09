@@ -1,3 +1,13 @@
+## 4.0.0
+
+- https://github.com/ndtp/android-testify/pull/266 Updated to Kotlin 2.2
+- https://github.com/ndtp/android-testify/pull/266 Major version updates to all core dependencies. This will require the following changes to your projects:
+    - Java 21 requires you to update your app to use Java 21
+    - Compile 35+ requires you to target 35+
+    - Minimum SDK raised to 26
+
+---
+
 # Testify Change Log
 
 ## 3.2.3
