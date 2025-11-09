@@ -33,16 +33,18 @@ import java.io.File
 
 internal val Project.root: String
     @Suppress("SdCardPath")
-    get() = testifySettings.rootDestinationDirectory ?: if (testifySettings.useSdCard)
+    get() = testifySettings.rootDestinationDirectory ?: if (testifySettings.useSdCard) {
         "/sdcard/Android/data/${testifySettings.targetPackageId}/files/testify_"
-    else
+    } else {
         "./app_"
+    }
 
 internal val Project.screenshotDirectory: String
-    get() = if (testifySettings.useSdCard)
+    get() = if (testifySettings.useSdCard) {
         "${root}images/"
-    else
+    } else {
         "${root}images/$SCREENSHOT_DIR"
+    }
 
 internal fun Adb.listFiles(path: String): List<String> {
     val log = this

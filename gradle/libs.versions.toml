@@ -17,6 +17,7 @@ junit = "1.3.0"
 kotlin = "2.2.10"
 kotlinPluginSerialization = "2.2.10"
 kotlinxCoroutinesAndroid = "1.10.2"
+ktlint = "13.1.0"
 lifecycleRuntimeKtx = "2.9.3"
 mapsplatformSecrets = "2.0.1"
 material = "1.12.0"
@@ -69,9 +70,10 @@ truth = { module = "com.google.truth:truth", version.ref = "truth" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-android-libraries-mapsplatform-secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "mapsplatformSecrets" }
 google-dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPluginSerialization" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint"}

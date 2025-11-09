@@ -107,8 +107,9 @@ class TestStorageDestination(
                     if (outputStream == null) return false
                     val buffer = ByteArray(1024)
                     var length: Int
-                    while (inputStream.read(buffer).also { length = it } > 0)
+                    while (inputStream.read(buffer).also { length = it } > 0) {
                         outputStream.write(buffer, 0, length)
+                    }
                 }
             }
             return true

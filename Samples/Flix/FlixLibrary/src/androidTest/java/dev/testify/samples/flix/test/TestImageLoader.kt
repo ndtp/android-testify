@@ -49,4 +49,3 @@ fun setSynchronousImageLoader() {
     val imageLoader = ImageLoader.Builder(context).dispatcher(synchronousDispatcher()).build()
     Coil.setImageLoader(imageLoader)
 }
-

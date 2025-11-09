@@ -61,9 +61,11 @@ abstract class TestifyDefaultTask : DefaultTask() {
     internal open fun provideInput(project: Project) {}
 
     protected open fun beforeAction() {
-        if (isDeviceRequired && Device.isEmpty) throw GradleException(
-            "No Android Virtual Device found. Please start an emulator prior to running Testify tasks."
-        )
+        if (isDeviceRequired && Device.isEmpty) {
+            throw GradleException(
+                "No Android Virtual Device found. Please start an emulator prior to running Testify tasks."
+            )
+        }
     }
 
     @TaskAction

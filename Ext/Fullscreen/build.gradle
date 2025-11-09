@@ -92,5 +92,3 @@ android {
 afterEvaluate {
     apply from: "../../publish.build.gradle"
 }
-
-apply from: '../../ktlint.gradle'

@@ -124,8 +124,6 @@ afterEvaluate {
     apply from: "../publish.build.gradle"
 }
 
-apply from: '../ktlint.gradle'
-
 tasks.withType(Test) {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']

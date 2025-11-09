@@ -46,11 +46,20 @@ import java.io.FileOutputStream
 
 open class ScreenshotPullTask : TestifyDefaultTask() {
 
-    @get:Input lateinit var screenshotDirectory: String
-    @get:Input lateinit var destinationImageDirectory: String
-    @get:Input lateinit var targetPackageId: String
-    @get:Input var isVerbose: Boolean = false
-    @get:Input var pullWaitTime: Long = 0L
+    @get:Input
+    lateinit var screenshotDirectory: String
+
+    @get:Input
+    lateinit var destinationImageDirectory: String
+
+    @get:Input
+    lateinit var targetPackageId: String
+
+    @get:Input
+    var isVerbose: Boolean = false
+
+    @get:Input
+    var pullWaitTime: Long = 0L
 
     override fun getDescription() = "Pull screenshots from the device and wait for all files to be committed to disk"
 
@@ -108,7 +117,6 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         )
 
         failedScreenshots.forEach {
-
             val localPath = it.toLocalPath()
 
             if (isVerbose) {

@@ -34,7 +34,6 @@ open class DisableSoftKeyboardTask : TestifyUtilityTask() {
     override fun getDescription() = "Disables the soft keyboard on the device"
 
     override fun taskAction() {
-
         Adb().arguments(
             "shell",
             "settings",

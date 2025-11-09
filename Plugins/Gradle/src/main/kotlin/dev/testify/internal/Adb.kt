@@ -71,8 +71,9 @@ class Adb {
             arguments("--user", "$forcedUser")
         } else {
             val user = Device.user
-            if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0)
+            if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0) {
                 arguments("--user", user)
+            }
         }
         return this
     }
@@ -111,7 +112,6 @@ class Adb {
     }
 
     fun testOptions(testOptionsBuilder: TestOptionsBuilder): Adb {
-
         testOptionsBuilder.resolved.forEach {
             arguments.add(TestOptionsBuilder.TEST_OPTIONS_FLAG)
             arguments.add(it)

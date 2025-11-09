@@ -30,8 +30,11 @@ import org.gradle.api.tasks.Internal
 
 abstract class ReportTask : TestifyDefaultTask() {
 
-    @get:Input lateinit var reportFileName: String
-    @get:Input lateinit var reportPath: String
+    @get:Input
+    lateinit var reportFileName: String
+
+    @get:Input
+    lateinit var reportPath: String
 
     override fun getGroup() = "Testify reports"
 

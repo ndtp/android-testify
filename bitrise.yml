@@ -178,7 +178,7 @@ workflows:
     - gradle-runner@2:
         inputs:
         - gradlew_path: "./gradlew"
-        - gradle_task: Library:ktlint
+        - gradle_task: Library:ktlintCheck
         title: KtLint
     - android-unit-test@1:
         inputs:
@@ -213,7 +213,7 @@ workflows:
     - gradle-runner@2:
         inputs:
           - gradlew_path: "./gradlew"
-          - gradle_task: Plugin:ktlint
+          - gradle_task: Plugin:ktlintCheck
         title: KtLint
     - gradle-unit-test@1:
         inputs:
@@ -241,7 +241,7 @@ workflows:
     - gradle-runner@2:
         inputs:
           - gradlew_path: "./gradlew"
-          - gradle_task: Accessibility:ktlint
+          - gradle_task: Accessibility:ktlintCheck
         title: KtLint
     - gradle-runner@2:
         inputs:
@@ -266,7 +266,7 @@ workflows:
     - gradle-runner@2:
         inputs:
           - gradlew_path: "./gradlew"
-          - gradle_task: ComposeExtensions:ktlint
+          - gradle_task: ComposeExtensions:ktlintCheck
         title: KtLint
     - gradle-runner@2:
         inputs:
@@ -291,7 +291,7 @@ workflows:
     - gradle-runner@2:
         inputs:
           - gradlew_path: "./gradlew"
-          - gradle_task: FullscreenCaptureMethod:ktlint
+          - gradle_task: FullscreenCaptureMethod:ktlintCheck
         title: KtLint
     - gradle-runner@2:
         inputs:
