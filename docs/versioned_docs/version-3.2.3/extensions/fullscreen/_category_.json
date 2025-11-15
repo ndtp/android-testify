@@ -1,0 +1,8 @@
+{
+  "label": "Fullscreen Capture Method",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Capture the entire device screen, including system UI, dialogs and menus."
+  }
+}
