@@ -23,7 +23,7 @@ $ ./gradlew app:screenshotTest
 
 ## Test failures
 
-By default, Testify will use a strict binary comparison. This means that any difference in the binary value used for any of the pixels will be considered a failure. You may wish to adjust the matching tolerance through the use of the `exactness` tolerance. A value of less than `1.0f` will result in a more leniant comparison which will exclude visually similar pixels. For more information on Testify's tolerance implementation, please read the blog post [_Accounting for platform differences_](../../blog/platform-differences).
+By default, Testify will use a strict binary comparison. This means that any difference in the binary value used for any of the pixels will be considered a failure. You may wish to adjust the matching tolerance through the use of the `exactness` tolerance. A value of less than `1.0f` will result in a more leniant comparison which will exclude visually similar pixels. For more information on Testify's tolerance implementation, please read the blog post [_Accounting for platform differences_](../../../blog/platform-differences).
 
 ### Tolerance
 

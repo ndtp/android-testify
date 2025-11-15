@@ -10,7 +10,7 @@ Please read more about [Hardware acceleration](https://developer.android.com/gui
 :::caution
 **Software rendering is not recommended.**
 
-The software rendering pipeline on Android does not produce the same results as the default hardware rendering and can omit shadows, elevation and other advanced features. If you're having difficulty with flaky or inconsistent rendering, it is recommended that you consider the options presented in [Accounting for platform differences](../../blog/platform-differences).
+The software rendering pipeline on Android does not produce the same results as the default hardware rendering and can omit shadows, elevation and other advanced features. If you're having difficulty with flaky or inconsistent rendering, it is recommended that you consider the options presented in [Accounting for platform differences](../../../blog/platform-differences).
 :::
 
 <Tabs>
