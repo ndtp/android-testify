@@ -56,14 +56,18 @@ internal class CheckResults(other: List<CheckResult>) : ArrayList<CheckResult>(o
         return if (this.any { it.type == type }) "    * $type:\n${this.prettyPrint(type)}" else ""
     }
 
-    private fun List<CheckResult>.prettyPrint(filter: String): String {
-        return if (this.isEmpty())
-            "    * - [NONE]"
-        else
-            filter { it.type == filter }.joinToString(separator = "\n    * -", prefix = "    * -") {
-                "${it.check}: [${it.elementClass}/${it.resourceName}] - ${it.message}"
-            }
-    }
+    private fun List<CheckResult>.prettyPrint(filter: String) =
+        prettyPrintEmpty().takeIf { isEmpty() } ?: prettyPrintNotEmpty(filter)
+
+    private fun prettyPrintEmpty() = "    * - [NONE]"
+
+    private fun List<CheckResult>.prettyPrintNotEmpty(filter: String) = filter { it.type == filter }
+        .joinToString(
+            separator = "\n    * -",
+            prefix = "    * -"
+        ) {
+            "${it.check}: [${it.elementClass}/${it.resourceName}] - ${it.message}"
+        }
 
     companion object {
         fun fromJson(json: Reader): CheckResults {

@@ -91,7 +91,6 @@ fun getDeviceDescription(targetContext: Context): String {
  * @return String - The formatted device description string
  */
 fun formatDeviceString(formatter: DeviceStringFormatter, format: String): String {
-
     val a = formatter.androidVersion
     val w = formatter.deviceWidth
     val h = formatter.deviceHeight

@@ -85,6 +85,9 @@ class ScenarioComposeActivityScreenshotTest {
         }
     }
 
+    /**
+     * If this screenshot test fails, double-check that animations have been disabled on your emulator
+     */
     @ScreenshotInstrumentation
     @Test
     fun dropDownExpanded() {

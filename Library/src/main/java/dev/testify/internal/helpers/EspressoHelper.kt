@@ -68,8 +68,9 @@ class EspressoHelper(private val configuration: TestifyConfiguration) : Screensh
 
         syncUiThread()
 
-        if (configuration.hideSoftKeyboard)
+        if (configuration.hideSoftKeyboard) {
             closeSoftKeyboard()
+        }
     }
 
     /**

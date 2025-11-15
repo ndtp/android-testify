@@ -1,7 +1,12 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'org.jetbrains.dokka'
+    id 'maven-publish'
+    id 'signing'
+    alias(libs.plugins.compose.compiler)
 }
 
 ext {
@@ -66,15 +71,16 @@ android {
         compose true
     }
 
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlin {
+        compilerOptions {
+            allWarningsAsErrors.set(true)
+            jvmTarget.set(JvmTarget.JVM_21)
+            freeCompilerArgs.addAll("-Xcontext-parameters")
+        }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion "1.5.14"
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     dependencies {
@@ -106,5 +112,3 @@ android {
 afterEvaluate {
     apply from: "../../publish.build.gradle"
 }
-
-apply from: '../../ktlint.gradle'

@@ -47,16 +47,41 @@ import org.gradle.api.tasks.Optional
 
 open class ScreenshotTestTask : TestifyDefaultTask() {
 
-    @Optional @get:Input var moduleName: String? = null
-    @Optional @get:Input var outputFormat: String? = null
-    @Optional @get:Input var shardCount: Int? = null
-    @Optional @get:Input var shardIndex: Int? = null
-    @Optional @get:Input var testClass: String? = null
-    @Optional @get:Input var testName: String? = null
-    @get:Input lateinit var screenshotAnnotation: String
-    @get:Input lateinit var testPackageId: String
-    @get:Input lateinit var testRunner: String
-    @get:Input var useSdCard: Boolean = false
+    @Optional
+    @get:Input
+    var moduleName: String? = null
+
+    @Optional
+    @get:Input
+    var outputFormat: String? = null
+
+    @Optional
+    @get:Input
+    var shardCount: Int? = null
+
+    @Optional
+    @get:Input
+    var shardIndex: Int? = null
+
+    @Optional
+    @get:Input
+    var testClass: String? = null
+
+    @Optional
+    @get:Input
+    var testName: String? = null
+
+    @get:Input
+    lateinit var screenshotAnnotation: String
+
+    @get:Input
+    lateinit var testPackageId: String
+
+    @get:Input
+    lateinit var testRunner: String
+
+    @get:Input
+    var useSdCard: Boolean = false
 
     override fun getDescription() = "Run the Testify screenshot tests"
 
@@ -84,8 +109,9 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
     protected open fun getRuntimeParams(): List<AdbParam> {
         val params = ArrayList<AdbParam>()
 
-        if (useSdCard)
+        if (useSdCard) {
             params.add(AdbParam("useSdCard", "true"))
+        }
 
         outputFormat.letNotEmpty {
             params.add(AdbParam("outputFileNameFormat", it))

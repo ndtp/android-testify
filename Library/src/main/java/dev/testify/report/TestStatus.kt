@@ -42,5 +42,5 @@ enum class TestStatus {
     /**
      * Test failed
      */
-    FAIL;
+    FAIL
 }

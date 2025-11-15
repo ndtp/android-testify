@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2024 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -206,12 +206,12 @@ open class ComposableScreenshotScenarioRule(
      */
     override fun beforeScreenshot(activity: Activity) {
         val targetView = activity.findRootView(rootViewId).getChildAt(0)
-        if (targetView.width == 0 && targetView.height == 0)
+        if (targetView.width == 0 && targetView.height == 0) {
             throw IllegalStateException(
-                "Target view has 0 size. " +
+                "Target view has 0 size." +
                     "Verify if you have provided a ComposeTestRule instance to ComposableScreenshotRule."
             )
-
+        }
         super.beforeScreenshot(activity)
     }
 

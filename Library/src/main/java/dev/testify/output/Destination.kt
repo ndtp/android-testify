@@ -112,7 +112,6 @@ fun getDestination(
     customKey: String? = null,
     root: String? = null
 ): Destination {
-
     /**
      * Get the value of the manifest placeholder for the destination
      */

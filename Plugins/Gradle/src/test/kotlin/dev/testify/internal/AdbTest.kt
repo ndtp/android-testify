@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2023-2024 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -41,7 +41,6 @@ import org.junit.jupiter.api.assertThrows
 import java.io.File
 
 class AdbTest : BaseTest() {
-
     @RelaxedMockK
     lateinit var project: Project
 
@@ -53,10 +52,11 @@ class AdbTest : BaseTest() {
 
     private var processLog = mutableListOf<String>()
 
-    private val defaultResultMap = mapOf(
-        "devices" to "emulator-5554\tdevice",
-        "get-current-user" to "0"
-    )
+    private val defaultResultMap =
+        mapOf(
+            "devices" to "emulator-5554\tdevice",
+            "get-current-user" to "0"
+        )
 
     private lateinit var subject: Adb
 

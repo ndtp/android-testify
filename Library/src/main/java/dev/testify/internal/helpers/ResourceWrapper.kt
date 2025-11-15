@@ -206,15 +206,18 @@ object ResourceWrapper {
  * @param fontScale The font scale to override. If null, the font scale will not be overridden.
  * @param locale The locale to override. If null, the locale will not be overridden.
  */
+@Suppress("ktlint:standard:annotation")
 fun <@Suppress("unused") A : Activity> overrideResourceConfiguration(
     fontScale: Float? = null,
     locale: Locale? = null
 ) {
-    if (fontScale != null)
+    if (fontScale != null) {
         ResourceWrapper.addOverride(WrappedFontScale(fontScale))
+    }
 
-    if (locale != null)
+    if (locale != null) {
         ResourceWrapper.addOverride(WrappedLocale(locale))
+    }
 
     ResourceWrapper.beforeActivityLaunched()
 }

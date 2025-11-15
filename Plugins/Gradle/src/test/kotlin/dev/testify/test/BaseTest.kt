@@ -7,14 +7,12 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeEach
 
 abstract class BaseTest {
-
     @BeforeEach
     open fun setUp() {
         MockKAnnotations.init(this)
     }
 
     companion object {
-
         @AfterAll
         @JvmStatic
         fun tearDown() {

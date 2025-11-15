@@ -48,8 +48,9 @@ val Context.realDisplaySize: Size
         } else {
             (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay
         }?.getRealSize(screenSize)
-        return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+        return if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             Size(screenSize.x, screenSize.y)
-        else
+        } else {
             Size(screenSize.y, screenSize.x)
+        }
     }

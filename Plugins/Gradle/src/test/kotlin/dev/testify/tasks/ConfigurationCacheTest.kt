@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2024 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -34,9 +34,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import java.io.File
 
 class ConfigurationCacheTest {
-
     companion object {
-
         @field:TempDir
         @JvmField
         var testProjectDir: File? = null
@@ -44,11 +42,15 @@ class ConfigurationCacheTest {
         private var settingsFile: File? = null
         private var buildFile: File? = null
 
+        @Suppress("ktlint")
         @BeforeAll
         @JvmStatic
         fun setup() {
             settingsFile = File(testProjectDir, "settings.gradle")
-            buildFile = File(testProjectDir, "build.gradle").apply {
+            buildFile = File(
+                testProjectDir,
+                "build.gradle"
+            ).apply {
                 writeText("plugins { id 'dev.testify' }")
             }
         }
@@ -62,24 +64,26 @@ class ConfigurationCacheTest {
                 "--configuration-cache",
                 ":LegacySample:$taskName",
                 "-PtestClass=dev.testify.sample.MainActivityScreenshotTest#default"
-            )
-            .build()
+            ).build()
 
     private fun assertCacheReused(result: BuildResult) =
         assertThat(result.output).contains("Configuration cache entry reused.")
 
-    private fun assumeDevice(isDeviceRequired: Boolean, exactly: Int = 1) {
+    private fun assumeDevice(
+        isDeviceRequired: Boolean,
+        exactly: Int = 1
+    ) {
         if (isDeviceRequired) {
-            assume().that(
-                GradleRunner
-                    .create()
-                    .withProjectDir(File("../.."))
-                    .withArguments(
-                        ":LegacySample:testifyDevices",
-                    )
-                    .build()
-                    .output
-            ).contains("Connected devices    = $exactly")
+            assume()
+                .that(
+                    GradleRunner
+                        .create()
+                        .withProjectDir(File("../.."))
+                        .withArguments(
+                            ":LegacySample:testifyDevices",
+                        ).build()
+                        .output
+                ).contains("Connected devices    = $exactly")
         }
     }
 

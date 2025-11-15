@@ -90,9 +90,9 @@ internal data class ImageBuffers(
                 height = height,
                 allocateDiffBuffer = allocateDiffBuffer
             ).apply {
-                if ((width.toLong() * height.toLong()) > Int.MAX_VALUE.toLong()) throw IllegalArgumentException(
-                    "Requested size of $width x $height exceeds maximum buffer size"
-                )
+                if ((width.toLong() * height.toLong()) > Int.MAX_VALUE.toLong()) {
+                    throw IllegalArgumentException("Requested size of $width x $height exceeds maximum buffer size")
+                }
 
                 val capacity = width * height
                 if (capacity == 0) throw IllegalArgumentException("$width and $height must be positive integers")

@@ -10,7 +10,7 @@ In order to use the Android Testify Accessibility Checks extension, you must fir
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.2.3" apply false
+    id("dev.testify") version "4.0.0" apply false
 }
 ```
 
@@ -25,6 +25,6 @@ The Android Testify Accessibility Checks extension is packaged as a separate art
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-accessibility:3.2.3"
+    androidTestImplementation "dev.testify:testify-accessibility:4.0.0"
 }
 ```

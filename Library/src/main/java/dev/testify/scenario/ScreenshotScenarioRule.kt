@@ -108,9 +108,9 @@ import kotlin.contracts.contract
  * @param configuration The [TestifyConfiguration] for the current test
  */
 open class ScreenshotScenarioRule @JvmOverloads constructor(
-    @IdRes override var rootViewId: Int = android.R.id.content,
+    @field:IdRes override var rootViewId: Int = android.R.id.content,
     enableReporter: Boolean = false,
-    @LayoutRes override var targetLayoutId: Int = View.NO_ID,
+    @field:LayoutRes override var targetLayoutId: Int = View.NO_ID,
     override val configuration: TestifyConfiguration = TestifyConfiguration()
 ) :
     TestWatcher(),
@@ -301,19 +301,21 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         scenario?.onActivity { activity = it }
 
         if (activity != null) {
-            if (configuration.fontScale != null)
+            if (configuration.fontScale != null) {
                 throw NoResourceConfigurationOnScenarioException(
                     cause = "fontScale",
                     value = configuration.fontScale.toString(),
                     activity = activity?.javaClass?.simpleName.orEmpty()
                 )
+            }
 
-            if (configuration.locale != null)
+            if (configuration.locale != null) {
                 throw NoResourceConfigurationOnScenarioException(
                     cause = "locale",
                     value = configuration.locale.toString(),
                     activity = activity?.javaClass?.simpleName.orEmpty()
                 )
+            }
         }
 
         return this
@@ -430,11 +432,12 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
             methodAnnotations
         )
 
-        if (annotation == null)
+        if (annotation == null) {
             this.throwable = MissingScreenshotInstrumentationAnnotationException(
                 annotationName = getScreenshotAnnotationName(),
                 methodName = methodName
             )
+        }
     }
 
     /**
@@ -447,8 +450,9 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
 
         getInstrumentation().waitForIdleSync()
 
-        if (configuration.hideSoftKeyboard)
+        if (configuration.hideSoftKeyboard) {
             closeSoftKeyboard()
+        }
     }
 
     /**
@@ -501,10 +505,10 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         } ?: throw ScenarioRequiredException()
     }
 
-    context (ActivityScenario<*>)
     @JvmName("assertSameContext")
+    context (scenario: ActivityScenario<*>)
     fun assertSame() {
-        assertSame(this@ActivityScenario)
+        assertSame(scenario)
     }
 
     private fun assertSame(scenario: ActivityScenario<*>) {

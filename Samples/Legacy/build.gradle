@@ -2,10 +2,9 @@ buildscript {
     ext {
         versions = [
                 'compose': [
-                        'compilerExt': '1.5.14',
-                        'core'       : '1.5.14',
-                        'material'   : '1.6.7',
-                        'ui'         : '1.6.7',
+                        'compilerExt': '1.9.0',
+                        'material'   : '1.9.0',
+                        'ui'         : '1.9.0',
                 ]
         ]
     }
@@ -15,24 +14,26 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'dev.testify'
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
     compileSdk 34
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'
         freeCompilerArgs = ["-Xcontext-receivers"]
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     defaultConfig {
         applicationId "dev.testify.sample"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdkVersion 26
+        compileSdkVersion 35
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
 

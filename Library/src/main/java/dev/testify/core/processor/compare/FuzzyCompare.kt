@@ -43,6 +43,7 @@ import dev.testify.core.processor.compare.colorspace.calculateDeltaE
  * @param configuration - The configuration to use for the comparison.
  * @param parallelProcessorConfiguration - The configuration for the [ParallelPixelProcessor].
  */
+@Suppress("ktlint:standard:multiline-if-else")
 internal class FuzzyCompare(
     configuration: TestifyConfiguration,
     private val parallelProcessorConfiguration: ParallelProcessorConfiguration = ParallelProcessorConfiguration()

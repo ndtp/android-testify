@@ -33,16 +33,15 @@ import android.graphics.BitmapFactory
 import android.os.Debug
 import android.util.Log
 import android.view.View
-import androidx.test.annotation.ExperimentalTestApi
 import dev.testify.core.getDeviceDescription
 import dev.testify.internal.helpers.loadAsset
 import dev.testify.output.Destination
 import dev.testify.output.PNG_EXTENSION
 import dev.testify.output.getDestination
 import dev.testify.output.getFileRelativeToRoot
+import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import java.io.File
 
 /**
  * The default, preferred [BitmapFactory.Options] to use when decoding a [Bitmap].
@@ -138,7 +137,6 @@ fun loadBaselineBitmapForComparison(
  * @return A [Bitmap] representing the captured [screenshotView] in [activity]
  *          Will return [null] if there is an error capturing the bitmap.
  */
-@ExperimentalTestApi
 fun createBitmapFromActivity(
     activity: Activity,
     fileName: String,

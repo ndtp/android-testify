@@ -67,7 +67,6 @@ import dev.testify.testDescription
  */
 @Suppress("UNUSED_PARAMETER")
 fun fullscreenCapture(activity: Activity, targetView: View?): Bitmap {
-
     val instrumentation = getInstrumentation()
     val fileName = getFileName(instrumentation.context)
     val destination = getDestination(activity, fileName)

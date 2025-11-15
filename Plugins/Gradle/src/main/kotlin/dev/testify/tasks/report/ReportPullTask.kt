@@ -47,10 +47,17 @@ import java.io.FileOutputStream
 
 open class ReportPullTask : ReportTask() {
 
-    @get:Input lateinit var reportFilePath: String
-    @get:Input lateinit var targetPackageId: String
-    @get:Input var isVerbose: Boolean = false
-    @get:Input var pullWaitTime: Long = 0L
+    @get:Input
+    lateinit var reportFilePath: String
+
+    @get:Input
+    lateinit var targetPackageId: String
+
+    @get:Input
+    var isVerbose: Boolean = false
+
+    @get:Input
+    var pullWaitTime: Long = 0L
 
     override fun getDescription() =
         "Pull $DEFAULT_REPORT_FILE_NAME from the device and wait for it to be committed to disk"
@@ -92,7 +99,6 @@ open class ReportPullTask : ReportTask() {
     }
 
     private fun pull(sourceFilePath: String, destinationPath: String) {
-
         File(destinationPath).assurePath()
 
         val destinationFile = File(destinationPath, reportName)

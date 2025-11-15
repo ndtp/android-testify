@@ -159,7 +159,6 @@ internal open class ReporterTest {
 
     @Test
     fun `endTest() produces the expected yaml for an existing session`() {
-
         reporter.endTest()
 
         assertEquals(

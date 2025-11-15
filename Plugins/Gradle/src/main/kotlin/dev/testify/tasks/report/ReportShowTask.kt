@@ -40,8 +40,11 @@ import org.gradle.api.tasks.Input
 
 open class ReportShowTask : ReportTask() {
 
-    @get:Input lateinit var reportFilePath: String
-    @get:Input lateinit var targetPackageId: String
+    @get:Input
+    lateinit var reportFilePath: String
+
+    @get:Input
+    lateinit var targetPackageId: String
 
     override fun getDescription() = "Print the test result report to the console"
 

@@ -89,6 +89,7 @@ var Instrumentation.testDescription: TestDescription
         TestDescription.hashCode = this.hashCode()
         TestDescription.current = value
     }
+
     /**
      * Get the current [TestDescription] for the currently executing test.
      *
@@ -96,8 +97,9 @@ var Instrumentation.testDescription: TestDescription
      * @throws UninitializedPropertyAccessException if the current [TestDescription] is not initialized.
      */
     get() {
-        if (TestDescription.hashCode != this.hashCode())
+        if (TestDescription.hashCode != this.hashCode()) {
             throw IllegalStateException("TestDescription is not initialized for $this")
+        }
         return TestDescription.current
             ?: throw UninitializedPropertyAccessException("TestDescription is not initialized")
     }
