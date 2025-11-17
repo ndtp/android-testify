@@ -1,6 +1,6 @@
 # Testify — Android Screenshot Testing — Kotlin Extensions
 
-<a href="https://search.maven.org/artifact/dev.testify/testify-kts"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify-ktx?color=%236e40ed&label=dev.testify%3Atestify-ktx"/></a>
+<a href="https://search.maven.org/artifact/dev.testify/testify-ktx"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify-ktx?color=%236e40ed&label=dev.testify%3Atestify-ktx"/></a>
 
 **Kotlin extensions for Android Testify, providing more idiomatic and helper APIs to work with screenshot testing in Android.**
 
@@ -18,7 +18,7 @@ Why Use Testify KTX?
 
 ```groovy
 plugins {
-    id("dev.testify") version "3.2.3" apply false
+    id("dev.testify") version "5.0.0" apply false
 }
 ```
 
@@ -29,7 +29,7 @@ Ensure that `mavenCentral()` is available to both `pluginManagement` and `depend
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-ktx:3.2.3"
+    androidTestImplementation "dev.testify:testify-ktx:5.0.0"
 }
 ```
 

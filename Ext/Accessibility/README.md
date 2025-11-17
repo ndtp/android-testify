@@ -18,7 +18,7 @@ For more information about _Accessibility Checking_, please see https://develope
 
 ```groovy
 plugins {
-    id("dev.testify") version "4.0.0" apply false
+    id("dev.testify") version "5.0.0" apply false
 }
 ```
 
@@ -29,7 +29,7 @@ Ensure that `mavenCentral()` is available to both `pluginManagement` and `depend
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-accessibility:4.0.0"
+    androidTestImplementation "dev.testify:testify-accessibility:5.0.0"
 }
 ```
 
