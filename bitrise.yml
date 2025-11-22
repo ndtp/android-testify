@@ -432,7 +432,7 @@ workflows:
 meta:
   bitrise.io:
     stack: ubuntu-noble-24.04-bitrise-2025-android
-    machine_type_id: g2.linux.2medium
+    machine_type_id: g2.linux.large
 app:
   envs:
   - opts:
