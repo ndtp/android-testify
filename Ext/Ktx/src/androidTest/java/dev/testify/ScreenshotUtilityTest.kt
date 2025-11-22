@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,11 +26,12 @@
 
 package dev.testify
 
+import android.app.Activity
+import android.graphics.Bitmap
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import dev.testify.core.processor.capture.createBitmapFromDrawingCache
 import dev.testify.output.getDestination
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -61,14 +62,17 @@ class ScreenshotUtilityTest {
     @Test
     fun createBitmapFromActivity() {
         val activity = testActivityRule.activity
-        val rootView = activity.findViewById<View>(R.id.test_root_view)
+        val rootView = activity.findViewById<View>(android.R.id.content)
         val destination = getDestination(context = activity, fileName = "testing")
         val bitmapFile = destination.file
 
         val capturedBitmap = createBitmapFromActivity(
             activity = activity,
             fileName = "testing",
-            captureMethod = ::createBitmapFromDrawingCache,
+            captureMethod = { activity: Activity, view: View? ->
+                val view: View = view ?: activity.window.decorView
+                Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+            },
             screenshotView = rootView
         )
         assertNotNull(capturedBitmap)

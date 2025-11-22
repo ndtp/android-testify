@@ -22,28 +22,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.core.processor.capture
+package dev.testify
 
 import android.app.Activity
-import android.graphics.Bitmap
-import android.view.View
+import android.os.Bundle
 
 /**
- * Capture a bitmap of the current activity.
- *
- * Uses View.getDrawingCache() to capture the bitmap.
- *
- * @param activity The activity to capture.
- * @param targetView The view to capture. If null, the entire decorView of the activity will be captured.
- * @return A bitmap of the activity.
+ * This is a test Activity that is used to test the Testify library.
  */
-@Suppress("DEPRECATION")
-fun createBitmapFromDrawingCache(activity: Activity, targetView: View?): Bitmap {
-    val view: View = targetView ?: activity.window.decorView
+class TestActivity : Activity() {
 
-    view.isDrawingCacheEnabled = true
-    val bitmap = Bitmap.createBitmap(view.drawingCache)
-    view.isDrawingCacheEnabled = false
-
-    return bitmap
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
 }

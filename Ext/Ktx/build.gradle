@@ -77,8 +77,33 @@ android {
         implementation libs.androidx.uiautomator
         implementation libs.core.ktx
         implementation libs.androidx.test.storage
-    }
 
+        // TODO: trim this list down
+        testImplementation libs.kotlinx.coroutines.test
+        testImplementation libs.mockk
+        testImplementation libs.slf4j.jdk14
+        testImplementation libs.truth
+
+        // TODO: trim this list down
+        androidTestImplementation libs.androidx.appcompat
+        androidTestImplementation libs.androidx.espresso.contrib
+        androidTestImplementation libs.androidx.espresso.core
+        androidTestImplementation libs.androidx.junit
+        androidTestImplementation libs.androidx.multidex
+        androidTestImplementation libs.androidx.rules
+        androidTestImplementation libs.androidx.runner
+        androidTestImplementation libs.material
+        androidTestImplementation libs.mockk.android
+    }
+    packagingOptions {
+        resources {
+            excludes += [
+                    'MANIFEST.MF',
+                    'META-INF/LICENSE.md',
+                    'META-INF/LICENSE-notice.md'
+            ]
+        }
+    }
     publishing {
         singleVariant("release") {
             // if you don't want sources/javadoc, remove these lines

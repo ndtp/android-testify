@@ -54,9 +54,13 @@ fun instrumentationPrintln(str: String) {
  */
 @ExcludeFromJacocoGeneratedReport
 fun getModuleName(instrumentationRegistryArguments: Bundle): String {
-    val name = if (instrumentationRegistryArguments.containsKey("moduleName")) instrumentationRegistryArguments.getString(
-        "moduleName"
-    )!! + ":" else ""
+    val name = if (instrumentationRegistryArguments.containsKey("moduleName")) {
+        instrumentationRegistryArguments.getString(
+            "moduleName"
+        )!! + ":"
+    } else {
+        ""
+    }
     return name.ifEmpty { ManifestPlaceholder.Module.getMetaDataValue() ?: "" }
 }
 

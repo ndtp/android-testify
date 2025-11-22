@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2025 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
