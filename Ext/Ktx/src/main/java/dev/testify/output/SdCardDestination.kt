@@ -147,7 +147,7 @@ open class SdCardDestination(
 /**
  * Exception to throw when the destination is not found
  */
-internal class SdCardDestinationNotFoundException(path: String) :
+class SdCardDestinationNotFoundException(path: String) :
     TestifyException(
         "NO_SD_CARD",
         """

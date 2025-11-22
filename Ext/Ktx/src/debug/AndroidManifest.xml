@@ -8,7 +8,7 @@
     <uses-sdk tools:overrideLibrary="io.mockk, io.mockk.proxy.android" />
 
     <application android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
-        <activity android:name="dev.testify.TestActivity" />
+        <activity android:name="dev.testify.ktx.TestActivity" />
     </application>
 
 </manifest>

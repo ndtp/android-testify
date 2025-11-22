@@ -32,6 +32,7 @@ import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
+import dev.testify.ktx.TestActivity
 import dev.testify.output.getDestination
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull

@@ -136,5 +136,5 @@ open class DataDirectoryDestination(
 /**
  * Exception to throw when the destination is not found or could not be created.
  */
-internal class DataDirectoryDestinationNotFoundException(path: String) :
+class DataDirectoryDestinationNotFoundException(path: String) :
     TestifyException("NO_DIRECTORY", "\n\n* Could not find or create path {$path}")

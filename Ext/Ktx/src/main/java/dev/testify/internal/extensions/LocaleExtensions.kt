@@ -62,7 +62,7 @@ fun Context.updateLocale(locale: Locale?): Context {
  */
 @VisibleForTesting
 @RequiresApi(Build.VERSION_CODES.N)
-internal fun Context.updateResources(locale: Locale): Context {
+fun Context.updateResources(locale: Locale): Context {
     val configuration = Configuration(this.resources.configuration)
     val localeList = LocaleList(locale)
     LocaleList.setDefault(localeList)
@@ -80,7 +80,7 @@ internal fun Context.updateResources(locale: Locale): Context {
  */
 @VisibleForTesting
 @Suppress("DEPRECATION")
-internal fun Context.updateResourcesLegacy(locale: Locale): Context {
+fun Context.updateResourcesLegacy(locale: Locale): Context {
     Locale.setDefault(locale)
     val configuration = Configuration(this.resources.configuration)
     configuration.locale = locale

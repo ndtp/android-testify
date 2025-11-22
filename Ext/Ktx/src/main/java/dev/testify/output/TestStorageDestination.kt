@@ -155,7 +155,7 @@ class TestStorageDestination(
 /**
  * Exception to throw when the [TestStorage] service is not found.
  */
-internal class TestStorageNotFoundException :
+class TestStorageNotFoundException :
     TestifyException(
         "NO_TEST_STORAGE",
         """
