@@ -40,6 +40,13 @@ workflows:
         inputs:
         - set_specific_status: "pending"
         - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Ktx"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
         - status_identifier: "Plugin"
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     - github-status@3:
@@ -203,6 +210,41 @@ workflows:
         inputs:
         - auth_token: $GITHUB_TOKEN
         - status_identifier: "Library"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    - _emulatorSetup
+
+  test_ktx:
+    steps:
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Ktx:ktlintCheck
+        title: KtLint
+    - android-unit-test@1:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: Ktx
+        - cache_level: none
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Ktx:assembleDebugAndroidTest
+        title: Build Test APK
+    - android-instrumented-test@0:
+        inputs:
+        - test_apk_path: "./Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
+        - main_apk_path: "./Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Ktx"
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     before_run:
     - _globalSetup
