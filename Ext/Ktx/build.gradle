@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
@@ -36,17 +39,13 @@ android {
     }
 
     defaultConfig {
-        compileSdk libs.versions.compileSdk.get().toInteger()
+        compileSdkVersion = libs.versions.compileSdk.get().toInteger()
         minSdkVersion libs.versions.minSdk.get().toInteger()
         targetSdkVersion libs.versions.targetSdk.get().toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled = true
-        kotlinOptions {
-            allWarningsAsErrors = true
-        }
     }
 
-    libraryVariants.all { variant ->
+    libraryVariants.configureEach { variant ->
         variant.outputs.all {
             outputFileName = "${archivesBaseName}-${version}.aar"
         }
@@ -63,9 +62,6 @@ android {
         }
     }
 
-    kotlinOptions {
-        jvmTarget = '21'
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
@@ -78,22 +74,11 @@ android {
         implementation libs.core.ktx
         implementation libs.androidx.test.storage
 
-        // TODO: trim this list down
-        testImplementation libs.kotlinx.coroutines.test
         testImplementation libs.mockk
-        testImplementation libs.slf4j.jdk14
-        testImplementation libs.truth
 
-        // TODO: trim this list down
-        androidTestImplementation libs.androidx.appcompat
-        androidTestImplementation libs.androidx.espresso.contrib
-        androidTestImplementation libs.androidx.espresso.core
         androidTestImplementation libs.androidx.junit
-        androidTestImplementation libs.androidx.multidex
-        androidTestImplementation libs.androidx.rules
         androidTestImplementation libs.androidx.runner
         androidTestImplementation libs.material
-        androidTestImplementation libs.mockk.android
     }
     packagingOptions {
         resources {
@@ -115,4 +100,11 @@ android {
 
 afterEvaluate {
     apply from: "../../publish.build.gradle"
+}
+
+tasks.withType(KotlinJvmCompile).configureEach {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        jvmTarget.set(JvmTarget.JVM_21)
+    }
 }
