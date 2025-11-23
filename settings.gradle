@@ -26,6 +26,8 @@ include ':GmdSample'
 include ':Ktx'
 include ':LegacySample'
 include ':Library'
+include ':PaparazziSample'
+include ':PaparazziSampleLibrary'
 includeBuild("./Plugins/Gradle") { name = "Plugin" }
 
 project(':Accessibility').projectDir = new File("./Ext/Accessibility")
@@ -36,3 +38,5 @@ project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':GmdSample').projectDir = new File("./Samples/Gmd")
 project(':Ktx').projectDir = new File("./Ext/Ktx")
 project(':LegacySample').projectDir = new File("./Samples/Legacy")
+project(':PaparazziSample').projectDir = new File("./Samples/Paparazzi")
+project(':PaparazziSampleLibrary').projectDir = new File("./Samples/Paparazzi/PaparazziSampleLibrary")
