@@ -2,6 +2,8 @@
 
 # Android Testify - IntelliJ Platform Plugin - Change Log
 
+## [Unreleased]
+
 ## [3.0.0]
 
 - Added support for Support Android Studio Narwhal | 2025.1.1 Canary 9 | 251.+

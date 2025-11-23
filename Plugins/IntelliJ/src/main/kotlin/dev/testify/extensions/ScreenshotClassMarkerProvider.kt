@@ -29,7 +29,10 @@ import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import dev.testify.TestFlavor
+import dev.testify.determineTestFlavor
 import dev.testify.hasScreenshotAnnotation
+import dev.testify.isQualifying
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
@@ -42,15 +45,15 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element !is KtClass) return null
-        if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
-        return element.getLineMarkerInfo()
+        val testFlavor = element.determineTestFlavor() ?: return null
+        return element.getLineMarkerInfo(testFlavor)
     }
 
-    private fun KtClass.getLineMarkerInfo(): LineMarkerInfo<PsiElement>? {
-
-        val functions = PsiTreeUtil.findChildrenOfType(this, KtNamedFunction::class.java)
+    private fun KtClass.getLineMarkerInfo(testFlavor: TestFlavor): LineMarkerInfo<PsiElement>? {
+        if (testFlavor.isClassEligible.not()) return null
+        val functions: Set<KtNamedFunction> = PsiTreeUtil.findChildrenOfType(this, KtNamedFunction::class.java).filterNotNull().toSet()
         if (functions.isEmpty()) return null
-        if (functions.none(KtNamedFunction::hasScreenshotAnnotation)) return null
+        if (testFlavor.isQualifying(functions).not()) return null
 
         val anchorElement = this.nameIdentifier ?: return null
 

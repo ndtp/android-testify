@@ -34,16 +34,20 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
+import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.name
 import org.jetbrains.kotlin.idea.util.projectStructure.module
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.util.concurrent.Callable
+import kotlin.collections.contains
 
 private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
@@ -113,22 +117,27 @@ val KtClass.testifyClassInvocationPath: String
     }
 
 val KtNamedFunction.hasScreenshotAnnotation: Boolean
-    get() {
-        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<Boolean, Throwable> {
-                analyze(this@hasScreenshotAnnotation) {
-                    this@hasScreenshotAnnotation.symbol
-                        .annotations
-                        .any {
-                            it.classId?.asSingleFqName()?.asString() in listOf(
-                                SCREENSHOT_INSTRUMENTATION,
-                                SCREENSHOT_INSTRUMENTATION_LEGACY
-                            )
-                        }
-                }
+    get() = hasQualifyingAnnotation(setOf(SCREENSHOT_INSTRUMENTATION, SCREENSHOT_INSTRUMENTATION_LEGACY))
+
+fun KtNamedFunction.hasQualifyingAnnotation(annotationClassIds: Set<String>): Boolean {
+    return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+        ReadAction.compute<Boolean, Throwable> {
+            analyze(this@hasQualifyingAnnotation) {
+                this@hasQualifyingAnnotation.symbol
+                    .annotations
+                    .any {
+                        it.classId?.asSingleFqName()?.asString() in annotationClassIds
+                    }
             }
-        }).get() ?: false
+        }
+    }).get() ?: false
+}
+
+fun KaSession.getQualifyingAnnotation(function: KtNamedFunction, annotationClassIds: Set<String>): KaAnnotation? {
+    return function.symbol.annotations.firstOrNull { annotation ->
+        annotationClassIds.any { FqName(it) == annotation.classId?.asSingleFqName() }
     }
+}
 
 fun AnActionEvent.findScreenshotAnnotatedFunction(): KtNamedFunction? {
     val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return null
