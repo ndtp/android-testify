@@ -26,16 +26,16 @@
 package dev.testify.samples.paparazzi.application
 
 import android.app.Application
-import coil.ImageLoader
-import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
+
+//@HiltAndroidApp
+//class PaparazziApplication : Application(), ImageLoaderFactory {
+//
+//    @Inject
+//    lateinit var imageLoader: ImageLoader
+//
+//    override fun newImageLoader(): ImageLoader = imageLoader
+//}
 
 @HiltAndroidApp
-class PaparazziApplication : Application(), ImageLoaderFactory {
-
-    @Inject
-    lateinit var imageLoader: ImageLoader
-
-    override fun newImageLoader(): ImageLoader = imageLoader
-}
+class PaparazziApplication : Application()

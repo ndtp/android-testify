@@ -2,7 +2,6 @@ package dev.testify.samples.paparazzi.application.foundation.di
 
 import android.content.Context
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
-import coil.ImageLoader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,16 +36,16 @@ class FoundationModule {
             Executors.defaultThreadFactory()
         ).asCoroutineDispatcher()
 
-    @Provides
-    @Singleton
-    fun provideImageLoader(
-        @ApplicationContext context: Context,
-        dispatcher: CoroutineDispatcher
-    ): ImageLoader =
-        if (BuildConfig.DEBUG) {
-            ImageLoader.Builder(context).dispatcher(dispatcher).build()
-        } else {
-            ImageLoader.Builder(context).build()
-        }
+//    @Provides
+//    @Singleton
+//    fun provideImageLoader(
+//        @ApplicationContext context: Context,
+//        dispatcher: CoroutineDispatcher
+//    ): ImageLoader =
+//        if (BuildConfig.DEBUG) {
+//            ImageLoader.Builder(context).dispatcher(dispatcher).build()
+//        } else {
+//            ImageLoader.Builder(context).build()
+//        }
 }
 
