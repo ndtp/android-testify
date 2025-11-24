@@ -57,7 +57,7 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
                 anchorElement.textRange,
                 IconHelper.ICON_CAMERA,
                 { "Android Testify Commands" },
-                ScreenshotInstrumentationAnnotationNavHandler(this@getLineMarkerInfo),
+                ScreenshotInstrumentationAnnotationNavHandler(this@getLineMarkerInfo, testFlavor),
                 GutterIconRenderer.Alignment.RIGHT,
                 { "" }
             )

@@ -47,7 +47,6 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.util.concurrent.Callable
-import kotlin.collections.contains
 
 private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
@@ -89,20 +88,19 @@ val PsiElement.methodName: String
         return methodName ?: "unknown"
     }
 
-val KtNamedFunction.testifyMethodInvocationPath: String
-    get() {
-        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<String, Throwable> {
-                analyze(this@testifyMethodInvocationPath) {
-                    val functionSymbol = this@testifyMethodInvocationPath.symbol
-                    val className =
-                        (functionSymbol.containingSymbol as? KaClassSymbol)?.classId?.asSingleFqName()?.asString()
-                    val methodName = functionSymbol.name?.asString()
-                    "$className#$methodName"
-                }
+fun KtNamedFunction.testifyMethodInvocationPath(testFlavor: TestFlavor): String {
+    return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+        ReadAction.compute<String, Throwable> {
+            analyze(this@testifyMethodInvocationPath) {
+                val functionSymbol = this@testifyMethodInvocationPath.symbol
+                val className =
+                    (functionSymbol.containingSymbol as? KaClassSymbol)?.classId?.asSingleFqName()?.asString()
+                val methodName = functionSymbol.name?.asString()
+                testFlavor.methodInvocationPath(className, methodName)
             }
-        }).get() ?: "unknown"
-    }
+        }
+    }).get() ?: "unknown"
+}
 
 val KtClass.testifyClassInvocationPath: String
     get() {

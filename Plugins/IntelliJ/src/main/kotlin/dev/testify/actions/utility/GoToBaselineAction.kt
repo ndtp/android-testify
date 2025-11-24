@@ -26,6 +26,7 @@ package dev.testify.actions.utility
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
+import dev.testify.TestFlavor
 import dev.testify.baselineImageName
 import dev.testify.findScreenshotAnnotatedFunction
 

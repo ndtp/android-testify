@@ -26,6 +26,7 @@ package dev.testify.actions.utility
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.VirtualFile
+import dev.testify.TestFlavor
 import dev.testify.getVirtualFile
 
 class GoToSourceAction : BaseUtilityAction() {

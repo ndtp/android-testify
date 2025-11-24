@@ -25,17 +25,21 @@
 package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
+import dev.testify.GradleCommand
+import dev.testify.TestFlavor
 
-class ScreenshotPullAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
+    BaseScreenshotAction(anchorElement, testFlavor) {
 
-    override val classGradleCommand: String
-        get() = "screenshotPull"
+    override val gradleCommand: GradleCommand
+        get() = GradleCommand(
+            argumentFlag = "-PtestClass=",
+            classCommand = "screenshotPull",
+            methodCommand = "screenshotPull"
+        )
 
     override val classMenuText: String
         get() = "Pull all screenshots for '$className'"
-
-    override val methodGradleCommand: String
-        get() = "screenshotPull"
 
     override val methodMenuText: String
         get() = "Pull screenshots for '$methodName()'"

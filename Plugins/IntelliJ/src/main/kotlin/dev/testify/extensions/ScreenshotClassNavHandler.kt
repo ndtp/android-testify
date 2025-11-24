@@ -37,6 +37,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.ui.awt.RelativePoint
+import dev.testify.TestFlavor
 import dev.testify.actions.screenshot.ScreenshotClearAction
 import dev.testify.actions.screenshot.ScreenshotPullAction
 import dev.testify.actions.screenshot.ScreenshotRecordAction
@@ -44,7 +45,10 @@ import dev.testify.actions.screenshot.ScreenshotTestAction
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
 
-class ScreenshotClassNavHandler(private val anchorElement: PsiElement) : GutterIconNavigationHandler<PsiElement> {
+class ScreenshotClassNavHandler(
+    private val anchorElement: PsiElement,
+    private val testFlavor: TestFlavor
+) : GutterIconNavigationHandler<PsiElement> {
 
     override fun navigate(e: MouseEvent?, nameIdentifier: PsiElement) {
         if (e == null) return
@@ -69,10 +73,10 @@ class ScreenshotClassNavHandler(private val anchorElement: PsiElement) : GutterI
     private fun createActionGroupPopup(event: ComponentEvent, anchorElement: PsiElement): JBPopup {
 
         val group = DefaultActionGroup(
-            ScreenshotTestAction(anchorElement),
-            ScreenshotRecordAction(anchorElement),
-            ScreenshotPullAction(anchorElement),
-            ScreenshotClearAction(anchorElement)
+            ScreenshotTestAction(anchorElement, testFlavor),
+            ScreenshotRecordAction(anchorElement, testFlavor),
+            ScreenshotPullAction(anchorElement, testFlavor),
+            ScreenshotClearAction(anchorElement, testFlavor),
         )
         val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(

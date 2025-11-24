@@ -25,17 +25,17 @@
 package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
+import dev.testify.GradleCommand
+import dev.testify.TestFlavor
 
-class ScreenshotRecordAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotRecordAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
+    BaseScreenshotAction(anchorElement, testFlavor) {
 
-    override val classGradleCommand: String
-        get() = "screenshotRecord"
+    override val gradleCommand: GradleCommand
+        get() = testFlavor.recordGradleCommands
 
     override val classMenuText: String
         get() = "Record baseline for all '$className' tests"
-
-    override val methodGradleCommand: String
-        get() = "screenshotRecord"
 
     override val methodMenuText: String
         get() = "Record baseline for '$methodName()'"

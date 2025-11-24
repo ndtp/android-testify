@@ -8,25 +8,69 @@ import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
+data class GradleCommand(
+    val argumentFlag: String,
+    val classCommand: String,
+    val methodCommand: String
+)
+
 enum class TestFlavor(
     val path: String,
     val qualifyingAnnotations: Set<String>,
-    val isClassEligible: Boolean
+    val isClassEligible: Boolean,
+    val methodInvocationPath: (className: String?, methodName: String?) -> String,
+    val testGradleCommands: GradleCommand,
+    val recordGradleCommands: GradleCommand,
 ) {
     Testify(
         path = "androidTest",
         qualifyingAnnotations = setOf(SCREENSHOT_INSTRUMENTATION, SCREENSHOT_INSTRUMENTATION_LEGACY),
-        isClassEligible = true
+        isClassEligible = true,
+        methodInvocationPath = { className, methodName -> "$className#$methodName" },
+        testGradleCommands = GradleCommand(
+            argumentFlag = "-PtestClass=",
+            classCommand = "screenshotTest",
+            methodCommand = "screenshotTest"
+        ),
+        recordGradleCommands = GradleCommand(
+            argumentFlag = "-PtestClass=",
+            classCommand = "screenshotRecord",
+            methodCommand = "screenshotRecord"
+        )
     ),
+
     Paparazzi(
         path = "test",
         qualifyingAnnotations = setOf(PAPARAZZI_ANNOTATION),
-        isClassEligible = true
+        isClassEligible = true,
+        methodInvocationPath = { className, methodName -> "$className*$methodName" },
+        testGradleCommands = GradleCommand(
+            argumentFlag = "--rerun-tasks --tests",
+            classCommand = "verifyPaparazziDebug",
+            methodCommand = "verifyPaparazziDebug"
+        ),
+        recordGradleCommands = GradleCommand(
+            argumentFlag = "--updateFilter",
+            classCommand = "recordPaparazziDebug",
+            methodCommand = "recordPaparazziDebug"
+        )
     ),
+
     Preview(
         path = "screenshotTest",
         qualifyingAnnotations = setOf(PREVIEW_ANNOTATION),
-        isClassEligible = false // TODO: This is just for now, eventually we may want class-level markers too
+        isClassEligible = false, // TODO: This is just for now, eventually we may want class-level markers too
+        methodInvocationPath = { className, methodName -> "$className*$methodName" },
+        testGradleCommands = GradleCommand(
+            argumentFlag = "--rerun-tasks --tests",
+            classCommand = "validateDebugScreenshotTest",
+            methodCommand = "validateDebugScreenshotTest"
+        ),
+        recordGradleCommands = GradleCommand(
+            argumentFlag = "--updateFilter",
+            classCommand = "updateDebugScreenshotTest", // TODO: Need to parameterize for build variant
+            methodCommand = "updateDebugScreenshotTest"
+        )
     )
 }
 

@@ -37,6 +37,7 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiShortNamesCache
+import dev.testify.TestFlavor
 import dev.testify.baselineImageName
 import dev.testify.getVirtualFile
 import org.jetbrains.kotlin.idea.util.projectStructure.module
