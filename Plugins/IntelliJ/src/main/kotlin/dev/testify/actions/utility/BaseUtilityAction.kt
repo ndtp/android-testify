@@ -35,8 +35,6 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.FilenameIndex
-import com.intellij.psi.search.GlobalSearchScope
-import com.intellij.psi.search.PsiShortNamesCache
 import dev.testify.TestFlavor
 import dev.testify.baselineImageName
 import dev.testify.getVirtualFile
@@ -47,20 +45,10 @@ abstract class BaseUtilityAction : AnAction() {
 
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
-    private fun findClassByName(className: String, project: Project): PsiClass? {
-        val psiShortNamesCache = PsiShortNamesCache.getInstance(project)
-        val classes = psiShortNamesCache.getClassesByName(className, GlobalSearchScope.projectScope(project))
-        return classes.firstOrNull()
-    }
-
     private fun navigateToClass(psiClass: PsiClass, project: Project) {
         val psiFile = psiClass.containingFile.virtualFile
         val descriptor = OpenFileDescriptor(project, psiFile, psiClass.textOffset)
         FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
-    }
-
-    private fun findMethod(methodName: String, psiClass: PsiClass): PsiMethod? {
-        return psiClass.findMethodsByName(methodName, false).firstOrNull()
     }
 
     protected fun navigateToMethod(psiMethod: PsiMethod, project: Project) {
@@ -73,14 +61,9 @@ abstract class BaseUtilityAction : AnAction() {
         val imageFile = this.getVirtualFile()
         val project = this.project
         if (imageFile != null && project != null) {
-            imageFile.nameWithoutExtension.let { imageName ->
-                val parts = imageName.split("_")
-                if (parts.size == 2) {
-                    val (className, methodName) = parts
-                    findClassByName(className, project)?.let { psiClass ->
-                        return findMethod(methodName, psiClass)
-                    }
-                }
+            TestFlavor.entries.forEach { testFlavor ->
+                val method = testFlavor.findSourceMethod(imageFile, project)
+                if (method != null) return method
             }
         }
         return null
