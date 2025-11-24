@@ -48,7 +48,6 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.util.concurrent.Callable
 
-private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
 
 val AnActionEvent.moduleName: String
@@ -59,7 +58,12 @@ val AnActionEvent.moduleName: String
         val moduleName = ktFile?.module?.name ?: ""
 
         val modules = moduleName.removePrefix(PROJECT_FORMAT.format(projectName))
-        val psiModule = modules.removeSuffix(ANDROID_TEST_MODULE)
+
+        val suffix = TestFlavor.entries.find { flavor ->
+            modules.endsWith(flavor.moduleFilter)
+        }?.moduleFilter.orEmpty()
+        val psiModule = modules.removeSuffix(suffix)
+
         val gradleModule = psiModule.replace(".", ":")
         println("$modules $psiModule $gradleModule")
 

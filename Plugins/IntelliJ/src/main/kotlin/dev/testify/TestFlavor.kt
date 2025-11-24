@@ -15,7 +15,8 @@ data class GradleCommand(
 )
 
 enum class TestFlavor(
-    val path: String,
+    val srcRoot: String,
+    val moduleFilter: String,
     val qualifyingAnnotations: Set<String>,
     val isClassEligible: Boolean,
     val methodInvocationPath: (className: String?, methodName: String?) -> String,
@@ -23,7 +24,8 @@ enum class TestFlavor(
     val recordGradleCommands: GradleCommand,
 ) {
     Testify(
-        path = "androidTest",
+        srcRoot = "androidTest",
+        moduleFilter = ".androidTest",
         qualifyingAnnotations = setOf(SCREENSHOT_INSTRUMENTATION, SCREENSHOT_INSTRUMENTATION_LEGACY),
         isClassEligible = true,
         methodInvocationPath = { className, methodName -> "$className#$methodName" },
@@ -40,7 +42,8 @@ enum class TestFlavor(
     ),
 
     Paparazzi(
-        path = "test",
+        srcRoot = "test",
+        moduleFilter = ".unitTest",
         qualifyingAnnotations = setOf(PAPARAZZI_ANNOTATION),
         isClassEligible = true,
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
@@ -50,14 +53,15 @@ enum class TestFlavor(
             methodCommand = "verifyPaparazziDebug"
         ),
         recordGradleCommands = GradleCommand(
-            argumentFlag = "--updateFilter '$1'",
+            argumentFlag = "--rerun-tasks --tests '$1'",
             classCommand = "recordPaparazziDebug",
             methodCommand = "recordPaparazziDebug"
         )
     ),
 
     Preview(
-        path = "screenshotTest",
+        srcRoot = "screenshotTest",
+        moduleFilter = ".screenshotTest",
         qualifyingAnnotations = setOf(PREVIEW_ANNOTATION),
         isClassEligible = false, // TODO: This is just for now, eventually we may want class-level markers too
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
@@ -77,7 +81,7 @@ enum class TestFlavor(
 fun PsiElement.determineTestFlavor(): TestFlavor? {
     if (this !is KtElement) return null
     val path = this.containingKtFile.virtualFilePath
-    return TestFlavor.entries.find { "/${it.path}/" in path }
+    return TestFlavor.entries.find { "/${it.srcRoot}/" in path }
 }
 
 fun TestFlavor.isQualifying(functions: Set<KtNamedFunction>): Boolean =
