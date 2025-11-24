@@ -28,13 +28,16 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScope
 import dev.testify.TestFlavor
 import dev.testify.baselineImageName
 import dev.testify.getVirtualFile
@@ -69,9 +72,32 @@ abstract class BaseUtilityAction : AnAction() {
         return null
     }
 
+    fun findFilesByPartialNameOrRegex(
+        project: Project,
+        partialName: String? = null,
+        regex: Regex? = null,
+        scope: GlobalSearchScope = GlobalSearchScope.projectScope(project)
+    ): List<VirtualFile> {
+        val fileType = FileTypeManager.getInstance().getStdFileType("Image")
+        val allFiles = FileTypeIndex.getFiles(fileType, scope)
+        val fileList = allFiles.filter { file ->
+            when {
+                partialName != null && file.path.contains(partialName, ignoreCase = true) -> true
+                regex != null && regex.matches(file.path) -> true
+                else -> false
+            }
+        }
+
+        return fileList
+    }
+
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
         if (currentFile is KtFile && currentFile.module != null) {
-            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
+//            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
+            val files = findFilesByPartialNameOrRegex(
+                project = currentFile.project,
+                partialName = baselineImageName
+            )
             if (files.isNotEmpty()) {
                 return files.first()
             }

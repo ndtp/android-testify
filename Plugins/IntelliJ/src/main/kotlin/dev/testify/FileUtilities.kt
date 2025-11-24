@@ -7,10 +7,17 @@ import com.intellij.psi.PsiMethod
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiShortNamesCache
 
-fun findClassByName(className: String, project: Project): PsiClass? {
+fun findClassByName(className: String, project: Project, packageName: String? = null): PsiClass? {
     val psiShortNamesCache = PsiShortNamesCache.getInstance(project)
     val classes = psiShortNamesCache.getClassesByName(className, GlobalSearchScope.projectScope(project))
-    return classes.firstOrNull()
+    return if (packageName != null) {
+        classes.firstOrNull { psiClass ->
+            val pkg = psiClass.qualifiedName?.substringBeforeLast(".")
+            packageName == pkg
+        }
+    } else {
+        classes.firstOrNull()
+    }
 }
 
 fun findMethod(methodName: String, psiClass: PsiClass): PsiMethod? {
@@ -32,7 +39,7 @@ fun findTestifyMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
 }
 
 /**
- * Input: ./src/test/snapshots/images/dev.testify.samples.paparazzi.ui.common.composables_CastMemberScreenshotTest_default.png
+ * Input: /Users/danjette/dev/android-testify/Samples/Paparazzi/src/test/snapshots/images/dev.testify.samples.paparazzi.ui.common.composables_CastMemberScreenshotTest_b.png
  */
 fun findPaparazziMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
     if (imageFile.path.contains("/test").not()) return null
@@ -40,11 +47,11 @@ fun findPaparazziMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
         // imageName = composables_CastMemberScreenshotTest_default
         val parts = imageName.split("_")
         if (parts.size == 3) {
-            val (_, className, methodName) = parts
+            val (packageName, className, methodName) = parts
             // _ = composables
             // className = CastMemberScreenshotTest
             // methodName = default
-            findClassByName(className, project)?.let { psiClass ->
+            findClassByName(className, project, packageName)?.let { psiClass ->
                 return findMethod(methodName, psiClass)
             }
         }
