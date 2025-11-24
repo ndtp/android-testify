@@ -28,12 +28,12 @@ enum class TestFlavor(
         isClassEligible = true,
         methodInvocationPath = { className, methodName -> "$className#$methodName" },
         testGradleCommands = GradleCommand(
-            argumentFlag = "-PtestClass=",
+            argumentFlag = "-PtestClass=$1",
             classCommand = "screenshotTest",
             methodCommand = "screenshotTest"
         ),
         recordGradleCommands = GradleCommand(
-            argumentFlag = "-PtestClass=",
+            argumentFlag = "-PtestClass=$1",
             classCommand = "screenshotRecord",
             methodCommand = "screenshotRecord"
         )
@@ -45,12 +45,12 @@ enum class TestFlavor(
         isClassEligible = true,
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
         testGradleCommands = GradleCommand(
-            argumentFlag = "--rerun-tasks --tests",
+            argumentFlag = "--rerun-tasks --tests '$1'",
             classCommand = "verifyPaparazziDebug",
             methodCommand = "verifyPaparazziDebug"
         ),
         recordGradleCommands = GradleCommand(
-            argumentFlag = "--updateFilter",
+            argumentFlag = "--updateFilter '$1'",
             classCommand = "recordPaparazziDebug",
             methodCommand = "recordPaparazziDebug"
         )
@@ -62,12 +62,12 @@ enum class TestFlavor(
         isClassEligible = false, // TODO: This is just for now, eventually we may want class-level markers too
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
         testGradleCommands = GradleCommand(
-            argumentFlag = "--rerun-tasks --tests",
+            argumentFlag = "--rerun-tasks --tests '$1'",
             classCommand = "validateDebugScreenshotTest",
             methodCommand = "validateDebugScreenshotTest"
         ),
         recordGradleCommands = GradleCommand(
-            argumentFlag = "--updateFilter",
+            argumentFlag = "--updateFilter '$1'",
             classCommand = "updateDebugScreenshotTest", // TODO: Need to parameterize for build variant
             methodCommand = "updateDebugScreenshotTest"
         )

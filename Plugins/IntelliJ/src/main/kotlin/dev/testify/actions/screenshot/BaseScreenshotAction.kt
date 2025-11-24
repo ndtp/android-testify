@@ -85,7 +85,12 @@ abstract class BaseScreenshotAction(
             else -> null
         }
         val command = ":${event.moduleName}:$this"
-        return if (arguments != null) "$command $argumentFlag$arguments" else command
+        return if (arguments != null) {
+            val argFormatted = argumentFlag.replace("$1", arguments)
+            "$command $argFormatted"
+        } else {
+            command
+        }
     }
 
     private fun isClass(): Boolean {
