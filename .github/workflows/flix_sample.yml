@@ -1,5 +1,6 @@
 name: "Flix Sample Screenshot Tests"
 on:
+  workflow_dispatch:
   pull_request:
     paths:
       - ".github/workflows/flix_sample.yml"
