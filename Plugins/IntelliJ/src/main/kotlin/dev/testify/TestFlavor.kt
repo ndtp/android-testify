@@ -89,8 +89,19 @@ enum class TestFlavor(
 
 fun PsiElement.determineTestFlavor(): TestFlavor? {
     if (this !is KtElement) return null
+
+    if (this.hasPaparazziRule()) {
+        return TestFlavor.Paparazzi
+    }
+
     val path = this.containingKtFile.virtualFilePath
-    return TestFlavor.entries.find { "/${it.srcRoot}/" in path }
+    val flavor = TestFlavor.entries.find { "/${it.srcRoot}/" in path }
+
+    if (flavor == TestFlavor.Paparazzi) {
+        return null
+    }
+
+    return flavor
 }
 
 fun TestFlavor.isQualifying(functions: Set<KtNamedFunction>): Boolean =

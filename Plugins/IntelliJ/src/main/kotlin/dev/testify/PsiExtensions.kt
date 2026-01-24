@@ -38,14 +38,17 @@ import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaPropertySymbol
 import org.jetbrains.kotlin.analysis.api.symbols.name
 import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import java.util.ArrayDeque
 import java.util.concurrent.Callable
 
 private const val PROJECT_FORMAT = "%1s."
@@ -151,3 +154,39 @@ fun AnActionEvent.findScreenshotAnnotatedFunction(): KtNamedFunction? {
 fun AnActionEvent.getVirtualFile(): VirtualFile? =
     this.getData(PlatformDataKeys.VIRTUAL_FILE) ?: (this.getData(CommonDataKeys.NAVIGATABLE_ARRAY)
         ?.first() as? PsiFileNode)?.virtualFile
+
+fun KtElement.hasPaparazziRule(): Boolean {
+    val containingClass = this.parents.filterIsInstance<KtClassOrObject>().firstOrNull() ?: return false
+
+    return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+        ReadAction.compute<Boolean, Throwable> {
+            analyze(containingClass) {
+                val classSymbol = containingClass.symbol as? KaClassSymbol ?: return@analyze false
+
+                fun hasPaparazziField(symbol: KaClassSymbol): Boolean {
+                    return symbol.declaredMemberScope.callables.filterIsInstance<KaPropertySymbol>().any { property ->
+                        val typeSymbol = property.returnType.expandedSymbol as? KaClassSymbol
+                        typeSymbol?.classId?.asSingleFqName()?.asString() == "app.cash.paparazzi.Paparazzi"
+                    }
+                }
+
+                val visited = mutableSetOf<KaClassSymbol>()
+                val queue = ArrayDeque<KaClassSymbol>()
+                queue.add(classSymbol)
+
+                while (queue.isNotEmpty()) {
+                    val current = queue.removeFirst()
+                    if (!visited.add(current)) continue
+
+                    if (hasPaparazziField(current)) return@analyze true
+
+                    current.superTypes.forEach { type ->
+                        (type.expandedSymbol as? KaClassSymbol)?.let { queue.add(it) }
+                    }
+                }
+
+                false
+            }
+        }
+    }).get() ?: false
+}
