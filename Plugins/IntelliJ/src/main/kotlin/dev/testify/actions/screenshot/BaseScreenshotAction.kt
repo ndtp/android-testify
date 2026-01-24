@@ -50,7 +50,7 @@ import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
 
 abstract class BaseScreenshotAction(
-    private val anchorElement: PsiElement,
+    protected val anchorElement: PsiElement,
     protected val testFlavor: TestFlavor
 ) : AnAction() {
 
@@ -95,11 +95,11 @@ abstract class BaseScreenshotAction(
         }
     }
 
-    private fun isClass(): Boolean {
+    protected fun isClass(): Boolean {
         return anchorElement is KtClass
     }
 
-    final override fun actionPerformed(event: AnActionEvent) {
+    override fun actionPerformed(event: AnActionEvent) {
         val project = event.project as Project
         val dataContext = SimpleDataContext.getProjectContext(project)
         val executionContext =
@@ -130,7 +130,7 @@ abstract class BaseScreenshotAction(
         }
     }
 
-    private fun RunAnythingContext.getProjectPath() = when (this) {
+    protected fun RunAnythingContext.getProjectPath() = when (this) {
         is RunAnythingContext.ProjectContext ->
             GradleSettings.getInstance(project).linkedProjectsSettings.firstOrNull()
                 ?.let {

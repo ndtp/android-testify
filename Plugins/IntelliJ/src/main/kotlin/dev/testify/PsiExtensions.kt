@@ -201,3 +201,45 @@ fun KtElement.hasPaparazziRule(): Boolean {
         }
     }).get() ?: false
 }
+
+val KtNamedFunction.paparazziScreenshotFileName: String
+    get() {
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<String, Throwable> {
+                analyze(this@paparazziScreenshotFileName) {
+                    val functionSymbol = this@paparazziScreenshotFileName.symbol
+                    val classSymbol = functionSymbol.containingSymbol as? KaClassSymbol
+                    val classId = classSymbol?.classId
+                    val packageName = classId?.packageFqName?.asString()
+                    val relativeClassName = classId?.relativeClassName?.asString()?.replace('.', '_')
+                    val methodName = functionSymbol.name?.asString()
+
+                    if (packageName.isNullOrEmpty()) {
+                        "${relativeClassName}_$methodName.png"
+                    } else {
+                        "${packageName}_${relativeClassName}_$methodName.png"
+                    }
+                }
+            }
+        }).get() ?: "unknown.png"
+    }
+
+val KtClass.paparazziScreenshotFileNamePattern: String
+    get() {
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<String, Throwable> {
+                analyze(this@paparazziScreenshotFileNamePattern) {
+                    val classSymbol = this@paparazziScreenshotFileNamePattern.symbol as? KaClassSymbol
+                    val classId = classSymbol?.classId
+                    val packageName = classId?.packageFqName?.asString()
+                    val relativeClassName = classId?.relativeClassName?.asString()?.replace('.', '_')
+
+                    if (packageName.isNullOrEmpty()) {
+                        "${relativeClassName}_*.png"
+                    } else {
+                        "${packageName}_${relativeClassName}_*.png"
+                    }
+                }
+            }
+        }).get() ?: "unknown.png"
+    }
