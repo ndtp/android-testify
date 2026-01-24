@@ -30,10 +30,12 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
+import org.jetbrains.android.facet.AndroidFacet
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
@@ -49,6 +51,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.util.ArrayDeque
+import java.util.Locale
 import java.util.concurrent.Callable
 
 private const val PROJECT_FORMAT = "%1s."
@@ -71,6 +74,14 @@ val AnActionEvent.moduleName: String
         println("$modules $psiModule $gradleModule")
 
         return gradleModule
+    }
+
+val AnActionEvent.selectedBuildVariant: String
+    get() {
+        val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return "Debug"
+        val module = ModuleUtilCore.findModuleForPsiElement(psiFile) ?: return "Debug"
+        val variant = AndroidFacet.getInstance(module)?.properties?.SELECTED_BUILD_VARIANT ?: "debug"
+        return variant.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
 val PsiElement.baselineImageName: String

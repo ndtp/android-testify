@@ -56,13 +56,13 @@ enum class TestFlavor(
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
         testGradleCommands = GradleCommand(
             argumentFlag = "--rerun-tasks --tests '$1'",
-            classCommand = "verifyPaparazziDebug",
-            methodCommand = "verifyPaparazziDebug"
+            classCommand = "verifyPaparazzi$Variant",
+            methodCommand = "verifyPaparazzi$Variant"
         ),
         recordGradleCommands = GradleCommand(
             argumentFlag = "--rerun-tasks --tests '$1'",
-            classCommand = "recordPaparazziDebug",
-            methodCommand = "recordPaparazziDebug"
+            classCommand = "recordPaparazzi$Variant",
+            methodCommand = "recordPaparazzi$Variant"
         ),
         findSourceMethod = ::findPaparazziMethod
     ),
@@ -75,13 +75,13 @@ enum class TestFlavor(
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
         testGradleCommands = GradleCommand(
             argumentFlag = "--rerun-tasks --tests '$1'",
-            classCommand = "validateDebugScreenshotTest",
-            methodCommand = "validateDebugScreenshotTest"
+            classCommand = "validate${Variant}ScreenshotTest",
+            methodCommand = "validate${Variant}ScreenshotTest"
         ),
         recordGradleCommands = GradleCommand(
             argumentFlag = "--updateFilter '$1'",
-            classCommand = "updateDebugScreenshotTest", // TODO: Need to parameterize for build variant
-            methodCommand = "updateDebugScreenshotTest"
+            classCommand = "update${Variant}ScreenshotTest",
+            methodCommand = "update${Variant}ScreenshotTest"
         ),
         findSourceMethod = ::findPreviewMethod
     )
@@ -106,3 +106,5 @@ fun PsiElement.determineTestFlavor(): TestFlavor? {
 
 fun TestFlavor.isQualifying(functions: Set<KtNamedFunction>): Boolean =
     functions.any { it.hasQualifyingAnnotation(this.qualifyingAnnotations) }
+
+const val Variant = "\$Variant"

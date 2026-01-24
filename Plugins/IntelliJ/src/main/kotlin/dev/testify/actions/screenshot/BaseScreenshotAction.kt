@@ -37,8 +37,10 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
 import dev.testify.GradleCommand
 import dev.testify.TestFlavor
+import dev.testify.Variant
 import dev.testify.methodName
 import dev.testify.moduleName
+import dev.testify.selectedBuildVariant
 import dev.testify.testifyClassInvocationPath
 import dev.testify.testifyMethodInvocationPath
 import org.jetbrains.kotlin.psi.KtClass
@@ -106,8 +108,14 @@ abstract class BaseScreenshotAction(
         val executor = RunAnythingAction.EXECUTOR_KEY.getData(dataContext)
 
         val argumentFlag = gradleCommand.argumentFlag
-        val gradleCommand = if (isClass()) gradleCommand.classCommand else gradleCommand.methodCommand
-        val fullCommandLine = gradleCommand.toFullGradleCommand(event, argumentFlag)
+        var commandName = if (isClass()) gradleCommand.classCommand else gradleCommand.methodCommand
+
+        if (commandName.contains(Variant)) {
+            val variant = event.selectedBuildVariant
+            commandName = commandName.replace(Variant, variant)
+        }
+
+        val fullCommandLine = commandName.toFullGradleCommand(event, argumentFlag)
         GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)
     }
 
