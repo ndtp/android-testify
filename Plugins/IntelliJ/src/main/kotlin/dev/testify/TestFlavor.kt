@@ -104,7 +104,7 @@ fun PsiElement.determineTestFlavor(): TestFlavor? {
     return flavor
 }
 
-fun TestFlavor.isQualifying(functions: Set<KtNamedFunction>): Boolean =
+fun TestFlavor.hasQualifyingAnnotation(functions: Set<KtNamedFunction>): Boolean =
     functions.any { it.hasQualifyingAnnotation(this.qualifyingAnnotations) }
 
 const val Variant = "\$Variant"

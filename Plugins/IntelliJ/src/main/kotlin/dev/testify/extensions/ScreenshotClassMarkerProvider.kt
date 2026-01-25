@@ -31,8 +31,8 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import dev.testify.TestFlavor
 import dev.testify.determineTestFlavor
-import dev.testify.hasScreenshotAnnotation
-import dev.testify.isQualifying
+import dev.testify.hasPaparazziRule
+import dev.testify.hasQualifyingAnnotation
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
@@ -53,8 +53,8 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
         if (testFlavor.isClassEligible.not()) return null
         val functions: Set<KtNamedFunction> = PsiTreeUtil.findChildrenOfType(this, KtNamedFunction::class.java).filterNotNull().toSet()
         if (functions.isEmpty()) return null
-        if (testFlavor.isQualifying(functions).not()) return null
-
+        if (testFlavor.hasQualifyingAnnotation(functions).not()) return null
+        if ((testFlavor == TestFlavor.Paparazzi) && this.hasPaparazziRule().not()) return null
         val anchorElement = this.nameIdentifier ?: return null
 
         return LineMarkerInfo(

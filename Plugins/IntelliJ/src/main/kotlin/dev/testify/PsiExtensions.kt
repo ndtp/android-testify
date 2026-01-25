@@ -167,7 +167,12 @@ fun AnActionEvent.getVirtualFile(): VirtualFile? =
         ?.first() as? PsiFileNode)?.virtualFile
 
 fun KtElement.hasPaparazziRule(): Boolean {
-    val containingClass = this.parents.filterIsInstance<KtClassOrObject>().firstOrNull() ?: return false
+    val containingClass = (this as? KtClassOrObject) ?: this.parents.filterIsInstance<KtClassOrObject>().firstOrNull() ?: return false
+    return containingClass.hasPaparazziRule()
+}
+
+fun KtClassOrObject.hasPaparazziRule(): Boolean {
+    val containingClass = this
 
     return ApplicationManager.getApplication().executeOnPooledThread(Callable {
         ReadAction.compute<Boolean, Throwable> {
