@@ -72,12 +72,13 @@ class ScreenshotClassNavHandler(
 
     private fun createActionGroupPopup(event: ComponentEvent, anchorElement: PsiElement): JBPopup {
 
-        val group = DefaultActionGroup(
-            ScreenshotTestAction(anchorElement, testFlavor),
-            ScreenshotRecordAction(anchorElement, testFlavor),
-            ScreenshotPullAction(anchorElement, testFlavor),
-            ScreenshotClearAction(anchorElement, testFlavor),
-        )
+        val group = DefaultActionGroup()
+        group.add(ScreenshotTestAction(anchorElement, testFlavor))
+        group.add(ScreenshotRecordAction(anchorElement, testFlavor))
+        group.add(ScreenshotPullAction(anchorElement, testFlavor))
+        if (testFlavor == TestFlavor.Testify) {
+            group.add(ScreenshotClearAction(anchorElement, testFlavor))
+        }
         val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(
             "",

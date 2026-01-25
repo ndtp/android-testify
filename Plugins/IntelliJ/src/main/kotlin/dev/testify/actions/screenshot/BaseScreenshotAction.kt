@@ -119,7 +119,7 @@ abstract class BaseScreenshotAction(
         GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)
     }
 
-    final override fun update(anActionEvent: AnActionEvent) {
+    override fun update(anActionEvent: AnActionEvent) {
         anActionEvent.presentation.apply {
             text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)

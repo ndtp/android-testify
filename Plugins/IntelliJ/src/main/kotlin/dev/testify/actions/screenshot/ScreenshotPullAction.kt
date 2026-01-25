@@ -69,6 +69,34 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
         }
     }
 
+    override fun update(anActionEvent: AnActionEvent) {
+        super.update(anActionEvent)
+        if (testFlavor == TestFlavor.Paparazzi) {
+            anActionEvent.presentation.isEnabled = isPaparazziPullAvailable()
+        }
+    }
+
+    private fun isPaparazziPullAvailable(): Boolean {
+        val module = ModuleUtilCore.findModuleForPsiElement(anchorElement)
+        val workingDirectory = module?.let { ExternalSystemApiUtil.getExternalProjectPath(it) } ?: return false
+
+        val fileName = if (isClass()) {
+            (anchorElement as? KtClass)?.paparazziScreenshotFileNamePattern
+        } else {
+            (anchorElement as? KtNamedFunction)?.paparazziScreenshotFileName
+        } ?: return false
+
+        val sourceDir = File(workingDirectory, "build/paparazzi/failures")
+
+        if (fileName.contains("*")) {
+            val regex = fileName.replace("*", ".*").toRegex()
+            val files = sourceDir.listFiles { _, name -> regex.matches(name) }
+            return files?.isNotEmpty() == true
+        } else {
+            return File(sourceDir, fileName).exists()
+        }
+    }
+
     private fun handlePaparazziPull(event: AnActionEvent) {
         val project = event.project ?: return
 
