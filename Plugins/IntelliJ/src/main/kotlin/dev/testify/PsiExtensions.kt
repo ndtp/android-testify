@@ -132,9 +132,6 @@ val KtClass.testifyClassInvocationPath: String
         }).get() ?: "unknown"
     }
 
-val KtNamedFunction.hasScreenshotAnnotation: Boolean
-    get() = hasQualifyingAnnotation(setOf(SCREENSHOT_INSTRUMENTATION, SCREENSHOT_INSTRUMENTATION_LEGACY))
-
 fun KtNamedFunction.hasQualifyingAnnotation(annotationClassIds: Set<String>): Boolean {
     return ApplicationManager.getApplication().executeOnPooledThread(Callable {
         ReadAction.compute<Boolean, Throwable> {
@@ -155,11 +152,15 @@ fun KaSession.getQualifyingAnnotation(function: KtNamedFunction, annotationClass
     }
 }
 
-fun AnActionEvent.findScreenshotAnnotatedFunction(): KtNamedFunction? {
+fun AnActionEvent.getElementAtCaret(): PsiElement? {
     val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return null
     val offset = this.getData(PlatformDataKeys.EDITOR)?.caretModel?.offset ?: return null
-    val elementAtCaret = psiFile.findElementAt(offset)
-    return elementAtCaret?.parents?.filterIsInstance<KtNamedFunction>()?.find { it.hasScreenshotAnnotation }
+    return psiFile.findElementAt(offset)
+}
+
+fun AnActionEvent.findScreenshotAnnotatedFunction(testFlavor: TestFlavor): KtNamedFunction? {
+    val elementAtCaret = getElementAtCaret()
+    return elementAtCaret?.parents?.filterIsInstance<KtNamedFunction>()?.find { it.hasQualifyingAnnotation(testFlavor.qualifyingAnnotations) }
 }
 
 fun AnActionEvent.getVirtualFile(): VirtualFile? =

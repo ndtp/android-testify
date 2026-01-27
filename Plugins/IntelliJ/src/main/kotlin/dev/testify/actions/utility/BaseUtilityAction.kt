@@ -93,7 +93,6 @@ abstract class BaseUtilityAction : AnAction() {
 
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
         if (currentFile is KtFile && currentFile.module != null) {
-//            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
             val files = findFilesByPartialNameOrRegex(
                 project = currentFile.project,
                 partialName = baselineImageName
