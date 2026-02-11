@@ -26,11 +26,14 @@
 package dev.testify.internal
 
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-val Project.android: ApplicationExtension
+val Project.android: CommonExtension<*, *, *, *, *, *>
     get() = this.extensions.findByType(ApplicationExtension::class.java)
+        ?: this.extensions.findByType(LibraryExtension::class.java)
         ?: throw GradleException("Gradle project must contain an `android` closure")
 
 
@@ -64,14 +67,14 @@ val Project.inferredDefaultTestVariantId: String
 
 val Project.applicationTargetPackageId: String?
     get() {
+        val appExtension = this.extensions.findByType(ApplicationExtension::class.java) ?: return null
         return try {
-            val android = this.android
-            val baseApplicationId = android.defaultConfig.applicationId ?: return null
-            
+            val baseApplicationId = appExtension.defaultConfig.applicationId ?: return null
+
             // Prefer debug build type suffix (most common for testing), fall back to any build type
-            val debugBuildType = android.buildTypes.findByName("debug")
-            val buildType = debugBuildType ?: android.buildTypes.firstOrNull()
-            
+            val debugBuildType = appExtension.buildTypes.findByName("debug")
+            val buildType = debugBuildType ?: appExtension.buildTypes.firstOrNull()
+
             val suffix = buildType?.applicationIdSuffix
             if (suffix != null && suffix.isNotEmpty()) {
                 // Remove leading dot if present, then append with dot
@@ -81,9 +84,8 @@ val Project.applicationTargetPackageId: String?
                 baseApplicationId
             }
         } catch (e: Throwable) {
-            // Fallback to just defaultConfig.applicationId
             try {
-                this.android.defaultConfig.applicationId
+                appExtension.defaultConfig.applicationId
             } catch (e2: Throwable) {
                 null
             }

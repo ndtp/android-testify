@@ -26,6 +26,7 @@
 package dev.testify.internal
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import dev.testify.internal.StreamData.BufferedStream
 import dev.testify.internal.Style.Description
 import org.gradle.api.GradleException
@@ -131,6 +132,8 @@ class Adb {
             adbPathProvider = {
                 val androidComponents = project.extensions.findByType(
                     ApplicationAndroidComponentsExtension::class.java
+                ) ?: project.extensions.findByType(
+                    LibraryAndroidComponentsExtension::class.java
                 )
                 androidComponents?.sdkComponents?.adb?.get()?.asFile?.absolutePath
                     ?: throw GradleException("adb not found via androidComponents.sdkComponents")
