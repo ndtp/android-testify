@@ -41,7 +41,7 @@ This is an IntelliJ Platform Plugin designed to enhance the development experien
 
 ## Build & Run
 
-*   **Build:** `./gradlew build`
+*   **Build:** `./gradlew buildPlugin`
 *   **Run IDE:** `./gradlew runIde` (Starts a sandboxed Android Studio instance with the plugin installed)
 *   **Run Tests:** `./gradlew test`
 
