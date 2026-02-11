@@ -25,14 +25,14 @@
 
 package dev.testify.internal
 
-import com.android.build.gradle.AppExtension
-import com.android.build.gradle.TestedExtension
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
-val Project.android: TestedExtension
-    get() = this.properties["android"] as? TestedExtension
+val Project.android: ApplicationExtension
+    get() = this.extensions.findByType(ApplicationExtension::class.java)
         ?: throw GradleException("Gradle project must contain an `android` closure")
+
 
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
@@ -59,30 +59,33 @@ val Project.inferredAndroidTestInstallTask: String?
 
 val Project.inferredDefaultTestVariantId: String
     get() {
-        val testVariant = this.android.testVariants.sortedBy { it.testedVariant.flavorName }.firstOrNull()
-        return try {
-            testVariant?.applicationId
-        } catch (e: Throwable) {
-            this.applicationTargetPackageId?.let { "$it.test" } ?: ""
-        } ?: ""
+        return this.applicationTargetPackageId?.let { "$it.test" } ?: ""
     }
 
 val Project.applicationTargetPackageId: String?
     get() {
-        var targetPackageId: String? = null
-
-        // Prefer the debug variant
-        if (this.android is AppExtension) {
-            val appExtension = this.android as AppExtension
-            val allDebugVariants = appExtension.applicationVariants.filter {
-                it.name == "debug" || it.name.endsWith("Debug")
-            }.sortedBy { it.name }
-            targetPackageId = allDebugVariants.firstOrNull()?.applicationId
+        return try {
+            val android = this.android
+            val baseApplicationId = android.defaultConfig.applicationId ?: return null
+            
+            // Prefer debug build type suffix (most common for testing), fall back to any build type
+            val debugBuildType = android.buildTypes.findByName("debug")
+            val buildType = debugBuildType ?: android.buildTypes.firstOrNull()
+            
+            val suffix = buildType?.applicationIdSuffix
+            if (suffix != null && suffix.isNotEmpty()) {
+                // Remove leading dot if present, then append with dot
+                val cleanSuffix = suffix.removePrefix(".")
+                "$baseApplicationId.$cleanSuffix"
+            } else {
+                baseApplicationId
+            }
+        } catch (e: Throwable) {
+            // Fallback to just defaultConfig.applicationId
+            try {
+                this.android.defaultConfig.applicationId
+            } catch (e2: Throwable) {
+                null
+            }
         }
-
-        // For apks without a debug variant, use the default applicationId
-        if (targetPackageId.isNullOrEmpty()) {
-            targetPackageId = this.android.defaultConfig.applicationId
-        }
-        return targetPackageId
     }
