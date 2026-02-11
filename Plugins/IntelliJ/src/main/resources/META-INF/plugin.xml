@@ -4,10 +4,10 @@
     <name>Android Testify - Screenshot Instrumentation Tests</name>
     <vendor email="testifyscreenshots@gmail.com" url="http://testify.dev">ndtp</vendor>
 
-    <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.kotlin</depends>
     <depends>com.intellij.gradle</depends>
     <depends>org.jetbrains.android</depends>
+    <depends>com.intellij.modules.androidstudio</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 

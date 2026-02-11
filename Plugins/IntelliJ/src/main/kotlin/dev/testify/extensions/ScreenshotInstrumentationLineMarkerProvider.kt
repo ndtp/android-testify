@@ -28,6 +28,9 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
+import dev.testify.TestFlavor
+import dev.testify.determineTestFlavor
+import dev.testify.getQualifyingAnnotation
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -41,23 +44,20 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element !is KtNamedFunction) return null
-        if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
-        return element.getLineMarkerInfo()
+        val testFlavor = element.determineTestFlavor() ?: return null
+        return element.getLineMarkerInfo(testFlavor)
     }
 
-    private fun KtNamedFunction.getLineMarkerInfo(): LineMarkerInfo<PsiElement>? {
+    private fun KtNamedFunction.getLineMarkerInfo(testFlavor: TestFlavor): LineMarkerInfo<PsiElement>? {
         analyze(this) {
-            val annotation = symbol.annotations.firstOrNull {
-                it.classId?.asSingleFqName() == FqName(SCREENSHOT_INSTRUMENTATION) ||
-                        it.classId?.asSingleFqName() == FqName(SCREENSHOT_INSTRUMENTATION_LEGACY)
-            }
+            val annotation = getQualifyingAnnotation(this@getLineMarkerInfo, testFlavor.qualifyingAnnotations)
             val anchorElement = annotation?.psi ?: return null
             return LineMarkerInfo(
                 anchorElement.firstChild,
                 anchorElement.textRange,
                 IconHelper.ICON_CAMERA,
                 { "Android Testify Commands" },
-                ScreenshotInstrumentationAnnotationNavHandler(this@getLineMarkerInfo),
+                ScreenshotInstrumentationAnnotationNavHandler(this@getLineMarkerInfo, testFlavor),
                 GutterIconRenderer.Alignment.RIGHT,
                 { "" }
             )

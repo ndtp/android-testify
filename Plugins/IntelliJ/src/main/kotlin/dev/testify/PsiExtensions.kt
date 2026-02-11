@@ -30,22 +30,30 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
+import org.jetbrains.android.facet.AndroidFacet
+import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaPropertySymbol
 import org.jetbrains.kotlin.analysis.api.symbols.name
 import org.jetbrains.kotlin.idea.util.projectStructure.module
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.parents
+import java.util.ArrayDeque
+import java.util.Locale
 import java.util.concurrent.Callable
 
-private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
 
 val AnActionEvent.moduleName: String
@@ -56,11 +64,24 @@ val AnActionEvent.moduleName: String
         val moduleName = ktFile?.module?.name ?: ""
 
         val modules = moduleName.removePrefix(PROJECT_FORMAT.format(projectName))
-        val psiModule = modules.removeSuffix(ANDROID_TEST_MODULE)
+
+        val suffix = TestFlavor.entries.find { flavor ->
+            modules.endsWith(flavor.moduleFilter)
+        }?.moduleFilter.orEmpty()
+        val psiModule = modules.removeSuffix(suffix)
+
         val gradleModule = psiModule.replace(".", ":")
         println("$modules $psiModule $gradleModule")
 
         return gradleModule
+    }
+
+val AnActionEvent.selectedBuildVariant: String
+    get() {
+        val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return "Debug"
+        val module = ModuleUtilCore.findModuleForPsiElement(psiFile) ?: return "Debug"
+        val variant = AndroidFacet.getInstance(module)?.properties?.SELECTED_BUILD_VARIANT ?: "debug"
+        return variant.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
 
 val PsiElement.baselineImageName: String
@@ -85,20 +106,19 @@ val PsiElement.methodName: String
         return methodName ?: "unknown"
     }
 
-val KtNamedFunction.testifyMethodInvocationPath: String
-    get() {
-        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<String, Throwable> {
-                analyze(this@testifyMethodInvocationPath) {
-                    val functionSymbol = this@testifyMethodInvocationPath.symbol
-                    val className =
-                        (functionSymbol.containingSymbol as? KaClassSymbol)?.classId?.asSingleFqName()?.asString()
-                    val methodName = functionSymbol.name?.asString()
-                    "$className#$methodName"
-                }
+fun KtNamedFunction.testifyMethodInvocationPath(testFlavor: TestFlavor): String {
+    return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+        ReadAction.compute<String, Throwable> {
+            analyze(this@testifyMethodInvocationPath) {
+                val functionSymbol = this@testifyMethodInvocationPath.symbol
+                val className =
+                    (functionSymbol.containingSymbol as? KaClassSymbol)?.classId?.asSingleFqName()?.asString()
+                val methodName = functionSymbol.name?.asString()
+                testFlavor.methodInvocationPath(className, methodName)
             }
-        }).get() ?: "unknown"
-    }
+        }
+    }).get() ?: "unknown"
+}
 
 val KtClass.testifyClassInvocationPath: String
     get() {
@@ -112,31 +132,120 @@ val KtClass.testifyClassInvocationPath: String
         }).get() ?: "unknown"
     }
 
-val KtNamedFunction.hasScreenshotAnnotation: Boolean
-    get() {
-        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<Boolean, Throwable> {
-                analyze(this@hasScreenshotAnnotation) {
-                    this@hasScreenshotAnnotation.symbol
-                        .annotations
-                        .any {
-                            it.classId?.asSingleFqName()?.asString() in listOf(
-                                SCREENSHOT_INSTRUMENTATION,
-                                SCREENSHOT_INSTRUMENTATION_LEGACY
-                            )
-                        }
-                }
+fun KtNamedFunction.hasQualifyingAnnotation(annotationClassIds: Set<String>): Boolean {
+    return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+        ReadAction.compute<Boolean, Throwable> {
+            analyze(this@hasQualifyingAnnotation) {
+                this@hasQualifyingAnnotation.symbol
+                    .annotations
+                    .any {
+                        it.classId?.asSingleFqName()?.asString() in annotationClassIds
+                    }
             }
-        }).get() ?: false
-    }
+        }
+    }).get() ?: false
+}
 
-fun AnActionEvent.findScreenshotAnnotatedFunction(): KtNamedFunction? {
+fun KaSession.getQualifyingAnnotation(function: KtNamedFunction, annotationClassIds: Set<String>): KaAnnotation? {
+    return function.symbol.annotations.firstOrNull { annotation ->
+        annotationClassIds.any { FqName(it) == annotation.classId?.asSingleFqName() }
+    }
+}
+
+fun AnActionEvent.getElementAtCaret(): PsiElement? {
     val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return null
     val offset = this.getData(PlatformDataKeys.EDITOR)?.caretModel?.offset ?: return null
-    val elementAtCaret = psiFile.findElementAt(offset)
-    return elementAtCaret?.parents?.filterIsInstance<KtNamedFunction>()?.find { it.hasScreenshotAnnotation }
+    return psiFile.findElementAt(offset)
+}
+
+fun AnActionEvent.findScreenshotAnnotatedFunction(testFlavor: TestFlavor): KtNamedFunction? {
+    val elementAtCaret = getElementAtCaret()
+    return elementAtCaret?.parents?.filterIsInstance<KtNamedFunction>()?.find { it.hasQualifyingAnnotation(testFlavor.qualifyingAnnotations) }
 }
 
 fun AnActionEvent.getVirtualFile(): VirtualFile? =
     this.getData(PlatformDataKeys.VIRTUAL_FILE) ?: (this.getData(CommonDataKeys.NAVIGATABLE_ARRAY)
         ?.first() as? PsiFileNode)?.virtualFile
+
+fun KtElement.hasPaparazziRule(): Boolean {
+    val containingClass = (this as? KtClassOrObject) ?: this.parents.filterIsInstance<KtClassOrObject>().firstOrNull() ?: return false
+    return containingClass.hasPaparazziRule()
+}
+
+fun KtClassOrObject.hasPaparazziRule(): Boolean {
+    val containingClass = this
+
+    return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+        ReadAction.compute<Boolean, Throwable> {
+            analyze(containingClass) {
+                val classSymbol = containingClass.symbol as? KaClassSymbol ?: return@analyze false
+
+                fun hasPaparazziField(symbol: KaClassSymbol): Boolean {
+                    return symbol.declaredMemberScope.callables.filterIsInstance<KaPropertySymbol>().any { property ->
+                        val typeSymbol = property.returnType.expandedSymbol as? KaClassSymbol
+                        typeSymbol?.classId?.asSingleFqName()?.asString() == "app.cash.paparazzi.Paparazzi"
+                    }
+                }
+
+                val visited = mutableSetOf<KaClassSymbol>()
+                val queue = ArrayDeque<KaClassSymbol>()
+                queue.add(classSymbol)
+
+                while (queue.isNotEmpty()) {
+                    val current = queue.removeFirst()
+                    if (!visited.add(current)) continue
+
+                    if (hasPaparazziField(current)) return@analyze true
+
+                    current.superTypes.forEach { type ->
+                        (type.expandedSymbol as? KaClassSymbol)?.let { queue.add(it) }
+                    }
+                }
+
+                false
+            }
+        }
+    }).get() ?: false
+}
+
+val KtNamedFunction.paparazziScreenshotFileName: String
+    get() {
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<String, Throwable> {
+                analyze(this@paparazziScreenshotFileName) {
+                    val functionSymbol = this@paparazziScreenshotFileName.symbol
+                    val classSymbol = functionSymbol.containingSymbol as? KaClassSymbol
+                    val classId = classSymbol?.classId
+                    val packageName = classId?.packageFqName?.asString()
+                    val relativeClassName = classId?.relativeClassName?.asString()?.replace('.', '_')
+                    val methodName = functionSymbol.name?.asString()
+
+                    if (packageName.isNullOrEmpty()) {
+                        "${relativeClassName}_$methodName.png"
+                    } else {
+                        "${packageName}_${relativeClassName}_$methodName.png"
+                    }
+                }
+            }
+        }).get() ?: "unknown.png"
+    }
+
+val KtClass.paparazziScreenshotFileNamePattern: String
+    get() {
+        return ApplicationManager.getApplication().executeOnPooledThread(Callable {
+            ReadAction.compute<String, Throwable> {
+                analyze(this@paparazziScreenshotFileNamePattern) {
+                    val classSymbol = this@paparazziScreenshotFileNamePattern.symbol as? KaClassSymbol
+                    val classId = classSymbol?.classId
+                    val packageName = classId?.packageFqName?.asString()
+                    val relativeClassName = classId?.relativeClassName?.asString()?.replace('.', '_')
+
+                    if (packageName.isNullOrEmpty()) {
+                        "${relativeClassName}_*.png"
+                    } else {
+                        "${packageName}_${relativeClassName}_*.png"
+                    }
+                }
+            }
+        }).get() ?: "unknown.png"
+    }

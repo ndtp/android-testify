@@ -36,7 +36,9 @@ dependencies {
 
     // IntelliJ Platform Gradle Plugin Dependencies Extension - read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-dependencies-extension.html
     intellijPlatform {
-        androidStudio(providers.gradleProperty("platformVersion"), useInstaller = true)
+        androidStudio(version = providers.gradleProperty("platformVersion")) {
+            this.useInstaller = true
+        }
 
         // Plugin Dependencies. Uses `platformBundledPlugins` property from the gradle.properties file for bundled IntelliJ Platform plugins.
         bundledPlugins(providers.gradleProperty("platformBundledPlugins").map { it.split(',') })

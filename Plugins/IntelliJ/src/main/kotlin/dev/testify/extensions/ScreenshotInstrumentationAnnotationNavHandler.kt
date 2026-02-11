@@ -37,6 +37,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.util.PsiUtilCore
 import com.intellij.ui.awt.RelativePoint
+import dev.testify.TestFlavor
 import dev.testify.actions.screenshot.ScreenshotClearAction
 import dev.testify.actions.screenshot.ScreenshotPullAction
 import dev.testify.actions.screenshot.ScreenshotRecordAction
@@ -46,7 +47,10 @@ import dev.testify.actions.utility.RevealBaselineAction
 import java.awt.event.ComponentEvent
 import java.awt.event.MouseEvent
 
-class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: PsiElement) :
+class ScreenshotInstrumentationAnnotationNavHandler(
+    private val anchorElement: PsiElement,
+    private val testFlavor: TestFlavor
+) :
     GutterIconNavigationHandler<PsiElement> {
 
     override fun navigate(e: MouseEvent?, nameIdentifier: PsiElement) {
@@ -70,15 +74,17 @@ class ScreenshotInstrumentationAnnotationNavHandler(private val anchorElement: P
     }
 
     private fun createActionGroupPopup(event: ComponentEvent, anchorElement: PsiElement): JBPopup {
+        val group = DefaultActionGroup()
 
-        val group = DefaultActionGroup(
-            ScreenshotTestAction(anchorElement),
-            ScreenshotRecordAction(anchorElement),
-            ScreenshotPullAction(anchorElement),
-            ScreenshotClearAction(anchorElement),
-            RevealBaselineAction(anchorElement),
-            DeleteBaselineAction(anchorElement)
-        )
+        group.add(ScreenshotTestAction(anchorElement, testFlavor))
+        group.add(ScreenshotRecordAction(anchorElement, testFlavor))
+        group.add(ScreenshotPullAction(anchorElement, testFlavor))
+        if (testFlavor == TestFlavor.Testify) {
+            group.add(ScreenshotClearAction(anchorElement, testFlavor))
+        }
+        group.add(RevealBaselineAction(anchorElement, testFlavor))
+        group.add(DeleteBaselineAction(anchorElement, testFlavor))
+
         val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(
             "",

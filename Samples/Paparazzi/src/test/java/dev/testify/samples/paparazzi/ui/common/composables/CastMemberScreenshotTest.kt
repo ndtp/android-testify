@@ -1,6 +1,7 @@
 package dev.testify.samples.paparazzi.ui.common.composables
 
 import android.content.Context
+import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.test.espresso.idling.concurrent.IdlingThreadPoolExecutor
@@ -61,6 +62,20 @@ class CastMemberScreenshotTest {
 //        val imageLoader = coil.ImageLoader.Builder(context).dispatcher(synchronousDispatcher()).build()
 //        Coil.setImageLoader(imageLoader)
 //    }
+
+    @Test
+    fun a() {
+        paparazzi.snapshot {
+            Text("A")
+        }
+    }
+
+    @Test
+    fun b() {
+        paparazzi.snapshot {
+            Text("B")
+        }
+    }
 
     @Test
     fun default() {
