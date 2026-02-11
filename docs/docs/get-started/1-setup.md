@@ -21,6 +21,7 @@ plugins {
 }
 
 dependencies {
-    androidTestImplementation "androidx.test:rules:1.10.0"
+    androidTestImplementation "androidx.test:rules:1.7.0"
+    androidTestImplementation "androidx.test:core-ktx:1.7.0"
 }
 ```
