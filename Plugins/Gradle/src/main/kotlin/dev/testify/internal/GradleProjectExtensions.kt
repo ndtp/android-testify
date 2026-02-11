@@ -36,7 +36,6 @@ val Project.android: CommonExtension<*, *, *, *, *, *>
         ?: this.extensions.findByType(LibraryExtension::class.java)
         ?: throw GradleException("Gradle project must contain an `android` closure")
 
-
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
 

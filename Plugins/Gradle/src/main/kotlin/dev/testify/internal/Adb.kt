@@ -142,7 +142,7 @@ class Adb {
             verbose = project.isVerbose
             forcedUser = project.user
         }
-        
+
         private val adbPath: String
             get() = adbPathProvider?.invoke()
                 ?: throw GradleException("Adb.init() must be called before using Adb")
