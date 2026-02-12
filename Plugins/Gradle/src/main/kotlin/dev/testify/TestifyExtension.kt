@@ -113,8 +113,9 @@ internal data class TestifySettings(
             val android = project.android
             val extension = project.getTestifyExtension()
 
-            val assetsSet = android.sourceSets.getByName("""androidTest""").assets
-            val baselineSourceDir = extension.baselineSourceDir ?: assetsSet.srcDirs.first().path
+            val baselineSourceDir = extension.baselineSourceDir
+                ?: project.android.sourceSets.findByName("androidTest")?.assets?.directories?.firstOrNull()
+                ?: "src/androidTest/assets"
             val testRunner = extension.testRunner ?: android.defaultConfig.testInstrumentationRunner ?: "unknown"
             val pullWaitTime = extension.pullWaitTime ?: 0L
             val testPackageId = extension.testPackageId ?: project.inferredDefaultTestVariantId

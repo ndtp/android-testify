@@ -56,8 +56,10 @@ open class ScreenshotRecordTask : TestifyDefaultTask() {
 
             ScreenshotTestTask.setDependencies(taskNameProvider, project)
 
-            screenshotClearTask.mustRunAfter(getInstallDebugAndroidTestTask(project))
-            screenshotPullTask.mustRunAfter(getInstallDebugAndroidTestTask(project))
+            getInstallDebugAndroidTestTask(project)?.let { installDebugAndroidTestTask ->
+                screenshotClearTask.mustRunAfter(installDebugAndroidTestTask)
+                screenshotPullTask.mustRunAfter(installDebugAndroidTestTask)
+            }
         }
 
         override fun taskName() = "screenshotRecord"

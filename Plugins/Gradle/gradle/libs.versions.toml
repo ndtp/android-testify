@@ -1,7 +1,7 @@
 [versions]
-gradle = "7.4.2"
+gradle = "8.13.2"
 junitJupiter = "5.8.2"
-kotlin = "1.9.24"
+kotlin = "2.2.0"
 mockk = "1.13.16"
 truthVersion = "1.2.0"
 

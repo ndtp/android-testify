@@ -23,18 +23,20 @@
  */
 package dev.testify.internal
 
-import com.android.build.gradle.TestedExtension
+import com.android.build.api.dsl.SdkComponents
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.google.common.truth.Truth.assertThat
 import dev.testify.test.BaseTest
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.slot
-import io.mockk.unmockkStatic
 import io.mockk.verify
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -45,7 +47,19 @@ class AdbTest : BaseTest() {
     lateinit var project: Project
 
     @RelaxedMockK
-    lateinit var extension: TestedExtension
+    lateinit var extensions: org.gradle.api.plugins.ExtensionContainer
+
+    @RelaxedMockK
+    lateinit var androidComponents: ApplicationAndroidComponentsExtension
+
+    @RelaxedMockK
+    lateinit var sdkComponents: SdkComponents
+
+    @RelaxedMockK
+    lateinit var adbProvider: Provider<RegularFile>
+
+    @RelaxedMockK
+    lateinit var regularFile: RegularFile
 
     @RelaxedMockK
     lateinit var adbExecutable: File
@@ -64,17 +78,21 @@ class AdbTest : BaseTest() {
     override fun setUp() {
         super.setUp()
 
-        every { extension.adbExecutable } returns adbExecutable
+        every { project.extensions } returns extensions
+        every { extensions.findByType(ApplicationAndroidComponentsExtension::class.java) } returns androidComponents
+        every { extensions.findByType(LibraryAndroidComponentsExtension::class.java) } returns null
+        every { androidComponents.sdkComponents } returns sdkComponents
+        every { sdkComponents.adb } returns adbProvider
+        every { adbProvider.get() } returns regularFile
+        every { regularFile.asFile } returns adbExecutable
+        every { adbExecutable.absolutePath } returns "/usr/bin/adb"
 
         mockkStatic("dev.testify.internal.ClientUtilitiesKt")
-        mockkStatic(Project::android)
         mockkStatic(Project::isVerbose)
         mockkStatic(Project::user)
         mockkStatic(::println)
         mockkStatic(::runProcess)
-        mockkObject(Device)
 
-        every { any<Project>().android } returns extension
         every { any<Project>().isVerbose } returns false
         every { any<Project>().user } returns null
         every { println(any(), any()) } returns Unit
@@ -97,9 +115,11 @@ class AdbTest : BaseTest() {
 
     @Test
     fun `WHEN init AND no android closure THEN throw exception`() {
-        unmockkStatic(Project::android)
+        every { extensions.findByType(ApplicationAndroidComponentsExtension::class.java) } returns null
+        every { extensions.findByType(LibraryAndroidComponentsExtension::class.java) } returns null
+        Adb.init(project)
         assertThrows<GradleException> {
-            Adb.init(project)
+            Adb().argument("test").execute()
         }
     }
 
@@ -112,8 +132,9 @@ class AdbTest : BaseTest() {
     fun `WHEN init AND no adb path THEN throw exception`() {
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         every { adbExecutable.absolutePath } returns null
+        Adb.init(project)
         assertThrows<GradleException> {
-            Adb.init(project)
+            Adb().argument("test").execute()
         }
     }
 
