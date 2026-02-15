@@ -46,8 +46,8 @@ import dev.testify.core.formatDeviceString
 import dev.testify.core.processor.capture.createBitmapFromDrawingCache
 import dev.testify.core.processor.diff.HighContrastDiff
 import dev.testify.deleteBitmap
+import dev.testify.extensions.cyan
 import dev.testify.internal.extensions.TestInstrumentationRegistry
-import dev.testify.internal.extensions.cyan
 import dev.testify.internal.helpers.ActivityProvider
 import dev.testify.internal.helpers.ResourceWrapper
 import dev.testify.internal.helpers.findRootView

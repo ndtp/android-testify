@@ -1,0 +1,110 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'org.jetbrains.dokka'
+    id 'maven-publish'
+    id 'signing'
+}
+
+ext {
+    pom = [
+            publishedGroupId  : 'dev.testify',
+            artifact          : 'testify-ktx',
+            libraryName       : 'testify-ktx',
+            libraryDescription: 'Kotlin extension methods and helpers for Android Testify',
+            siteUrl           : 'https://github.com/ndtp/android-testify',
+            gitUrl            : 'https://github.com/ndtp/android-testify.git',
+            licenseName       : 'The MIT License',
+            licenseUrl        : 'https://opensource.org/licenses/MIT',
+            author            : 'ndtp'
+    ]
+}
+
+version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
+group = pom.publishedGroupId
+archivesBaseName = pom.artifact
+
+android {
+    namespace "dev.testify.ktx"
+
+    lintOptions {
+        abortOnError true
+        warningsAsErrors true
+        textOutput 'stdout'
+        textReport true
+        xmlReport false
+    }
+
+    defaultConfig {
+        compileSdkVersion = libs.versions.compileSdk.get().toInteger()
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    libraryVariants.configureEach { variant ->
+        variant.outputs.all {
+            outputFileName = "${archivesBaseName}-${version}.aar"
+        }
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+
+    dependencies {
+        implementation libs.androidx.monitor
+        implementation libs.androidx.rules
+        implementation libs.androidx.uiautomator
+        implementation libs.core.ktx
+        implementation libs.androidx.test.storage
+
+        testImplementation libs.mockk
+
+        androidTestImplementation libs.androidx.junit
+        androidTestImplementation libs.androidx.runner
+        androidTestImplementation libs.material
+    }
+    packagingOptions {
+        resources {
+            excludes += [
+                    'MANIFEST.MF',
+                    'META-INF/LICENSE.md',
+                    'META-INF/LICENSE-notice.md'
+            ]
+        }
+    }
+    publishing {
+        singleVariant("release") {
+            // if you don't want sources/javadoc, remove these lines
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+afterEvaluate {
+    apply from: "../../publish.build.gradle"
+}
+
+tasks.withType(KotlinJvmCompile).configureEach {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        jvmTarget.set(JvmTarget.JVM_21)
+    }
+}

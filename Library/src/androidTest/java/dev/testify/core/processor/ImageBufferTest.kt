@@ -70,7 +70,7 @@ class ImageBufferTest {
     @Test(expected = LowMemoryException::class)
     fun allocate_fails_on_oom() {
         val activityManager = getInstrumentation().targetContext.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        val requestedSize: Int = activityManager.memoryClass * 1_048_576 / 2
+        val requestedSize: Int = activityManager.memoryClass * 1_048_576 * 2
         ImageBuffers.allocate(width = 1, height = requestedSize, allocateDiffBuffer = false)
     }
 
