@@ -235,6 +235,7 @@ workflows:
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     before_run:
     - _globalSetup
+    - _emulatorSetup
 
   test_accessibility_ext:
     steps:
