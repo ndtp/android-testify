@@ -30,13 +30,20 @@ import com.google.common.truth.Truth.assertThat
 import dev.testify.test.BaseTest
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
+import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.file.RegularFile
+import org.gradle.api.invocation.Gradle
+import org.gradle.api.plugins.ExtensionContainer
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.services.BuildServiceRegistry
+import org.gradle.api.services.BuildServiceSpec
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -47,7 +54,7 @@ class AdbTest : BaseTest() {
     lateinit var project: Project
 
     @RelaxedMockK
-    lateinit var extensions: org.gradle.api.plugins.ExtensionContainer
+    lateinit var extensions: ExtensionContainer
 
     @RelaxedMockK
     lateinit var androidComponents: ApplicationAndroidComponentsExtension
@@ -59,10 +66,43 @@ class AdbTest : BaseTest() {
     lateinit var adbProvider: Provider<RegularFile>
 
     @RelaxedMockK
+    lateinit var adbServiceProvider: Provider<AdbService>
+
+    @RelaxedMockK
     lateinit var regularFile: RegularFile
 
     @RelaxedMockK
     lateinit var adbExecutable: File
+
+    @RelaxedMockK
+    lateinit var gradle: Gradle
+
+    @RelaxedMockK
+    lateinit var buildServiceRegistry: BuildServiceRegistry
+
+    private val adbServiceParameters by lazy {
+        object : AdbService.Params {
+            override val adbPath: Property<String> = mockk(relaxed = true) {
+                every { get() } answers { adbExecutable.absolutePath }
+            }
+
+            private var _verbose: Boolean = false
+            override val verbose: Property<Boolean> = mockk(relaxed = true) {
+                every { get() } answers { _verbose }
+                every { set(any<Boolean>()) } answers { _verbose = this.args.first() as Boolean }
+            }
+            override val forcedUser: Property<Int> = mockk(relaxed = true) {
+                every { getOrNull() } answers { project.user }
+            }
+            override val deviceTargetIndex: Property<Int> = mockk(relaxed = true) {
+                every { get() } returns 0
+            }
+        }
+    }
+
+    val adbService = object : AdbService() {
+        override fun getParameters() = adbServiceParameters
+    }
 
     private var processLog = mutableListOf<String>()
 
@@ -77,7 +117,18 @@ class AdbTest : BaseTest() {
     @BeforeEach
     override fun setUp() {
         super.setUp()
-
+        every { project.gradle } returns gradle
+        every { gradle.sharedServices } returns buildServiceRegistry
+        every { buildServiceRegistry.registerIfAbsent("adbService", AdbService::class.java, any()) } answers {
+            @Suppress("UNCHECKED_CAST")
+            val configureAction = this.args.last() as Action<BuildServiceSpec<AdbService.Params>>?
+            val buildServiceSpec = mockk<BuildServiceSpec<AdbService.Params>>(relaxed = true) {
+                every { getParameters() } returns adbService.parameters
+            }
+            configureAction?.execute(buildServiceSpec)
+            every { adbServiceProvider.get() } returns adbService
+            adbServiceProvider
+        }
         every { project.extensions } returns extensions
         every { extensions.findByType(ApplicationAndroidComponentsExtension::class.java) } returns androidComponents
         every { extensions.findByType(LibraryAndroidComponentsExtension::class.java) } returns null
@@ -93,14 +144,16 @@ class AdbTest : BaseTest() {
         mockkStatic(::println)
         mockkStatic(::runProcess)
 
-        every { any<Project>().isVerbose } returns false
         every { any<Project>().user } returns null
         every { println(any(), any()) } returns Unit
 
         configureRunProcessCapture(defaultResultMap)
-        Adb.init(project)
 
-        subject = Adb()
+        adbInit()
+    }
+
+    private fun adbInit() {
+        subject = Adb(project.getAdbServiceProvider().get())
     }
 
     private fun configureRunProcessCapture(resultMap: Map<String, String>) {
@@ -117,24 +170,24 @@ class AdbTest : BaseTest() {
     fun `WHEN init AND no android closure THEN throw exception`() {
         every { extensions.findByType(ApplicationAndroidComponentsExtension::class.java) } returns null
         every { extensions.findByType(LibraryAndroidComponentsExtension::class.java) } returns null
-        Adb.init(project)
         assertThrows<GradleException> {
-            Adb().argument("test").execute()
+            adbInit()
+            Adb(adbService).argument("test").execute()
         }
     }
 
     @Test
     fun `WHEN init THEN initialize adb`() {
-        Adb.init(project)
+        adbInit()
     }
 
     @Test
     fun `WHEN init AND no adb path THEN throw exception`() {
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         every { adbExecutable.absolutePath } returns null
-        Adb.init(project)
         assertThrows<GradleException> {
-            Adb().argument("test").execute()
+            adbInit()
+            Adb(adbService).argument("test").execute()
         }
     }
 
@@ -148,7 +201,7 @@ class AdbTest : BaseTest() {
     @Test
     fun `WHEN project is verbose THEN print`() {
         every { any<Project>().isVerbose } returns true
-        Adb.init(project)
+        adbInit()
 
         subject.argument("test")
         subject.execute()
@@ -164,7 +217,7 @@ class AdbTest : BaseTest() {
 
     @Test
     fun `WHEN executing any command THEN always check which device to run on`() {
-        Adb.init(project)
+        adbInit()
         subject.shell().execute()
         assertThat(processLog[0]).contains("devices")
         assertThat(processLog[1]).contains("-s emulator-5554")
@@ -203,7 +256,7 @@ class AdbTest : BaseTest() {
         configureRunProcessCapture(mapOf("get-current-user" to "10"))
         every { any<Project>().user } returns 99
 
-        Adb.init(project)
+        adbInit()
         subject.shell().runAs("dev.testify").execute()
         assertThat(processLog.last()).contains("--user 99")
     }

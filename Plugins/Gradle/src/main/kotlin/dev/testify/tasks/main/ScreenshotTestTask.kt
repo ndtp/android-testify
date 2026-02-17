@@ -159,7 +159,7 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .addAll(getRuntimeParams())
             .add(annotation)
 
-        val log = Adb()
+        val log = Adb(adbServiceProvider.get())
             .shell()
             .argument("am")
             .argument("instrument")

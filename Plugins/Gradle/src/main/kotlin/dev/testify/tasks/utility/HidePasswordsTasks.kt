@@ -34,7 +34,7 @@ open class HidePasswordsTasks : TestifyUtilityTask() {
     override fun getDescription() = "Hides passwords fully on the device"
 
     override fun taskAction() {
-        Adb().arguments(
+        Adb(adbServiceProvider.get()).arguments(
             "shell",
             "settings",
             "put",

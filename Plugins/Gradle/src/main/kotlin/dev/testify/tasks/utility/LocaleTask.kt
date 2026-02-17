@@ -34,7 +34,7 @@ open class LocaleTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the device locale."
 
     override fun taskAction() {
-        println("  Current Locale       = ${Device.locale}")
+        println("  Current Locale       = ${Device.locale(adbServiceProvider.get())}")
     }
 
     companion object : TaskNameProvider {

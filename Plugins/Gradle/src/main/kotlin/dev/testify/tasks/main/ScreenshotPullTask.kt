@@ -81,17 +81,12 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         println()
 
         val failedScreenshots = listFailedScreenshots(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             dst = destinationImageDirectory,
             targetPackageId = targetPackageId,
             isVerbose = isVerbose
         )
-        if (failedScreenshots.isEmpty()) {
-            println(Success, "  No failed screenshots found")
-            return
-        }
-
-        println("  ${failedScreenshots.size} images to be pulled")
 
         pullScreenshots()
         syncScreenshots()
@@ -121,6 +116,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         dstFile.assurePath()
 
         val failedScreenshots = listFailedScreenshotsWithPath(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             targetPackageId = targetPackageId,
             isVerbose = isVerbose
@@ -135,7 +131,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
             File(localPath).parentFile.assurePath()
 
-            Adb()
+            Adb(adbServiceProvider.get())
                 .execOut()
                 .runAs(targetPackageId)
                 .argument("cat")
@@ -149,6 +145,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
     private fun syncScreenshots() {
         val failedScreenshots = listFailedScreenshots(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             dst = destinationImageDirectory,
             targetPackageId = targetPackageId,

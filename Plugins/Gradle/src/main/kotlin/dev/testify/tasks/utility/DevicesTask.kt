@@ -36,7 +36,7 @@ open class DevicesTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays Testify devices"
 
     override fun taskAction() {
-        val devices = Device.targets
+        val devices = Device.targets(adbServiceProvider.get())
         println("  Connected devices    = ${devices.size}")
         println(divider)
         if (devices.isEmpty()) {

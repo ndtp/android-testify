@@ -26,7 +26,6 @@
 package dev.testify
 
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
-import dev.testify.internal.Adb
 import dev.testify.internal.Style.Description
 import dev.testify.internal.android
 import dev.testify.internal.isVerbose
@@ -81,8 +80,6 @@ class TestifyPlugin : Plugin<Project> {
                 if (project.isVerbose) println(Description, "Adding androidTestImplementation($dependency)")
                 project.dependencies.add("androidTestImplementation", dependency)
             }
-
-            Adb.init(project)
         }
 
         private fun Project.addManifestPlaceholders(settings: TestifySettings) {

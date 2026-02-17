@@ -34,7 +34,7 @@ open class TimeZoneTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the time zone currently set on the device"
 
     override fun taskAction() {
-        println("  Time zone            = ${Device.timeZone}")
+        println("  Time zone            = ${Device.timeZone(adbServiceProvider.get())}")
     }
 
     companion object : TaskNameProvider {

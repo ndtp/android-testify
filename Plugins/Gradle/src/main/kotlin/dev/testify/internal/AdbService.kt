@@ -25,6 +25,7 @@ package dev.testify.internal
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -34,16 +35,35 @@ import org.gradle.api.services.BuildServiceParameters
 abstract class AdbService : BuildService<AdbService.Params> {
     interface Params : BuildServiceParameters {
         val adbPath: Property<String>
+        val verbose: Property<Boolean>
+        val forcedUser: Property<Int>
+        val deviceTargetIndex: Property<Int>
     }
+
+    val adbPath: String
+        get() = parameters.adbPath.get()
+
+    val verbose: Boolean
+        get() = parameters.verbose.get()
+
+    val forcedUser: Int?
+        get() = parameters.forcedUser.orNull
+
+    val deviceTargetIndex: Int
+        get() = parameters.deviceTargetIndex.get()
 }
 
-internal fun Project.getAdbServiceProvider(): Provider<AdbService> {
-    return gradle.sharedServices.registerIfAbsent("adbService", AdbService::class.java) {
+internal fun Project.getAdbServiceProvider(): Provider<AdbService> =
+    gradle.sharedServices.registerIfAbsent("adbService", AdbService::class.java) {
         val androidComponents =
             extensions.findByType(ApplicationAndroidComponentsExtension::class.java)
                 ?: extensions.findByType(LibraryAndroidComponentsExtension::class.java)
+                ?: throw GradleException("?")
         it.parameters.adbPath.set(
             androidComponents?.sdkComponents?.adb?.get()?.asFile?.absolutePath
+                ?: throw GradleException("adb not found via androidComponents.sdkComponents")
         )
+        it.parameters.verbose.set(project.isVerbose)
+        it.parameters.forcedUser.set(project.user)
+        it.parameters.deviceTargetIndex.set((project.properties["device"] as? String)?.toInt() ?: 0)
     }
-}

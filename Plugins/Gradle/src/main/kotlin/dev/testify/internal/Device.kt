@@ -27,119 +27,112 @@ package dev.testify.internal
 
 object Device {
 
-    private val version: Int
-        get() {
-            return Adb().getprop("ro.build.version.sdk").toInt()
-        }
-
-    val locale: String
-        get() {
-            return when {
-                version in 21..22 -> {
-                    var language = Adb().getprop("persist.sys.language")
-                    if (language.isBlank()) {
-                        language = "en"
-                    }
-                    var region = Adb().getprop("persist.sys.country")
-                    if (region.isBlank()) {
-                        region = "US"
-                    }
-                    "${language}_$region"
-                }
-
-                version >= 23 -> {
-                    var result = Adb().getprop("persist.sys.locale").trim().replace("-", "_")
-                    if (result.isBlank()) {
-                        result = "en_US"
-                    }
-                    return result
-                }
-
-                else -> "unsupported"
-            }
-        }
-
-    val timeZone: String
-        get() {
-            return Adb().getprop("persist.sys.timezone")
-        }
-
-    private val displayDensity: Int
-        get() {
-            val densityLine = Adb()
-                .shell()
-                .arguments(
-                    "wm",
-                    "density"
-                )
-                .execute().trim()
-            return if (densityLine.contains("Override density", true)) {
-                densityLine.split(":").last().trim().toInt()
-            } else {
-                densityLine.substring("Physical density: ".length).trim().toInt()
-            }
-        }
-
-    private val displaySize: String
-        get() {
-            val sizeLine = Adb()
-                .shell()
-                .arguments(
-                    "wm",
-                    "size"
-                )
-                .execute().trim()
-            return sizeLine.substring("Physical size: ".length).trim()
-        }
-
-    internal val user: String
-        get() {
-            val user = Adb()
-                .shell()
-                .arguments(
-                    "am",
-                    "get-current-user"
-                )
-                .execute().trim()
-            return user.ifEmpty { "0" }
-        }
-
-    internal fun deviceKey(): String {
-        return "$version-$displaySize@${displayDensity}dp-$locale"
+    fun version(adbService: AdbService): Int {
+        return Adb(adbService).getprop(adbService, "ro.build.version.sdk").toInt()
     }
 
-    private fun Adb.getprop(prop: String): String {
+    fun locale(adbService: AdbService): String {
+        return when {
+            version(adbService) in 21..22 -> {
+                var language = Adb(adbService).getprop(adbService, "persist.sys.language")
+                if (language.isBlank()) {
+                    language = "en"
+                }
+                var region = Adb(adbService).getprop(adbService, "persist.sys.country")
+                if (region.isBlank()) {
+                    region = "US"
+                }
+                "${language}_$region"
+            }
+
+            version(adbService) >= 23 -> {
+                var result = Adb(adbService).getprop(adbService, "persist.sys.locale").trim().replace("-", "_")
+                if (result.isBlank()) {
+                    result = "en_US"
+                }
+                return result
+            }
+
+            else -> "unsupported"
+        }
+    }
+
+    fun timeZone(adbService: AdbService): String {
+        return Adb(adbService).getprop(adbService, "persist.sys.timezone")
+    }
+
+    fun displayDensity(adbService: AdbService): Int {
+        val densityLine = Adb(adbService)
+            .shell()
+            .arguments(
+                "wm",
+                "density"
+            )
+            .execute().trim()
+        return if (densityLine.contains("Override density", true)) {
+            densityLine.split(":").last().trim().toInt()
+        } else {
+            densityLine.substring("Physical density: ".length).trim().toInt()
+        }
+    }
+
+    fun displaySize(adbService: AdbService): String {
+        val sizeLine = Adb(adbService)
+            .shell()
+            .arguments(
+                "wm",
+                "size"
+            )
+            .execute().trim()
+        return sizeLine.substring("Physical size: ".length).trim()
+    }
+
+    internal fun user(adbService: AdbService): String {
+        val user = Adb(adbService)
+            .shell()
+            .arguments(
+                "am",
+                "get-current-user"
+            )
+            .execute().trim()
+        return user.ifEmpty { "0" }
+    }
+
+    internal fun deviceKey(adbService: AdbService): String {
+        return "${version(adbService)}-${displaySize(adbService)}@${displayDensity(adbService)}dp-${locale(adbService)}"
+    }
+
+    private fun Adb.getprop(adbService: AdbService, prop: String): String {
         shell()
         argument("getprop")
         argument(prop)
         return execute().trim()
     }
 
-    val isEmpty: Boolean
-        get() = (count == 0)
+    fun isEmpty(adbService: AdbService): Boolean {
+        return count(adbService) == 0
+    }
 
-    val count: Int
-        get() {
-            val result = Adb()
-                .argument("devices")
-                .execute(targetsDevice = false)
+    fun count(adbService: AdbService): Int {
+        val result = Adb(adbService)
+            .argument("devices")
+            .execute(targetsDevice = false)
 
-            return result.lines().count {
-                it.isNotBlank() && !it.contains("List of devices attached")
-            }
+        return result.lines().count {
+            it.isNotBlank() && !it.contains("List of devices attached")
         }
+    }
 
-    val targets: Map<Int, String>
-        get() {
-            val map = HashMap<Int, String>()
-            enumerateDevices().mapIndexed { index, s ->
-                map[index] = s
-            }
-            return map
+    fun targets(adbService: AdbService): Map<Int, String> {
+        val map = HashMap<Int, String>()
+        enumerateDevices(adbService).mapIndexed { index, s ->
+            map[index] = s
         }
+        return map
+    }
 
-    private fun enumerateDevices(): List<String> {
-        val result = Adb()
+    private fun enumerateDevices(adbService: AdbService): List<String> {
+        val result = Adb(adbService)
             .argument("devices")
             .execute(targetsDevice = false)
 

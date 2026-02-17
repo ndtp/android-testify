@@ -61,6 +61,7 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
 
     override fun taskAction() {
         val failedScreenshots = listFailedScreenshotsWithPath(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             targetPackageId = targetPackageId,
             isVerbose = isVerbose
@@ -75,7 +76,7 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
         failedScreenshots.forEach {
             val file = File(it)
             println(Failure, "    x ${file.nameWithoutExtension}")
-            file.deleteOnDevice(targetPackageId)
+            file.deleteOnDevice(adbServiceProvider.get(), targetPackageId)
         }
     }
 

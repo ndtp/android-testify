@@ -74,7 +74,7 @@ open class ReportPullTask : ReportTask() {
         println("  Pulling report:")
 
         val reportFilePath = reportFilePath
-        val files = Adb()
+        val files = Adb(adbServiceProvider.get())
             .shell()
             .runAs(targetPackageId)
             .listFiles(reportFilePath)
@@ -107,7 +107,7 @@ open class ReportPullTask : ReportTask() {
             println(ProgressStatus, "Copying $sourceFilePath to ${destinationFile.absolutePath}")
         }
 
-        Adb()
+        Adb(adbServiceProvider.get())
             .execOut()
             .runAs(targetPackageId)
             .argument("cat")

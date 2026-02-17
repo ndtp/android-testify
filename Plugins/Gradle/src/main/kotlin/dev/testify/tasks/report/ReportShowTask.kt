@@ -56,7 +56,7 @@ open class ReportShowTask : ReportTask() {
 
     override fun taskAction() {
         val reportFilePath = reportFilePath
-        val files = Adb()
+        val files = Adb(adbServiceProvider.get())
             .shell()
             .runAs(targetPackageId)
             .listFiles(reportFilePath)
@@ -71,7 +71,7 @@ open class ReportShowTask : ReportTask() {
     }
 
     private fun show(sourceFilePath: String) {
-        Adb()
+        Adb(adbServiceProvider.get())
             .execOut()
             .runAs(targetPackageId)
             .argument("cat")

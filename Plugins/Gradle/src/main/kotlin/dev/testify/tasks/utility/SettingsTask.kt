@@ -25,7 +25,6 @@
 
 package dev.testify.tasks.utility
 
-import dev.testify.internal.Adb
 import dev.testify.internal.Device
 import dev.testify.internal.reportFilePath
 import dev.testify.internal.screenshotDirectory
@@ -114,7 +113,7 @@ open class SettingsTask : TestifyUtilityTask() {
     }
 
     override fun taskAction() {
-        val userId = Adb.forcedUser?.toString() ?: Device.user.takeUnless { Device.isEmpty } ?: "Device not found"
+        val userId = adbServiceProvider.get().forcedUser?.toString() ?: Device.user(adbServiceProvider.get()).takeUnless { Device.isEmpty(adbServiceProvider.get()) } ?: "Device not found"
 
         println("  baselineSourceDir      = $baselineSourceDir")
         println("  installAndroidTestTask = $installAndroidTestTask")

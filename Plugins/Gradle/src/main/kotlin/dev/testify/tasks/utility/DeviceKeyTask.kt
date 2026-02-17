@@ -35,7 +35,7 @@ open class DeviceKeyTask : TestifyUtilityTask() {
 
     override fun taskAction() {
         println("  Format: {api_version}-{width_in_pixels}x{height_in_pixels}@{dpi}_{locale}")
-        println("  key                  = ${Device.deviceKey()}")
+        println("  key                  = ${Device.deviceKey(adbServiceProvider.get())}")
     }
 
     companion object : TaskNameProvider {
