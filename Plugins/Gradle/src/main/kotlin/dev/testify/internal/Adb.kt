@@ -25,6 +25,8 @@
 
 package dev.testify.internal
 
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import dev.testify.internal.StreamData.BufferedStream
 import dev.testify.internal.Style.Description
 import org.gradle.api.GradleException
@@ -121,18 +123,29 @@ class Adb {
     }
 
     companion object {
-        private lateinit var adbPath: String
+        private var adbPathProvider: (() -> String)? = null
         private var verbose: Boolean = false
         var forcedUser: Int? = null
         private var deviceTargetIndex: Int = 0
 
         fun init(project: Project) {
-            adbPath = project.android.adbExecutable.absolutePath
-                ?: throw GradleException("adb not found. Have you defined an `android` block?")
+            adbPathProvider = {
+                val androidComponents = project.extensions.findByType(
+                    ApplicationAndroidComponentsExtension::class.java
+                ) ?: project.extensions.findByType(
+                    LibraryAndroidComponentsExtension::class.java
+                )
+                androidComponents?.sdkComponents?.adb?.get()?.asFile?.absolutePath
+                    ?: throw GradleException("adb not found via androidComponents.sdkComponents")
+            }
             deviceTargetIndex = (project.properties["device"] as? String)?.toInt() ?: 0
             verbose = project.isVerbose
             forcedUser = project.user
         }
+
+        private val adbPath: String
+            get() = adbPathProvider?.invoke()
+                ?: throw GradleException("Adb.init() must be called before using Adb")
     }
 }
 

@@ -102,13 +102,23 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
     private fun String.toLocalPath(): String {
         val src = screenshotDirectory
         val dst = destinationImageDirectory
+        val dstFile = if (File(dst).isAbsolute) {
+            File(dst)
+        } else {
+            File(project.projectDir, dst)
+        }
         val key = this.removePrefix("$src/").replace('/', File.separatorChar)
-        return "$dst${File.separatorChar}$SCREENSHOT_DIR${File.separatorChar}$key"
+        return File(dstFile, "$SCREENSHOT_DIR${File.separatorChar}$key").path
     }
 
     private fun pullScreenshots() {
         val dst = destinationImageDirectory
-        File(dst).assurePath()
+        val dstFile = if (File(dst).isAbsolute) {
+            File(dst)
+        } else {
+            File(project.projectDir, dst)
+        }
+        dstFile.assurePath()
 
         val failedScreenshots = listFailedScreenshotsWithPath(
             src = screenshotDirectory,
