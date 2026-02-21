@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -132,32 +132,6 @@ class Adb(
 
         return this
     }
-
-//    companion object {
-//        private var adbPathProvider: (() -> String)? = null
-//        private var verbose: Boolean = false
-//        var forcedUser: Int? = null
-//        private var deviceTargetIndex: Int = 0
-//
-//        fun init(project: Project) {
-//            adbPathProvider = {
-//                val androidComponents = project.extensions.findByType(
-//                    ApplicationAndroidComponentsExtension::class.java
-//                ) ?: project.extensions.findByType(
-//                    LibraryAndroidComponentsExtension::class.java
-//                )
-//                androidComponents?.sdkComponents?.adb?.get()?.asFile?.absolutePath
-//                    ?: throw GradleException("adb not found via androidComponents.sdkComponents")
-//            }
-//            deviceTargetIndex = (project.properties["device"] as? String)?.toInt() ?: 0
-//            verbose = project.isVerbose
-//            forcedUser = project.user
-//        }
-//
-//        private val adbPath: String
-//            get() = adbPathProvider?.invoke()
-//                ?: throw GradleException("Adb.init() must be called before using Adb")
-//    }
 }
 
 typealias AdbParam = Pair<String, String>
