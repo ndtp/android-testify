@@ -67,7 +67,7 @@ Testify plugin:
 
 ```groovy
 plugins {
-    id("dev.testify") version "4.0.0" apply false
+    id("dev.testify") version "5.0.0" apply false
 }
 ```
 

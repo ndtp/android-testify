@@ -1,3 +1,10 @@
+## 5.0.0
+
+*   Support Android Gradle Plugin 9.0 (#273)
+*   Add GEMINI.md context file
+*   Fix setup documentation
+*   Allow Flix Sample to be triggered manually
+
 ## 4.0.0
 
 - https://github.com/ndtp/android-testify/pull/266 Updated to Kotlin 2.2
