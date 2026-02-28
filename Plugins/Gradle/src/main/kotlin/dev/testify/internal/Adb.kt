@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,17 +25,28 @@
 
 package dev.testify.internal
 
-import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import dev.testify.internal.StreamData.BufferedStream
 import dev.testify.internal.Style.Description
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 
-class Adb {
+class Adb(
+    private val adbService: AdbService
+) {
 
     private val arguments = ArrayList<String>()
     private var streamData: StreamData? = null
+
+    private val adbPath: String
+        get() = adbService.adbPath
+
+    private val deviceTargetIndex: Int
+        get() = adbService.deviceTargetIndex
+
+    private val verbose: Boolean
+        get() = adbService.verbose
+
+    private val forcedUser: Int?
+        get() = adbService.forcedUser
 
     fun emulator(): Adb {
         arguments.add("-e")
@@ -72,7 +83,7 @@ class Adb {
         if (forcedUser != null) {
             arguments("--user", "$forcedUser")
         } else {
-            val user = Device.user
+            val user = Device.user(adbService)
             if (user.isNotEmpty() && (user.toIntOrNull() ?: 0) > 0) {
                 arguments("--user", user)
             }
@@ -97,7 +108,7 @@ class Adb {
 
     fun execute(targetsDevice: Boolean = true): String {
         if (targetsDevice) {
-            val deviceTarget = Device.targets[deviceTargetIndex]
+            val deviceTarget = Device.targets(adbService)[deviceTargetIndex]
             if (deviceTarget != null) {
                 arguments.add(0, "-s")
                 arguments.add(1, deviceTarget)
@@ -120,32 +131,6 @@ class Adb {
         }
 
         return this
-    }
-
-    companion object {
-        private var adbPathProvider: (() -> String)? = null
-        private var verbose: Boolean = false
-        var forcedUser: Int? = null
-        private var deviceTargetIndex: Int = 0
-
-        fun init(project: Project) {
-            adbPathProvider = {
-                val androidComponents = project.extensions.findByType(
-                    ApplicationAndroidComponentsExtension::class.java
-                ) ?: project.extensions.findByType(
-                    LibraryAndroidComponentsExtension::class.java
-                )
-                androidComponents?.sdkComponents?.adb?.get()?.asFile?.absolutePath
-                    ?: throw GradleException("adb not found via androidComponents.sdkComponents")
-            }
-            deviceTargetIndex = (project.properties["device"] as? String)?.toInt() ?: 0
-            verbose = project.isVerbose
-            forcedUser = project.user
-        }
-
-        private val adbPath: String
-            get() = adbPathProvider?.invoke()
-                ?: throw GradleException("Adb.init() must be called before using Adb")
     }
 }
 

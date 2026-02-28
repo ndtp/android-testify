@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -56,7 +56,7 @@ open class ReportShowTask : ReportTask() {
 
     override fun taskAction() {
         val reportFilePath = reportFilePath
-        val files = Adb()
+        val files = Adb(adbServiceProvider.get())
             .shell()
             .runAs(targetPackageId)
             .listFiles(reportFilePath)
@@ -71,7 +71,7 @@ open class ReportShowTask : ReportTask() {
     }
 
     private fun show(sourceFilePath: String) {
-        Adb()
+        Adb(adbServiceProvider.get())
             .execOut()
             .runAs(targetPackageId)
             .argument("cat")

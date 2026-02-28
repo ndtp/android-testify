@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -61,6 +61,9 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
     @get:Input
     var pullWaitTime: Long = 0L
 
+    @get:Input
+    lateinit var parentDirectory: String
+
     override fun getDescription() = "Pull screenshots from the device and wait for all files to be committed to disk"
 
     override fun provideInput(project: Project) {
@@ -70,6 +73,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         targetPackageId = project.testifySettings.targetPackageId
         isVerbose = project.isVerbose
         pullWaitTime = project.testifySettings.pullWaitTime
+        parentDirectory = project.projectDir.absolutePath
     }
 
     override fun taskAction() {
@@ -80,18 +84,13 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         println("  Destination          = $destinationImageDirectory")
         println()
 
-        val failedScreenshots = listFailedScreenshots(
+        listFailedScreenshots(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             dst = destinationImageDirectory,
             targetPackageId = targetPackageId,
             isVerbose = isVerbose
         )
-        if (failedScreenshots.isEmpty()) {
-            println(Success, "  No failed screenshots found")
-            return
-        }
-
-        println("  ${failedScreenshots.size} images to be pulled")
 
         pullScreenshots()
         syncScreenshots()
@@ -105,7 +104,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         val dstFile = if (File(dst).isAbsolute) {
             File(dst)
         } else {
-            File(project.projectDir, dst)
+            File(parentDirectory, dst)
         }
         val key = this.removePrefix("$src/").replace('/', File.separatorChar)
         return File(dstFile, "$SCREENSHOT_DIR${File.separatorChar}$key").path
@@ -116,11 +115,12 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
         val dstFile = if (File(dst).isAbsolute) {
             File(dst)
         } else {
-            File(project.projectDir, dst)
+            File(parentDirectory, dst)
         }
         dstFile.assurePath()
 
         val failedScreenshots = listFailedScreenshotsWithPath(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             targetPackageId = targetPackageId,
             isVerbose = isVerbose
@@ -135,7 +135,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
             File(localPath).parentFile.assurePath()
 
-            Adb()
+            Adb(adbServiceProvider.get())
                 .execOut()
                 .runAs(targetPackageId)
                 .argument("cat")
@@ -149,6 +149,7 @@ open class ScreenshotPullTask : TestifyDefaultTask() {
 
     private fun syncScreenshots() {
         val failedScreenshots = listFailedScreenshots(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             dst = destinationImageDirectory,
             targetPackageId = targetPackageId,

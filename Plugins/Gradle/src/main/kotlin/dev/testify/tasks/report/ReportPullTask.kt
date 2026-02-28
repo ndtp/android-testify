@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -74,7 +74,7 @@ open class ReportPullTask : ReportTask() {
         println("  Pulling report:")
 
         val reportFilePath = reportFilePath
-        val files = Adb()
+        val files = Adb(adbServiceProvider.get())
             .shell()
             .runAs(targetPackageId)
             .listFiles(reportFilePath)
@@ -107,7 +107,7 @@ open class ReportPullTask : ReportTask() {
             println(ProgressStatus, "Copying $sourceFilePath to ${destinationFile.absolutePath}")
         }
 
-        Adb()
+        Adb(adbServiceProvider.get())
             .execOut()
             .runAs(targetPackageId)
             .argument("cat")

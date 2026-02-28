@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,9 +27,11 @@ package dev.testify.tasks.internal
 
 import dev.testify.internal.Device
 import dev.testify.internal.Style.Header
+import dev.testify.internal.getAdbServiceProvider
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
@@ -42,6 +44,9 @@ internal interface TaskDependencyProvider {
 }
 
 abstract class TestifyDefaultTask : DefaultTask() {
+
+    @get:Internal
+    val adbServiceProvider: Property<dev.testify.internal.AdbService> = project.objects.property(dev.testify.internal.AdbService::class.java)
 
     @Internal
     override fun getDescription() = super.getDescription()
@@ -58,10 +63,12 @@ abstract class TestifyDefaultTask : DefaultTask() {
     @get:Internal
     open val isDeviceRequired = true
 
-    internal open fun provideInput(project: Project) {}
+    internal open fun provideInput(project: Project) {
+        this.adbServiceProvider.set(project.getAdbServiceProvider())
+    }
 
     protected open fun beforeAction() {
-        if (isDeviceRequired && Device.isEmpty) {
+        if (isDeviceRequired && Device.isEmpty(adbServiceProvider.get())) {
             throw GradleException(
                 "No Android Virtual Device found. Please start an emulator prior to running Testify tasks."
             )

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,7 +34,7 @@ open class DisableSoftKeyboardTask : TestifyUtilityTask() {
     override fun getDescription() = "Disables the soft keyboard on the device"
 
     override fun taskAction() {
-        Adb().arguments(
+        Adb(adbServiceProvider.get()).arguments(
             "shell",
             "settings",
             "put",

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,7 +34,7 @@ open class LocaleTask : TestifyUtilityTask() {
     override fun getDescription() = "Displays the device locale."
 
     override fun taskAction() {
-        println("  Current Locale       = ${Device.locale}")
+        println("  Current Locale       = ${Device.locale(adbServiceProvider.get())}")
     }
 
     companion object : TaskNameProvider {

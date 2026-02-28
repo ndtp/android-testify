@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -55,13 +55,13 @@ internal fun Adb.listFiles(path: String): List<String> {
     return log.lines().filter { it.isNotEmpty() }.map { "$path/$it" }
 }
 
-internal fun listFailedScreenshotsWithPath(src: String, targetPackageId: String, isVerbose: Boolean): List<String> {
-    val rootDir = Adb()
+internal fun listFailedScreenshotsWithPath(adbService: AdbService, src: String, targetPackageId: String, isVerbose: Boolean): List<String> {
+    val rootDir = Adb(adbService)
         .shell()
         .runAs(targetPackageId)
         .listFiles(src)
     val files = rootDir.flatMap {
-        Adb()
+        Adb(adbService)
             .shell()
             .runAs(targetPackageId)
             .listFiles(it)
@@ -74,12 +74,14 @@ internal fun listFailedScreenshotsWithPath(src: String, targetPackageId: String,
 }
 
 internal fun listFailedScreenshots(
+    adbService: AdbService,
     src: String,
     dst: String,
     targetPackageId: String,
     isVerbose: Boolean
 ): List<String> {
     val files = listFailedScreenshotsWithPath(
+        adbService = adbService,
         src = src,
         targetPackageId = targetPackageId,
         isVerbose = isVerbose
@@ -90,8 +92,8 @@ internal fun listFailedScreenshots(
 internal val Project.reportFilePath: String
     get() = "${root.replace("testify_", "")}testify"
 
-internal fun File.deleteOnDevice(targetPackageId: String) {
-    Adb()
+internal fun File.deleteOnDevice(adbService: AdbService, targetPackageId: String) {
+    Adb(adbService)
         .shell()
         .runAs(targetPackageId)
         .argument("rm")

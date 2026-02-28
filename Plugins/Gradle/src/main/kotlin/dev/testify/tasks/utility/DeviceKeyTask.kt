@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,7 +35,7 @@ open class DeviceKeyTask : TestifyUtilityTask() {
 
     override fun taskAction() {
         println("  Format: {api_version}-{width_in_pixels}x{height_in_pixels}@{dpi}_{locale}")
-        println("  key                  = ${Device.deviceKey()}")
+        println("  key                  = ${Device.deviceKey(adbServiceProvider.get())}")
     }
 
     companion object : TaskNameProvider {

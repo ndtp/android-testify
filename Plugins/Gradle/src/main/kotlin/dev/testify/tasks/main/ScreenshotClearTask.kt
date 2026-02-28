@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -61,6 +61,7 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
 
     override fun taskAction() {
         val failedScreenshots = listFailedScreenshotsWithPath(
+            adbService = adbServiceProvider.get(),
             src = screenshotDirectory,
             targetPackageId = targetPackageId,
             isVerbose = isVerbose
@@ -75,7 +76,7 @@ open class ScreenshotClearTask : TestifyDefaultTask() {
         failedScreenshots.forEach {
             val file = File(it)
             println(Failure, "    x ${file.nameWithoutExtension}")
-            file.deleteOnDevice(targetPackageId)
+            file.deleteOnDevice(adbServiceProvider.get(), targetPackageId)
         }
     }
 
