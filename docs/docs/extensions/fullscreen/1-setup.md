@@ -10,7 +10,7 @@ In order to use the Android Testify Fullscreen Capture Method extension, you mus
 
 ```groovy
 plugins {
-    id("dev.testify") version "4.0.0" apply false
+    id("dev.testify") version "5.0.0" apply false
 }
 ```
 
@@ -26,6 +26,6 @@ The Android Testify Fullscreen Capture Method extension is packaged as a separat
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-fullscreen:4.0.0"
+    androidTestImplementation "dev.testify:testify-fullscreen:5.0.0"
 }
 ```
