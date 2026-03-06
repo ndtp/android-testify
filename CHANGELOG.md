@@ -1,3 +1,7 @@
+## 5.0.1
+
+*   Fix Testify plugin crash on Android Gradle Plugin 9+
+
 ## 5.0.0
 
 *   Support Android Gradle Plugin 9.0 (#273)

@@ -67,7 +67,7 @@ Testify plugin:
 
 ```groovy
 plugins {
-    id("dev.testify") version "5.0.0" apply false
+    id("dev.testify") version "5.0.1" apply false
 }
 ```
 
@@ -232,7 +232,7 @@ usage, please refer to the [Plugin guide](Plugins/Gradle/README.md).
 
     MIT License
     
-    Modified work copyright (c) 2022-2024 ndtp
+    Modified work copyright (c) 2022-2026 ndtp
     Original work copyright (c) 2021 Shopify
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
