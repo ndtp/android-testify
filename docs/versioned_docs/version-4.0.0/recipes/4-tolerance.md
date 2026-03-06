@@ -11,7 +11,7 @@ By providing a value less than 1 to `exactness`, a test will be more tolerant to
 
 :::tip
 
-Please also see [_Accounting for platform differences_](../../blog/platform-differences) for more insight into handling unintended differences in your rendering.
+Please also see [_Accounting for platform differences_](../../../blog/platform-differences) for more insight into handling unintended differences in your rendering.
 
 :::
 

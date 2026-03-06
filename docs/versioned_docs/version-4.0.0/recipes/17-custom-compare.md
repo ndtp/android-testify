@@ -22,7 +22,7 @@ typealias CompareMethod = (baselineBitmap: Bitmap, currentBitmap: Bitmap) -> Boo
 
 Before writing your own comparison method, consider that Testify provides multiple built-in mechanisms to customize the comparison of bitmaps. You can easily [_increase the matching tolerance_](tolerance) or [_exclude a region from the comparison_](exclude-regions).
 
-Please also see [_Accounting for platform differences_](../../blog/platform-differences) for more insight into handling unintended differences in your rendering.
+Please also see [_Accounting for platform differences_](../../../blog/platform-differences) for more insight into handling unintended differences in your rendering.
 
 :::
 
