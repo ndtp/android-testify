@@ -91,7 +91,7 @@ class TestifyPlugin : Plugin<Project> {
             val module = settings.moduleName
             val isRecordMode = settings.isRecordMode.toString()
             val parallelThreads = settings.parallelThreads.toString()
-            android.defaultConfig {
+            with(android.defaultConfig) {
                 resValue("string", "testifyDestination", destination)
                 resValue("string", "testifyModule", module)
                 resValue("string", "isRecordMode", isRecordMode)
