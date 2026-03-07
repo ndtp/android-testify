@@ -81,6 +81,7 @@ dependencies {
     def composeBom = platform('androidx.compose:compose-bom:2025.08.01')
     implementation composeBom
     //noinspection UseTomlInstead
+    implementation "androidx.appcompat:appcompat:1.7.1"
     implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.9.3"
     implementation "androidx.test.espresso.idling:idling-concurrent:3.7.0"
