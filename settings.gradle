@@ -17,20 +17,22 @@ dependencyResolutionManagement {
     }
 }
 
-include ':LegacySample'
-include ':FlixSample'
-include ':FlixLibrary'
-include ':GmdSample'
-includeBuild("./Plugins/Gradle") { name = "Plugin" }
-include ':Library'
-include ':ComposeExtensions'
-include ':FullscreenCaptureMethod'
 include ':Accessibility'
+include ':ComposeExtensions'
+include ':FlixLibrary'
+include ':FlixSample'
+include ':FullscreenCaptureMethod'
+include ':GmdSample'
+include ':Ktx'
+include ':LegacySample'
+include ':Library'
+includeBuild("./Plugins/Gradle") { name = "Plugin" }
 
-project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
-project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':Accessibility').projectDir = new File("./Ext/Accessibility")
-project(':LegacySample').projectDir = new File("./Samples/Legacy")
-project(':FlixSample').projectDir = new File("./Samples/Flix")
+project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
 project(':FlixLibrary').projectDir = new File("./Samples/Flix/FlixLibrary")
+project(':FlixSample').projectDir = new File("./Samples/Flix")
+project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':GmdSample').projectDir = new File("./Samples/Gmd")
+project(':Ktx').projectDir = new File("./Ext/Ktx")
+project(':LegacySample').projectDir = new File("./Samples/Legacy")

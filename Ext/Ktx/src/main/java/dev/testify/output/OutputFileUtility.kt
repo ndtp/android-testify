@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
+ * Original work copyright (c) 2021 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +22,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-package dev.testify.annotation
-
-import androidx.test.platform.app.InstrumentationRegistry
+package dev.testify.output
 
 /**
- * Returns the fully qualified dot-separated name of the annotation required by the Gradle plugin.
+ * The default screenshot directory name
  */
-fun getScreenshotAnnotationName(): String =
-    InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
+const val SCREENSHOT_DIR = "screenshots"
 
 /**
- * Get the [ScreenshotInstrumentation] instance associated with the test method
+ * The default screenshot file extension
+ */
+const val PNG_EXTENSION = ".png"
+
+/**
+ * Construct a path to the baseline image file
  *
- * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
- * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+ * @param subpath The subpath to the file
+ * @param fileName The name of the file
+ * @param extension The file extension
  */
-fun getScreenshotInstrumentationAnnotation(
-    classAnnotations: List<Annotation>,
-    methodAnnotations: Collection<Annotation>?
-): Annotation? {
-    val annotationName = getScreenshotAnnotationName()
-    return classAnnotations.findAnnotation(annotationName) ?: methodAnnotations?.findAnnotation(annotationName)
+fun getFileRelativeToRoot(subpath: String, fileName: String, extension: String): String {
+    return "$SCREENSHOT_DIR/$subpath/$fileName$extension"
 }

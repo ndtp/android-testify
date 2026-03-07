@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Copyright (c) 2023-2026 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
-package dev.testify.annotation
-
-import androidx.test.platform.app.InstrumentationRegistry
+package dev.testify.internal.annotation
 
 /**
- * Returns the fully qualified dot-separated name of the annotation required by the Gradle plugin.
- */
-fun getScreenshotAnnotationName(): String =
-    InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
-
-/**
- * Get the [ScreenshotInstrumentation] instance associated with the test method
+ * Annotation for excluding code from the Jacoco coverage generator.
  *
- * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
- * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+ * Used to exclude elements from being considered for code coverage.
+ * Element annotated with [ExcludeFromJacocoGeneratedReport] are filtered out
+ * during generation of the report.
+ *
+ * Normally this is reserved for use by Android platform implementations that are
+ * normally mocked in tests and are otherwise untestable.
  */
-fun getScreenshotInstrumentationAnnotation(
-    classAnnotations: List<Annotation>,
-    methodAnnotations: Collection<Annotation>?
-): Annotation? {
-    val annotationName = getScreenshotAnnotationName()
-    return classAnnotations.findAnnotation(annotationName) ?: methodAnnotations?.findAnnotation(annotationName)
-}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(
+    AnnotationTarget.CLASS,
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER,
+    AnnotationTarget.CONSTRUCTOR
+)
+annotation class ExcludeFromJacocoGeneratedReport
