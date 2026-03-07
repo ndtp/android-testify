@@ -24,6 +24,7 @@ stages:
     - test_accessibility_ext: {}
     - test_compose_ext: {}
     - test_fullscreen_ext: {}
+    - test_ktx: {}
 
 workflows:
   evaluate_build:
@@ -235,8 +236,8 @@ workflows:
         title: Build Test APK
     - android-instrumented-test@0:
         inputs:
-        - test_apk_path: "./Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
-        - main_apk_path: "./Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
+        - test_apk_path: "./Ext/Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
+        - main_apk_path: "./Ext/Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
