@@ -30,9 +30,13 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import dev.testify.TestFlavor
 import dev.testify.baselineImageName
 
-abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseUtilityAction() {
+abstract class BaseFileAction(
+    protected val anchorElement: PsiElement,
+    private val testFlavor: TestFlavor
+) : BaseUtilityAction() {
 
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
 

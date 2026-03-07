@@ -25,17 +25,21 @@
 package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
+import dev.testify.GradleCommand
+import dev.testify.TestFlavor
 
-class ScreenshotClearAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotClearAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
+    BaseScreenshotAction(anchorElement, testFlavor) {
 
-    override val classGradleCommand: String
-        get() = "screenshotClear"
+    override val gradleCommand: GradleCommand
+        get() = GradleCommand(
+            argumentFlag = "-PtestClass=",
+            classCommand = "screenshotClear",
+            methodCommand = "screenshotClear"
+        )
 
     override val classMenuText: String
         get() = "Clear screenshots from device"
-
-    override val methodGradleCommand: String
-        get() = "screenshotClear"
 
     override val methodMenuText: String
         get() = "Clear screenshots from device"

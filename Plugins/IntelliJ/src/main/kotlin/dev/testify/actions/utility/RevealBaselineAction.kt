@@ -28,9 +28,10 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import dev.testify.TestFlavor
 import java.awt.event.ActionEvent
 
-class RevealBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+class RevealBaselineAction(anchorElement: PsiElement, testFlavor: TestFlavor) : BaseFileAction(anchorElement, testFlavor) {
 
     override val icon = "reveal"
 
