@@ -93,7 +93,7 @@ workflows:
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     meta:
       bitrise.io:
-        stack: ubuntu-noble-24.04-bitrise-2025-android
+        stack: linux-docker-android-22.04
         machine_type_id: standard
 
   _emulatorSetup:
@@ -300,7 +300,7 @@ workflows:
     - _globalSetup
     meta:
       bitrise.io:
-        stack: ubuntu-noble-24.04-bitrise-2025-android
+        stack: linux-docker-android-22.04
         machine_type_id: standard
 
   test_compose_ext:
@@ -325,7 +325,7 @@ workflows:
     - _globalSetup
     meta:
       bitrise.io:
-        stack: ubuntu-noble-24.04-bitrise-2025-android
+        stack: linux-docker-android-22.04
         machine_type_id: standard
 
   test_fullscreen_ext:
@@ -350,7 +350,7 @@ workflows:
     - _globalSetup
     meta:
       bitrise.io:
-        stack: ubuntu-noble-24.04-bitrise-2025-android
+        stack: linux-docker-android-22.04
         machine_type_id: standard
 
   test_flix:
@@ -431,7 +431,7 @@ workflows:
 
 meta:
   bitrise.io:
-    stack: ubuntu-noble-24.04-bitrise-2025-android
+    stack: linux-docker-android-22.04
     machine_type_id: g2.linux.large
 app:
   envs:
