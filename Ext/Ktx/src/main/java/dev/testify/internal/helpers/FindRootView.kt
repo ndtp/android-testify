@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Copyright (c) 2023-2026 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package dev.testify.internal.helpers
 
-package dev.testify.annotation
-
-import androidx.test.platform.app.InstrumentationRegistry
-
-/**
- * Returns the fully qualified dot-separated name of the annotation required by the Gradle plugin.
- */
-fun getScreenshotAnnotationName(): String =
-    InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
+import android.app.Activity
+import android.view.ViewGroup
+import androidx.annotation.IdRes
+import dev.testify.core.exception.RootViewNotFoundException
+import dev.testify.internal.annotation.ExcludeFromJacocoGeneratedReport
 
 /**
- * Get the [ScreenshotInstrumentation] instance associated with the test method
+ * Helper extension method to find the root view of an [Activity].
  *
- * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
- * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+ * @param rootViewId The id of the root view.
+ * @return The root view.
+ * @throws dev.testify.core.exception.RootViewNotFoundException If the root view is not found.
  */
-fun getScreenshotInstrumentationAnnotation(
-    classAnnotations: List<Annotation>,
-    methodAnnotations: Collection<Annotation>?
-): Annotation? {
-    val annotationName = getScreenshotAnnotationName()
-    return classAnnotations.findAnnotation(annotationName) ?: methodAnnotations?.findAnnotation(annotationName)
-}
+@ExcludeFromJacocoGeneratedReport
+fun Activity.findRootView(@IdRes rootViewId: Int): ViewGroup =
+    this.findViewById(rootViewId) ?: throw RootViewNotFoundException(this, rootViewId)

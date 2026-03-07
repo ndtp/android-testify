@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
+ * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +22,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package dev.testify.extensions
 
-package dev.testify.annotation
-
-import androidx.test.platform.app.InstrumentationRegistry
-
-/**
- * Returns the fully qualified dot-separated name of the annotation required by the Gradle plugin.
- */
-fun getScreenshotAnnotationName(): String =
-    InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
+import android.graphics.Rect
+import android.view.View
 
 /**
- * Get the [ScreenshotInstrumentation] instance associated with the test method
- *
- * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
- * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+ * Helper extension method to return the bounding box of the view in screen coordinates.
  */
-fun getScreenshotInstrumentationAnnotation(
-    classAnnotations: List<Annotation>,
-    methodAnnotations: Collection<Annotation>?
-): Annotation? {
-    val annotationName = getScreenshotAnnotationName()
-    return classAnnotations.findAnnotation(annotationName) ?: methodAnnotations?.findAnnotation(annotationName)
-}
+val View.boundingBox
+    get(): Rect {
+        val screenLocation = IntArray(2)
+        getLocationOnScreen(screenLocation)
+        val (x, y) = screenLocation
+        return Rect(x, y, x + width, y + height)
+    }

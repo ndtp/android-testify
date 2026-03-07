@@ -1,7 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
+ * Original work copyright (c) 2019 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,27 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package dev.testify.core.exception
 
-package dev.testify.annotation
-
-import androidx.test.platform.app.InstrumentationRegistry
-
-/**
- * Returns the fully qualified dot-separated name of the annotation required by the Gradle plugin.
- */
-fun getScreenshotAnnotationName(): String =
-    InstrumentationRegistry.getArguments().getString("annotation", ScreenshotInstrumentation::class.qualifiedName)
+import android.content.Context
+import androidx.annotation.IdRes
 
 /**
- * Get the [ScreenshotInstrumentation] instance associated with the test method
+ * Exception thrown when the root view id cannot be found in the test harness Activity.
  *
- * @param classAnnotations - A [List] of all the [Annotation]s defined on the currently running test class
- * @param methodAnnotations - A [Collection] of all the [Annotation]s defined on the currently running test method
+ * @param context The context of the test harness Activity.
+ * @param rootViewId The id of the root view.
+ *
  */
-fun getScreenshotInstrumentationAnnotation(
-    classAnnotations: List<Annotation>,
-    methodAnnotations: Collection<Annotation>?
-): Annotation? {
-    val annotationName = getScreenshotAnnotationName()
-    return classAnnotations.findAnnotation(annotationName) ?: methodAnnotations?.findAnnotation(annotationName)
-}
+class RootViewNotFoundException(context: Context, @IdRes rootViewId: Int) :
+    TestifyException(
+        "NO_ROOT_VIEW",
+        "The provided RootViewId {R.id.${context.resources.getResourceEntryName(rootViewId)}} could " +
+            "not be found in the test harness Activity"
+    )
