@@ -23,9 +23,6 @@
  */
 package dev.testify.core.processor
 
-import android.app.ActivityManager
-import android.content.Context.ACTIVITY_SERVICE
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import dev.testify.core.exception.ImageBufferAllocationException
 import dev.testify.core.exception.LowMemoryException
 import org.junit.Assert.assertEquals
@@ -69,14 +66,16 @@ class ImageBufferTest {
 
     @Test(expected = LowMemoryException::class)
     fun allocate_fails_on_oom() {
-        val activityManager = getInstrumentation().targetContext.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        val requestedSize: Int = activityManager.memoryClass * 1_048_576 / 2
+        // Request a capacity whose byte size (capacity * 4) exceeds Int.MAX_VALUE,
+        // which cannot be fulfilled by a single direct ByteBuffer.
+        val requestedSize: Int = Int.MAX_VALUE / 2
         ImageBuffers.allocate(width = 1, height = requestedSize, allocateDiffBuffer = false)
     }
 
     @Test
     fun can_allocate_a_reasonable_amount() {
-        val requestedSize: Int = Runtime.getRuntime().freeMemory().toInt() / 10
+        // Allocate buffers equivalent to a 1080x1920 screen (a typical device resolution)
+        val requestedSize = 1080 * 1920
         val buffers = ImageBuffers.allocate(width = 1, height = requestedSize, allocateDiffBuffer = false)
         assertNotNull(buffers.baselineBuffer)
         assertNotNull(buffers.currentBuffer)

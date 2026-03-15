@@ -133,23 +133,26 @@ class ParallelPixelProcessor private constructor(
      */
     fun analyze(analyzer: AnalyzePixelFunction): Boolean {
         val buffers = prepareBuffers()
-        val chunkData = getChunkData(buffers.width, buffers.height)
-        val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
+        try {
+            val chunkData = getChunkData(buffers.width, buffers.height)
+            val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
 
-        runBlockingInChunks(chunkData) { chunk, index ->
-            val position = getPosition(index, buffers.width)
-            val baselinePixel = buffers.baselineBuffer[index]
-            val currentPixel = buffers.currentBuffer[index]
-            if (!analyzer(baselinePixel, currentPixel, position)) {
-                results.clear(chunk)
-                false
-            } else {
-                true
+            runBlockingInChunks(chunkData) { chunk, index ->
+                val position = getPosition(index, buffers.width)
+                val baselinePixel = buffers.baselineBuffer[index]
+                val currentPixel = buffers.currentBuffer[index]
+                if (!analyzer(baselinePixel, currentPixel, position)) {
+                    results.clear(chunk)
+                    false
+                } else {
+                    true
+                }
             }
-        }
 
-        buffers.free()
-        return results.cardinality() == chunkData.chunks
+            return results.cardinality() == chunkData.chunks
+        } finally {
+            buffers.free()
+        }
     }
 
     /**
@@ -163,25 +166,30 @@ class ParallelPixelProcessor private constructor(
         transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int
     ): TransformResult {
         val buffers = prepareBuffers(allocateDiffBuffer = true)
-        val chunkData = getChunkData(buffers.width, buffers.height)
-        val diffBuffer = buffers.diffBuffer
+        try {
+            val chunkData = getChunkData(buffers.width, buffers.height)
+            val diffBuffer = buffers.diffBuffer
 
-        runBlockingInChunks(chunkData) { _, index ->
-            val position = getPosition(index, buffers.width)
-            val baselinePixel = buffers.baselineBuffer[index]
-            val currentPixel = buffers.currentBuffer[index]
-            diffBuffer.put(index, transformer(baselinePixel, currentPixel, position))
-            true
+            runBlockingInChunks(chunkData) { _, index ->
+                val position = getPosition(index, buffers.width)
+                val baselinePixel = buffers.baselineBuffer[index]
+                val currentPixel = buffers.currentBuffer[index]
+                diffBuffer.put(index, transformer(baselinePixel, currentPixel, position))
+                true
+            }
+
+            val pixels = IntArray(buffers.width * buffers.height)
+            diffBuffer.position(0)
+            diffBuffer.get(pixels)
+
+            return TransformResult(
+                width = buffers.width,
+                height = buffers.height,
+                pixels = pixels
+            )
+        } finally {
+            buffers.free()
         }
-
-        val result = TransformResult(
-            width = buffers.width,
-            height = buffers.height,
-            pixels = diffBuffer.array()
-        )
-
-        buffers.free()
-        return result
     }
 
     /**
