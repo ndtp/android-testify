@@ -100,11 +100,16 @@ class HighContrastDiff private constructor(
                 }
             }
 
-        saveBitmapToDestination(
-            context = context,
-            bitmap = transformResult.createBitmap(),
-            destination = getDestination(context, "$fileName.diff")
-        )
+        val diffBitmap = transformResult.createBitmap()
+        try {
+            saveBitmapToDestination(
+                context = context,
+                bitmap = diffBitmap,
+                destination = getDestination(context, "$fileName.diff")
+            )
+        } finally {
+            diffBitmap.recycle()
+        }
     }
 
     private var exactness: Float? = null
