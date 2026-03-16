@@ -30,10 +30,14 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.nio.IntBuffer
 import java.util.BitSet
 import kotlin.math.ceil
+import kotlin.math.min
 
 typealias AnalyzePixelFunction = (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Boolean
+
+private const val BYTES_PER_PIXEL = 4
 
 /**
  * A class that allows for parallel processing of pixels in a bitmap.
@@ -41,6 +45,10 @@ typealias AnalyzePixelFunction = (baselinePixel: Int, currentPixel: Int, positio
  * Uses coroutines to process pixels in two [Bitmap] objects in parallel.
  * [analyze] is used to compare two bitmaps in parallel.
  * [transform] is used to transform two bitmaps in parallel.
+ *
+ * Processes images in horizontal stripes to limit heap memory usage. Each stripe's pixels are
+ * read via [Bitmap.getPixels] into temporary arrays sized for just that stripe, avoiding the
+ * need to allocate full-image buffers on the Java heap.
  */
 class ParallelPixelProcessor private constructor(
     private val configuration: ParallelProcessorConfiguration
@@ -66,17 +74,17 @@ class ParallelPixelProcessor private constructor(
     }
 
     /**
-     * Prepare the bitmaps for parallel processing.
+     * Calculate the number of rows to process per stripe based on available heap memory.
+     * Targets using no more than 1/4 of free heap for the two per-stripe IntArrays.
      */
-    private fun prepareBuffers(allocateDiffBuffer: Boolean = false): ImageBuffers {
-        return ImageBuffers.allocate(
-            width = currentBitmap.width,
-            height = currentBitmap.height,
-            allocateDiffBuffer = allocateDiffBuffer
-        ).apply {
-            baselineBitmap.copyPixelsToBuffer(baselineBuffer)
-            currentBitmap.copyPixelsToBuffer(currentBuffer)
-        }
+    @VisibleForTesting
+    internal fun calculateStripeHeight(width: Int, height: Int): Int {
+        val runtime = Runtime.getRuntime()
+        val freeMemory = runtime.maxMemory() - (runtime.totalMemory() - runtime.freeMemory())
+        val targetBudget = freeMemory / 4
+        val bytesPerRow = width.toLong() * BYTES_PER_PIXEL * 2 // two IntArrays (baseline + current)
+        val maxRows = (targetBudget / bytesPerRow).toInt().coerceAtLeast(1)
+        return min(maxRows, height)
     }
 
     /**
@@ -128,33 +136,60 @@ class ParallelPixelProcessor private constructor(
      * Analyze the two bitmaps in parallel.
      * The analyzer function is called for each pixel in the bitmaps.
      *
+     * Processes the image in horizontal stripes to minimize heap usage.
+     *
      * @param analyzer The analyzer function to call for each pixel.
      * @return True if all pixels pass the analyzer function, false otherwise.
      */
     fun analyze(analyzer: AnalyzePixelFunction): Boolean {
-        val buffers = prepareBuffers()
-        val chunkData = getChunkData(buffers.width, buffers.height)
-        val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
+        val width = currentBitmap.width
+        val height = currentBitmap.height
+        val stripeHeight = calculateStripeHeight(width, height)
 
-        runBlockingInChunks(chunkData) { chunk, index ->
-            val position = getPosition(index, buffers.width)
-            val baselinePixel = buffers.baselineBuffer[index]
-            val currentPixel = buffers.currentBuffer[index]
-            if (!analyzer(baselinePixel, currentPixel, position)) {
-                results.clear(chunk)
-                false
-            } else {
-                true
+        for (stripeY in 0 until height step stripeHeight) {
+            val h = min(stripeHeight, height - stripeY)
+            val stripeSize = width * h
+
+            val baselineBuffer = IntBuffer.allocate(stripeSize)
+            val currentBuffer = IntBuffer.allocate(stripeSize)
+
+            val baselineStripe = Bitmap.createBitmap(baselineBitmap, 0, stripeY, width, h)
+            val currentStripe = Bitmap.createBitmap(currentBitmap, 0, stripeY, width, h)
+            try {
+                baselineStripe.copyPixelsToBuffer(baselineBuffer)
+                currentStripe.copyPixelsToBuffer(currentBuffer)
+            } finally {
+                if (baselineStripe !== baselineBitmap) baselineStripe.recycle()
+                if (currentStripe !== currentBitmap) currentStripe.recycle()
+            }
+
+            val chunkData = getChunkData(width, h)
+            val results = BitSet(chunkData.chunks).apply { set(0, chunkData.chunks) }
+
+            runBlockingInChunks(chunkData) { chunk, index ->
+                val x = index % width
+                val y = stripeY + index / width
+                if (!analyzer(baselineBuffer[index], currentBuffer[index], x to y)) {
+                    results.clear(chunk)
+                    false
+                } else {
+                    true
+                }
+            }
+
+            if (results.cardinality() != chunkData.chunks) {
+                return false
             }
         }
 
-        buffers.free()
-        return results.cardinality() == chunkData.chunks
+        return true
     }
 
     /**
      * Transform the two bitmaps in parallel.
      * The transformer function is called for each pixel in the bitmaps.
+     *
+     * Processes the image in horizontal stripes to minimize heap usage.
      *
      * @param transformer The transformer function to call for each pixel.
      * @return A [TransformResult] containing the transformed pixels.
@@ -162,26 +197,44 @@ class ParallelPixelProcessor private constructor(
     fun transform(
         transformer: (baselinePixel: Int, currentPixel: Int, position: Pair<Int, Int>) -> Int
     ): TransformResult {
-        val buffers = prepareBuffers(allocateDiffBuffer = true)
-        val chunkData = getChunkData(buffers.width, buffers.height)
-        val diffBuffer = buffers.diffBuffer
+        val width = currentBitmap.width
+        val height = currentBitmap.height
+        val stripeHeight = calculateStripeHeight(width, height)
+        val outputPixels = IntArray(width * height)
 
-        runBlockingInChunks(chunkData) { _, index ->
-            val position = getPosition(index, buffers.width)
-            val baselinePixel = buffers.baselineBuffer[index]
-            val currentPixel = buffers.currentBuffer[index]
-            diffBuffer.put(index, transformer(baselinePixel, currentPixel, position))
-            true
+        for (stripeY in 0 until height step stripeHeight) {
+            val h = min(stripeHeight, height - stripeY)
+            val stripeSize = width * h
+
+            val baselineBuffer = IntBuffer.allocate(stripeSize)
+            val currentBuffer = IntBuffer.allocate(stripeSize)
+
+            val baselineStripe = Bitmap.createBitmap(baselineBitmap, 0, stripeY, width, h)
+            val currentStripe = Bitmap.createBitmap(currentBitmap, 0, stripeY, width, h)
+            try {
+                baselineStripe.copyPixelsToBuffer(baselineBuffer)
+                currentStripe.copyPixelsToBuffer(currentBuffer)
+            } finally {
+                if (baselineStripe !== baselineBitmap) baselineStripe.recycle()
+                if (currentStripe !== currentBitmap) currentStripe.recycle()
+            }
+
+            val chunkData = getChunkData(width, h)
+            val stripeOffset = stripeY * width
+
+            runBlockingInChunks(chunkData) { _, index ->
+                val x = index % width
+                val y = stripeY + index / width
+                outputPixels[stripeOffset + index] = transformer(
+                    baselineBuffer[index],
+                    currentBuffer[index],
+                    x to y
+                )
+                true
+            }
         }
 
-        val result = TransformResult(
-            width = buffers.width,
-            height = buffers.height,
-            pixels = diffBuffer.array()
-        )
-
-        buffers.free()
-        return result
+        return TransformResult(width = width, height = height, pixels = outputPixels)
     }
 
     /**
