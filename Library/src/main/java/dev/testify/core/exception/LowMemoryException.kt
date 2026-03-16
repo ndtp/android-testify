@@ -50,7 +50,7 @@ import dev.testify.core.formatDeviceString
 @Suppress("ktlint:standard:argument-list-wrapping")
 class LowMemoryException(
     targetContext: Context,
-    requestedAllocation: Long,
+    requestedAllocation: Int,
     memoryInfo: String,
     cause: OutOfMemoryError
 ) : TestifyException(

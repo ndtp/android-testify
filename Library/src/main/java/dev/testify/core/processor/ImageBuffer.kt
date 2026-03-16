@@ -34,8 +34,6 @@ import androidx.annotation.IntRange
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.testify.core.exception.ImageBufferAllocationException
 import dev.testify.core.exception.LowMemoryException
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.IntBuffer
 
 private const val INTEGER_BYTES: Int = 4
@@ -124,16 +122,11 @@ internal data class ImageBuffers(
  * @throws LowMemoryException if the allocation fails twice
  */
 internal fun allocateSafely(capacity: Int, retry: Boolean = true): IntBuffer {
-    val requestedBytes = capacity.toLong() * INTEGER_BYTES
+    val requestedBytes = capacity * INTEGER_BYTES
     return try {
         val memoryState = formatMemoryState()
         Log.v(LOG_TAG, "Allocating $requestedBytes bytes\n$memoryState")
-        if (requestedBytes > Int.MAX_VALUE) {
-            throw OutOfMemoryError("Requested allocation of $requestedBytes bytes exceeds maximum direct buffer size")
-        }
-        ByteBuffer.allocateDirect(requestedBytes.toInt())
-            .order(ByteOrder.nativeOrder())
-            .asIntBuffer()
+        IntBuffer.allocate(capacity)
     } catch (e: OutOfMemoryError) {
         val memoryState = formatMemoryState()
         Log.e(LOG_TAG, "Error allocating $requestedBytes bytes\n$memoryState", e)
