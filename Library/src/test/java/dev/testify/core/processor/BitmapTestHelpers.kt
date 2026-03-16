@@ -27,12 +27,61 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
 import java.nio.Buffer
 import java.nio.IntBuffer
 
 const val DEFAULT_BITMAP_WIDTH = 1080
 const val DEFAULT_BITMAP_HEIGHT = 2220
+
+/**
+ * Set up the static mock for [Bitmap.createBitmap] so that stripe-based processing works in unit tests.
+ * Call this from @Before in tests that use [ParallelPixelProcessor].
+ */
+fun mockBitmapCreateBitmap() {
+    mockkStatic(Bitmap::class)
+    every { Bitmap.createBitmap(any<Bitmap>(), any(), any(), any(), any()) } answers {
+        val source = arg<Bitmap>(0)
+        val x = arg<Int>(1)
+        val y = arg<Int>(2)
+        val w = arg<Int>(3)
+        val h = arg<Int>(4)
+        createSubBitmapMock(source, x, y, w, h)
+    }
+}
+
+/**
+ * Creates a mock sub-bitmap that extracts pixel data from the source bitmap's region.
+ */
+private fun createSubBitmapMock(source: Bitmap, srcX: Int, srcY: Int, w: Int, h: Int): Bitmap {
+    // Read the source region's pixels via copyPixelsToBuffer on the full source,
+    // then extract just the sub-region.
+    val fullWidth = source.width
+    val fullHeight = source.height
+    val fullBuffer = IntBuffer.allocate(fullWidth * fullHeight)
+    source.copyPixelsToBuffer(fullBuffer)
+
+    val subBuffer = IntBuffer.allocate(w * h)
+    for (row in 0 until h) {
+        for (col in 0 until w) {
+            val srcIndex = (srcY + row) * fullWidth + (srcX + col)
+            subBuffer.put(row * w + col, fullBuffer[srcIndex])
+        }
+    }
+
+    return mockk(relaxed = true) {
+        every { this@mockk.width } returns w
+        every { this@mockk.height } returns h
+        val slotBuffer = slot<Buffer>()
+        every { this@mockk.copyPixelsToBuffer(capture(slotBuffer)) } answers {
+            val outputBuffer = slotBuffer.captured as IntBuffer
+            for (i in 0 until w * h) {
+                outputBuffer.put(subBuffer[i])
+            }
+        }
+    }
+}
 
 fun mockBitmap(
     width: Int = DEFAULT_BITMAP_WIDTH,
