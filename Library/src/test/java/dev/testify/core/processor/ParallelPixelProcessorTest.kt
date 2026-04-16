@@ -67,6 +67,7 @@ class ParallelPixelProcessorTest {
     fun setUp() {
         mockkStatic(::formatMemoryState)
         every { formatMemoryState() } returns ""
+        mockBitmapCreateBitmap()
     }
 
     @After

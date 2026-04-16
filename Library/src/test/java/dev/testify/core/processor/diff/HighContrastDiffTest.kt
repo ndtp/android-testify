@@ -31,6 +31,7 @@ import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.createBitmap
 import dev.testify.core.processor.formatMemoryState
 import dev.testify.core.processor.mockBitmap
+import dev.testify.core.processor.mockBitmapCreateBitmap
 import dev.testify.core.processor.mockRect
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
@@ -76,6 +77,7 @@ class HighContrastDiffTest {
         mockkStatic("dev.testify.core.processor.BitmapExtentionsKt")
         mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
         mockkStatic(::formatMemoryState)
+        mockBitmapCreateBitmap()
 
         every { formatMemoryState() } returns ""
         every { any<ParallelPixelProcessor.TransformResult>().createBitmap() } answers {

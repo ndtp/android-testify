@@ -29,6 +29,7 @@ import android.graphics.Rect
 import dev.testify.core.TestifyConfiguration
 import dev.testify.core.processor.ParallelProcessorConfiguration
 import dev.testify.core.processor.formatMemoryState
+import dev.testify.core.processor.mockBitmapCreateBitmap
 import dev.testify.core.processor.mockRect
 import dev.testify.internal.helpers.ManifestPlaceholder
 import dev.testify.internal.helpers.getMetaDataValue
@@ -61,6 +62,7 @@ class RegionCompareTest {
         Dispatchers.setMain(mainThreadSurrogate)
         mockkStatic("dev.testify.internal.helpers.ManifestHelpersKt")
         mockkStatic(::formatMemoryState)
+        mockBitmapCreateBitmap()
         every { any<ManifestPlaceholder>().getMetaDataValue() } returns null
         every { formatMemoryState() } returns ""
     }
@@ -154,6 +156,23 @@ class RegionCompareTest {
                 (0 until 100).forEach { x ->
                     (0 until 100).forEach { y ->
                         buffer.put(index++, if (alternateColor != null) alternateColor(color, x, y) else color)
+                    }
+                }
+            }
+            every { getPixels(any(), any(), any(), any(), any(), any(), any()) } answers {
+                val pixels = arg<IntArray>(0)
+                val offset = arg<Int>(1)
+                val stride = arg<Int>(2)
+                val startX = arg<Int>(3)
+                val startY = arg<Int>(4)
+                val regionWidth = arg<Int>(5)
+                val regionHeight = arg<Int>(6)
+                for (row in 0 until regionHeight) {
+                    for (col in 0 until regionWidth) {
+                        val x = startX + col
+                        val y = startY + row
+                        pixels[offset + row * stride + col] =
+                            if (alternateColor != null) alternateColor(color, x, y) else color
                     }
                 }
             }

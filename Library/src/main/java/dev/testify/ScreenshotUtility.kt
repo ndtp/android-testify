@@ -163,6 +163,8 @@ fun createBitmapFromActivity(
 
     val destination = getDestination(activity, fileName)
     saveBitmapToDestination(activity, currentActivityBitmap[0], destination)
+    currentActivityBitmap[0]?.recycle()
+    currentActivityBitmap[0] = null
     return destination.loadBitmap(preferredBitmapOptions)
 }
 
