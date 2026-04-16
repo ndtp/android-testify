@@ -11,6 +11,7 @@ Plugins/Intellij/out
 Plugins/.idea/
 docs/yarn.lock
 Plugins/Gradle/.idea/
+Plugins/Gradle/.kotlin/
 Plugins/Gradle/gradle/wrapper/
 Plugins/Gradle/gradlew
 Plugins/Gradle/gradlew.bat

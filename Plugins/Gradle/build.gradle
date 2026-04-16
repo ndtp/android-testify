@@ -56,11 +56,13 @@ test {
 
 dependencies {
     implementation gradleApi()
-    implementation libs.gradle
     implementation libs.kotlin.stdlib.jdk8
+
+    compileOnly libs.gradle
 
     testRuntimeOnly libs.junit.platform.launcher
     testImplementation gradleTestKit()
+    testImplementation libs.gradle
     testImplementation libs.junit.jupiter
     testImplementation libs.junit.jupiter.params
     testImplementation libs.mockk

@@ -1,3 +1,7 @@
+## 5.0.2
+
+*   Declare AGP as compileOnly to prevent deprecated android {} accessor in consuming projects
+
 ## 5.0.1
 
 *   Fix Testify plugin crash on Android Gradle Plugin 9+
