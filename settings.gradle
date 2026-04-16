@@ -21,6 +21,7 @@ include ':LegacySample'
 include ':FlixSample'
 include ':FlixLibrary'
 include ':GmdSample'
+include ':PaparazziExt'
 includeBuild("./Plugins/Gradle") { name = "Plugin" }
 include ':Library'
 include ':ComposeExtensions'
@@ -34,3 +35,4 @@ project(':LegacySample').projectDir = new File("./Samples/Legacy")
 project(':FlixSample').projectDir = new File("./Samples/Flix")
 project(':FlixLibrary').projectDir = new File("./Samples/Flix/FlixLibrary")
 project(':GmdSample').projectDir = new File("./Samples/Gmd")
+project(':PaparazziExt').projectDir = new File("./Ext/Paparazzi")

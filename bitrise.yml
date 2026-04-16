@@ -24,6 +24,7 @@ stages:
     - test_accessibility_ext: {}
     - test_compose_ext: {}
     - test_fullscreen_ext: {}
+    - test_paparazzi_ext: {}
 
 workflows:
   evaluate_build:
@@ -83,6 +84,13 @@ workflows:
         - set_specific_status: "pending"
         - auth_token: $GITHUB_TOKEN
         - status_identifier: "Fullscreen Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Extension"
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     meta:
       bitrise.io:
@@ -304,6 +312,31 @@ workflows:
         inputs:
         - auth_token: $GITHUB_TOKEN
         - status_identifier: "Fullscreen Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    meta:
+      bitrise.io:
+        stack: ubuntu-noble-24.04-bitrise-2025-android
+        machine_type_id: standard
+
+  test_paparazzi_ext:
+    steps:
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: PaparazziExt:ktlintCheck
+        title: KtLint
+    - gradle-runner@2:
+        inputs:
+          - gradlew_path: "./gradlew"
+          - gradle_task: PaparazziExt:assemble
+        title: Validate build
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Extension"
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     before_run:
     - _globalSetup

@@ -1,0 +1,64 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
+plugins {
+    id 'java-library'
+    id 'org.jetbrains.kotlin.jvm'
+    alias(libs.plugins.compose.compiler)
+    id 'org.jetbrains.dokka'
+    id 'maven-publish'
+    id 'signing'
+}
+
+ext {
+    pom = [
+            publishedGroupId  : 'dev.testify',
+            artifact          : 'testify-paparazzi',
+            libraryName       : 'testify-paparazzi',
+            libraryDescription: 'Paparazzi snapshot testing utilities for Android Testify',
+            siteUrl           : 'https://github.com/ndtp/android-testify',
+            gitUrl            : 'https://github.com/ndtp/android-testify.git',
+            licenseName       : 'The MIT License',
+            licenseUrl        : 'https://opensource.org/licenses/MIT',
+            author            : 'ndtp'
+    ]
+}
+
+version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
+group = pom.publishedGroupId
+archivesBaseName = pom.artifact
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaGenerateModuleHtml) {
+    archiveClassifier.set('javadoc')
+    from dokkaGenerateModuleHtml.outputs
+}
+
+dependencies {
+    compileOnly libs.paparazzi
+    compileOnly libs.junit4
+
+    compileOnly(platform(libs.androidx.compose.bom))
+    compileOnly libs.androidx.compose.runtime
+    compileOnly libs.androidx.ui
+}
+
+tasks.withType(KotlinJvmCompile).configureEach {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        jvmTarget.set(JvmTarget.JVM_21)
+    }
+}
+
+afterEvaluate {
+    apply from: "../../publish.build.gradle"
+}
