@@ -1,3 +1,15 @@
+## 6.0.0
+
+- https://github.com/ndtp/android-testify/pull/269
+    - `dev.testify.internal.extensions.cyan` moved to `dev.testify.extensions.cyan`
+    - Java interop for `findAnnotation` method is now available from `AnnotationExtensionsKtx`
+    - Java interop for `instrumentationPrintln` method is now available from `InstrumentationRegistryExtensionsKt`
+    - Java interop for `getModuleName` method is now available from `InstrumentationRegistryExtensionsKt`
+    - `fun Context.updateLocale(locale: Locale?): Context` is now public
+    - `fun getMetaDataBundle(context: Context): Bundle?` is now public
+
+---
+
 ## 5.0.2
 
 *   Declare AGP as compileOnly to prevent deprecated android {} accessor in consuming projects
