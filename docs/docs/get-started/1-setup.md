@@ -6,7 +6,7 @@ Before building your screenshot test with Testify, make sure to set a dependency
 
 ```groovy
 plugins {
-    id("dev.testify") version "5.0.2" apply false
+    id("dev.testify") version "6.0.0" apply false
 }
 ```
 
