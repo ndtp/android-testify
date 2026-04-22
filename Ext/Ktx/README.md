@@ -14,14 +14,6 @@ Why Use Testify KTX?
 
 # Set up testify-ktx
 
-**Root build.gradle**
-
-```groovy
-plugins {
-    id("dev.testify") version "6.0.0" apply false
-}
-```
-
 **settings.gradle**
 
 Ensure that `mavenCentral()` is available in `dependencyResolutionManagement`.
