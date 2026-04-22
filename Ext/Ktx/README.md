@@ -1,6 +1,6 @@
 # Testify — Android Screenshot Testing — Kotlin Extensions
 
-<a href="https://search.maven.org/artifact/dev.testify/testify-kts"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify-ktx?color=%236e40ed&label=dev.testify%3Atestify-ktx"/></a>
+<a href="https://search.maven.org/artifact/dev.testify/testify-ktx"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/dev.testify/testify-ktx?color=%236e40ed&label=dev.testify%3Atestify-ktx"/></a>
 
 **Kotlin extensions for Android Testify, providing more idiomatic and helper APIs to work with screenshot testing in Android.**
 
