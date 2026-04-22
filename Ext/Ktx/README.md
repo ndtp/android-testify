@@ -18,7 +18,7 @@ Why Use Testify KTX?
 
 ```groovy
 plugins {
-    id("dev.testify") version "5.0.0" apply false
+    id("dev.testify") version "6.0.0" apply false
 }
 ```
 
@@ -29,7 +29,7 @@ Ensure that `mavenCentral()` is available in `dependencyResolutionManagement`.
 **Application build.gradle**
 ```groovy
 dependencies {
-    androidTestImplementation "dev.testify:testify-ktx:3.2.3"
+    androidTestImplementation "dev.testify:testify-ktx:6.0.0"
 }
 ```
 
