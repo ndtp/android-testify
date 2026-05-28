@@ -25,9 +25,14 @@
 
 package dev.testify
 
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.TestExtension
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
 import dev.testify.internal.Style.Description
 import dev.testify.internal.android
+import dev.testify.internal.isTestModule
 import dev.testify.internal.isVerbose
 import dev.testify.internal.println
 import dev.testify.tasks.internal.TaskNameProvider
@@ -48,6 +53,7 @@ import dev.testify.tasks.utility.SettingsTask
 import dev.testify.tasks.utility.TimeZoneTask
 import dev.testify.tasks.utility.VersionTask
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.extensions.core.serviceOf
@@ -77,8 +83,14 @@ class TestifyPlugin : Plugin<Project> {
             if (settings.autoImplementLibrary) {
                 val version = javaClass.getPackage().implementationVersion.orEmpty()
                 val dependency = "dev.testify:testify:$version"
-                if (project.isVerbose) println(Description, "Adding androidTestImplementation($dependency)")
-                project.dependencies.add("androidTestImplementation", dependency)
+
+                if (project.isTestModule) {
+                    if (project.isVerbose) println(Description, "Adding implementation($dependency)")
+                    project.dependencies.add("implementation", dependency)
+                } else {
+                    if (project.isVerbose) println(Description, "Adding androidTestImplementation($dependency)")
+                    project.dependencies.add("androidTestImplementation", dependency)
+                }
             }
         }
 
