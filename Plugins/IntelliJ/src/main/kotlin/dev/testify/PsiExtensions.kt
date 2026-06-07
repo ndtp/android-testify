@@ -24,6 +24,7 @@
  */
 package dev.testify
 
+import com.android.AndroidProjectTypes
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -35,6 +36,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
+import org.jetbrains.android.facet.AndroidFacet
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.name
@@ -50,6 +52,16 @@ private const val PROJECT_FORMAT = "%1s."
 
 val KtFile?.moduleName: String
     get() = this?.let { ModuleUtilCore.findModuleForPsiElement(it) }?.name ?: ""
+
+val PsiElement.isAndroidTestContext: Boolean
+    get() {
+        val ktFile = (this.containingFile as? KtFile) ?: return false
+        if (ktFile.virtualFilePath.contains("androidTest")) return true
+
+        val module = ModuleUtilCore.findModuleForPsiElement(this) ?: return false
+        val facet = AndroidFacet.getInstance(module) ?: return false
+        return facet.configuration.projectType == AndroidProjectTypes.PROJECT_TYPE_TEST
+    }
 
 val AnActionEvent.moduleName: String
     get() {

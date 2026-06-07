@@ -30,6 +30,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import dev.testify.hasScreenshotAnnotation
+import dev.testify.isAndroidTestContext
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
@@ -42,7 +43,7 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element !is KtClass) return null
-        if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
+        if (!element.isAndroidTestContext) return null
         return element.getLineMarkerInfo()
     }
 
