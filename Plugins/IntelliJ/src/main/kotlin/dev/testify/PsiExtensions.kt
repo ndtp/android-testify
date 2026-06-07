@@ -30,6 +30,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
@@ -37,7 +38,6 @@ import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.name
-import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
@@ -48,12 +48,15 @@ import java.util.concurrent.Callable
 private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
 
+val KtFile?.moduleName: String
+    get() = this?.let { ModuleUtilCore.findModuleForPsiElement(it) }?.name ?: ""
+
 val AnActionEvent.moduleName: String
     get() {
         val psiFile = this.getData(PlatformDataKeys.PSI_FILE)
         val ktFile = (psiFile as? KtFile)
         val projectName = ktFile?.project?.name?.replace(' ', '_') ?: ""
-        val moduleName = ktFile?.module?.name ?: ""
+        val moduleName = ktFile.moduleName
 
         val modules = moduleName.removePrefix(PROJECT_FORMAT.format(projectName))
         val psiModule = modules.removeSuffix(ANDROID_TEST_MODULE)
