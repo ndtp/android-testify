@@ -48,6 +48,7 @@ import org.jetbrains.kotlin.psi.psiUtil.parents
 import java.util.concurrent.Callable
 
 private const val ANDROID_TEST_MODULE = ".androidTest"
+private const val TEST_LIBRARY_MODULE = ".main"
 private const val PROJECT_FORMAT = "%1s."
 
 val KtFile?.moduleName: String
@@ -69,12 +70,9 @@ val AnActionEvent.moduleName: String
         val ktFile = (psiFile as? KtFile)
         val projectName = ktFile?.project?.name?.replace(' ', '_') ?: ""
         val moduleName = ktFile.moduleName
-
         val modules = moduleName.removePrefix(PROJECT_FORMAT.format(projectName))
-        val psiModule = modules.removeSuffix(ANDROID_TEST_MODULE)
+        val psiModule = modules.removeSuffix(ANDROID_TEST_MODULE).removeSuffix(TEST_LIBRARY_MODULE)
         val gradleModule = psiModule.replace(".", ":")
-        println("$modules $psiModule $gradleModule")
-
         return gradleModule
     }
 
