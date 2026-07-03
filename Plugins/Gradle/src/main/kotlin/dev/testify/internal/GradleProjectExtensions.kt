@@ -28,13 +28,18 @@ package dev.testify.internal
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.TestExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 val Project.android: CommonExtension<*, *, *, *, *, *>
     get() = this.extensions.findByType(ApplicationExtension::class.java)
         ?: this.extensions.findByType(LibraryExtension::class.java)
+        ?: this.extensions.findByType(TestExtension::class.java)
         ?: throw GradleException("Gradle project must contain an `android` closure")
+
+val Project.isTestModule: Boolean
+    get() = this.extensions.findByType(TestExtension::class.java) != null
 
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false

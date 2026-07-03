@@ -16,3 +16,5 @@ Plugins/Gradle/gradle/wrapper/
 Plugins/Gradle/gradlew
 Plugins/Gradle/gradlew.bat
 .intellijPlatform/
+.antigravitycli/
+Plugins/IntelliJ/.kotlin/

@@ -28,6 +28,7 @@ import com.intellij.codeInsight.daemon.LineMarkerInfo
 import com.intellij.codeInsight.daemon.LineMarkerProvider
 import com.intellij.openapi.editor.markup.GutterIconRenderer
 import com.intellij.psi.PsiElement
+import dev.testify.isAndroidTestContext
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -41,7 +42,7 @@ class ScreenshotInstrumentationLineMarkerProvider : LineMarkerProvider {
 
     override fun getLineMarkerInfo(element: PsiElement): LineMarkerInfo<*>? {
         if (element !is KtNamedFunction) return null
-        if (!element.containingKtFile.virtualFilePath.contains("androidTest")) return null
+        if (!element.isAndroidTestContext) return null
         return element.getLineMarkerInfo()
     }
 

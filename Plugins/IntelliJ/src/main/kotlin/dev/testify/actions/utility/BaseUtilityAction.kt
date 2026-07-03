@@ -39,7 +39,7 @@ import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiShortNamesCache
 import dev.testify.baselineImageName
 import dev.testify.getVirtualFile
-import org.jetbrains.kotlin.idea.util.projectStructure.module
+import com.intellij.openapi.module.ModuleUtilCore
 import org.jetbrains.kotlin.psi.KtFile
 
 abstract class BaseUtilityAction : AnAction() {
@@ -86,8 +86,9 @@ abstract class BaseUtilityAction : AnAction() {
     }
 
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
-        if (currentFile is KtFile && currentFile.module != null) {
-            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, currentFile.module!!.moduleContentScope)
+        val module = ModuleUtilCore.findModuleForPsiElement(currentFile)
+        if (module != null) {
+            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, module.moduleContentScope)
             if (files.isNotEmpty()) {
                 return files.first()
             }
