@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization) apply false
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.paparazzi) apply false
     id("dev.testify") apply false
 }
 
