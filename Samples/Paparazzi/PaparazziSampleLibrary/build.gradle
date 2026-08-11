@@ -54,6 +54,11 @@ android {
     buildFeatures {
         compose true
     }
+    // Publishes the `src/testFixtures` source set as a consumable variant so that :PaparazziSample
+    // (and any other module migrating from Testify) can share PaparazziTestRule.
+    testFixtures {
+        enable true
+    }
     composeOptions {
         kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
     }
@@ -90,6 +95,15 @@ dependencies {
     implementation 'io.ktor:ktor-client-android:3.2.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0'
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+    // Shared Paparazzi support, consumed via `testImplementation testFixtures(project(...))`.
+    // Paparazzi itself is compileOnly: the runtime is contributed by the consuming module's
+    // `app.cash.paparazzi` Gradle plugin, and it must never reach an Android runtime classpath.
+    testFixturesCompileOnly libs.paparazzi
+    testFixturesApi 'junit:junit:4.13.2'
+    testFixturesImplementation composeBom
+    testFixturesImplementation 'androidx.compose.runtime:runtime'
+    testFixturesImplementation "io.coil-kt:coil-compose:2.7.0"
 
     androidTestImplementation composeBom
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"

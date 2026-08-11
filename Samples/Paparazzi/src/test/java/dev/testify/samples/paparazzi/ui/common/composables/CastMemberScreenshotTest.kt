@@ -1,11 +1,7 @@
 package dev.testify.samples.paparazzi.ui.common.composables
 
-import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_3A
-import app.cash.paparazzi.Paparazzi
-import com.android.ide.common.rendering.api.SessionParams.RenderingMode
-import dev.testify.samples.paparazzi.test.setSynchronousImageLoader
+import dev.testify.samples.paparazzi.test.PaparazziTestRule
 import dev.testify.samples.paparazzi.ui.common.util.imagePromise
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -20,22 +16,11 @@ import org.junit.Test
 class CastMemberScreenshotTest {
 
     @get:Rule
-    val paparazzi = Paparazzi(
-        deviceConfig = PIXEL_3A,
-        theme = "android:Theme.Material.Light.NoActionBar",
-        renderingMode = RenderingMode.SHRINK
-    )
-
-    @Before
-    fun before() {
-        // Without this, Coil is still decoding on a worker thread when Paparazzi draws the frame
-        // and the headshot renders as empty space.
-        setSynchronousImageLoader(paparazzi.context)
-    }
+    val rule = PaparazziTestRule()
 
     @Test
     fun default() {
-        paparazzi.snapshot {
+        rule.snapshot {
             CastMember(
                 model = CastMemberPresentationModel(
                     id = 0,

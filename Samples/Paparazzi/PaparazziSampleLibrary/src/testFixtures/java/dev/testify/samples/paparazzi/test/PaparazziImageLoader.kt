@@ -46,6 +46,9 @@ import kotlinx.coroutines.Dispatchers
  * directories (`src/main/assets`, `src/debug/assets`, plus any library modules). That lets a
  * Paparazzi test reference an image fixture checked into the repository with exactly the same
  * `file:///android_asset/...` URI used by the Testify instrumented tests.
+ *
+ * [PaparazziTestRule] calls this for you; call it directly only when constructing a bare
+ * [app.cash.paparazzi.Paparazzi] rule.
  */
 fun setSynchronousImageLoader(context: Context) {
     val imageLoader = ImageLoader.Builder(context).dispatcher(Dispatchers.Unconfined).build()
