@@ -30,6 +30,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
@@ -37,7 +38,6 @@ import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.name
-import org.jetbrains.kotlin.idea.util.projectStructure.module
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
@@ -48,18 +48,18 @@ import java.util.concurrent.Callable
 private const val ANDROID_TEST_MODULE = ".androidTest"
 private const val PROJECT_FORMAT = "%1s."
 
+val KtFile?.moduleName: String
+    get() = this?.let { ModuleUtilCore.findModuleForPsiElement(it) }?.name ?: ""
+
 val AnActionEvent.moduleName: String
     get() {
         val psiFile = this.getData(PlatformDataKeys.PSI_FILE)
         val ktFile = (psiFile as? KtFile)
         val projectName = ktFile?.project?.name?.replace(' ', '_') ?: ""
-        val moduleName = ktFile?.module?.name ?: ""
-
+        val moduleName = ktFile.moduleName
         val modules = moduleName.removePrefix(PROJECT_FORMAT.format(projectName))
         val psiModule = modules.removeSuffix(ANDROID_TEST_MODULE)
         val gradleModule = psiModule.replace(".", ":")
-        println("$modules $psiModule $gradleModule")
-
         return gradleModule
     }
 
@@ -67,7 +67,7 @@ val PsiElement.baselineImageName: String
     get() {
         val ktElement = this as? KtElement ?: return "unknown"
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<String, Throwable> {
+            ReadAction.computeBlocking<String, Throwable> {
                 analyze(ktElement) {
                     (ktElement as? KtNamedFunction)?.symbol?.let { functionSymbol ->
                         val className = (functionSymbol.containingSymbol as? KaClassSymbol)?.name?.asString()
@@ -88,7 +88,7 @@ val PsiElement.methodName: String
 val KtNamedFunction.testifyMethodInvocationPath: String
     get() {
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<String, Throwable> {
+            ReadAction.computeBlocking<String, Throwable> {
                 analyze(this@testifyMethodInvocationPath) {
                     val functionSymbol = this@testifyMethodInvocationPath.symbol
                     val className =
@@ -103,7 +103,7 @@ val KtNamedFunction.testifyMethodInvocationPath: String
 val KtClass.testifyClassInvocationPath: String
     get() {
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<String, Throwable> {
+            ReadAction.computeBlocking<String, Throwable> {
                 analyze(this@testifyClassInvocationPath) {
                     val classSymbol = this@testifyClassInvocationPath.symbol as? KaClassSymbol
                     classSymbol?.classId?.asSingleFqName()?.asString() ?: "unknown"
@@ -115,7 +115,7 @@ val KtClass.testifyClassInvocationPath: String
 val KtNamedFunction.hasScreenshotAnnotation: Boolean
     get() {
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.compute<Boolean, Throwable> {
+            ReadAction.computeBlocking<Boolean, Throwable> {
                 analyze(this@hasScreenshotAnnotation) {
                     this@hasScreenshotAnnotation.symbol
                         .annotations

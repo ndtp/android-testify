@@ -2,6 +2,20 @@
 
 # Android Testify - IntelliJ Platform Plugin - Change Log
 
+## [5.0.0]
+
+- Added support for Support Android Studio Quail 4 | 2026.1.4 Canary 4 | 261.*
+
+## [4.0.0]
+
+- Added initial support for Paparazzi and Preview tests!
+    - Implemented record and test functionality for Paparazzi tests.
+    - Enhanced "Go To Baseline" and "Go To Source" navigation for baseline images.
+    - Added support for build variants.
+    - Enabled class-level menu actions.
+    - Disabled "Pull" action when no baseline image is found.
+- Bumped minimum IDE support to 252.. Added support for 253.
+
 ## [3.0.0]
 
 - Added support for Support Android Studio Narwhal | 2025.1.1 Canary 9 | 251.+
