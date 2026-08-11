@@ -50,7 +50,21 @@ import kotlinx.coroutines.Dispatchers
  * [PaparazziTestRule] calls this for you; call it directly only when constructing a bare
  * [app.cash.paparazzi.Paparazzi] rule.
  */
-fun setSynchronousImageLoader(context: Context) {
+fun setSynchronousImageLoader(context: Context): ImageLoader {
     val imageLoader = ImageLoader.Builder(context).dispatcher(Dispatchers.Unconfined).build()
     Coil.setImageLoader(imageLoader)
+    return imageLoader
+}
+
+/**
+ * Undo [setSynchronousImageLoader], shutting the loader down and clearing Coil's singleton.
+ *
+ * Coil's singleton is process-wide, so without this the loader built for one test — holding the
+ * [Context] and caches of a render session Paparazzi has since torn down — is still installed when
+ * the next test in the same class runs. Requests made through it never produce a bitmap in time and
+ * the composable records with an empty image slot.
+ */
+fun resetImageLoader(imageLoader: ImageLoader) {
+    imageLoader.shutdown()
+    Coil.reset()
 }

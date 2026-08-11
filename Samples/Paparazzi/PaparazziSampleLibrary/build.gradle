@@ -104,6 +104,7 @@ dependencies {
     testFixturesImplementation composeBom
     testFixturesImplementation 'androidx.compose.runtime:runtime'
     testFixturesImplementation "io.coil-kt:coil-compose:2.7.0"
+    testFixturesImplementation libs.kotlinx.coroutines.test
 
     androidTestImplementation composeBom
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:${versions.compose.ui}"

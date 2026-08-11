@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2023-2026 ndtp
  * Original work copyright (c) 2023 Andrew Carmichael
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,13 +25,6 @@
 
 package dev.testify.samples.paparazzi.data.remote.tmdb.httpclient
 
-//import io.ktor.client.features.DefaultRequest
-//import io.ktor.client.features.defaultRequest
-//import io.ktor.client.features.json.JsonFeature
-//import io.ktor.client.features.json.serializer.KotlinxSerializer
-//import io.ktor.client.features.logging.LogLevel
-//import io.ktor.client.features.logging.Logger
-//import io.ktor.client.features.logging.Logging
 import android.util.Log
 import dev.testify.samples.paparazzi.application.foundation.secret.SecretsProvider
 import io.ktor.client.HttpClient

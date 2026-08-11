@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 ndtp
+ * Copyright (c) 2026 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,11 +24,17 @@
 package dev.testify.samples.paparazzi.test
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.runtime.Composable
 import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import app.cash.paparazzi.RenderExtension
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -126,15 +132,31 @@ class PaparazziTestRule(
     }
 
     /**
-     * Installs the synchronous Coil loader after Paparazzi has prepared the render session, so that
-     * `Paparazzi.context` is available, and before the test body runs.
+     * Prepares the image pipeline once Paparazzi has built the render session — `Paparazzi.context`
+     * and the main `Looper` only exist from here — and restores it afterwards.
+     *
+     * Re-pointing [Dispatchers.Main] at the *current* main `Looper` is what makes image loading work
+     * for more than one test per JVM. `Dispatchers.Main` is resolved once per process and caches a
+     * `Handler` for the main `Looper` that existed at the time; Paparazzi tears that `Looper` down in
+     * `teardown()` and builds a new one for the next test. From the second test onwards the cached
+     * dispatcher is therefore bound to a dead `Looper`, and work submitted to it never runs.
+     *
+     * Coil hits this directly: `RealImageLoader.execute` dispatches through `Dispatchers.Main.immediate`,
+     * so its requests simply never complete and every `AsyncImage` records as an empty slot — with the
+     * test still passing, because Paparazzi is happy to record a blank image.
      */
     private inner class SynchronousImageLoaderStatement(
         private val base: Statement
     ) : Statement() {
         override fun evaluate() {
-            setSynchronousImageLoader(context)
-            base.evaluate()
+            Dispatchers.setMain(Handler(Looper.getMainLooper()).asCoroutineDispatcher())
+            val imageLoader = setSynchronousImageLoader(context)
+            try {
+                base.evaluate()
+            } finally {
+                resetImageLoader(imageLoader)
+                Dispatchers.resetMain()
+            }
         }
     }
 

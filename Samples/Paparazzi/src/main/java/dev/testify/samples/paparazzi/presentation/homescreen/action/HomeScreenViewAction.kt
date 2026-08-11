@@ -25,22 +25,16 @@
 
 package dev.testify.samples.paparazzi.presentation.homescreen.action
 
-import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dev.testify.samples.paparazzi.R
 import dev.testify.samples.paparazzi.application.foundation.ui.action.ViewAction
 import dev.testify.samples.paparazzi.presentation.common.model.MoviePresentationModel
-import javax.inject.Inject
 
 sealed class HomeScreenViewAction : ViewAction {
 
     data class ViewHeadliningMoveInfoPressed(val moviePresentationModel: MoviePresentationModel) : HomeScreenViewAction() {
         override fun describe() = moviePresentationModel.title
-            // TODO: context.getString(R.string.view_action_view_headlining_movie_info, moviePresentationModel.title)
     }
 
     data class MovieThumbnailPressed(val moviePresentationModel: MoviePresentationModel) : HomeScreenViewAction() {
         override fun describe(): String = moviePresentationModel.title
-            // TODO: context.getString(R.string.view_action_view_movie_detail, moviePresentationModel.title)
     }
 }

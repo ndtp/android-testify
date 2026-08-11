@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2023-2026 ndtp
  * Original work copyright (c) 2023 Andrew Carmichael
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,7 +38,6 @@ import dev.testify.samples.paparazzi.data.remote.tmdb.httpclient.TmdbHostnamePro
 import dev.testify.samples.paparazzi.data.remote.tmdb.httpclient.buildKtorHttpClient
 import io.ktor.client.HttpClient
 import javax.inject.Singleton
-
 
 @Module
 @InstallIn(value = [SingletonComponent::class])

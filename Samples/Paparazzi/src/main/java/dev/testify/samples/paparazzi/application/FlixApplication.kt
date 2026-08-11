@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2023-2026 ndtp
  * Original work copyright (c) 2023 Andrew Carmichael
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,15 +27,6 @@ package dev.testify.samples.paparazzi.application
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-
-//@HiltAndroidApp
-//class PaparazziApplication : Application(), ImageLoaderFactory {
-//
-//    @Inject
-//    lateinit var imageLoader: ImageLoader
-//
-//    override fun newImageLoader(): ImageLoader = imageLoader
-//}
 
 @HiltAndroidApp
 class PaparazziApplication : Application()

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2023 ndtp
+ * Modified work copyright (c) 2023-2026 ndtp
  * Original work copyright (c) 2023 Andrew Carmichael
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -41,12 +41,12 @@ import dev.testify.samples.paparazzi.ui.common.composables.IndeterminateLoadingS
 @Composable
 inline fun <reified T : ViewState> ScreenState(
     screenState: ScreenState,
-    ViewStateRenderer: @Composable (T) -> Unit
+    viewStateRenderer: @Composable (T) -> Unit
 ) {
     when (screenState) {
         UnsetScreenState -> Unit
         FullscreenLoadingState -> FullscreenLoadingState()
-        is BasicScreenState<*> -> ViewStateRenderer(screenState.viewState as T)
+        is BasicScreenState<*> -> viewStateRenderer(screenState.viewState as T)
     }
 }
 
@@ -60,6 +60,3 @@ fun FullscreenLoadingState() {
         IndeterminateLoadingSpinner()
     }
 }
-
-@Composable
-fun UnknownScreenState() { }
