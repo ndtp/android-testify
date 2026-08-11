@@ -4,7 +4,7 @@
 
 ## [5.0.0]
 
-- Added support for Support Android Studio Quail 4 | 2026.1.4 Canary 4 | 261.*
+- Added support for Android Studio Quail 4 | 2026.1.4 Canary 4 | 261.*
 
 ## [4.0.0]
 
