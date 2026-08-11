@@ -25,6 +25,7 @@ stages:
     - test_compose_ext: {}
     - test_fullscreen_ext: {}
     - test_ktx: {}
+    - test_paparazzi: {}
 
 workflows:
   evaluate_build:
@@ -430,6 +431,44 @@ workflows:
     - _globalSetup
     - _emulatorSetup
 
+  test_paparazzi:
+    steps:
+    - android-unit-test@1:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: PaparazziSample
+        - cache_level: none
+    - android-unit-test@1:
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: PaparazziSampleLibrary
+        - cache_level: none
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Sample App"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - custom-test-results-export@1.0:
+        is_always_run: true
+        timeout: 120
+        inputs:
+        - test_name: Paparazzi Screenshot Test
+        - search_pattern: "**/build/test-results/"
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Sample Library"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
+    - _emulatorSetup
 
 meta:
   bitrise.io:
