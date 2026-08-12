@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2025 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,9 +29,10 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.ConfirmationDialogWrapper
+import dev.testify.TestFlavor
 import java.awt.event.ActionEvent
 
-class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
+class DeleteBaselineAction(anchorElement: PsiElement, testFlavor: TestFlavor) : BaseFileAction(anchorElement, testFlavor) {
 
     override val menuText: String
         get() = "Delete ${shortDisplayName(anchorElement)}"

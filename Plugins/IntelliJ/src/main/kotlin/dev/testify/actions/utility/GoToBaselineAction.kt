@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 ndtp
+ * Copyright (c) 2024-2026 ndtp
   *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +27,26 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import dev.testify.baselineImageName
+import dev.testify.determineTestFlavor
 import dev.testify.findScreenshotAnnotatedFunction
+import dev.testify.getElementAtCaret
 
 class GoToBaselineAction : BaseUtilityAction() {
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(event: AnActionEvent) {
-        event.presentation.isEnabledAndVisible = event.findScreenshotAnnotatedFunction()?.let { function ->
+        val testFlavor = event.getElementAtCaret()?.determineTestFlavor() ?: return
+        val screenshotTestFunction = event.findScreenshotAnnotatedFunction(testFlavor)
+        event.presentation.isEnabledAndVisible = screenshotTestFunction?.let { function ->
             isBaselineInProject(function)
         } ?: false
     }
 
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.project ?: return
-        event.findScreenshotAnnotatedFunction()?.let { function ->
+        val testFlavor = event.getElementAtCaret()?.determineTestFlavor() ?: return
+        event.findScreenshotAnnotatedFunction(testFlavor)?.let { function ->
             findBaselineImage(function.containingFile, function.baselineImageName)?.let { virtualFile ->
                 FileEditorManager.getInstance(project).openFile(virtualFile, true)
             }

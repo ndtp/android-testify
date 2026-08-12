@@ -2,6 +2,12 @@
 
 # Android Testify - IntelliJ Platform Plugin - Change Log
 
+## [Unreleased]
+
+## [5.1.0]
+
+- Improved support for Paparazzi tests.
+
 ## [5.0.0]
 
 - Added support for Android Studio Quail 4 | 2026.1.4 Canary 4 | 261.*

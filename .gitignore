@@ -18,3 +18,4 @@ Plugins/Gradle/gradlew.bat
 .intellijPlatform/
 .antigravitycli/
 Plugins/IntelliJ/.kotlin/
+Samples/Paparazzi/.idea/
