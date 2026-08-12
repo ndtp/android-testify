@@ -38,8 +38,9 @@ import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotation
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
-import org.jetbrains.kotlin.analysis.api.symbols.KaPropertySymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KaVariableSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.name
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -52,6 +53,17 @@ import java.util.Locale
 import java.util.concurrent.Callable
 
 private const val PROJECT_FORMAT = "%1s."
+
+private const val PAPARAZZI_CLASS_FQ_NAME = "app.cash.paparazzi.Paparazzi"
+private const val TEST_RULE_CLASS_FQ_NAME = "org.junit.rules.TestRule"
+
+/**
+ * How many times [hasPaparazziRule] will step from a rule into a rule nested inside it. One step
+ * covers the pattern this exists for — a test class holding a rule that wraps Paparazzi — the rest
+ * is headroom. It is a termination guard as much as a limit: it bounds the search even for rule
+ * types that cannot be de-duplicated by `ClassId`, such as anonymous or local classes.
+ */
+private const val MAX_RULE_NESTING_DEPTH = 3
 
 val KtFile?.moduleName: String
     get() = this?.let { ModuleUtilCore.findModuleForPsiElement(it) }?.name ?: ""
@@ -175,34 +187,81 @@ fun KtClassOrObject.hasPaparazziRule(): Boolean {
         ReadAction.computeBlocking<Boolean, Throwable> {
             analyze(containingClass) {
                 val classSymbol = containingClass.symbol as? KaClassSymbol ?: return@analyze false
-
-                fun hasPaparazziField(symbol: KaClassSymbol): Boolean {
-                    return symbol.declaredMemberScope.callables.filterIsInstance<KaPropertySymbol>().any { property ->
-                        val typeSymbol = property.returnType.expandedSymbol as? KaClassSymbol
-                        typeSymbol?.classId?.asSingleFqName()?.asString() == "app.cash.paparazzi.Paparazzi"
-                    }
-                }
-
-                val visited = mutableSetOf<KaClassSymbol>()
-                val queue = ArrayDeque<KaClassSymbol>()
-                queue.add(classSymbol)
-
-                while (queue.isNotEmpty()) {
-                    val current = queue.removeFirst()
-                    if (!visited.add(current)) continue
-
-                    if (hasPaparazziField(current)) return@analyze true
-
-                    current.superTypes.forEach { type ->
-                        (type.expandedSymbol as? KaClassSymbol)?.let { queue.add(it) }
-                    }
-                }
-
-                false
+                hasPaparazziRule(classSymbol)
             }
         }
     }).get() ?: false
 }
+
+/**
+ * True if [classSymbol] declares a [Paparazzi][PAPARAZZI_CLASS_FQ_NAME] instance, either directly or
+ * through a [TestRule][TEST_RULE_CLASS_FQ_NAME] that wraps one.
+ *
+ * Wrapping Paparazzi in a project-specific rule to cut down on per-test boilerplate is a common
+ * pattern, so a test class is considered Paparazzi-capable when its rule — rather than the class
+ * itself — is what holds the Paparazzi instance. Fields inherited from a base class count for both.
+ */
+private fun KaSession.hasPaparazziRule(classSymbol: KaClassSymbol): Boolean {
+    val visited = mutableSetOf<ClassId>()
+    var frontier = listOf(classSymbol)
+
+    repeat(MAX_RULE_NESTING_DEPTH) {
+        val nestedRules = mutableListOf<KaClassSymbol>()
+
+        frontier.forEach { symbol ->
+            val classId = symbol.classId
+            if (classId != null && !visited.add(classId)) return@forEach
+
+            fieldTypes(symbol).forEach { fieldType ->
+                if (fieldType.isOfType(PAPARAZZI_CLASS_FQ_NAME)) return true
+                if (isTestRule(fieldType)) nestedRules.add(fieldType)
+            }
+        }
+
+        if (nestedRules.isEmpty()) return false
+        frontier = nestedRules
+    }
+
+    return false
+}
+
+/** [root] plus every class and interface it inherits from, breadth-first. */
+private fun KaSession.classHierarchy(root: KaClassSymbol): List<KaClassSymbol> {
+    val hierarchy = mutableListOf<KaClassSymbol>()
+    val visited = mutableSetOf<ClassId>()
+    val queue = ArrayDeque<KaClassSymbol>()
+    queue.add(root)
+
+    while (queue.isNotEmpty()) {
+        val current = queue.removeFirst()
+        val classId = current.classId
+        if (classId != null && !visited.add(classId)) continue
+
+        hierarchy.add(current)
+        current.superTypes.forEach { type ->
+            (type.expandedSymbol as? KaClassSymbol)?.let { queue.add(it) }
+        }
+    }
+
+    return hierarchy
+}
+
+/**
+ * The type of every property and field declared by [root] or inherited from one of its supertypes.
+ *
+ * [KaVariableSymbol] covers both Kotlin properties and Java fields, so a rule written in either
+ * language is matched.
+ */
+private fun KaSession.fieldTypes(root: KaClassSymbol): List<KaClassSymbol> =
+    classHierarchy(root)
+        .flatMap { it.declaredMemberScope.callables.filterIsInstance<KaVariableSymbol>() }
+        .mapNotNull { it.returnType.expandedSymbol as? KaClassSymbol }
+
+private fun KaSession.isTestRule(symbol: KaClassSymbol): Boolean =
+    classHierarchy(symbol).any { it.isOfType(TEST_RULE_CLASS_FQ_NAME) }
+
+private fun KaClassSymbol.isOfType(fqName: String): Boolean =
+    this.classId?.asSingleFqName()?.asString() == fqName
 
 val KtNamedFunction.paparazziScreenshotFileName: String
     get() {

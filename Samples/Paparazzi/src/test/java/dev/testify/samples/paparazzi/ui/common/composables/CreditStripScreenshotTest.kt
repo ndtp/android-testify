@@ -23,14 +23,9 @@
  */
 package dev.testify.samples.paparazzi.ui.common.composables
 
-import dev.testify.samples.paparazzi.test.PaparazziTestRule
-import org.junit.Rule
 import org.junit.Test
 
-class CreditStripScreenshotTest {
-
-    @get:Rule
-    val rule = PaparazziTestRule()
+class CreditStripScreenshotTest : BasePaparazziTest() {
 
     private val presentationModels = listOf(
         CastMemberPresentationModel(
