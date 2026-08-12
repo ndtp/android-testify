@@ -25,6 +25,7 @@ stages:
     - test_compose_ext: {}
     - test_fullscreen_ext: {}
     - test_ktx: {}
+    - test_paparazzi: {}
 
 workflows:
   evaluate_build:
@@ -91,6 +92,20 @@ workflows:
         - set_specific_status: "pending"
         - auth_token: $GITHUB_TOKEN
         - status_identifier: "Fullscreen Extension"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Sample App"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Sample Library"
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     meta:
       bitrise.io:
@@ -430,6 +445,63 @@ workflows:
     - _globalSetup
     - _emulatorSetup
 
+  test_paparazzi:
+    steps:
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: PaparazziSample:verifyPaparazziDebug
+        title: Verify Paparazzi Snapshots
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: PaparazziSampleLibrary:verifyPaparazziDebug
+        title: Verify Paparazzi Snapshots (Library)
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Sample App"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - custom-test-results-export@1.0:
+        is_always_run: true
+        timeout: 120
+        inputs:
+        - test_name: Paparazzi Screenshot Test
+        - search_pattern: "**/build/test-results/**/*.xml"
+    - script@1:
+        is_always_run: true
+        title: Collect Paparazzi failure diffs
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -euo pipefail
+            shopt -s nullglob
+
+            found=0
+            for module in Samples/Paparazzi Samples/Paparazzi/PaparazziSampleLibrary; do
+              for image in "$module"/build/paparazzi/failures/*/*.png; do
+                cp "$image" "$BITRISE_DEPLOY_DIR/$(basename "$module")-$(basename "$image")"
+                found=1
+              done
+            done
+
+            if [ "$found" -eq 1 ]; then
+              echo "Collected Paparazzi failure diffs into \$BITRISE_DEPLOY_DIR"
+            else
+              echo "No Paparazzi failure diffs - all snapshots matched."
+            fi
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Sample Library"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
+    before_run:
+    - _globalSetup
 
 meta:
   bitrise.io:
