@@ -30,9 +30,6 @@ Image fixtures are checked in under `src/debug/assets/images/` and referenced wi
 `file:///android_asset/...` URIs an instrumented test would use — Paparazzi resolves assets against
 the module's merged asset directories, so Coil loads them exactly as it does on a device.
 
-`PaparazziSampleLibrary` keeps one Testify test, so the repository still exercises Testify against a
-library project.
-
 ## Building
 
 ```

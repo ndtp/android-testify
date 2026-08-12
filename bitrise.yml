@@ -93,6 +93,13 @@ workflows:
         - auth_token: $GITHUB_TOKEN
         - status_identifier: "Fullscreen Extension"
         - pipeline_build_url: "$BITRISE_BUILD_URL"
+    - github-status@3:
+        run_if: .IsCI
+        inputs:
+        - set_specific_status: "pending"
+        - auth_token: $GITHUB_TOKEN
+        - status_identifier: "Paparazzi Sample App"
+        - pipeline_build_url: "$BITRISE_BUILD_URL"
     meta:
       bitrise.io:
         stack: ubuntu-resolute-26.04-bitrise-2026-android
@@ -433,18 +440,16 @@ workflows:
 
   test_paparazzi:
     steps:
-    - android-unit-test@1:
+    - gradle-runner@2:
         inputs:
-        - project_location: "$PROJECT_LOCATION"
-        - variant: Debug
-        - module: PaparazziSample
-        - cache_level: none
-    - android-unit-test@1:
+        - gradlew_path: "./gradlew"
+        - gradle_task: PaparazziSample:verifyPaparazziDebug
+        title: Verify Paparazzi Snapshots
+    - gradle-runner@2:
         inputs:
-        - project_location: "$PROJECT_LOCATION"
-        - variant: Debug
-        - module: PaparazziSampleLibrary
-        - cache_level: none
+        - gradlew_path: "./gradlew"
+        - gradle_task: PaparazziSampleLibrary:verifyPaparazziDebug
+        title: Verify Paparazzi Snapshots (Library)
     - github-status@3:
         run_if: .IsCI
         inputs:
@@ -468,7 +473,6 @@ workflows:
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     before_run:
     - _globalSetup
-    - _emulatorSetup
 
 meta:
   bitrise.io:

@@ -6,7 +6,7 @@ A sample demonstrating the interoperability of Testify with Paparazzi for a libr
 ## Building
 
 ```
-./gradlew PaparazziLibrarySample:assembleDebug
+./gradlew PaparazziSampleLibrary:assembleDebug
 ```
 
 ---
@@ -15,7 +15,7 @@ A sample demonstrating the interoperability of Testify with Paparazzi for a libr
 
     MIT License
     
-    Copyright (c) 2025 ndtp
+    Copyright (c) 2026 ndtp
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
