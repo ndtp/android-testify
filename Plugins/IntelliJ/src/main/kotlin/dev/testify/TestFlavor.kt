@@ -48,7 +48,16 @@ const val TESTIFY_TEST_CLASS_FLAG = "-PtestClass=$1"
 data class GradleCommand(
     val argumentFlag: String,
     val classCommand: String,
-    val methodCommand: String
+    val methodCommand: String,
+    /**
+     * Extra tasks to name on the command line alongside the one above.
+     *
+     * `--rerun` only applies to tasks named on the command line. `verifyPaparazzi$Variant` is a
+     * lifecycle task that delegates to AGP's unit test task, so naming only it leaves the test task
+     * up-to-date and the run verifies nothing. Naming the test task here is what makes `--rerun`
+     * land where the work happens — and why removing it would make the action silently pass.
+     */
+    val additionalTasks: List<String> = emptyList()
 )
 
 enum class TestFlavor(
@@ -87,14 +96,16 @@ enum class TestFlavor(
         isClassEligible = true,
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
         testGradleCommands = GradleCommand(
-            argumentFlag = "--rerun-tasks --tests '$1'",
+            argumentFlag = "--rerun --tests '$1'",
             classCommand = "verifyPaparazzi$VARIANT_PLACEHOLDER",
-            methodCommand = "verifyPaparazzi$VARIANT_PLACEHOLDER"
+            methodCommand = "verifyPaparazzi$VARIANT_PLACEHOLDER",
+            additionalTasks = listOf(ANDROID_UNIT_TEST_TASK)
         ),
         recordGradleCommands = GradleCommand(
-            argumentFlag = "--rerun-tasks --tests '$1'",
+            argumentFlag = "--rerun --tests '$1'",
             classCommand = "recordPaparazzi$VARIANT_PLACEHOLDER",
-            methodCommand = "recordPaparazzi$VARIANT_PLACEHOLDER"
+            methodCommand = "recordPaparazzi$VARIANT_PLACEHOLDER",
+            additionalTasks = listOf(ANDROID_UNIT_TEST_TASK)
         ),
         findSourceMethod = ::findPaparazziMethod
     )
@@ -138,3 +149,11 @@ fun TestFlavor.hasQualifyingAnnotation(functions: Set<KtNamedFunction>): Boolean
  * the IDE has selected at the moment the action runs.
  */
 const val VARIANT_PLACEHOLDER = "\$Variant"
+
+/**
+ * The Android Gradle Plugin unit test task for the selected variant, e.g. `testDebugUnitTest`.
+ *
+ * Paparazzi's own tasks delegate to this one, so it is the task that has to be re-run for a
+ * verification or a recording to actually happen.
+ */
+const val ANDROID_UNIT_TEST_TASK = "test${VARIANT_PLACEHOLDER}UnitTest"

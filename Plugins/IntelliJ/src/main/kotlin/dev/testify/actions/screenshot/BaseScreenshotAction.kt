@@ -77,7 +77,7 @@ abstract class BaseScreenshotAction(
             return if (isClass()) (anchorElement as? KtClass)?.name else null
         }
 
-    private fun String.toFullGradleCommand(
+    private fun List<String>.toFullGradleCommand(
         event: AnActionEvent,
         argumentFlag: String
     ): String {
@@ -86,7 +86,7 @@ abstract class BaseScreenshotAction(
             is KtClass -> anchorElement.testifyClassInvocationPath
             else -> null
         }
-        val command = ":${event.moduleName}:$this"
+        val command = joinToString(" ") { ":${event.moduleName}:$it" }
         return if (arguments != null) {
             val argFormatted = argumentFlag.replace("$1", arguments)
             "$command $argFormatted"
@@ -108,14 +108,20 @@ abstract class BaseScreenshotAction(
         val executor = RunAnythingAction.EXECUTOR_KEY.getData(dataContext)
 
         val argumentFlag = gradleCommand.argumentFlag
-        var commandName = if (isClass()) gradleCommand.classCommand else gradleCommand.methodCommand
+        val commandName = if (isClass()) gradleCommand.classCommand else gradleCommand.methodCommand
 
-        if (commandName.contains(VARIANT_PLACEHOLDER)) {
-            val variant = event.selectedBuildVariant
-            commandName = commandName.replace(VARIANT_PLACEHOLDER, variant)
+        // Resolved at most once, and only when a task name actually needs it — finding the variant
+        // walks the module graph looking for an AndroidFacet.
+        val variant by lazy { event.selectedBuildVariant }
+        val taskNames = (listOf(commandName) + gradleCommand.additionalTasks).map { taskName ->
+            if (taskName.contains(VARIANT_PLACEHOLDER)) {
+                taskName.replace(VARIANT_PLACEHOLDER, variant)
+            } else {
+                taskName
+            }
         }
 
-        val fullCommandLine = commandName.toFullGradleCommand(event, argumentFlag)
+        val fullCommandLine = taskNames.toFullGradleCommand(event, argumentFlag)
         GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)
     }
 
