@@ -6,7 +6,26 @@
 
 ## [5.1.0]
 
+- **Breaking:** this plugin now requires Android Studio and can no longer be installed in IntelliJ
+  IDEA.
 - Improved support for Paparazzi tests.
+    - Detect a Paparazzi instance held by a test rule, or inherited from a base class, not only one
+      declared directly on the test.
+    - Pull moves failure images into the baseline directory and refreshes the IDE so they appear
+      immediately.
+    - The selected build variant is resolved from the holder module, rather than always producing a
+      `Debug` task name.
+- Fixed "Pull" and "Clear" dropping the `-PtestClass` filter for Testify tests.
+- Fixed "Go To Baseline Image" never resolving the test under the caret.
+- Fixed baseline lookup resolving to a similarly named test's image, which "Delete" could then
+  remove.
+- Test methods named with underscores now resolve for "Go To Source".
+
+### Known limitations
+
+- Compose Preview support is incomplete: recording a baseline fails, and "Go To Source" from a
+  reference image does not resolve. Both need updating for Compose Preview Screenshot Testing
+  0.0.1-alpha10 and later.
 
 ## [5.0.0]
 

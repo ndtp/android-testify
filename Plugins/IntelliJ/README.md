@@ -16,6 +16,11 @@ This plugin will enhance the developer experience by adding fully integrated IDE
 - Reveal the baseline image in Android Studio
 - Delete the baseline image from your project
 
+Supports Testify, Paparazzi and Compose Preview screenshot tests.
+
+**Requires Android Studio.** As of version 5.1.0 this plugin depends on Android Studio APIs and can
+no longer be installed in IntelliJ IDEA.
+
 Learn more at <a href="https://testify.dev/">testify.dev</a>
 
 Copyright (c) 2023-2026 ndtp
