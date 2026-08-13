@@ -28,16 +28,12 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
-import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiMethod
-import com.intellij.psi.search.FileTypeIndex
-import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import dev.testify.TestFlavor
 import dev.testify.baselineImageName
@@ -47,12 +43,6 @@ import dev.testify.getVirtualFile
 abstract class BaseUtilityAction : AnAction() {
 
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
-
-    private fun navigateToClass(psiClass: PsiClass, project: Project) {
-        val psiFile = psiClass.containingFile.virtualFile
-        val descriptor = OpenFileDescriptor(project, psiFile, psiClass.textOffset)
-        FileEditorManager.getInstance(project).openTextEditor(descriptor, true)
-    }
 
     protected fun navigateToMethod(psiMethod: PsiMethod, project: Project) {
         val psiFile = psiMethod.containingFile.virtualFile

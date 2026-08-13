@@ -50,7 +50,7 @@ class ScreenshotClassMarkerProvider : LineMarkerProvider {
 
     private fun KtClass.getLineMarkerInfo(testFlavor: TestFlavor): LineMarkerInfo<PsiElement>? {
         if (testFlavor.isClassEligible.not()) return null
-        val functions: Set<KtNamedFunction> = PsiTreeUtil.findChildrenOfType(this, KtNamedFunction::class.java).filterNotNull().toSet()
+        val functions: Set<KtNamedFunction> = PsiTreeUtil.findChildrenOfType(this, KtNamedFunction::class.java).toSet()
         if (functions.isEmpty()) return null
         if (testFlavor.hasQualifyingAnnotation(functions).not()) return null
         val anchorElement = this.nameIdentifier ?: return null

@@ -37,7 +37,7 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
 import dev.testify.GradleCommand
 import dev.testify.TestFlavor
-import dev.testify.Variant
+import dev.testify.VARIANT_PLACEHOLDER
 import dev.testify.methodName
 import dev.testify.moduleName
 import dev.testify.selectedBuildVariant
@@ -110,9 +110,9 @@ abstract class BaseScreenshotAction(
         val argumentFlag = gradleCommand.argumentFlag
         var commandName = if (isClass()) gradleCommand.classCommand else gradleCommand.methodCommand
 
-        if (commandName.contains(Variant)) {
+        if (commandName.contains(VARIANT_PLACEHOLDER)) {
             val variant = event.selectedBuildVariant
-            commandName = commandName.replace(Variant, variant)
+            commandName = commandName.replace(VARIANT_PLACEHOLDER, variant)
         }
 
         val fullCommandLine = commandName.toFullGradleCommand(event, argumentFlag)

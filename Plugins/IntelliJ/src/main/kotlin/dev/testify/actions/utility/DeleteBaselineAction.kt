@@ -29,10 +29,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import dev.testify.ConfirmationDialogWrapper
-import dev.testify.TestFlavor
 import java.awt.event.ActionEvent
 
-class DeleteBaselineAction(anchorElement: PsiElement, testFlavor: TestFlavor) : BaseFileAction(anchorElement, testFlavor) {
+class DeleteBaselineAction(anchorElement: PsiElement) : BaseFileAction(anchorElement) {
 
     override val menuText: String
         get() = "Delete ${shortDisplayName(anchorElement)}"

@@ -89,13 +89,13 @@ enum class TestFlavor(
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
         testGradleCommands = GradleCommand(
             argumentFlag = "--rerun-tasks --tests '$1'",
-            classCommand = "verifyPaparazzi$Variant",
-            methodCommand = "verifyPaparazzi$Variant"
+            classCommand = "verifyPaparazzi$VARIANT_PLACEHOLDER",
+            methodCommand = "verifyPaparazzi$VARIANT_PLACEHOLDER"
         ),
         recordGradleCommands = GradleCommand(
             argumentFlag = "--rerun-tasks --tests '$1'",
-            classCommand = "recordPaparazzi$Variant",
-            methodCommand = "recordPaparazzi$Variant"
+            classCommand = "recordPaparazzi$VARIANT_PLACEHOLDER",
+            methodCommand = "recordPaparazzi$VARIANT_PLACEHOLDER"
         ),
         findSourceMethod = ::findPaparazziMethod
     ),
@@ -108,13 +108,13 @@ enum class TestFlavor(
         methodInvocationPath = { className, methodName -> "$className*$methodName" },
         testGradleCommands = GradleCommand(
             argumentFlag = "--rerun-tasks --tests '$1'",
-            classCommand = "validate${Variant}ScreenshotTest",
-            methodCommand = "validate${Variant}ScreenshotTest"
+            classCommand = "validate${VARIANT_PLACEHOLDER}ScreenshotTest",
+            methodCommand = "validate${VARIANT_PLACEHOLDER}ScreenshotTest"
         ),
         recordGradleCommands = GradleCommand(
             argumentFlag = "--updateFilter '$1'",
-            classCommand = "update${Variant}ScreenshotTest",
-            methodCommand = "update${Variant}ScreenshotTest"
+            classCommand = "update${VARIANT_PLACEHOLDER}ScreenshotTest",
+            methodCommand = "update${VARIANT_PLACEHOLDER}ScreenshotTest"
         ),
         findSourceMethod = ::findPreviewMethod
     )
@@ -149,4 +149,12 @@ fun PsiElement.determineTestFlavor(): TestFlavor? {
 fun TestFlavor.hasQualifyingAnnotation(functions: Set<KtNamedFunction>): Boolean =
     functions.any { it.hasQualifyingAnnotation(this.qualifyingAnnotations) }
 
-const val Variant = "\$Variant"
+/**
+ * Stands in for the selected build variant inside a Gradle task name.
+ *
+ * The entries above interpolate this constant, so a task name written as
+ * `"verifyPaparazzi&#36;VARIANT_PLACEHOLDER"` holds the literal text `verifyPaparazzi&#36;Variant`
+ * until [dev.testify.actions.screenshot.BaseScreenshotAction] swaps the placeholder for the variant
+ * the IDE has selected at the moment the action runs.
+ */
+const val VARIANT_PLACEHOLDER = "\$Variant"

@@ -262,7 +262,7 @@ private fun KaSession.classHierarchy(root: KaClassSymbol): List<KaClassSymbol> {
 
         hierarchy.add(current)
         current.superTypes.forEach { type ->
-            (type.expandedSymbol as? KaClassSymbol)?.let { queue.add(it) }
+            type.expandedSymbol?.let { queue.add(it) }
         }
     }
 
@@ -278,7 +278,7 @@ private fun KaSession.classHierarchy(root: KaClassSymbol): List<KaClassSymbol> {
 private fun KaSession.fieldTypes(root: KaClassSymbol): List<KaClassSymbol> =
     classHierarchy(root)
         .flatMap { it.declaredMemberScope.callables.filterIsInstance<KaVariableSymbol>() }
-        .mapNotNull { it.returnType.expandedSymbol as? KaClassSymbol }
+        .mapNotNull { it.returnType.expandedSymbol }
 
 private fun KaSession.isTestRule(symbol: KaClassSymbol): Boolean =
     classHierarchy(symbol).any { it.isOfType(TEST_RULE_CLASS_FQ_NAME) }

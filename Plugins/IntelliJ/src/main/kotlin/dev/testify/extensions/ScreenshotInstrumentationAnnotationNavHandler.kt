@@ -82,8 +82,8 @@ class ScreenshotInstrumentationAnnotationNavHandler(
         if (testFlavor == TestFlavor.Testify) {
             group.add(ScreenshotClearAction(anchorElement, testFlavor))
         }
-        group.add(RevealBaselineAction(anchorElement, testFlavor))
-        group.add(DeleteBaselineAction(anchorElement, testFlavor))
+        group.add(RevealBaselineAction(anchorElement))
+        group.add(DeleteBaselineAction(anchorElement))
 
         val dataContext = DataManager.getInstance().getDataContext(event.component)
         return JBPopupFactory.getInstance().createActionGroupPopup(

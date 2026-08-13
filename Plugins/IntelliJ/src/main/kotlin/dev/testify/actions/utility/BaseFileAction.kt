@@ -30,13 +30,9 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
-import dev.testify.TestFlavor
 import dev.testify.baselineImageName
 
-abstract class BaseFileAction(
-    protected val anchorElement: PsiElement,
-    private val testFlavor: TestFlavor
-) : BaseUtilityAction() {
+abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseUtilityAction() {
 
     // BGT: update() searches the file type index for the baseline image, which is too much work
     // to do on the EDT.
