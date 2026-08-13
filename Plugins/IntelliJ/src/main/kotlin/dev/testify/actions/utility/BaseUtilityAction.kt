@@ -34,11 +34,13 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import dev.testify.TestFlavor
 import dev.testify.baselineImageName
 import dev.testify.findBaselineImageFiles
 import dev.testify.getVirtualFile
+import org.jetbrains.kotlin.psi.KtFile
 
 abstract class BaseUtilityAction : AnAction() {
 
@@ -65,18 +67,41 @@ abstract class BaseUtilityAction : AnAction() {
     /**
      * The baseline image for [baselineImageName], preferring one in [currentFile]'s own module.
      *
+     * Both flavours name their baselines predictably — Testify as `Class_method.png`, Paparazzi as
+     * the same with the package prefixed — so both candidates are exact names the filename index can
+     * answer directly. That matters because this runs in `update()`: [findBaselineImageFiles] has to
+     * enumerate every image in the scope, which in an Android project means every drawable.
+     *
      * The module is only a preference, not a filter. Which content roots a source set module owns
      * depends on how the Gradle import modelled the project, and the Paparazzi baselines sit outside
      * any source root, so a module-scoped search can legitimately come up empty. Widening to the
-     * project in that case keeps the action working; the `_`-anchored match in
-     * [findBaselineImageFiles] is what stops the wider search resolving to a similarly named test.
+     * project keeps the action working.
+     *
+     * [findBaselineImageFiles] remains the last resort, for the layouts neither name shape covers —
+     * a nested test class, which Paparazzi flattens as `Outer_Inner`, or a custom `SnapshotHandler`.
+     * Its `_`-anchored match is what stops that wider search resolving to a similarly named test.
      */
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
         val project = currentFile.project
         val module = ModuleUtilCore.findModuleForPsiElement(currentFile) ?: return null
+        val projectScope = GlobalSearchScope.projectScope(project)
 
-        return findBaselineImageFiles(baselineImageName, module.moduleContentScope).firstOrNull()
-            ?: findBaselineImageFiles(baselineImageName, GlobalSearchScope.projectScope(project)).firstOrNull()
+        val packageName = (currentFile as? KtFile)?.packageFqName?.asString().orEmpty()
+        val candidateNames = if (packageName.isEmpty()) {
+            listOf(baselineImageName)
+        } else {
+            listOf(baselineImageName, "${packageName}_$baselineImageName")
+        }
+
+        for (scope in listOf(module.moduleContentScope, projectScope)) {
+            candidateNames.forEach { name ->
+                // minBy, not first: the index gives no ordering guarantee, and a project with more
+                // than one match has to resolve to the same file every time.
+                FilenameIndex.getVirtualFilesByName(name, scope).minByOrNull { it.path }?.let { return it }
+            }
+        }
+
+        return findBaselineImageFiles(baselineImageName, projectScope).firstOrNull()
     }
 
     protected fun isBaselineInProject(anchorElement: PsiElement): Boolean =
