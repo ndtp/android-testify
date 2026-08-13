@@ -35,6 +35,9 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiModificationTracker
 import org.jetbrains.android.facet.AndroidFacet
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
@@ -203,7 +206,23 @@ fun KtElement.hasPaparazziRule(): Boolean {
     return containingClass.hasPaparazziRule()
 }
 
-fun KtClassOrObject.hasPaparazziRule(): Boolean {
+/**
+ * Whether this class can render a Paparazzi snapshot.
+ *
+ * Cached per class. [determineTestFlavor] asks this for every class and every function the
+ * highlighting pass visits, and each function resolves the same containing class, so a test file
+ * would otherwise pay for one full hierarchy resolve per test method on every pass. The answer
+ * depends on base classes and rule types in other files, so any PSI change invalidates it.
+ */
+fun KtClassOrObject.hasPaparazziRule(): Boolean =
+    CachedValuesManager.getCachedValue(this) {
+        CachedValueProvider.Result.create(
+            computeHasPaparazziRule(),
+            PsiModificationTracker.MODIFICATION_COUNT
+        )
+    }
+
+private fun KtClassOrObject.computeHasPaparazziRule(): Boolean {
     val containingClass = this
 
     return ApplicationManager.getApplication().executeOnPooledThread(Callable {
