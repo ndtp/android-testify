@@ -30,6 +30,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.psi.PsiElement
 import dev.testify.GradleCommand
 import dev.testify.TESTIFY_TEST_CLASS_FLAG
@@ -39,6 +41,7 @@ import dev.testify.paparazziScreenshotFileNamePattern
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -75,78 +78,101 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
         }
     }
 
-    private fun isPaparazziPullAvailable(): Boolean {
-        val module = ModuleUtilCore.findModuleForPsiElement(anchorElement) ?: return false
-        val workingDirectory = module.let { ExternalSystemApiUtil.getExternalProjectPath(it) } ?: return false
+    private fun isPaparazziPullAvailable(): Boolean = findPaparazziFailures().isNotEmpty()
+
+    /** The module directory, or `null` if the anchor element is not part of a Gradle module. */
+    private fun moduleDirectory(): File? =
+        ModuleUtilCore.findModuleForPsiElement(anchorElement)
+            ?.let { ExternalSystemApiUtil.getExternalProjectPath(it) }
+            ?.let(::File)
+
+    /**
+     * The failure images Paparazzi recorded for the class or method this action was invoked on.
+     *
+     * Paparazzi writes both the new render and a `delta-` prefixed comparison strip for each
+     * failure. Only the former is a usable baseline, and matching the name from its start is what
+     * excludes the latter.
+     */
+    private fun findPaparazziFailures(): List<File> {
+        val moduleDirectory = moduleDirectory() ?: return emptyList()
         val fileName = if (isClass()) {
             (anchorElement as? KtClass)?.paparazziScreenshotFileNamePattern
         } else {
             (anchorElement as? KtNamedFunction)?.paparazziScreenshotFileName
-        } ?: return false
+        } ?: return emptyList()
 
-        val sourceDir = File(workingDirectory, "build/paparazzi/failures")
-        val files = sourceDir.walkTopDown()
-            .filter { it.isFile && it.extension == "png" }
+        return File(moduleDirectory, PAPARAZZI_FAILURES_DIR)
+            .walkTopDown()
+            .filter { it.isFile && it.extension == "png" && it.name.matchesScreenshotName(fileName) }
             .toList()
+    }
 
-        return if (fileName.contains("*")) {
-            val regex = fileName.replace("*", ".*").toRegex()
-            files.any { regex.matches(it.name) }
-        } else {
-            files.any { it.name == fileName }
-        }
+    /**
+     * Whether this file name is the one [target] names, where a `*` in [target] stands for the
+     * method name.
+     *
+     * Matching the two literal halves of the pattern is exact, where converting the glob to a regex
+     * would leave the package separators as wildcards.
+     */
+    private fun String.matchesScreenshotName(target: String): Boolean {
+        if (!target.contains('*')) return this == target
+
+        val prefix = target.substringBefore('*')
+        val suffix = target.substringAfter('*')
+        return length >= prefix.length + suffix.length && startsWith(prefix) && endsWith(suffix)
     }
 
     private fun handlePaparazziPull(event: AnActionEvent) {
         val project = event.project ?: return
 
-        val module = ModuleUtilCore.findModuleForPsiElement(anchorElement)
-        val workingDirectory = module?.let { ExternalSystemApiUtil.getExternalProjectPath(it) }
-
-        if (workingDirectory == null) {
+        val moduleDirectory = moduleDirectory()
+        if (moduleDirectory == null) {
             notify(project, "Could not determine module path.", NotificationType.ERROR)
             return
         }
 
-        val fileName = if (isClass()) {
-            (anchorElement as? KtClass)?.paparazziScreenshotFileNamePattern
-        } else {
-            (anchorElement as? KtNamedFunction)?.paparazziScreenshotFileName
-        } ?: return
+        val sourceFiles = findPaparazziFailures()
+        if (sourceFiles.isEmpty()) {
+            notify(project, "No failure screenshots found.", NotificationType.WARNING)
+            return
+        }
 
-        val sourceDir = File(workingDirectory, "build/paparazzi/failures")
-        val destDir = File(workingDirectory, "src/test/snapshots/images")
-
+        val destDir = File(moduleDirectory, PAPARAZZI_SNAPSHOTS_DIR)
         if (!destDir.exists()) {
             destDir.mkdirs()
         }
 
         var count = 0
-
-        val sourceFiles = sourceDir.walkTopDown()
-            .filter { it.isFile && it.extension == "png" }
-            .toList()
-
-        if (fileName.contains("*")) {
-            val regex = fileName.replace("*", ".*").toRegex()
-            sourceFiles.filter { regex.matches(it.name) }.forEach { file ->
-                val destFile = File(destDir, file.name)
-                Files.move(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        try {
+            sourceFiles.forEach { sourceFile ->
+                Files.move(
+                    sourceFile.toPath(),
+                    File(destDir, sourceFile.name).toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+                )
                 count++
             }
-        } else {
-            val sourceFile = sourceFiles.firstOrNull { it.name == fileName }
-            if (sourceFile?.exists() == true) {
-                val destFile = File(destDir, fileName)
-                Files.move(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
-                count++
-            }
+        } catch (e: IOException) {
+            notify(project, "Moved $count of ${sourceFiles.size} screenshot(s): ${e.message}", NotificationType.ERROR)
+            refreshMovedFiles(moduleDirectory, destDir)
+            return
         }
 
-        val message = if (count > 0) "Moved $count screenshot(s) to baseline." else "No failure screenshots found."
-        val type = if (count > 0) NotificationType.INFORMATION else NotificationType.WARNING
+        refreshMovedFiles(moduleDirectory, destDir)
+        notify(project, "Moved $count screenshot(s) to baseline.", NotificationType.INFORMATION)
+    }
 
-        notify(project, message, type)
+    /**
+     * Tells the VFS about the moves. They were made with `java.nio`, so without this the new
+     * baselines do not appear in the project view and the editor keeps showing the stale images.
+     */
+    private fun refreshMovedFiles(moduleDirectory: File, destDir: File) {
+        val localFileSystem = LocalFileSystem.getInstance()
+        val touched = listOfNotNull(
+            localFileSystem.refreshAndFindFileByIoFile(File(moduleDirectory, PAPARAZZI_FAILURES_DIR)),
+            localFileSystem.refreshAndFindFileByIoFile(destDir)
+        )
+        VfsUtil.markDirtyAndRefresh(true, true, false, *touched.toTypedArray())
     }
 
     private fun notify(project: Project, message: String, type: NotificationType) {
@@ -159,5 +185,9 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
     private companion object {
         /** Must match the `notificationGroup` registered in `plugin.xml`. */
         const val NOTIFICATION_GROUP_ID = "Android Testify"
+
+        // Paparazzi's defaults. Both move if a test supplies its own SnapshotHandler.
+        const val PAPARAZZI_FAILURES_DIR = "build/paparazzi/failures"
+        const val PAPARAZZI_SNAPSHOTS_DIR = "src/test/snapshots/images"
     }
 }
