@@ -21,12 +21,6 @@
   remove.
 - Test methods named with underscores now resolve for "Go To Source".
 
-### Known limitations
-
-- Compose Preview support is incomplete: recording a baseline fails, and "Go To Source" from a
-  reference image does not resolve. Both need updating for Compose Preview Screenshot Testing
-  0.0.1-alpha10 and later.
-
 ## [5.0.0]
 
 - Added support for Android Studio Quail 4 | 2026.1.4 Canary 4 | 261.*
