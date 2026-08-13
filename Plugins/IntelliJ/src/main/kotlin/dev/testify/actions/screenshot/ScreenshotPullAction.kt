@@ -24,11 +24,12 @@
  */
 package dev.testify.actions.screenshot
 
-import com.intellij.notification.Notification
+import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.ModuleUtilCore
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import dev.testify.GradleCommand
 import dev.testify.TESTIFY_TEST_CLASS_FLAG
@@ -103,7 +104,7 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
         val workingDirectory = module?.let { ExternalSystemApiUtil.getExternalProjectPath(it) }
 
         if (workingDirectory == null) {
-            Notification("Android Testify", "Screenshot Pull", "Could not determine module path.", NotificationType.ERROR).notify(project)
+            notify(project, "Could not determine module path.", NotificationType.ERROR)
             return
         }
 
@@ -145,6 +146,18 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
         val message = if (count > 0) "Moved $count screenshot(s) to baseline." else "No failure screenshots found."
         val type = if (count > 0) NotificationType.INFORMATION else NotificationType.WARNING
 
-        Notification("Android Testify", "Screenshot Pull", message, type).notify(project)
+        notify(project, message, type)
+    }
+
+    private fun notify(project: Project, message: String, type: NotificationType) {
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup(NOTIFICATION_GROUP_ID)
+            .createNotification("Screenshot Pull", message, type)
+            .notify(project)
+    }
+
+    private companion object {
+        /** Must match the `notificationGroup` registered in `plugin.xml`. */
+        const val NOTIFICATION_GROUP_ID = "Android Testify"
     }
 }

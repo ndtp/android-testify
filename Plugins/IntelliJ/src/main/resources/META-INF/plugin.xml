@@ -13,6 +13,8 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Android Testify" displayType="BALLOON"/>
+
         <codeInsight.lineMarkerProvider
                 language="kotlin"
                 implementationClass="dev.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>
