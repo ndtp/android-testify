@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2026 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -112,12 +112,36 @@ fun findPaparazziMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
 }
 
 /**
- * Every image in [scope] whose name is [baselineImageName], or ends with it on a `_` boundary.
+ * Whether [fileName] is the baseline named by [baselineImageName], or a flavour-prefixed form of it.
  *
  * The two flavours name their baselines differently — Testify uses `Class_method.png` while
  * Paparazzi prefixes the package, `com.example_Class_method.png` — so an exact match is too strict.
  * The `_` boundary is what keeps it from being too loose: searching for `FooTest_default.png` must
  * not match `com.example_SubFooTest_default.png`, which a plain "contains" check would.
+ */
+fun isBaselineImageName(fileName: String, baselineImageName: String): Boolean =
+    fileName.equals(baselineImageName, ignoreCase = true) ||
+        fileName.endsWith("_$baselineImageName", ignoreCase = true)
+
+/**
+ * Whether [fileName] is the file [pattern] names, where a `*` in [pattern] stands for the method
+ * name.
+ *
+ * Matching the two literal halves of the pattern is exact, where converting the glob to a regex
+ * would leave the package separators as wildcards.
+ */
+fun matchesScreenshotName(fileName: String, pattern: String): Boolean {
+    if (!pattern.contains('*')) return fileName == pattern
+
+    val prefix = pattern.substringBefore('*')
+    val suffix = pattern.substringAfter('*')
+    return fileName.length >= prefix.length + suffix.length &&
+        fileName.startsWith(prefix) &&
+        fileName.endsWith(suffix)
+}
+
+/**
+ * Every image in [scope] matching [baselineImageName] under [isBaselineImageName].
  *
  * Results are sorted so that a project with more than one match resolves to the same file every
  * time; the file type index itself gives no ordering guarantee.
@@ -130,9 +154,6 @@ fun findBaselineImageFiles(
     if (fileType is UnknownFileType) return emptyList()
 
     return FileTypeIndex.getFiles(fileType, scope)
-        .filter { file ->
-            file.name.equals(baselineImageName, ignoreCase = true) ||
-                file.name.endsWith("_$baselineImageName", ignoreCase = true)
-        }
+        .filter { file -> isBaselineImageName(file.name, baselineImageName) }
         .sortedBy { it.path }
 }

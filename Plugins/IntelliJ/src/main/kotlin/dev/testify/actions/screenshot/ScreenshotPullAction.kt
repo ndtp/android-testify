@@ -36,6 +36,7 @@ import com.intellij.psi.PsiElement
 import dev.testify.GradleCommand
 import dev.testify.TESTIFY_TEST_CLASS_FLAG
 import dev.testify.TestFlavor
+import dev.testify.matchesScreenshotName
 import dev.testify.paparazziScreenshotFileName
 import dev.testify.paparazziScreenshotFileNamePattern
 import org.jetbrains.kotlin.psi.KtClass
@@ -103,23 +104,8 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
 
         return File(moduleDirectory, PAPARAZZI_FAILURES_DIR)
             .walkTopDown()
-            .filter { it.isFile && it.extension == "png" && it.name.matchesScreenshotName(fileName) }
+            .filter { it.isFile && it.extension == "png" && matchesScreenshotName(it.name, fileName) }
             .toList()
-    }
-
-    /**
-     * Whether this file name is the one [target] names, where a `*` in [target] stands for the
-     * method name.
-     *
-     * Matching the two literal halves of the pattern is exact, where converting the glob to a regex
-     * would leave the package separators as wildcards.
-     */
-    private fun String.matchesScreenshotName(target: String): Boolean {
-        if (!target.contains('*')) return this == target
-
-        val prefix = target.substringBefore('*')
-        val suffix = target.substringAfter('*')
-        return length >= prefix.length + suffix.length && startsWith(prefix) && endsWith(suffix)
     }
 
     private fun handlePaparazziPull(event: AnActionEvent) {

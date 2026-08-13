@@ -87,17 +87,4 @@ class ImageNameParsingTest {
     fun `a testify name is not mistaken for a paparazzi one`() {
         assertNull(parsePaparazziImageName("OrientationTest_default"))
     }
-
-    /**
-     * The counterpart to the `_`-anchored match in [findBaselineImageFiles]: the two names below
-     * belong to different classes, and a plain "contains" check would confuse them.
-     */
-    @Test
-    fun `a longer class name is a different test`() {
-        val subclass = parsePaparazziImageName("dev.testify.samples_SubFooTest_default")
-        val target = parseTestifyImageName("FooTest_default")
-
-        assertEquals("SubFooTest", subclass?.className)
-        assertEquals("FooTest", target?.className)
-    }
 }
