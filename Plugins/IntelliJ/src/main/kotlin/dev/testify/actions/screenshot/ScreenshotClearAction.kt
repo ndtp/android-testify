@@ -26,6 +26,7 @@ package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
 import dev.testify.GradleCommand
+import dev.testify.TESTIFY_TEST_CLASS_FLAG
 import dev.testify.TestFlavor
 
 class ScreenshotClearAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
@@ -33,7 +34,7 @@ class ScreenshotClearAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
 
     override val gradleCommand: GradleCommand
         get() = GradleCommand(
-            argumentFlag = "-PtestClass=",
+            argumentFlag = TESTIFY_TEST_CLASS_FLAG,
             classCommand = "screenshotClear",
             methodCommand = "screenshotClear"
         )

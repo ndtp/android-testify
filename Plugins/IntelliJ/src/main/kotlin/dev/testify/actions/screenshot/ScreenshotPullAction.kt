@@ -31,6 +31,7 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.psi.PsiElement
 import dev.testify.GradleCommand
+import dev.testify.TESTIFY_TEST_CLASS_FLAG
 import dev.testify.TestFlavor
 import dev.testify.paparazziScreenshotFileName
 import dev.testify.paparazziScreenshotFileNamePattern
@@ -45,7 +46,7 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
 
     override val gradleCommand: GradleCommand
         get() = GradleCommand(
-            argumentFlag = "-PtestClass=",
+            argumentFlag = TESTIFY_TEST_CLASS_FLAG,
             classCommand = "screenshotPull",
             methodCommand = "screenshotPull"
         )

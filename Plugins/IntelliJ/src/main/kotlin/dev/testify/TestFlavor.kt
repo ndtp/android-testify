@@ -36,6 +36,15 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 
 typealias FindSourceMethod = (imageFile: VirtualFile, project: Project) -> PsiMethod?
 
+/**
+ * The Gradle argument that scopes a Testify task to a single class or method.
+ *
+ * `$1` is a placeholder, not a Kotlin template — `$` only begins a template when followed by an
+ * identifier or `{`. [dev.testify.actions.screenshot.BaseScreenshotAction] substitutes it with the
+ * invocation path of the class or method the action was invoked on.
+ */
+const val TESTIFY_TEST_CLASS_FLAG = "-PtestClass=$1"
+
 data class GradleCommand(
     val argumentFlag: String,
     val classCommand: String,
@@ -59,12 +68,12 @@ enum class TestFlavor(
         isClassEligible = true,
         methodInvocationPath = { className, methodName -> "$className#$methodName" },
         testGradleCommands = GradleCommand(
-            argumentFlag = "-PtestClass=$1",
+            argumentFlag = TESTIFY_TEST_CLASS_FLAG,
             classCommand = "screenshotTest",
             methodCommand = "screenshotTest"
         ),
         recordGradleCommands = GradleCommand(
-            argumentFlag = "-PtestClass=$1",
+            argumentFlag = TESTIFY_TEST_CLASS_FLAG,
             classCommand = "screenshotRecord",
             methodCommand = "screenshotRecord"
         ),
