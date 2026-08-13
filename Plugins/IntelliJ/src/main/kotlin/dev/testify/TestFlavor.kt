@@ -126,20 +126,20 @@ enum class TestFlavor(
  * The receiver may be any element, including a leaf token — `PsiFile.findElementAt` never returns a
  * [KtElement], since every Kotlin PSI type is a composite — so resolution starts from the nearest
  * enclosing [KtElement].
+ *
+ * The source root is checked first because it is a string comparison, whereas confirming a Paparazzi
+ * rule resolves the whole class hierarchy. This runs for every class and function the highlighting
+ * pass visits, so the cheap test has to be the one that rejects production code.
  */
 fun PsiElement.determineTestFlavor(): TestFlavor? {
     val ktElement = this as? KtElement
         ?: this.parents.filterIsInstance<KtElement>().firstOrNull()
         ?: return null
 
-    if (ktElement.hasPaparazziRule()) {
-        return TestFlavor.Paparazzi
-    }
-
     val path = ktElement.containingKtFile.virtualFilePath
-    val flavor = TestFlavor.entries.find { "/${it.srcRoot}/" in path }
+    val flavor = TestFlavor.entries.find { "/${it.srcRoot}/" in path } ?: return null
 
-    if (flavor == TestFlavor.Paparazzi) {
+    if (flavor == TestFlavor.Paparazzi && ktElement.hasPaparazziRule().not()) {
         return null
     }
 
