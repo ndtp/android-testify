@@ -33,6 +33,7 @@ import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION
 import dev.testify.extensions.SCREENSHOT_INSTRUMENTATION_LEGACY
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.psiUtil.parents
 
 typealias FindSourceMethod = (imageFile: VirtualFile, project: Project) -> PsiMethod?
 
@@ -119,14 +120,23 @@ enum class TestFlavor(
     )
 }
 
+/**
+ * The [TestFlavor] the receiver belongs to, or `null` if it is not part of a screenshot test.
+ *
+ * The receiver may be any element, including a leaf token — `PsiFile.findElementAt` never returns a
+ * [KtElement], since every Kotlin PSI type is a composite — so resolution starts from the nearest
+ * enclosing [KtElement].
+ */
 fun PsiElement.determineTestFlavor(): TestFlavor? {
-    if (this !is KtElement) return null
+    val ktElement = this as? KtElement
+        ?: this.parents.filterIsInstance<KtElement>().firstOrNull()
+        ?: return null
 
-    if (this.hasPaparazziRule()) {
+    if (ktElement.hasPaparazziRule()) {
         return TestFlavor.Paparazzi
     }
 
-    val path = this.containingKtFile.virtualFilePath
+    val path = ktElement.containingKtFile.virtualFilePath
     val flavor = TestFlavor.entries.find { "/${it.srcRoot}/" in path }
 
     if (flavor == TestFlavor.Paparazzi) {

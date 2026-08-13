@@ -36,7 +36,11 @@ class GoToBaselineAction : BaseUtilityAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(event: AnActionEvent) {
-        val testFlavor = event.getElementAtCaret()?.determineTestFlavor() ?: return
+        val testFlavor = event.getElementAtCaret()?.determineTestFlavor()
+        if (testFlavor == null) {
+            event.presentation.isEnabledAndVisible = false
+            return
+        }
         val screenshotTestFunction = event.findScreenshotAnnotatedFunction(testFlavor)
         event.presentation.isEnabledAndVisible = screenshotTestFunction?.let { function ->
             isBaselineInProject(function)
