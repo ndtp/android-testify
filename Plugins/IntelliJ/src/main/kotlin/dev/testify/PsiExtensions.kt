@@ -30,6 +30,8 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.module.Module
+import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
@@ -53,6 +55,8 @@ import java.util.Locale
 import java.util.concurrent.Callable
 
 private const val PROJECT_FORMAT = "%1s."
+
+private const val DEFAULT_BUILD_VARIANT = "Debug"
 
 private const val PAPARAZZI_CLASS_FQ_NAME = "app.cash.paparazzi.Paparazzi"
 private const val TEST_RULE_CLASS_FQ_NAME = "org.junit.rules.TestRule"
@@ -84,13 +88,32 @@ val AnActionEvent.moduleName: String
         return gradleModule
     }
 
+/**
+ * The capitalized name of the selected build variant, e.g. `Debug`, for use in a Gradle task name.
+ *
+ * Under the module-per-source-set model a test file resolves to a source set module — `app.unitTest`
+ * — which carries no [AndroidFacet]; the facet lives on the holder module. Fall back to that before
+ * giving up, otherwise every project silently builds a `Debug` task name.
+ */
 val AnActionEvent.selectedBuildVariant: String
     get() {
-        val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return "Debug"
-        val module = ModuleUtilCore.findModuleForPsiElement(psiFile) ?: return "Debug"
-        val variant = AndroidFacet.getInstance(module)?.properties?.SELECTED_BUILD_VARIANT ?: "debug"
-        return variant.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+        val psiFile = this.getData(PlatformDataKeys.PSI_FILE) ?: return DEFAULT_BUILD_VARIANT
+        val module = ModuleUtilCore.findModuleForPsiElement(psiFile) ?: return DEFAULT_BUILD_VARIANT
+        val facet = AndroidFacet.getInstance(module) ?: module.holderModule()?.let { AndroidFacet.getInstance(it) }
+        val variant = facet?.properties?.SELECTED_BUILD_VARIANT ?: return DEFAULT_BUILD_VARIANT
+
+        // Locale.ROOT: this becomes part of a Gradle task name, so it must not be locale-sensitive.
+        return variant.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
     }
+
+/**
+ * The module holding this source set module, found by dropping the source set suffix from its name.
+ * `null` if the receiver is already a holder module, or its holder cannot be found.
+ */
+private fun Module.holderModule(): Module? {
+    val suffix = TestFlavor.entries.firstOrNull { name.endsWith(it.moduleFilter) }?.moduleFilter ?: return null
+    return ModuleManager.getInstance(project).findModuleByName(name.removeSuffix(suffix))
+}
 
 val PsiElement.baselineImageName: String
     get() {
