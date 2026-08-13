@@ -100,6 +100,25 @@ enum class TestFlavor(
         findSourceMethod = ::findPaparazziMethod
     ),
 
+    /**
+     * Compose Preview screenshot tests.
+     *
+     * TODO: this flavour is unfinished and was written against a pre-alpha10 version of the tool.
+     *  Two things are known to be wrong, and neither can be verified until this repository has a
+     *  Compose Preview sample module to exercise them against:
+     *
+     *  1. [recordGradleCommands] passes `--updateFilter`, which was removed in Compose Preview
+     *     Screenshot Testing 0.0.1-alpha10 — the same release that introduced the `@PreviewTest`
+     *     annotation [PREVIEW_ANNOTATION] matches on. Gradle rejects the command outright. The task
+     *     now compares against a threshold instead of taking a filter, so there may be nothing to
+     *     replace it with.
+     *  2. [findPreviewMethod] reads the class name from the image's parent directory, which matched
+     *     the old nested layout. alpha10 moved reference images to
+     *     `{module}/src/screenshotTest{Variant}/reference/` and names them after the fully qualified
+     *     function, so Go To Source does not resolve.
+     *
+     *  See https://developer.android.com/studio/preview/compose-screenshot-testing-release-notes
+     */
     Preview(
         srcRoot = "screenshotTest",
         moduleFilter = ".screenshotTest",

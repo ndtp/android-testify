@@ -111,6 +111,12 @@ fun findPaparazziMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
     return findMethod(reference.methodName, psiClass)
 }
 
+/**
+ * TODO: this reads the class name from the image's parent directory and the method name from the
+ *  leading segment of its name, which matched the layout Compose Preview Screenshot Testing used
+ *  before 0.0.1-alpha10. Reference images now live in `src/screenshotTest{Variant}/reference/` and
+ *  are named after the fully qualified function, so this no longer resolves. See [TestFlavor.Preview].
+ */
 fun findPreviewMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
     if (imageFile.path.contains("/screenshotTest").not()) return null
     val className = imageFile.parent.name
