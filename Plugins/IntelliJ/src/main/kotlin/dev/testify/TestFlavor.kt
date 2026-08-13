@@ -2,7 +2,7 @@
  * The MIT License (MIT)
  *
  * Copyright (c) 2026 ndtp
-  *
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -94,7 +94,7 @@ enum class TestFlavor(
         moduleFilter = ".unitTest",
         qualifyingAnnotations = setOf(PAPARAZZI_ANNOTATION),
         isClassEligible = true,
-        methodInvocationPath = { className, methodName -> "$className*$methodName" },
+        methodInvocationPath = { className, methodName -> "$className.$methodName" },
         testGradleCommands = GradleCommand(
             argumentFlag = "--rerun --tests '$1'",
             classCommand = "verifyPaparazzi$VARIANT_PLACEHOLDER",
