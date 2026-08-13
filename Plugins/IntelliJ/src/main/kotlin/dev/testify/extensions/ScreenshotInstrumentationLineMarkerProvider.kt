@@ -32,7 +32,6 @@ import dev.testify.TestFlavor
 import dev.testify.determineTestFlavor
 import dev.testify.getQualifyingAnnotation
 import org.jetbrains.kotlin.analysis.api.analyze
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
 // Reference https://github.com/square/dagger-intellij-plugin/blob/master/src/com/squareup/ideaplugin/dagger/InjectionLineMarkerProvider.java
