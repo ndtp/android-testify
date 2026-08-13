@@ -38,7 +38,9 @@ abstract class BaseFileAction(
     private val testFlavor: TestFlavor
 ) : BaseUtilityAction() {
 
-    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+    // BGT: update() searches the file type index for the baseline image, which is too much work
+    // to do on the EDT.
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     abstract val menuText: String
     abstract val icon: String

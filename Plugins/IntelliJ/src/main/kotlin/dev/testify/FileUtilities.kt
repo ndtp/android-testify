@@ -24,6 +24,7 @@
 package dev.testify
 
 import com.intellij.openapi.fileTypes.FileTypeManager
+import com.intellij.openapi.fileTypes.UnknownFileType
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiClass
@@ -96,21 +97,28 @@ fun findPreviewMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
     return null
 }
 
-fun findFilesByPartialNameOrRegex(
-    project: Project,
-    partialName: String? = null,
-    regex: Regex? = null,
-    scope: GlobalSearchScope = GlobalSearchScope.projectScope(project)
+/**
+ * Every image in [scope] whose name is [baselineImageName], or ends with it on a `_` boundary.
+ *
+ * The two flavours name their baselines differently — Testify uses `Class_method.png` while
+ * Paparazzi prefixes the package, `com.example_Class_method.png` — so an exact match is too strict.
+ * The `_` boundary is what keeps it from being too loose: searching for `FooTest_default.png` must
+ * not match `com.example_SubFooTest_default.png`, which a plain "contains" check would.
+ *
+ * Results are sorted so that a project with more than one match resolves to the same file every
+ * time; the file type index itself gives no ordering guarantee.
+ */
+fun findBaselineImageFiles(
+    baselineImageName: String,
+    scope: GlobalSearchScope
 ): List<VirtualFile> {
     val fileType = FileTypeManager.getInstance().getStdFileType("Image")
-    val allFiles = FileTypeIndex.getFiles(fileType, scope)
-    val fileList = allFiles.filter { file ->
-        when {
-            partialName != null && file.path.contains(partialName, ignoreCase = true) -> true
-            regex != null && regex.matches(file.path) -> true
-            else -> false
-        }
-    }
+    if (fileType is UnknownFileType) return emptyList()
 
-    return fileList
+    return FileTypeIndex.getFiles(fileType, scope)
+        .filter { file ->
+            file.name.equals(baselineImageName, ignoreCase = true) ||
+                file.name.endsWith("_$baselineImageName", ignoreCase = true)
+        }
+        .sortedBy { it.path }
 }

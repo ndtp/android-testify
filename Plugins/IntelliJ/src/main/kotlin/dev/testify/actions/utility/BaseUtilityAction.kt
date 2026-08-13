@@ -41,7 +41,7 @@ import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import dev.testify.TestFlavor
 import dev.testify.baselineImageName
-import dev.testify.findFilesByPartialNameOrRegex
+import dev.testify.findBaselineImageFiles
 import dev.testify.getVirtualFile
 
 abstract class BaseUtilityAction : AnAction() {
@@ -72,19 +72,21 @@ abstract class BaseUtilityAction : AnAction() {
         return null
     }
 
+    /**
+     * The baseline image for [baselineImageName], preferring one in [currentFile]'s own module.
+     *
+     * The module is only a preference, not a filter. Which content roots a source set module owns
+     * depends on how the Gradle import modelled the project, and the Paparazzi baselines sit outside
+     * any source root, so a module-scoped search can legitimately come up empty. Widening to the
+     * project in that case keeps the action working; the `_`-anchored match in
+     * [findBaselineImageFiles] is what stops the wider search resolving to a similarly named test.
+     */
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
-        val module = ModuleUtilCore.findModuleForPsiElement(currentFile)
-        if (module != null) {
+        val project = currentFile.project
+        val module = ModuleUtilCore.findModuleForPsiElement(currentFile) ?: return null
 
-            val files = findFilesByPartialNameOrRegex(
-                project = currentFile.project,
-                partialName = baselineImageName
-            )
-            if (files.isNotEmpty()) {
-                return files.first()
-            }
-        }
-        return null
+        return findBaselineImageFiles(baselineImageName, module.moduleContentScope).firstOrNull()
+            ?: findBaselineImageFiles(baselineImageName, GlobalSearchScope.projectScope(project)).firstOrNull()
     }
 
     protected fun isBaselineInProject(anchorElement: PsiElement): Boolean =
