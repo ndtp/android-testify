@@ -50,39 +50,65 @@ fun findMethod(methodName: String, psiClass: PsiClass): PsiMethod? {
     return psiClass.findMethodsByName(methodName, false).firstOrNull()
 }
 
-fun findTestifyMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
-    if (imageFile.path.contains("/androidTest").not()) return null
-    imageFile.nameWithoutExtension.let { imageName ->
-        val parts = imageName.split("_")
-        if (parts.size == 2) {
-            val (className, methodName) = parts
-            findClassByName(className, project)?.let { psiClass ->
-                return findMethod(methodName, psiClass)
-            }
-        }
-    }
-    return null
+/**
+ * The class and method a Testify baseline image name refers to, or `null` if it is not one.
+ *
+ * Testify names its baselines `<Class>_<method>.png`. Only the first `_` is a separator, so a test
+ * named in the `renders_empty_state` style still resolves.
+ *
+ *     CastMemberScreenshotTest_renders_empty_state -> (CastMemberScreenshotTest, renders_empty_state)
+ */
+fun parseTestifyImageName(imageName: String): TestMethodReference? {
+    val parts = imageName.split("_")
+    if (parts.size < 2) return null
+    return TestMethodReference(
+        className = parts[0],
+        methodName = parts.drop(1).joinToString("_")
+    )
 }
 
 /**
- * Input: /Users/danjette/dev/android-testify/Samples/Paparazzi/src/test/snapshots/images/dev.testify.samples.paparazzi.ui.common.composables_CastMemberScreenshotTest_b.png
+ * The package, class and method a Paparazzi baseline image name refers to, or `null` if it is not
+ * one.
+ *
+ * Paparazzi names its baselines `<package>_<Class>_<method>.png`, so the first two `_` are the
+ * separators and the rest belong to the method name.
+ *
+ *     dev.testify.samples_CastMemberScreenshotTest_renders_empty_state
+ *         -> (dev.testify.samples, CastMemberScreenshotTest, renders_empty_state)
+ *
+ * A package containing `_`, or a nested test class — which Paparazzi flattens as `Outer_Inner` —
+ * would need the candidate splits to be resolved one by one, and are not supported.
  */
+fun parsePaparazziImageName(imageName: String): TestMethodReference? {
+    val parts = imageName.split("_")
+    if (parts.size < 3) return null
+    return TestMethodReference(
+        packageName = parts[0],
+        className = parts[1],
+        methodName = parts.drop(2).joinToString("_")
+    )
+}
+
+/** The test method a baseline image was recorded from. */
+data class TestMethodReference(
+    val className: String,
+    val methodName: String,
+    val packageName: String? = null
+)
+
+fun findTestifyMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
+    if (imageFile.path.contains("/androidTest/").not()) return null
+    val reference = parseTestifyImageName(imageFile.nameWithoutExtension) ?: return null
+    val psiClass = findClassByName(reference.className, project) ?: return null
+    return findMethod(reference.methodName, psiClass)
+}
+
 fun findPaparazziMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
-    if (imageFile.path.contains("/test").not()) return null
-    imageFile.nameWithoutExtension.let { imageName ->
-        // imageName = composables_CastMemberScreenshotTest_default
-        val parts = imageName.split("_")
-        if (parts.size == 3) {
-            val (packageName, className, methodName) = parts
-            // _ = composables
-            // className = CastMemberScreenshotTest
-            // methodName = default
-            findClassByName(className, project, packageName)?.let { psiClass ->
-                return findMethod(methodName, psiClass)
-            }
-        }
-    }
-    return null
+    if (imageFile.path.contains("/test/").not()) return null
+    val reference = parsePaparazziImageName(imageFile.nameWithoutExtension) ?: return null
+    val psiClass = findClassByName(reference.className, project, reference.packageName) ?: return null
+    return findMethod(reference.methodName, psiClass)
 }
 
 fun findPreviewMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
