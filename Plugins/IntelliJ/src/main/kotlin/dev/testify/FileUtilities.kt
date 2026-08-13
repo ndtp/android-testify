@@ -23,10 +23,12 @@
  */
 package dev.testify
 
+import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiShortNamesCache
 
@@ -92,4 +94,23 @@ fun findPreviewMethod(imageFile: VirtualFile, project: Project): PsiMethod? {
         }
     }
     return null
+}
+
+fun findFilesByPartialNameOrRegex(
+    project: Project,
+    partialName: String? = null,
+    regex: Regex? = null,
+    scope: GlobalSearchScope = GlobalSearchScope.projectScope(project)
+): List<VirtualFile> {
+    val fileType = FileTypeManager.getInstance().getStdFileType("Image")
+    val allFiles = FileTypeIndex.getFiles(fileType, scope)
+    val fileList = allFiles.filter { file ->
+        when {
+            partialName != null && file.path.contains(partialName, ignoreCase = true) -> true
+            regex != null && regex.matches(file.path) -> true
+            else -> false
+        }
+    }
+
+    return fileList
 }

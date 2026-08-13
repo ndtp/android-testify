@@ -41,6 +41,7 @@ import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import dev.testify.TestFlavor
 import dev.testify.baselineImageName
+import dev.testify.findFilesByPartialNameOrRegex
 import dev.testify.getVirtualFile
 
 abstract class BaseUtilityAction : AnAction() {
@@ -71,29 +72,14 @@ abstract class BaseUtilityAction : AnAction() {
         return null
     }
 
-    fun findFilesByPartialNameOrRegex(
-        project: Project,
-        partialName: String? = null,
-        regex: Regex? = null,
-        scope: GlobalSearchScope = GlobalSearchScope.projectScope(project)
-    ): List<VirtualFile> {
-        val fileType = FileTypeManager.getInstance().getStdFileType("Image")
-        val allFiles = FileTypeIndex.getFiles(fileType, scope)
-        val fileList = allFiles.filter { file ->
-            when {
-                partialName != null && file.path.contains(partialName, ignoreCase = true) -> true
-                regex != null && regex.matches(file.path) -> true
-                else -> false
-            }
-        }
-
-        return fileList
-    }
-
     protected fun findBaselineImage(currentFile: PsiFile, baselineImageName: String): VirtualFile? {
         val module = ModuleUtilCore.findModuleForPsiElement(currentFile)
         if (module != null) {
-            val files = FilenameIndex.getVirtualFilesByName(baselineImageName, module.moduleContentScope)
+
+            val files = findFilesByPartialNameOrRegex(
+                project = currentFile.project,
+                partialName = baselineImageName
+            )
             if (files.isNotEmpty()) {
                 return files.first()
             }

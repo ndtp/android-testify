@@ -18,7 +18,7 @@ This plugin will enhance the developer experience by adding fully integrated IDE
 
 Learn more at <a href="https://testify.dev/">testify.dev</a>
 
-Copyright (c) 2023-2025 ndtp
+Copyright (c) 2023-2026 ndtp
 
 <!-- Plugin description end -->
 
@@ -42,5 +42,5 @@ Copyright (c) 2023-2025 ndtp
 
 ### License
 
-[MIT License -- Modified work copyright (c) 2022-2025 ndtp](LICENSE)<br/>
+[MIT License -- Modified work copyright (c) 2022-2026 ndtp](LICENSE)<br/>
 [MIT License -- Original work copyright (c) 2020 Shopify](LICENSE)

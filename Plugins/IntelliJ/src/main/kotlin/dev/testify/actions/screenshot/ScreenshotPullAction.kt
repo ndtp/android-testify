@@ -74,9 +74,8 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
     }
 
     private fun isPaparazziPullAvailable(): Boolean {
-        val module = ModuleUtilCore.findModuleForPsiElement(anchorElement)
-        val workingDirectory = module?.let { ExternalSystemApiUtil.getExternalProjectPath(it) } ?: return false
-
+        val module = ModuleUtilCore.findModuleForPsiElement(anchorElement) ?: return false
+        val workingDirectory = module.let { ExternalSystemApiUtil.getExternalProjectPath(it) } ?: return false
         val fileName = if (isClass()) {
             (anchorElement as? KtClass)?.paparazziScreenshotFileNamePattern
         } else {
@@ -84,13 +83,15 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
         } ?: return false
 
         val sourceDir = File(workingDirectory, "build/paparazzi/failures")
+        val files = sourceDir.walkTopDown()
+            .filter { it.isFile && it.extension == "png" }
+            .toList()
 
-        if (fileName.contains("*")) {
+        return if (fileName.contains("*")) {
             val regex = fileName.replace("*", ".*").toRegex()
-            val files = sourceDir.listFiles { _, name -> regex.matches(name) }
-            return files?.isNotEmpty() == true
+            files.any { regex.matches(it.name) }
         } else {
-            return File(sourceDir, fileName).exists()
+            files.any { it.name == fileName }
         }
     }
 
@@ -120,17 +121,20 @@ class ScreenshotPullAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
 
         var count = 0
 
+        val sourceFiles = sourceDir.walkTopDown()
+            .filter { it.isFile && it.extension == "png" }
+            .toList()
+
         if (fileName.contains("*")) {
             val regex = fileName.replace("*", ".*").toRegex()
-            val files = sourceDir.listFiles { _, name -> regex.matches(name) }
-            files?.forEach { file ->
+            sourceFiles.filter { regex.matches(it.name) }.forEach { file ->
                 val destFile = File(destDir, file.name)
                 Files.move(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
                 count++
             }
         } else {
-            val sourceFile = File(sourceDir, fileName)
-            if (sourceFile.exists()) {
+            val sourceFile = sourceFiles.firstOrNull { it.name == fileName }
+            if (sourceFile?.exists() == true) {
                 val destFile = File(destDir, fileName)
                 Files.move(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
                 count++
