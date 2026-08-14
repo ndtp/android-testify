@@ -24,7 +24,6 @@
  */
 package dev.testify.actions.utility
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
@@ -33,10 +32,6 @@ import com.intellij.psi.PsiElement
 import dev.testify.baselineImageName
 
 abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseUtilityAction() {
-
-    // BGT: update() searches the file type index for the baseline image, which is too much work
-    // to do on the EDT.
-    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     abstract val menuText: String
     abstract val icon: String

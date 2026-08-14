@@ -23,7 +23,6 @@
  */
 package dev.testify.actions.utility
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import dev.testify.baselineImageName
@@ -32,8 +31,6 @@ import dev.testify.findScreenshotAnnotatedFunction
 import dev.testify.getElementAtCaret
 
 class GoToBaselineAction : BaseUtilityAction() {
-
-    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(event: AnActionEvent) {
         val testFlavor = event.getElementAtCaret()?.determineTestFlavor()

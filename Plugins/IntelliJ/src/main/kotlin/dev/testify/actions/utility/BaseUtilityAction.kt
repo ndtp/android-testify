@@ -44,7 +44,7 @@ import org.jetbrains.kotlin.psi.KtFile
 
 abstract class BaseUtilityAction : AnAction() {
 
-    override fun getActionUpdateThread() = ActionUpdateThread.EDT
+    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     protected fun navigateToMethod(psiMethod: PsiMethod, project: Project) {
         val psiFile = psiMethod.containingFile.virtualFile
