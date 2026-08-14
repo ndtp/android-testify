@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2026 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2026 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.actions.screenshot
+package dev.testify.samples.paparazzi.ui.common.composables
 
-import com.intellij.psi.PsiElement
-import dev.testify.GradleCommand
-import dev.testify.TestFlavor
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
-class ScreenshotTestAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
-    BaseScreenshotAction(anchorElement, testFlavor) {
+/**
+ * A plain unit test sharing the `test` source set with the Paparazzi screenshot tests.
+ *
+ * It holds no Paparazzi rule, so the IntelliJ plugin must not offer screenshot actions on it. That
+ * is the only reason it exists.
+ */
+class UnitTestExample {
 
-    override val gradleCommand: GradleCommand
-        get() = testFlavor.testGradleCommands
-
-    override val classMenuText: String
-        get() = "Run all '$className' screenshot tests"
-
-    override val methodMenuText: String
-        get() = "Test '$methodName()'"
-
-    override val icon = "play"
+    @Test
+    fun `This is an example test`() {
+        assertEquals(4, 2 + 2)
+    }
 }

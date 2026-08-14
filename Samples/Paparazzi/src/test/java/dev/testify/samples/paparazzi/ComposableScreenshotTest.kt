@@ -24,21 +24,32 @@
 package dev.testify.samples.paparazzi
 
 import androidx.compose.material3.Text
-import dev.testify.samples.paparazzi.test.PaparazziTestRule
+import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_3A
+import app.cash.paparazzi.Paparazzi
+import com.android.ide.common.rendering.api.SessionParams
 import org.junit.Rule
 import org.junit.Test
 
 /**
  * Demonstrates how to use Paparazzi to test Jetpack Compose @Composable functions.
+ *
+ * Unlike the other tests here, this one holds a [Paparazzi] instance directly rather than the
+ * shared [dev.testify.samples.paparazzi.test.PaparazziTestRule] wrapper, which keeps the plugin's
+ * two rule detection paths — a direct field and a field whose type wraps one — both covered by the
+ * samples. Please leave it as it is.
  */
 class ComposableScreenshotTest {
 
     @get:Rule
-    val rule = PaparazziTestRule()
+    val paparazzi = Paparazzi(
+        deviceConfig = PIXEL_3A,
+        theme = "android:Theme.Material.Light.NoActionBar",
+        renderingMode = SessionParams.RenderingMode.SHRINK
+    )
 
     @Test
     fun default() {
-        rule.snapshot {
+        paparazzi.snapshot {
             Text(text = "Hello, Paparazzi!")
         }
     }

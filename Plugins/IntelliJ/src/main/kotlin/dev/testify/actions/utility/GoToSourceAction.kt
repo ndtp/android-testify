@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024-2025 ndtp
+ * Copyright (c) 2024-2026 ndtp
   *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +23,11 @@
  */
 package dev.testify.actions.utility
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.vfs.VirtualFile
 import dev.testify.getVirtualFile
 
 class GoToSourceAction : BaseUtilityAction() {
-
-    override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(event: AnActionEvent) {
         val virtualFile: VirtualFile? = event.getVirtualFile()

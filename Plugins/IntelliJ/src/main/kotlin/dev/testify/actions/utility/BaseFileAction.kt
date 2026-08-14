@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2024 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,7 +24,6 @@
  */
 package dev.testify.actions.utility
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
@@ -33,8 +32,6 @@ import com.intellij.psi.PsiElement
 import dev.testify.baselineImageName
 
 abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseUtilityAction() {
-
-    override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
     abstract val menuText: String
     abstract val icon: String

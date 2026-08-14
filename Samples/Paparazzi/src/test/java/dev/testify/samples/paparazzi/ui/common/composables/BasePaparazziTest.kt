@@ -1,8 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2026 ndtp
- * Original work copyright (c) 2020 Shopify Inc.
+ * Copyright (c) 2026 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.actions.screenshot
+package dev.testify.samples.paparazzi.ui.common.composables
 
-import com.intellij.psi.PsiElement
-import dev.testify.GradleCommand
-import dev.testify.TestFlavor
+import dev.testify.samples.paparazzi.test.PaparazziTestRule
+import org.junit.Rule
 
-class ScreenshotTestAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
-    BaseScreenshotAction(anchorElement, testFlavor) {
+/**
+ * Declares the shared Paparazzi rule once for the screenshot tests in this package.
+ *
+ * Subclasses inherit the rule rather than declaring their own, which is the pattern the IntelliJ
+ * plugin has to see through to offer its screenshot actions.
+ */
+abstract class BasePaparazziTest {
 
-    override val gradleCommand: GradleCommand
-        get() = testFlavor.testGradleCommands
-
-    override val classMenuText: String
-        get() = "Run all '$className' screenshot tests"
-
-    override val methodMenuText: String
-        get() = "Test '$methodName()'"
-
-    override val icon = "play"
+    @get:Rule
+    val rule = PaparazziTestRule()
 }

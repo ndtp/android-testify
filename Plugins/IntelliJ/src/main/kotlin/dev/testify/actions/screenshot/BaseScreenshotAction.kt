@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022-2025 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -35,8 +35,12 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.psi.PsiElement
+import dev.testify.GradleCommand
+import dev.testify.TestFlavor
+import dev.testify.VARIANT_PLACEHOLDER
 import dev.testify.methodName
 import dev.testify.moduleName
+import dev.testify.selectedBuildVariant
 import dev.testify.testifyClassInvocationPath
 import dev.testify.testifyMethodInvocationPath
 import org.jetbrains.kotlin.psi.KtClass
@@ -45,14 +49,16 @@ import org.jetbrains.plugins.gradle.action.GradleExecuteTaskAction
 import org.jetbrains.plugins.gradle.settings.GradleSettings
 import org.jetbrains.plugins.gradle.util.GradleConstants
 
-abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnAction() {
+abstract class BaseScreenshotAction(
+    protected val anchorElement: PsiElement,
+    protected val testFlavor: TestFlavor
+) : AnAction() {
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-    abstract val classGradleCommand: String
-    abstract val classMenuText: String
+    abstract val gradleCommand: GradleCommand
 
-    abstract val methodGradleCommand: String
+    abstract val classMenuText: String
     abstract val methodMenuText: String
 
     abstract val icon: String
@@ -71,21 +77,29 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
             return if (isClass()) (anchorElement as? KtClass)?.name else null
         }
 
-    private fun String.toFullGradleCommand(event: AnActionEvent): String {
+    private fun List<String>.toFullGradleCommand(
+        event: AnActionEvent,
+        argumentFlag: String
+    ): String {
         val arguments = when (anchorElement) {
-            is KtNamedFunction -> anchorElement.testifyMethodInvocationPath
+            is KtNamedFunction -> anchorElement.testifyMethodInvocationPath(testFlavor)
             is KtClass -> anchorElement.testifyClassInvocationPath
             else -> null
         }
-        val command = ":${event.moduleName}:$this"
-        return if (arguments != null) "$command -PtestClass=$arguments" else command
+        val command = joinToString(" ") { ":${event.moduleName}:$it" }
+        return if (arguments != null) {
+            val argFormatted = argumentFlag.replace("$1", arguments)
+            "$command $argFormatted"
+        } else {
+            command
+        }
     }
 
-    private fun isClass(): Boolean {
+    protected fun isClass(): Boolean {
         return anchorElement is KtClass
     }
 
-    final override fun actionPerformed(event: AnActionEvent) {
+    override fun actionPerformed(event: AnActionEvent) {
         val project = event.project as Project
         val dataContext = SimpleDataContext.getProjectContext(project)
         val executionContext =
@@ -93,12 +107,25 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         val workingDirectory: String = executionContext.getProjectPath() ?: ""
         val executor = RunAnythingAction.EXECUTOR_KEY.getData(dataContext)
 
-        val gradleCommand = if (isClass()) classGradleCommand else methodGradleCommand
-        val fullCommandLine = gradleCommand.toFullGradleCommand(event)
+        val argumentFlag = gradleCommand.argumentFlag
+        val commandName = if (isClass()) gradleCommand.classCommand else gradleCommand.methodCommand
+
+        // Resolved at most once, and only when a task name actually needs it — finding the variant
+        // walks the module graph looking for an AndroidFacet.
+        val variant by lazy { event.selectedBuildVariant }
+        val taskNames = (listOf(commandName) + gradleCommand.additionalTasks).map { taskName ->
+            if (taskName.contains(VARIANT_PLACEHOLDER)) {
+                taskName.replace(VARIANT_PLACEHOLDER, variant)
+            } else {
+                taskName
+            }
+        }
+
+        val fullCommandLine = taskNames.toFullGradleCommand(event, argumentFlag)
         GradleExecuteTaskAction.runGradle(project, executor, workingDirectory, fullCommandLine)
     }
 
-    final override fun update(anActionEvent: AnActionEvent) {
+    override fun update(anActionEvent: AnActionEvent) {
         anActionEvent.presentation.apply {
             text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
@@ -109,7 +136,7 @@ abstract class BaseScreenshotAction(private val anchorElement: PsiElement) : AnA
         }
     }
 
-    private fun RunAnythingContext.getProjectPath() = when (this) {
+    protected fun RunAnythingContext.getProjectPath() = when (this) {
         is RunAnythingContext.ProjectContext ->
             GradleSettings.getInstance(project).linkedProjectsSettings.firstOrNull()
                 ?.let {

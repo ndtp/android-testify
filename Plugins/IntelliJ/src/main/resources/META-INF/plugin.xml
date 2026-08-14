@@ -8,10 +8,13 @@
     <depends>org.jetbrains.kotlin</depends>
     <depends>com.intellij.gradle</depends>
     <depends>org.jetbrains.android</depends>
+    <depends>com.intellij.modules.androidstudio</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Android Testify" displayType="BALLOON"/>
+
         <codeInsight.lineMarkerProvider
                 language="kotlin"
                 implementationClass="dev.testify.extensions.ScreenshotInstrumentationLineMarkerProvider"/>

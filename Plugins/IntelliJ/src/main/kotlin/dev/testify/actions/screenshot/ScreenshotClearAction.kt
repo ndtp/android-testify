@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Modified work copyright (c) 2022 ndtp
+ * Modified work copyright (c) 2022-2026 ndtp
  * Original work copyright (c) 2020 Shopify Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,17 +25,22 @@
 package dev.testify.actions.screenshot
 
 import com.intellij.psi.PsiElement
+import dev.testify.GradleCommand
+import dev.testify.TESTIFY_TEST_CLASS_FLAG
+import dev.testify.TestFlavor
 
-class ScreenshotClearAction(anchorElement: PsiElement) : BaseScreenshotAction(anchorElement) {
+class ScreenshotClearAction(anchorElement: PsiElement, testFlavor: TestFlavor) :
+    BaseScreenshotAction(anchorElement, testFlavor) {
 
-    override val classGradleCommand: String
-        get() = "screenshotClear"
+    override val gradleCommand: GradleCommand
+        get() = GradleCommand(
+            argumentFlag = TESTIFY_TEST_CLASS_FLAG,
+            classCommand = "screenshotClear",
+            methodCommand = "screenshotClear"
+        )
 
     override val classMenuText: String
         get() = "Clear screenshots from device"
-
-    override val methodGradleCommand: String
-        get() = "screenshotClear"
 
     override val methodMenuText: String
         get() = "Clear screenshots from device"
