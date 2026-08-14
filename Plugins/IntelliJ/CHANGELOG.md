@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [5.1.1]
+
+- Remove `ReadAction.computeBlocking` usage to prevent `Invocation of unresolved method` errors in Android Studio versions older than Quail | 2026.1 
+
 ## [5.1.0]
 
 - **Breaking:** this plugin now requires Android Studio and can no longer be installed in IntelliJ

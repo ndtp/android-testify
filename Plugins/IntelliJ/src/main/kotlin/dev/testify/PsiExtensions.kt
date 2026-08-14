@@ -122,7 +122,7 @@ val PsiElement.baselineImageName: String
     get() {
         val ktElement = this as? KtElement ?: return "unknown"
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.computeBlocking<String, Throwable> {
+            ReadAction.compute<String, Throwable> {
                 analyze(ktElement) {
                     (ktElement as? KtNamedFunction)?.symbol?.let { functionSymbol ->
                         val className = (functionSymbol.containingSymbol as? KaClassSymbol)?.name?.asString()
@@ -142,7 +142,7 @@ val PsiElement.methodName: String
 
 fun KtNamedFunction.testifyMethodInvocationPath(testFlavor: TestFlavor): String {
     return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-        ReadAction.computeBlocking<String, Throwable> {
+        ReadAction.compute<String, Throwable> {
             analyze(this@testifyMethodInvocationPath) {
                 val functionSymbol = this@testifyMethodInvocationPath.symbol
                 val className =
@@ -157,7 +157,7 @@ fun KtNamedFunction.testifyMethodInvocationPath(testFlavor: TestFlavor): String 
 val KtClass.testifyClassInvocationPath: String
     get() {
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.computeBlocking<String, Throwable> {
+            ReadAction.compute<String, Throwable> {
                 analyze(this@testifyClassInvocationPath) {
                     val classSymbol = this@testifyClassInvocationPath.symbol as? KaClassSymbol
                     classSymbol?.classId?.asSingleFqName()?.asString() ?: "unknown"
@@ -168,7 +168,7 @@ val KtClass.testifyClassInvocationPath: String
 
 fun KtNamedFunction.hasQualifyingAnnotation(annotationClassIds: Set<String>): Boolean {
     return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-        ReadAction.computeBlocking<Boolean, Throwable> {
+        ReadAction.compute<Boolean, Throwable> {
             analyze(this@hasQualifyingAnnotation) {
                 this@hasQualifyingAnnotation.symbol
                     .annotations
@@ -226,7 +226,7 @@ private fun KtClassOrObject.computeHasPaparazziRule(): Boolean {
     val containingClass = this
 
     return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-        ReadAction.computeBlocking<Boolean, Throwable> {
+        ReadAction.compute<Boolean, Throwable> {
             analyze(containingClass) {
                 val classSymbol = containingClass.symbol as? KaClassSymbol ?: return@analyze false
                 hasPaparazziRule(classSymbol)
@@ -308,7 +308,7 @@ private fun KaClassSymbol.isOfType(fqName: String): Boolean =
 val KtNamedFunction.paparazziScreenshotFileName: String
     get() {
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.computeBlocking<String, Throwable> {
+            ReadAction.compute<String, Throwable> {
                 analyze(this@paparazziScreenshotFileName) {
                     val functionSymbol = this@paparazziScreenshotFileName.symbol
                     val classSymbol = functionSymbol.containingSymbol as? KaClassSymbol
@@ -330,7 +330,7 @@ val KtNamedFunction.paparazziScreenshotFileName: String
 val KtClass.paparazziScreenshotFileNamePattern: String
     get() {
         return ApplicationManager.getApplication().executeOnPooledThread(Callable {
-            ReadAction.computeBlocking<String, Throwable> {
+            ReadAction.compute<String, Throwable> {
                 analyze(this@paparazziScreenshotFileNamePattern) {
                     val classSymbol = this@paparazziScreenshotFileNamePattern.symbol as? KaClassSymbol
                     val classId = classSymbol?.classId
