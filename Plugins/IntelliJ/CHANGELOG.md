@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [6.0.0]
+
+- Raise minimum supported Android Studio version to Otter | 2025.2.1.
+
 ## [5.1.1]
 
 - Remove `ReadAction.computeBlocking` usage to prevent `Invocation of unresolved method` errors in Android Studio versions older than Quail | 2026.1 
