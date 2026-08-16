@@ -1,3 +1,8 @@
+## Unreleased
+
+- Upgrade kotlin to 2.3.21, gradle to 9.5.0 and AGP to 9.3.1
+- Upgrade all project files to use Java 25
+
 ## 6.0.0
 
 - https://github.com/ndtp/android-testify/pull/269
