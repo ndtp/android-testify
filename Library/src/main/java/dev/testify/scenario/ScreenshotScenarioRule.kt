@@ -305,7 +305,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
                 throw NoResourceConfigurationOnScenarioException(
                     cause = "fontScale",
                     value = configuration.fontScale.toString(),
-                    activity = activity?.javaClass?.simpleName.orEmpty()
+                    activity = activity.javaClass.simpleName.orEmpty()
                 )
             }
 
@@ -313,7 +313,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
                 throw NoResourceConfigurationOnScenarioException(
                     cause = "locale",
                     value = configuration.locale.toString(),
-                    activity = activity?.javaClass?.simpleName.orEmpty()
+                    activity = activity.javaClass.simpleName.orEmpty()
                 )
             }
         }
@@ -505,6 +505,11 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         } ?: throw ScenarioRequiredException()
     }
 
+    // Kotlin 2.3 added the CONTEXTUAL_OVERLOAD_SHADOWED diagnostic, which fires here because the
+    // no-arg `assertSame()` above takes precedence in overload resolution over this
+    // context-parameter variant. Suppressed to keep the Java 25 upgrade behaviour-neutral;
+    // resolving it for real would mean changing this public API.
+    @Suppress("CONTEXTUAL_OVERLOAD_SHADOWED")
     @JvmName("assertSameContext")
     context (scenario: ActivityScenario<*>)
     fun assertSame() {

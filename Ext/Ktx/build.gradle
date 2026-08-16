@@ -1,9 +1,9 @@
+import com.android.build.gradle.tasks.BundleAar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
     id 'org.jetbrains.dokka'
     id 'maven-publish'
     id 'signing'
@@ -25,15 +25,14 @@ ext {
 
 version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
 group = pom.publishedGroupId
-archivesBaseName = pom.artifact
 
 android {
     namespace "dev.testify.ktx"
 
-    lintOptions {
+    lint {
         abortOnError true
         warningsAsErrors true
-        textOutput 'stdout'
+        textOutput = file('stdout')
         textReport true
         xmlReport false
     }
@@ -43,12 +42,6 @@ android {
         minSdkVersion libs.versions.minSdk.get().toInteger()
         targetSdkVersion libs.versions.targetSdk.get().toInteger()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    libraryVariants.configureEach { variant ->
-        variant.outputs.all {
-            outputFileName = "${archivesBaseName}-${version}.aar"
-        }
     }
 
     testOptions {
@@ -80,7 +73,7 @@ android {
         androidTestImplementation libs.androidx.junit
         androidTestImplementation libs.androidx.runner
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += [
                     'MANIFEST.MF',
@@ -107,4 +100,10 @@ tasks.withType(KotlinJvmCompile).configureEach {
         allWarningsAsErrors.set(true)
         jvmTarget.set(JvmTarget.JVM_25)
     }
+}
+
+// AGP 9 removed the legacy `libraryVariants` API that was previously used to set
+// `outputFileName`. The AAR is renamed by configuring its bundle task directly.
+tasks.withType(BundleAar).configureEach {
+    archiveFileName.set("${pom.artifact}-${version}.aar")
 }

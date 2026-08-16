@@ -1,8 +1,8 @@
+import com.android.build.gradle.tasks.BundleAar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id 'com.android.library'
-    id 'kotlin-android'
     id 'org.jetbrains.dokka'
     id 'jacoco'
     id 'maven-publish'
@@ -25,14 +25,10 @@ ext {
 
 version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
 group = pom.publishedGroupId
-archivesBaseName = pom.artifact
 
 jacoco { toolVersion = "0.8.10" }
 
 android {
-    kotlinOptions {
-        jvmTarget = '25'
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_25
         targetCompatibility JavaVersion.VERSION_25
@@ -50,12 +46,6 @@ android {
                 jvmTarget.set(JvmTarget.JVM_25)
                 freeCompilerArgs.addAll("-Xcontext-parameters")
             }
-        }
-    }
-
-    libraryVariants.configureEach { variant ->
-        variant.outputs.all {
-            outputFileName = "${archivesBaseName}-${version}.aar"
         }
     }
 
@@ -98,13 +88,13 @@ android {
     }
     lint {
         abortOnError true
-        textOutput file('stdout')
+        textOutput = file('stdout')
         textReport true
         htmlReport true
         warningsAsErrors true
         xmlReport false
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += [
                     'MANIFEST.MF',
@@ -122,6 +112,12 @@ android {
             withJavadocJar()
         }
     }
+}
+
+// AGP 9 removed the legacy `libraryVariants` API that was previously used to set
+// `outputFileName`. The AAR is renamed by configuring its bundle task directly.
+tasks.withType(BundleAar).configureEach {
+    archiveFileName.set("${pom.artifact}-${version}.aar")
 }
 
 afterEvaluate {

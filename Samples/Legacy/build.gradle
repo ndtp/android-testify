@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 buildscript {
     ext {
         versions = [
@@ -12,7 +14,6 @@ buildscript {
 
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
     id 'dev.testify'
     alias(libs.plugins.compose.compiler)
 }
@@ -20,9 +21,11 @@ plugins {
 android {
     compileSdk 34
 
-    kotlinOptions {
-        jvmTarget = '25'
-        freeCompilerArgs = ["-Xcontext-receivers"]
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_25)
+            freeCompilerArgs.add("-Xcontext-parameters")
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_25
@@ -58,7 +61,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += [
                     'META-INF/AL2.0',

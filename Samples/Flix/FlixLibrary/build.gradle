@@ -15,8 +15,7 @@ buildscript {
 
 plugins {
     id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
+    alias(libs.plugins.google.devtools.ksp)
     id 'com.google.dagger.hilt.android'
     id 'dev.testify'
     alias(libs.plugins.compose.compiler)
@@ -57,15 +56,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-}
-
-kapt {
-    correctErrorTypes true
 }
 
 testify {
@@ -75,8 +70,8 @@ testify {
 }
 
 dependencies {
-    kapt "com.google.dagger:dagger-compiler:2.57.1"
-    kapt "com.google.dagger:hilt-compiler:2.57.1"
+    ksp "com.google.dagger:dagger-compiler:2.60.1"
+    ksp "com.google.dagger:hilt-compiler:2.60.1"
 
     def composeBom = platform('androidx.compose:compose-bom:2025.08.01')
     implementation composeBom
@@ -85,7 +80,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.9.3"
     implementation "androidx.test.espresso.idling:idling-concurrent:3.7.0"
-    implementation "com.google.dagger:hilt-android:2.57.1"
+    implementation "com.google.dagger:hilt-android:2.60.1"
     implementation 'androidx.compose.material3:material3:1.3.2'
     implementation 'androidx.core:core-ktx:1.17.0'
     implementation 'io.ktor:ktor-client-android:3.2.3'
