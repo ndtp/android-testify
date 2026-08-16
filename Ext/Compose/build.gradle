@@ -74,13 +74,13 @@ android {
     kotlin {
         compilerOptions {
             allWarningsAsErrors.set(true)
-            jvmTarget.set(JvmTarget.JVM_21)
+            jvmTarget.set(JvmTarget.JVM_25)
             freeCompilerArgs.addAll("-Xcontext-parameters")
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
     }
 
     dependencies {

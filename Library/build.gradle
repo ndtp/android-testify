@@ -31,11 +31,11 @@ jacoco { toolVersion = "0.8.10" }
 
 android {
     kotlinOptions {
-        jvmTarget = '21'
+        jvmTarget = '25'
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
     }
 
     defaultConfig {
@@ -47,7 +47,7 @@ android {
         kotlin {
             compilerOptions {
                 allWarningsAsErrors.set(true)
-                jvmTarget.set(JvmTarget.JVM_21)
+                jvmTarget.set(JvmTarget.JVM_25)
                 freeCompilerArgs.addAll("-Xcontext-parameters")
             }
         }

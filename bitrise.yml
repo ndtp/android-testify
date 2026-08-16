@@ -140,7 +140,7 @@ workflows:
     - git-clone@8: {}
     - set-java-version@1:
         inputs:
-        - set_java_version: '21'
+        - set_java_version: '25'
     - install-missing-android-tools@3:
         inputs:
         - gradlew_path: "$PROJECT_LOCATION/gradlew"
