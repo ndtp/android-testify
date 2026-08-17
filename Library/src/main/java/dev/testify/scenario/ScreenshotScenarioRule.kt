@@ -305,7 +305,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
                 throw NoResourceConfigurationOnScenarioException(
                     cause = "fontScale",
                     value = configuration.fontScale.toString(),
-                    activity = activity?.javaClass?.simpleName.orEmpty()
+                    activity = activity.javaClass.simpleName.orEmpty()
                 )
             }
 
@@ -313,7 +313,7 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
                 throw NoResourceConfigurationOnScenarioException(
                     cause = "locale",
                     value = configuration.locale.toString(),
-                    activity = activity?.javaClass?.simpleName.orEmpty()
+                    activity = activity.javaClass.simpleName.orEmpty()
                 )
             }
         }
@@ -503,12 +503,6 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         scenario?.let {
             assertSame(it)
         } ?: throw ScenarioRequiredException()
-    }
-
-    @JvmName("assertSameContext")
-    context (scenario: ActivityScenario<*>)
-    fun assertSame() {
-        assertSame(scenario)
     }
 
     private fun assertSame(scenario: ActivityScenario<*>) {

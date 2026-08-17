@@ -1,3 +1,23 @@
+## Unreleased
+
+> [!CAUTION]
+> **Critical Update Needed:** Check your configuration files. 
+> This release uses Java 25 which requires you to update your app to use Java 25.
+> Java 25 also requires Android Gradle Plugin 9.x — the published artifacts are Java 25 bytecode and cannot be consumed by AGP 8.x
+
+- Upgrade kotlin to 2.3.21, gradle to 9.5.0 and AGP to 9.3.1
+- Upgrade all project files to use Java 25
+    - Java 25 requires you to update your app to use Java 25
+    - Requires Android Gradle Plugin 9.x. The published artifacts are Java 25 bytecode (class file
+      major version 69) and cannot be consumed by AGP 8.x
+    - Gradle 9.5.0 is required to build; `kotlinOptions`, `lintOptions`, `packagingOptions` and the
+      legacy `libraryVariants` API have been migrated to their AGP 9 replacements
+    - **Removed** `ScreenshotScenarioRule.assertSame()` with an `ActivityScenario` context parameter
+      (JVM name `assertSameContext`). Kotlin 2.3 makes it ambiguous with the no-arg `assertSame()`
+      at any call site where an `ActivityScenario` is an implicit receiver, such as inside
+      `ActivityScenario.test { }`, so it could no longer be called. Set the scenario explicitly
+      instead: `rule.withScenario(scenario).assertSame()`
+
 ## 6.0.0
 
 - https://github.com/ndtp/android-testify/pull/269

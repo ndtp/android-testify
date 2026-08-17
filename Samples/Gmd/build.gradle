@@ -1,17 +1,16 @@
-import com.android.build.api.dsl.ManagedVirtualDevice
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
     id 'dev.testify'
 }
 
 android {
-    compileSdk 33
+    compileSdk 36
 
     compileOptions {
-        sourceCompatibility 1.8
-        targetCompatibility 1.8
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
     }
 
     defaultConfig {
@@ -40,8 +39,10 @@ android {
         viewBinding true
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_25)
+        }
     }
     lint {
         disable 'GradleDependency'
@@ -50,8 +51,10 @@ android {
 
     testOptions {
         managedDevices {
-            devices {
-                tester(ManagedVirtualDevice) {
+            // AGP 9 replaced the untyped `devices` container with `localDevices`,
+            // which is already typed as ManagedVirtualDevice.
+            localDevices {
+                tester {
                     device = "Pixel 2"
                     apiLevel = 30
                     systemImageSource = "aosp"

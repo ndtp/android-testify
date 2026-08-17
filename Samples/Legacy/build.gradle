@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 buildscript {
     ext {
         versions = [
@@ -12,27 +14,29 @@ buildscript {
 
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
     id 'dev.testify'
     alias(libs.plugins.compose.compiler)
 }
 
 android {
-    compileSdk 34
+    // Must be >= the compileSdk of the Testify modules this sample depends on (36), or AGP 9's
+    // checkDebugAndroidTestAarMetadata fails. targetSdk is deliberately left at 35.
+    compileSdk 36
 
-    kotlinOptions {
-        jvmTarget = '21'
-        freeCompilerArgs = ["-Xcontext-receivers"]
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_25)
+            freeCompilerArgs.add("-Xcontext-parameters")
+        }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
     }
 
     defaultConfig {
         applicationId "dev.testify.sample"
         minSdkVersion 26
-        compileSdkVersion 35
         targetSdkVersion 35
         versionCode 1
         versionName "1.0"
@@ -58,7 +62,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
     }
-    packagingOptions {
+    packaging {
         resources {
             excludes += [
                     'META-INF/AL2.0',
