@@ -25,6 +25,12 @@ ext {
 version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
 group = pom.publishedGroupId
 
+// Gradle 9 removed the `archivesBaseName` property; `base.archivesName` is the replacement.
+// This drives the androidTest APK name (which bitrise.yml pins), not just the AAR.
+base {
+    archivesName = pom.artifact
+}
+
 android {
     namespace "dev.testify.accessibility"
 

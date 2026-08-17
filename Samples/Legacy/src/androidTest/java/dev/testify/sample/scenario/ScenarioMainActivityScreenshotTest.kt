@@ -43,7 +43,7 @@ class ScenarioMainActivityScreenshotTest {
     @Test
     fun default() {
         launchActivity<MainActivity>().test {
-            rule.assertSame()
+            rule.withScenario(this).assertSame()
         }
     }
 }

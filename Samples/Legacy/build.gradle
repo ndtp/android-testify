@@ -19,7 +19,9 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    // Must be >= the compileSdk of the Testify modules this sample depends on (36), or AGP 9's
+    // checkDebugAndroidTestAarMetadata fails. targetSdk is deliberately left at 35.
+    compileSdk 36
 
     kotlin {
         compilerOptions {
@@ -35,7 +37,6 @@ android {
     defaultConfig {
         applicationId "dev.testify.sample"
         minSdkVersion 26
-        compileSdkVersion 35
         targetSdkVersion 35
         versionCode 1
         versionName "1.0"
