@@ -6,9 +6,6 @@ plugins {
 }
 
 android {
-    // androidx.databinding:viewbinding:9.3.1 (pulled in by `viewBinding true`) declares
-    // minCompileSdk=34, so AGP 9 fails checkDebugAarMetadata below 34. Matched to the rest
-    // of the repo rather than the bare minimum.
     compileSdk 36
 
     compileOptions {

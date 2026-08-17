@@ -1,5 +1,10 @@
 ## Unreleased
 
+> [!CAUTION]
+> **Critical Update Needed:** Check your configuration files. 
+> This release uses Java 25 which requires you to update your app to use Java 25.
+> Java 25 also requires Android Gradle Plugin 9.x — the published artifacts are Java 25 bytecode and cannot be consumed by AGP 8.x
+
 - Upgrade kotlin to 2.3.21, gradle to 9.5.0 and AGP to 9.3.1
 - Upgrade all project files to use Java 25
     - Java 25 requires you to update your app to use Java 25
