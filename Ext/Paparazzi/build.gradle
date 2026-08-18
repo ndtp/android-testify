@@ -1,0 +1,107 @@
+import com.android.build.gradle.tasks.BundleAar
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.dokka'
+    id 'maven-publish'
+    id 'signing'
+}
+
+ext {
+    pom = [
+            publishedGroupId  : 'dev.testify',
+            artifact          : 'testify-paparazzi',
+            libraryName       : 'testify-paparazzi',
+            libraryDescription: 'Paparazzi snapshot testing utilities for Android Testify',
+            siteUrl           : 'https://github.com/ndtp/android-testify',
+            gitUrl            : 'https://github.com/ndtp/android-testify.git',
+            licenseName       : 'The MIT License',
+            licenseUrl        : 'https://opensource.org/licenses/MIT',
+            author            : 'ndtp'
+    ]
+}
+
+version = project.findProperty("testify_version") ?: "0.0.1-SNAPSHOT"
+group = pom.publishedGroupId
+
+base {
+    archivesName = pom.artifact
+}
+
+android {
+    namespace "dev.testify.paparazzi"
+
+    lint {
+        abortOnError true
+        warningsAsErrors true
+        textOutput = file('stdout')
+        textReport true
+        xmlReport false
+    }
+
+    defaultConfig {
+        compileSdkVersion = libs.versions.compileSdk.get().toInteger()
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen { false }
+                showStandardStreams = true
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_25
+        targetCompatibility JavaVersion.VERSION_25
+    }
+
+    dependencies {
+    compileOnly libs.paparazzi
+    compileOnly libs.junit4
+
+    compileOnly(platform(libs.androidx.compose.bom))
+    compileOnly libs.androidx.compose.runtime
+    compileOnly libs.androidx.ui
+
+    }
+    packaging {
+        resources {
+            excludes += [
+                    'MANIFEST.MF',
+                    'META-INF/LICENSE.md',
+                    'META-INF/LICENSE-notice.md'
+            ]
+        }
+    }
+    publishing {
+        singleVariant("release") {
+            // if you don't want sources/javadoc, remove these lines
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
+afterEvaluate {
+    apply from: "../../publish.build.gradle"
+}
+
+tasks.withType(KotlinJvmCompile).configureEach {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        jvmTarget.set(JvmTarget.JVM_25)
+    }
+}
+
+tasks.withType(BundleAar).configureEach {
+    archiveFileName.set("${pom.artifact}-${version}.aar")
+}
