@@ -118,14 +118,16 @@ workflows:
       dependencies, install Android tools, run your Android unit tests and save the
       test report.
     steps:
-    - avd-manager@1:
+    - avd-manager@2:
         timeout: 240
         inputs:
-        - api_level: '29'
+        - api_level: '37.0'
         - start_command_flags: "-camera-back none -camera-front none -no-window -gpu
             swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -partition-size
             6144"
         - profile: pixel_3a
+        - tag: google_apis_ps16k
+        - abi: x86_64
         title: 'Emulator: Launch'
     - wait-for-android-emulator@1:
         timeout: 300
@@ -293,7 +295,6 @@ workflows:
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     before_run:
     - _globalSetup
-    - _emulatorSetup
 
   test_accessibility_ext:
     steps:
