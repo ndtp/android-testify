@@ -517,6 +517,21 @@ Disables the soft keyboard on the device
 
 ```
 
+### disableStylusInput
+
+Disables stylus input on the device. The stylus input method can disrupt screenshots of text input fields, so it's good to turn it off.
+
+```console
+~/: ./gradlew FlixSample:disableStylusInput
+
+> Task :FlixSample:disableStylusInput
+------------------------------------------------------------
+Disables stylus input on the device
+------------------------------------------------------------
+  Success
+
+```
+
 ### hidePasswords
 
 Hides passwords fully on the device.

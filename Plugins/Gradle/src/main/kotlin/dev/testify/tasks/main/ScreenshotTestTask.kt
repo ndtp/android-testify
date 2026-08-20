@@ -35,6 +35,7 @@ import dev.testify.tasks.internal.TaskDependencyProvider
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyDefaultTask
 import dev.testify.tasks.utility.DisableSoftKeyboardTask
+import dev.testify.tasks.utility.DisableStylusTask
 import dev.testify.tasks.utility.HidePasswordsTasks
 import dev.testify.tasks.utility.LocaleTask
 import dev.testify.tasks.utility.TimeZoneTask
@@ -189,6 +190,7 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             task.dependsOn(
                 HidePasswordsTasks.taskName(),
                 DisableSoftKeyboardTask.taskName(),
+                DisableStylusTask.taskName(),
                 LocaleTask.taskName(),
                 TimeZoneTask.taskName()
             )
