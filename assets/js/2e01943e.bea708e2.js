@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[222],{43636:a=>{a.exports=JSON.parse('{"label":"api","permalink":"/android-testify/blog/tags/api","allTagsPath":"/android-testify/blog/tags","count":1}')}}]);
