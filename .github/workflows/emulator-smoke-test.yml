@@ -1,0 +1,103 @@
+# Finds an API 37 emulator configuration that actually works on a GitHub
+# runner. Nothing custom: the off-the-shelf emulator action, a trivial app,
+# and a shell script. If a leg of this matrix fails, the emulator is at fault.
+name: Emulator Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - emulator-smoke-test
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    name: Build smoke app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Assemble
+        run: ./gradlew -p SmokeApp :app:assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smoke-apk
+          path: SmokeApp/app/build/outputs/apk/debug/app-debug.apk
+
+  smoke:
+    name: API ${{ matrix.api-level }} ${{ matrix.target }}
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Control. If this fails the harness is wrong, not the image.
+          - api-level: '36'
+            target: google_apis
+            channel: stable
+          # Known bad: SurfaceFlinger aborts in mapper.ranchu.so.
+          - api-level: '37.0'
+            target: google_apis
+            channel: stable
+          # Untested builds. 37.1 and later publish ps16k variants only.
+          - api-level: '37.1'
+            target: google_apis_ps16k
+            channel: stable
+          - api-level: '37.2-beta3'
+            target: google_apis_ps16k
+            channel: beta
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: smoke-apk
+          path: SmokeApp/app/build/outputs/apk/debug/
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Smoke test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
+          channel: ${{ matrix.channel }}
+          arch: x86_64
+          profile: pixel_3a
+          ram-size: 4096M
+          disk-size: 6G
+          script: ./scripts/emulator-smoke.sh
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screens-${{ matrix.api-level }}-${{ matrix.target }}
+          path: screen-*.png
+          if-no-files-found: ignore
