@@ -22,6 +22,16 @@ check() {
   fi
 }
 
+# A failed screencap still emits a tiny stub -- 72 bytes on a crash-looping
+# compositor -- so "non-empty" is not good enough. A real 1080x2220 frame runs
+# to tens of KB even when it is almost entirely flat colour.
+valid_png() {
+  local f=$1
+  [ -s "$f" ] || return 1
+  [ "$(wc -c < "$f")" -gt 10000 ] || return 1
+  head -c 8 "$f" | od -An -tx1 | tr -d ' \n' | grep -q '^89504e470d0a1a0a'
+}
+
 section "Device"
 adb devices
 for prop in ro.build.version.sdk ro.build.version.release \
@@ -62,8 +72,8 @@ section "Screencap"
 # Goes through the same host->guest colour buffer readback that screenshot
 # testing depends on.
 adb exec-out screencap -p > screen-idle.png
-[ -s screen-idle.png ]
-check $? "screencap wrote $(wc -c < screen-idle.png) bytes"
+valid_png screen-idle.png
+check $? "screencap produced a valid PNG ($(wc -c < screen-idle.png) bytes)"
 
 section "Install"
 adb install -r ./SmokeApp/app/build/outputs/apk/debug/app-debug.apk
@@ -76,8 +86,8 @@ adb shell am start -W -n dev.testify.smoke/.MainActivity
 check $? "MainActivity started"
 sleep 3
 adb exec-out screencap -p > screen-app.png
-[ -s screen-app.png ]
-check $? "screencap after launch wrote $(wc -c < screen-app.png) bytes"
+valid_png screen-app.png
+check $? "screencap after launch produced a valid PNG ($(wc -c < screen-app.png) bytes)"
 
 section "Result"
 if [ "$fail" -eq 0 ]; then
