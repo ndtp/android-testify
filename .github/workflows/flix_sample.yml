@@ -61,12 +61,19 @@ jobs:
 
       - name: Create AVD
         id: create
-        uses: ndtp/android-avd-manager-action@main
+        uses: ndtp/android-avd-manager-action@2.0
         with:
-          api-level: 37
-          target: google_apis
+          # 37.0 and 37.1 both crash-loop SurfaceFlinger: mapper.ranchu.so
+          # aborts on `!hasReadColorBufferDma`, taking system_server with it.
+          # 37.2-beta3 is the first image where that is fixed -- it carries a
+          # DEV-branch build, so the fix has not reached a release image yet.
+          api-level: '37.2-beta3'
+          target: google_apis_ps16k
+          channel: beta
           arch: x86_64
           profile: pixel_3a
+          ram-size: 4096M
+          disk-size: 6G
 
       - name: Enable kernel-based virtual machine (KVM)
         uses: ndtp/enable-kvm-action@v1
@@ -77,6 +84,14 @@ jobs:
         with:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           verbose: true
+
+      - name: Wait for the device to settle
+        run: |
+          # sys.boot_completed goes high while PackageManager is still doing
+          # first-boot work, so wait for the package service to actually answer.
+          timeout 240 bash -c 'until adb shell service check package | grep -q ": found"; do sleep 2; done'
+          echo "Host disk:"; df -h /
+          echo "Guest /data:"; adb shell df -h /data
 
       - name: Download app apk
         uses: actions/download-artifact@v4
