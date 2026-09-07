@@ -93,6 +93,7 @@ class ConfigurationCacheTest {
             "deviceLocale, true",
             "deviceTimeZone, true",
             "disableSoftKeyboard, true",
+            "disableStylusInput, true",
             "hidePasswords, true",
             "reportPull, true",
             "reportShow, true",

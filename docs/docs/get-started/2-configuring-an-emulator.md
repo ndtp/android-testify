@@ -4,24 +4,27 @@ The Sample application includes a baseline for an emulator that's compatible wit
 
 ## Intel based hardware
 
-- Phone: Pixel 3a (1080x2220 440dpi)
-- Q API level 29, x86, Android 10.0 (Google APIs)
-- RAM: 1536 MB
+- Phone: Pixel 3a (Obsolete) (1080x2220 440dpi)
+- 16 KB Page Size Google APIs **x86_64** v8a System Image, API 37.0 (CinnamonBun; Android 17.0)
+- CPU cores: 4
+- Graphics acceleration: Automatic
+- RAM: 2 GB
 - VM heap: 256 MB
-- Internal Storage: 2048 MB
-- SD card, Studio-managed: 512 MB
+- Internal Storage: 10 GB
+- Expanded storage, Custom: 512 MB
 - Enable Device Frame with pixel_3a skin
 - Enable keyboard input
 
-
 ## Apple M1 hardware
 
-- Phone: Pixel 3a (1080x2220 440dpi)
-- Q API level 29, **arm64**, Android 10.0 (Google APIs)
-- RAM: 1536 MB
+- Phone: Pixel 3a (Obsolete) (1080x2220 440dpi)
+- 16 KB Page Size Google APIs **ARM 64** v8a System Image, API 37.0 (CinnamonBun; Android 17.0)
+- CPU cores: 4
+- Graphics acceleration: Automatic
+- RAM: 2 GB
 - VM heap: 256 MB
-- Internal Storage: 2048 MB
-- SD card, Studio-managed: 512 MB
+- Internal Storage: 10 GB
+- Expanded storage, Custom: 512 MB
 - Enable Device Frame with pixel_3a skin
 - Enable keyboard input
 

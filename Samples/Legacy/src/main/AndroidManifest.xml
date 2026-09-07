@@ -31,7 +31,8 @@
             android:exported="false" />
         <activity
             android:name="dev.testify.ComposableTestActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".clients.details.ClientDetailsActivity"
             android:exported="false"
