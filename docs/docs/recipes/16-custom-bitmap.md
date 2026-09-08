@@ -35,8 +35,8 @@ Within the body of the `CaptureMethod`, you can use any mechanism you'd like to 
 
 In this example, we add the wordmark _Testify_ and the test name to the bottom of the captured image. We use the ScreenshotUtility function `createBitmapFromDrawingCache()` to capture a `Bitmap` from the provided activity. The, we wrap the `Bitmap` in a [`Canvas`<OpenNew/>](https://developer.android.com/reference/android/graphics/Canvas) and use the canvas' `drawText` method to render text on the bitmap.
 
-| <img width="200" src="https://github.com/ndtp/android-testify/blob/main/Samples/Legacy/src/androidTest/assets/screenshots/29-1080x2220@440dp-en_US/ScreenshotRuleExampleTests_captureMethodExample.png?raw=true"/> |
-|---|
+| <img width="200" src="https://github.com/ndtp/android-testify/blob/main/Samples/Legacy/src/androidTest/assets/screenshots/37-1080x2220@440dp-en_US/ScreenshotRuleExampleTests_captureMethodExample.png?raw=true"/> |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 <Tabs>
 <TabItem value="rule" label="ScreenshotTestRule">
