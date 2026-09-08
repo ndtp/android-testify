@@ -42,6 +42,7 @@ import dev.testify.tasks.report.ReportShowTask
 import dev.testify.tasks.utility.DeviceKeyTask
 import dev.testify.tasks.utility.DevicesTask
 import dev.testify.tasks.utility.DisableSoftKeyboardTask
+import dev.testify.tasks.utility.DisableStylusTask
 import dev.testify.tasks.utility.HidePasswordsTasks
 import dev.testify.tasks.utility.LocaleTask
 import dev.testify.tasks.utility.SettingsTask
@@ -109,6 +110,7 @@ class TestifyPlugin : Plugin<Project> {
         registerTask<DeviceKeyTask>(DeviceKeyTask.Companion)
         registerTask<DevicesTask>(DevicesTask.Companion)
         registerTask<DisableSoftKeyboardTask>(DisableSoftKeyboardTask.Companion)
+        registerTask<DisableStylusTask>(DisableStylusTask.Companion)
         registerTask<HidePasswordsTasks>(HidePasswordsTasks.Companion)
         registerTask<InternalScreenshotTestRecordTask>(InternalScreenshotTestRecordTask.Companion)
         registerTask<LocaleTask>(LocaleTask.Companion)

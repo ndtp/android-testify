@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2026 ndtp
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,8 +42,10 @@ class AssertExpectedDeviceTest {
     /**
      * WHEN the baseline image matches the current device settings THEN success
      *
-     * The baseline was recorded against a Pixel 3a (1080x2220 440dpi) running Q API level 29, x86, Android 10.0 (Google APIs)
-     * key = 29-1080x2220@440dp-en_US
+     * The baseline was recorded against a Pixel 3a (1080x2220 440dpi) running 16 KB Page Size Google
+     * APIs ARM 64 v8a System Image, API 37.0 (CinnamonBun; Android 17.0)
+     *
+     * key = 37-1080x2220@440dp-en_US
      *
      * https://testify.dev/docs/get-started/configuring-an-emulator
      */
@@ -87,7 +89,7 @@ class AssertExpectedDeviceTest {
         val e = assertThrows(UnexpectedDeviceException::class.java, rule::assertSame)
         assertTrue(
             e.message!!.contains(
-                "The currently running device '29-1080x2220@440dp-en_US'" +
+                "The currently running device '37-1080x2220@440dp-en_US'" +
                     " does not match the expected device '33-1080x1920@395dp-en_CA'"
             )
         )

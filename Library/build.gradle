@@ -30,7 +30,7 @@ base {
     archivesName = pom.artifact
 }
 
-jacoco { toolVersion = "0.8.10" }
+jacoco { toolVersion = "0.8.15" }
 
 android {
     compileOptions {
