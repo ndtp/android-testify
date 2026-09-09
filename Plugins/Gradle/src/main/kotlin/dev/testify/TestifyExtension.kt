@@ -26,6 +26,7 @@
 package dev.testify
 
 import dev.testify.internal.android
+import dev.testify.internal.isTestModule
 import dev.testify.internal.applicationTargetPackageId
 import dev.testify.internal.inferredAndroidTestInstallTask
 import dev.testify.internal.inferredDefaultTestVariantId
@@ -113,9 +114,12 @@ internal data class TestifySettings(
             val android = project.android
             val extension = project.getTestifyExtension()
 
+            // A `com.android.test` module has no `androidTest` source set; its tests are its
+            // `main` sources, so that is where its baselines belong.
+            val testSourceSet = if (project.isTestModule) "main" else "androidTest"
             val baselineSourceDir = extension.baselineSourceDir
-                ?: project.android.sourceSets.findByName("androidTest")?.assets?.directories?.firstOrNull()
-                ?: "src/androidTest/assets"
+                ?: project.android.sourceSets.findByName(testSourceSet)?.assets?.directories?.firstOrNull()
+                ?: "src/$testSourceSet/assets"
             val testRunner = extension.testRunner ?: android.defaultConfig.testInstrumentationRunner ?: "unknown"
             val pullWaitTime = extension.pullWaitTime ?: 0L
             val testPackageId = extension.testPackageId ?: project.inferredDefaultTestVariantId
