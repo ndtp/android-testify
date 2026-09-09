@@ -28,6 +28,7 @@ package dev.testify
 import dev.testify.TestifyPlugin.Companion.EVALUATED_SETTINGS
 import dev.testify.internal.Style.Description
 import dev.testify.internal.android
+import dev.testify.internal.isTestModule
 import dev.testify.internal.isVerbose
 import dev.testify.internal.println
 import dev.testify.tasks.internal.TaskNameProvider
@@ -78,8 +79,14 @@ class TestifyPlugin : Plugin<Project> {
             if (settings.autoImplementLibrary) {
                 val version = javaClass.getPackage().implementationVersion.orEmpty()
                 val dependency = "dev.testify:testify:$version"
-                if (project.isVerbose) println(Description, "Adding androidTestImplementation($dependency)")
-                project.dependencies.add("androidTestImplementation", dependency)
+
+                if (project.isTestModule) {
+                    if (project.isVerbose) println(Description, "Adding implementation($dependency)")
+                    project.dependencies.add("implementation", dependency)
+                } else {
+                    if (project.isVerbose) println(Description, "Adding androidTestImplementation($dependency)")
+                    project.dependencies.add("androidTestImplementation", dependency)
+                }
             }
         }
 

@@ -20,6 +20,13 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- Add support for test-only modules. The plugin can now be applied to a `com.android.test` module;
+  previously it failed with `Gradle project must contain an 'android' closure`
+    - `baselineSourceDir` defaults to `src/main/assets` for a test module, since a `com.android.test`
+      module has no `androidTest` source set — its tests are its `main` sources
+    - The Testify library is added as an `implementation` dependency rather than
+      `androidTestImplementation` for the same reason
+    - See the new `Samples/Flix/FlixTest` module for a worked example
 - **Removed** the `useLocale` Gradle project property. It was declared but never read, and was typed
   `Boolean`, so `-PuseLocale=en_CA` evaluated to `false` and could never have worked. Set the locale
   per test with `TestifyConfiguration.locale` instead

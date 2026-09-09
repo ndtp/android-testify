@@ -22,6 +22,7 @@ include ':ComposeExtensions'
 include ':FlixHilt'
 include ':FlixLibrary'
 include ':FlixSample'
+include ':FlixTest'
 include ':FullscreenCaptureMethod'
 include ':GmdSample'
 include ':Ktx'
@@ -36,6 +37,7 @@ project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
 project(':FlixHilt').projectDir = new File("./Samples/Flix/FlixHilt")
 project(':FlixLibrary').projectDir = new File("./Samples/Flix/FlixLibrary")
 project(':FlixSample').projectDir = new File("./Samples/Flix")
+project(':FlixTest').projectDir = new File("./Samples/Flix/FlixTest")
 project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
 project(':GmdSample').projectDir = new File("./Samples/Gmd")
 project(':Ktx').projectDir = new File("./Ext/Ktx")
