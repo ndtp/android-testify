@@ -8,6 +8,9 @@ pipelines:
     stages:
     - setup: {}
     - verify: {}
+  nightly:
+    workflows:
+      test_nightly: {}
 
 stages:
   setup:
@@ -272,17 +275,17 @@ workflows:
     steps:
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: Plugin:ktlintCheck
+        - gradlew_path: "./gradlew"
+        - gradle_task: Plugin:ktlintCheck
         title: KtLint
     - gradle-unit-test@1:
         inputs:
-          - gradlew_file_path: ./gradlew
-          - unit_test_task: Plugin:test
+        - gradlew_file_path: ./gradlew
+        - unit_test_task: Plugin:test
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: Plugin:assemble
+        - gradlew_path: "./gradlew"
+        - gradle_task: Plugin:assemble
         title: Validate build
     - deploy-to-bitrise-io@2:
         inputs:
@@ -301,13 +304,13 @@ workflows:
     steps:
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: Accessibility:ktlintCheck
+        - gradlew_path: "./gradlew"
+        - gradle_task: Accessibility:ktlintCheck
         title: KtLint
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: Accessibility:assemble
+        - gradlew_path: "./gradlew"
+        - gradle_task: Accessibility:assemble
         title: Validate build
     - github-status@3:
         run_if: .IsCI
@@ -326,13 +329,13 @@ workflows:
     steps:
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: ComposeExtensions:ktlintCheck
+        - gradlew_path: "./gradlew"
+        - gradle_task: ComposeExtensions:ktlintCheck
         title: KtLint
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: ComposeExtensions:assemble
+        - gradlew_path: "./gradlew"
+        - gradle_task: ComposeExtensions:assemble
         title: Validate build
     - github-status@3:
         run_if: .IsCI
@@ -351,13 +354,13 @@ workflows:
     steps:
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: FullscreenCaptureMethod:ktlintCheck
+        - gradlew_path: "./gradlew"
+        - gradle_task: FullscreenCaptureMethod:ktlintCheck
         title: KtLint
     - gradle-runner@2:
         inputs:
-          - gradlew_path: "./gradlew"
-          - gradle_task: FullscreenCaptureMethod:assemble
+        - gradlew_path: "./gradlew"
+        - gradle_task: FullscreenCaptureMethod:assemble
         title: Validate build
     - github-status@3:
         run_if: .IsCI
@@ -504,6 +507,159 @@ workflows:
         - pipeline_build_url: "$BITRISE_BUILD_URL"
     before_run:
     - _globalSetup
+
+  test_nightly:
+    steps:
+    - gradle-unit-test@1:
+        title: Gradle Plugin unit tests
+        inputs:
+        - gradlew_file_path: ./gradlew
+        - unit_test_task: Plugin:test
+    - android-unit-test@1:
+        title: Library unit tests
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: Library
+        - cache_level: none
+    - android-unit-test@1:
+        title: Legacy Sample unit tests
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: LegacySample
+        - cache_level: none
+    - android-unit-test@1:
+        title: Ktx unit tests
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: Ktx
+        - cache_level: none
+    - android-unit-test@1:
+        title: FlixSample unit tests
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: FlixSample
+        - cache_level: none
+    - android-unit-test@1:
+        title: FlixLibrary unit tests
+        inputs:
+        - project_location: "$PROJECT_LOCATION"
+        - variant: Debug
+        - module: FlixLibrary
+        - cache_level: none
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Library:assembleDebugAndroidTest
+        title: Build Library Test APK
+    - android-instrumented-test@0:
+        title: Library instrumented tests
+        inputs:
+        - test_apk_path: "./Library/build/outputs/apk/androidTest/debug/testify-debug-androidTest.apk"
+        - main_apk_path: "./Library/build/outputs/apk/androidTest/debug/testify-debug-androidTest.apk"
+    - android-build-for-ui-testing@0:
+        title: Build LegacySample APK
+        inputs:
+        - variant: Debug
+        - module: LegacySample
+    - git::https://github.com/ndtp/bitrise-step-android-testify.git@main:
+        timeout: 1800
+        title: Run LegacySample Screenshot Tests
+        inputs:
+        - adb_command: "./gradlew LegacySample:screenshotTest"
+        - module: ":LegacySample"
+        - app_apk: "./Samples/Legacy/build/outputs/apk/debug/LegacySample-debug.apk"
+        - app_package: dev.testify.sample
+        - test_apk: "./Samples/Legacy/build/outputs/apk/androidTest/debug/LegacySample-debug-androidTest.apk"
+        - test_package: dev.testify.sample.test
+        - test_runner: androidx.test.runner.AndroidJUnitRunner
+        - verbose: false
+    - custom-test-results-export@1.0:
+        is_always_run: true
+        timeout: 120
+        inputs:
+        - test_name: Legacy Sample Screenshot Test
+        - search_pattern: "**test_result_**.xml**"
+    - android-build-for-ui-testing@0:
+        title: Build FlixSample APK
+        inputs:
+        - variant: Debug
+        - module: FlixSample
+    - git::https://github.com/ndtp/bitrise-step-android-testify.git@main:
+        timeout: 1800
+        title: Run FlixSample Screenshot Tests
+        inputs:
+        - adb_command: "./gradlew FlixSample:screenshotTest"
+        - module: ":FlixSample"
+        - app_apk: "./Samples/Flix/build/outputs/apk/debug/FlixSample-debug.apk"
+        - app_package: dev.testify.samples.flix
+        - test_apk: "./Samples/Flix/build/outputs/apk/androidTest/debug/FlixSample-debug-androidTest.apk"
+        - test_package: dev.testify.samples.flix.test
+        - test_runner: androidx.test.runner.AndroidJUnitRunner
+        - verbose: false
+    - custom-test-results-export@1.0:
+        is_always_run: true
+        timeout: 120
+        inputs:
+        - test_name: Flix Screenshot Test
+        - search_pattern: "**test_result_**.xml**"
+    - android-build@1:
+        title: Build FlixLibrary test APK
+        inputs:
+        - variant: DebugAndroidTest
+        - module: FlixLibrary
+    - git::https://github.com/ndtp/bitrise-step-android-testify.git@main:
+        timeout: 1800
+        title: Run FlixLibrary Screenshot Tests
+        inputs:
+        - adb_command: "./gradlew FlixLibrary:screenshotTest"
+        - module: ":FlixLibrary"
+        - app_apk: "./Samples/Flix/FlixLibrary/build/outputs/apk/androidTest/debug/FlixLibrary-debug-androidTest.apk"
+        - app_package: dev.testify.samples.flix.library.test
+        - test_apk: "./Samples/Flix/FlixLibrary/build/outputs/apk/androidTest/debug/FlixLibrary-debug-androidTest.apk"
+        - test_package: dev.testify.samples.flix.library.test
+        - test_runner: androidx.test.runner.AndroidJUnitRunner
+        - verbose: true
+    - custom-test-results-export@1.0:
+        is_always_run: true
+        timeout: 120
+        inputs:
+        - test_name: Flix Screenshot Test
+        - search_pattern: "**test_result_**.xml**"
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Ktx:assembleDebugAndroidTest
+        title: Build Ktx Test APK
+    - android-instrumented-test@0:
+        title: Ktx instrumented tests
+        inputs:
+        - test_apk_path: "./Ext/Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
+        - main_apk_path: "./Ext/Ktx/build/outputs/apk/androidTest/debug/testify-ktx-debug-androidTest.apk"
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Accessibility:assemble
+        title: Validate Accessibility build
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: ComposeExtensions:assemble
+        title: Validate ComposeExtensions build
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: FullscreenCaptureMethod:assemble
+        title: Validate FullscreenCaptureMethod build
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+    before_run:
+    - _globalSetup
+    - _emulatorSetup
 
 meta:
   bitrise.io:
