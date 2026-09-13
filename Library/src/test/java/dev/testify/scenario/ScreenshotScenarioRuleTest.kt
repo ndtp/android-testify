@@ -187,7 +187,7 @@ class ScreenshotScenarioRuleTest {
         every { pauseForInspection() } just runs
         every { HighContrastDiff.create(any(), any()) } returns mockHighContrastDiff
         every { mockEspressoHelper.syncUiThread() } just runs
-        every { closeSoftKeyboard() } just runs
+        every { closeSoftKeyboard(any()) } just runs
 
         val slot = slot<Runnable>()
         every { mockActivity.runOnUiThread(capture(slot)) } answers {

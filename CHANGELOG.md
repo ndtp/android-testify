@@ -17,6 +17,8 @@
       at any call site where an `ActivityScenario` is an implicit receiver, such as inside
       `ActivityScenario.test { }`, so it could no longer be called. Set the scenario explicitly
       instead: `rule.withScenario(scenario).assertSame()`
+- Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
+    - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 
 ## 6.0.0
 
