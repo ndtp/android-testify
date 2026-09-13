@@ -451,7 +451,8 @@ open class ScreenshotScenarioRule @JvmOverloads constructor(
         getInstrumentation().waitForIdleSync()
 
         if (configuration.hideSoftKeyboard) {
-            closeSoftKeyboard()
+            closeSoftKeyboard(activity)
+            getInstrumentation().waitForIdleSync()
         }
     }
 
