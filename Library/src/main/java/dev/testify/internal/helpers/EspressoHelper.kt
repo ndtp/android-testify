@@ -34,6 +34,7 @@ import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.view.WindowInsets
+import android.view.WindowManager
 import android.view.inspector.WindowInspector
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
@@ -156,30 +157,37 @@ fun closeSoftKeyboard(activity: Activity) {
 }
 
 /**
- * Hide the soft keyboard using `WindowInsetsController`, and wait until the window's insets report
- * that it has gone.
+ * Hide the soft keyboard and wait until the window's insets stop reporting it.
  *
- * The insets are the platform's own answer to "is the keyboard showing?", which is why the
- * deprecation note on [InputMethodManager.hideSoftInputFromWindow] points at them: the
- * `ResultReceiver` overload acknowledges that the *request* was received, not that the keyboard has
- * finished animating away.
+ * The insets are the platform's own record of whether the keyboard is showing, and the only thing
+ * that answers that for a *particular window*. This is why the deprecation note on
+ * [InputMethodManager.hideSoftInputFromWindow] points at them rather than at its `ResultReceiver`,
+ * which only acknowledges that a request was received.
  *
  * Note that the caller is still expected to sync the UI thread afterwards. The insets report the
- * keyboard hidden at the end of its animation, but the app may still need to lay out and draw the
- * region it used to cover.
+ * keyboard hidden as soon as the hide begins, while its animation, and the app's relayout of the
+ * region it used to cover, may still be in progress.
+ *
+ * The keyboard is asked to hide twice, through the window's insets controller and through the
+ * [InputMethodManager]. A window that cannot control its own IME insets — in multi-window, for
+ * instance — ignores the first, which is why `androidx.core`'s `SoftwareKeyboardControllerCompat`
+ * carries the same fallback (b/280532442). Everywhere else the second request is redundant and
+ * harmless: whether the keyboard has gone is judged from the insets, never from these calls.
  */
 @RequiresApi(Build.VERSION_CODES.R)
 private fun closeSoftKeyboardViaInsets(activity: Activity) {
-    /* No window reports a visible IME, so there is no keyboard to dismiss. */
+    /* No window owns a visible IME, so there is no keyboard to dismiss. */
     val imeWindowView = activity.onMainThread { imeWindowView(activity) } ?: return
 
     activity.onMainThread {
         imeWindowView.windowInsetsController?.hide(WindowInsets.Type.ime())
+        imeWindowView.hideSoftInputFromWindow()
     }
 
     val deadline = SystemClock.uptimeMillis() + HIDE_KEYBOARD_TIMEOUT_MILLIS
     while (SystemClock.uptimeMillis() < deadline) {
-        if (activity.onMainThread { !imeWindowView.isImeVisible() } == true) return
+        val remaining = deadline - SystemClock.uptimeMillis()
+        if (activity.onMainThread(remaining) { !imeWindowView.isImeVisible() } == true) return
         SystemClock.sleep(HIDE_KEYBOARD_POLL_MILLIS)
     }
 
@@ -194,10 +202,18 @@ private fun closeSoftKeyboardViaInsets(activity: Activity) {
  * Hide the soft keyboard on API levels that predate [WindowInsets.Type.ime].
  *
  * Here the keyboard is hidden through the [InputMethodManager], which only acts when the token it
- * is given belongs to the window hosting the view the IME is serving. We therefore target the
- * focused window rather than the activity's. On these API levels the return value is meaningful —
- * the change that makes `hideSoftInputFromWindow` always report success applies to API 36 and
- * above.
+ * is given belongs to the window hosting the view the IME is serving. Without insets there is no
+ * way to ask which window that is, and guessing at the focused one is wrong precisely when it
+ * matters: a dialog opened over a keyboard holds the focus while the keyboard still belongs to the
+ * activity behind it.
+ *
+ * So every window is offered the request until one is accepted. The return value carries that
+ * answer on these API levels — the change that makes `hideSoftInputFromWindow` always report
+ * success applies to API 36 and above — and a window that rejects it is left untouched.
+ *
+ * Note that the platform can only enumerate a process's windows from API 29. Below that there is
+ * nothing to offer but the activity's own window, so a keyboard belonging to another window — one
+ * held by a dialog, say — is not hidden on API 26 to 28.
  */
 @Suppress("DEPRECATION")
 private fun closeSoftKeyboardViaInputMethodManager(activity: Activity) {
@@ -215,8 +231,10 @@ private fun closeSoftKeyboardViaInputMethodManager(activity: Activity) {
     }
 
     val hideRequested = activity.onMainThread {
-        val windowToken = focusedWindowView(activity).windowToken ?: return@onMainThread false
-        inputMethodManager.hideSoftInputFromWindow(windowToken, 0, resultReceiver)
+        activity.rootWindowViews().any { rootView ->
+            val windowToken = rootView.windowToken ?: return@any false
+            inputMethodManager.hideSoftInputFromWindow(windowToken, 0, resultReceiver)
+        }
     }
 
     /* Only wait for the keyboard to actually go away when there was one to dismiss. */
@@ -232,18 +250,46 @@ private fun closeSoftKeyboardViaInputMethodManager(activity: Activity) {
 }
 
 /**
- * The root view of the window currently showing the soft keyboard, or null when no window is.
+ * The root view of the window that currently owns the soft keyboard, or null when none does.
+ *
+ * Reporting the keyboard in its insets is not enough to make a window its owner, so candidates are
+ * filtered by [canOwnIme] first. A popup laid out behind the keyboard reports it, and so does an
+ * activity that was stopped while it was showing.
  */
 @RequiresApi(Build.VERSION_CODES.R)
 private fun imeWindowView(activity: Activity): View? =
-    activity.rootWindowViews().lastOrNull { it.isImeVisible() }
+    activity.rootWindowViews().lastOrNull { it.canOwnIme() && it.isImeVisible() }
 
 /**
- * The root view of the focused window, falling back to the activity's own window when no window
- * holds focus — which is the case while focus is being handed over to a newly shown dialog.
+ * Whether this root belongs to a window that can be the keyboard's target.
+ *
+ * Excludes windows that are not visible — a stopped activity keeps the insets it had when it went
+ * away, and so goes on claiming a keyboard that has long since gone — and windows that cannot take
+ * focus, such as the dropdown an `AutoCompleteTextView` shows, which asks to be laid out behind the
+ * keyboard and therefore reports it too. Asking the platform to hide the keyboard through either
+ * does nothing at all.
+ *
+ * Neither test consults window focus, so a window is still identified correctly while focus is
+ * being handed over.
  */
-private fun focusedWindowView(activity: Activity): View =
-    activity.rootWindowViews().lastOrNull { it.hasWindowFocus() } ?: activity.window.decorView
+private fun View.canOwnIme(): Boolean {
+    val windowFlags = (layoutParams as? WindowManager.LayoutParams)?.flags ?: return false
+    return windowVisibility == View.VISIBLE &&
+        (windowFlags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE) == 0
+}
+
+/**
+ * Ask the [InputMethodManager] to hide the keyboard belonging to this window.
+ *
+ * Covers windows whose IME insets are not controllable, where `WindowInsetsController.hide` does
+ * nothing.
+ */
+@Suppress("DEPRECATION")
+private fun View.hideSoftInputFromWindow() {
+    val inputMethodManager =
+        context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager ?: return
+    windowToken?.let { inputMethodManager.hideSoftInputFromWindow(it, 0) }
+}
 
 /**
  * Whether this window's insets report the soft keyboard as visible.
@@ -265,9 +311,16 @@ private fun Activity.rootWindowViews(): List<View> =
     }
 
 /**
- * Run [block] on the main thread and return its result, or null if it did not complete in time.
+ * Run [block] on the main thread and return its result, or null if it did not complete within
+ * [timeoutMillis].
+ *
+ * Callers that run this in a loop should pass the time they have left, so that the work as a whole
+ * stays within its budget rather than granting each iteration the full timeout.
  */
-private fun <T> Activity.onMainThread(block: () -> T): T? {
+private fun <T> Activity.onMainThread(
+    timeoutMillis: Long = HIDE_KEYBOARD_TIMEOUT_MILLIS,
+    block: () -> T
+): T? {
     val result = AtomicReference<T>()
     val completed = CountDownLatch(1)
     runOnUiThread {
@@ -277,6 +330,6 @@ private fun <T> Activity.onMainThread(block: () -> T): T? {
             completed.countDown()
         }
     }
-    if (!completed.await(HIDE_KEYBOARD_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) return null
+    if (!completed.await(timeoutMillis, TimeUnit.MILLISECONDS)) return null
     return result.get()
 }
