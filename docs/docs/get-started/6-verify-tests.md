@@ -25,6 +25,12 @@ $ ./gradlew app:screenshotTest
 
 By default, Testify will use a strict binary comparison. This means that any difference in the binary value used for any of the pixels will be considered a failure. You may wish to adjust the matching tolerance through the use of the `exactness` tolerance. A value of less than `1.0f` will result in a more leniant comparison which will exclude visually similar pixels. For more information on Testify's tolerance implementation, please read the blog post [_Accounting for platform differences_](../../blog/platform-differences).
 
+:::tip
+
+For a full explanation of how screenshots are compared, including what an `exactness` value means and how to read a diff image, see [How Testify compares screenshots](4-how-comparison-works.md).
+
+:::
+
 ### Tolerance
 
 To adjust the tolerance, configure the `exactness` value on the rule or you can use the `@BitmapComparisonExactness`.
