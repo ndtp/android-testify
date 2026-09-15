@@ -94,6 +94,68 @@ class MainActivityScreenshotTest {
 </TabItem>
 </Tabs>
 
+### Right-to-left layouts
+
+Setting a right-to-left locale, such as Arabic (`ar`) or Hebrew (`he`), also mirrors your layout. Android derives the layout direction from the locale, so views positioned with `start` and `end` swap sides, just as they do on a device set to that language.
+
+<Tabs>
+<TabItem value="scenario" label="ScreenshotScenarioRule">
+
+```kotlin
+import dev.testify.internal.helpers.overrideResourceConfiguration
+
+class RightToLeftScreenshotTest {
+
+    @get:Rule val rule = ScreenshotScenarioRule(rootViewId = R.id.harness_root)
+
+    @ScreenshotInstrumentation
+    @TestifyLayout(R.layout.view_client_details)
+    @Test
+    fun testHebrew() {
+        overrideResourceConfiguration<TestLocaleHarnessActivity>(locale = Locale.forLanguageTag("he"))
+
+        launchActivity<TestLocaleHarnessActivity>().use { scenario ->
+            rule
+                .withScenario(scenario)
+                .assertSame()
+        }
+    }
+}
+```
+
+</TabItem>
+<TabItem value="rule" label="ScreenshotRule">
+
+```kotlin
+class RightToLeftScreenshotTest {
+
+    @get:Rule var rule = ScreenshotRule(
+        activityClass = TestLocaleHarnessActivity::class.java,
+        rootViewId = R.id.harness_root
+    )
+
+    @ScreenshotInstrumentation
+    @TestifyLayout(R.layout.view_client_details)
+    @Test
+    fun testArabic() {
+        rule
+            .configure {
+                locale = Locale.forLanguageTag("ar")
+            }
+            .assertSame()
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+A few things to keep in mind:
+
+- Your app must declare `android:supportsRtl="true"` on the `<application>` element for its layouts to mirror.
+- Text in a left-to-right script, such as English placeholder text, is still laid out left to right. Use translated strings to see text aligned the way your users see it.
+- As with any locale, the baseline is stored in a folder for that locale, for example `37-1080x2220@440dp-ar`.
+
 ## API 23 or lower
 
 On lower API levels, a test harness activity is not required. You are not required to implement `TestifyResourcesOverride`, but doing so is not harmful.
