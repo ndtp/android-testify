@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 keywords: [error, exception, troubleshooting, stack trace, ScreenshotIsDifferentException, ScreenshotBaselineNotDefinedException, MissingAssertSameException, UnexpectedDeviceException]
 ---
 
@@ -53,7 +53,7 @@ The device ran out of memory while comparing images pixel by pixel. That compari
 
 ### ImageBufferAllocationException
 
-Testify couldn't allocate memory to hold the images for comparison. Follow the steps for [`LowMemoryException`](#lowmemoryexception).
+Testify couldn't allocate memory to hold the images for comparison. The message gives the size of the buffer as a number of pixels, for example `Failed to allocate image buffer of size 2073600` for a 1080 × 1920 screenshot. `LowMemoryException` reports its size in bytes instead. Follow the steps for [`LowMemoryException`](#lowmemoryexception).
 
 ## Writing tests
 
@@ -65,10 +65,10 @@ The Gradle plugin ran a test that doesn't have the screenshot annotation. The pl
 
 ### MissingAssertSameException
 
-A test using a Testify rule finished without calling `assertSame()`.
+A test using a Testify rule finished without calling `assertSame()`. With `ScreenshotScenarioRule`, this only happens in a test that passed a scenario to `withScenario()`.
 
-- Call `assertSame()` at the end of every test that uses the rule.
-- If a test in the class isn't a screenshot test, move it to a class that doesn't use a Testify rule.
+- Call `assertSame()` at the end of every screenshot test.
+- If a test in the class isn't a screenshot test, move it to a class that doesn't use a Testify rule. With `ScreenshotScenarioRule`, you can instead leave it in the class and not call `withScenario()` in it.
 
 ### AssertSameMustBeLastException
 
@@ -98,9 +98,9 @@ launchActivity<MainActivity>().use { scenario ->
 
 ### IllegalScenarioException
 
-`withScenario()` was called more than once in the same test, or with a different scenario.
+`withScenario()` was called again in the same test with a different scenario. Calling it more than once with the same scenario is allowed.
 
-- Call `withScenario()` once per test.
+- Pass the same scenario to every `withScenario()` call in a test.
 
 ### ActivityNotRegisteredException
 
