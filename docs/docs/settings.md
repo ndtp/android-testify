@@ -88,11 +88,16 @@ Pass these to any Testify Gradle task with `-P`.
 |---|---|
 | `testClass` | Run only this test class. Use the fully qualified class name. |
 | `testName` | Run only this test method. Use together with `testClass`. |
+| `shardCount` | Split the tests into this many shards and run one of them. Use together with `shardIndex`. Applies to `screenshotTest` and `screenshotRecord`. See [Splitting tests into shards](recipes/24-continuous-integration.md#splitting-tests-into-shards). |
+| `shardIndex` | The shard to run, from `0` to `shardCount` minus one. Use together with `shardCount`. |
 | `device` | The index of the device to use when more than one is connected. Run `./gradlew testifyDevices` to list them. |
 | `user` | The Android user ID to run tests as, for multi-user devices. See [Multi-user support](recipes/19-multi-user.md). |
 | `verbose` | Set to `true` to print the `adb` commands Testify runs. |
 | `reportFileName` | The file name to use when copying the test report from the device. |
 | `reportPath` | The local directory to copy the test report to. |
+| `useLocale` | Accepted, but the library doesn't currently use it ([#200](https://github.com/ndtp/android-testify/issues/200)). |
+
+`-PshardCount` and `-PshardIndex` fail with a `ClassCastException` in Testify 6.0.0 and earlier. With those versions, pass `numShards` and `shardIndex` as [instrumentation arguments](recipes/24-continuous-integration.md#splitting-tests-into-shards) instead.
 
 For example, to record the baseline for a single test:
 
@@ -105,6 +110,7 @@ $ ./gradlew app:screenshotRecord -PtestClass=com.example.MainActivityScreenshotT
 | Variable | Description |
 |---|---|
 | `TESTIFY_USE_SDCARD` | When `true`, `screenshotTest` tells the tests to write to the SD card. `screenshotPull` and `screenshotClear` don't read it, so prefer setting `useSdCard` in the build file. |
+| `TESTIFY_OUTPUT_FORMAT` | Overrides `outputFileNameFormat` for `screenshotTest`. Like that setting, it currently has no effect ([#199](https://github.com/ndtp/android-testify/issues/199)). |
 
 ## Test runner arguments and manifest tags
 
