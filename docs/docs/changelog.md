@@ -4,9 +4,58 @@ sidebar_position: 5
 
 # Change Log
 
+## 6.0.0
+
+- [#269](https://github.com/ndtp/android-testify/pull/269) `dev.testify.internal.extensions.cyan` moved to `dev.testify.extensions.cyan`
+- [#269](https://github.com/ndtp/android-testify/pull/269) Java interop for `findAnnotation` method is now available from `AnnotationExtensionsKtx` 
+- [#269](https://github.com/ndtp/android-testify/pull/269) Java interop for `instrumentationPrintln` method is now available from `InstrumentationRegistryExtensionsKt`
+- [#269](https://github.com/ndtp/android-testify/pull/269) Java interop for `getModuleName` method is now available from `InstrumentationRegistryExtensionsKt`
+- [#269](https://github.com/ndtp/android-testify/pull/269) `fun Context.updateLocale(locale: Locale?): Context` is now public
+- [#269](https://github.com/ndtp/android-testify/pull/269) `fun getMetaDataBundle(context: Context): Bundle?` is now public
+
+---
+
+## 5.0.2
+
+*   [#300](https://github.com/ndtp/android-testify/pull/300) Declare AGP as compileOnly to prevent deprecated android {} accessor in consuming projects
+
+---
+
+## 5.0.1
+
+*   [#276](https://github.com/ndtp/android-testify/pull/276) Fix Testify plugin crash on Android Gradle Plugin 9+
+
+---
+
+## 5.0.0
+
+*   Support Android Gradle Plugin 9.0 [#273](https://github.com/ndtp/android-testify/pull/273)
+*   Add GEMINI.md context file
+*   Fix setup documentation
+*   Allow Flix Sample to be triggered manually
+
+---
+
+## 4.0.0
+
+- https://github.com/ndtp/android-testify/pull/266 Updated to Kotlin 2.2
+- https://github.com/ndtp/android-testify/pull/266 Major version updates to all core dependencies. This will require the following changes to your projects:
+    - Compose 2025.08.01 updates require:
+      - kotlinCompilerExtensionVersion --> 1.9.0
+      - androidx.compose.material:material   --> 1.9.0
+      - androidx.compose.ui:ui-tooling-preview -> 1.9.0
+      - androidx.compose.ui:ui --> 1.9.0
+    - Java 21 requires you to update your app to use Java 21
+    - Compile 35+ requires you to target 35+
+    - Minimum SDK raised to 26
+
+---
+
 ## 3.2.3
 
 - https://github.com/ndtp/android-testify/pull/268 - Fix GMD TestStorage service not found
+
+---
 
 ## 3.2.2
 
@@ -16,19 +65,27 @@ sidebar_position: 5
 - https://github.com/ndtp/android-testify/pull/253 - Fix for #206: UnexpectedDeviceException thrown because wrong Context being used to determine device orientation
 - Minor changes to Flix Sample documentation to improve clarity of the requirements
 
+---
+
 ## 3.2.1
 
 - Fix #244 "GMD recordMode not working as expected" 
     - https://github.com/ndtp/android-testify/pull/248 - Update ManifestHelper to use alternate version of getApplicationInfo 
 - Respect Gradle console mode. See https://docs.gradle.org/current/userguide/command_line_interface.html#sec:command_line_customizing_log_format for more information.
 
+---
+
 ## 3.2.0
 
 - https://github.com/ndtp/android-testify/pull/231 - Replace Plugin-Local with Composite Build
 
+---
+
 ## 3.1.0
 
 - https://github.com/ndtp/android-testify/pull/226 - Testify will now throw a `LowMemoryException` when attempts to allocate an `IntBuffer` fail. This can help users diagnose AVD configuration problems and reports on the state of the device.
+
+---
 
 ## 3.0.0
 
