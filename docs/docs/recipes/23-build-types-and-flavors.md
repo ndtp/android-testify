@@ -1,5 +1,5 @@
 ---
-keywords: [build type, build variant, product flavor, flavors, productFlavors, installTask, installAndroidTestTask, applicationPackageId, testPackageId, Unable to find instrumentation info]
+keywords: [build type, build variant, product flavor, flavors, productFlavors, installTask, installAndroidTestTask, applicationPackageId, testPackageId, moduleName, nested module, Unable to find instrumentation info]
 ---
 
 import Tabs from '@theme/Tabs';
@@ -20,15 +20,17 @@ The Testify Gradle Plugin infers how to install and run your tests from your mod
 
 The inferred package IDs don't include a product flavor's `applicationId` or `applicationIdSuffix`. With more than one flavor, the inferred install tasks belong to whichever flavor sorts first alphabetically.
 
-When the values don't match the variant you're testing, the tests fail to start, and the output contains an error like this:
+When the install tasks or `testPackageId` don't match the variant you're testing, the tests fail to start. The message comes from Android rather than Testify, and you'll see an error like this:
 
 ```
 INSTRUMENTATION_STATUS: Error=Unable to find instrumentation info for: ComponentInfo{com.example.app.test/androidx.test.runner.AndroidJUnitRunner}
 ```
 
+When `applicationPackageId` doesn't match, the tests can still run, but `screenshotPull` and `screenshotClear` look for screenshots in the wrong app.
+
 ## Configure all four settings together
 
-Setting only the install tasks isn't enough. Testify runs the tests with `adb shell am instrument`, which needs the package IDs of the installed APKs. Set all four values for the variant you're testing.
+Setting only the install tasks isn't enough. Testify runs the tests with `adb shell am instrument` using `testPackageId`, and reads screenshots from the device using `applicationPackageId`. Set all four values for the variant you're testing.
 
 For example, for an app with a `googleMock` product flavor tested on its `debug` build type:
 
@@ -118,7 +120,34 @@ $ ./gradlew app:screenshotTest -Pverbose=true
 
 ## Nested modules
 
-`screenshotTest` and `screenshotRecord` depend on the install tasks, so the APKs are installed before the tests run. For a module nested inside another directory, such as `:feature:login`, the plugin may not find the install tasks, and it skips installing without an error ([#238](https://github.com/ndtp/android-testify/issues/238)). If your tests fail because the test APK isn't installed, run the install tasks yourself first:
+`screenshotTest` and `screenshotRecord` depend on the install tasks, so the APKs are installed before the tests run. The plugin looks for the install tasks at `:<moduleName>:<task name>`, and `moduleName` defaults to the module's own name, without its parent directories. For a module nested inside another directory, such as `:feature:login`, that gives `:login:installGoogleMockDebugAndroidTest`, which doesn't exist, so the plugin skips installing without an error ([#238](https://github.com/ndtp/android-testify/issues/238)).
+
+Set `moduleName` to the module's full path, without the leading colon:
+
+<Tabs>
+<TabItem value="groovy" label="build.gradle">
+
+```groovy
+testify {
+    moduleName "feature:login"
+}
+```
+
+</TabItem>
+<TabItem value="kotlin" label="build.gradle.kts">
+
+```kotlin
+testify {
+    moduleName = "feature:login"
+}
+```
+
+</TabItem>
+</Tabs>
+
+The plugin then finds `:feature:login:installGoogleMockDebugAndroidTest` and installs the APKs before the tests run. Testify also uses `moduleName` in the commands it suggests in error messages, so those name the right module too.
+
+If the install tasks still aren't found, run them yourself before the tests:
 
 ```shell-session
 $ ./gradlew :feature:login:installGoogleMockDebug :feature:login:installGoogleMockDebugAndroidTest
