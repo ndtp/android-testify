@@ -32,7 +32,7 @@ dependencies {
 }
 ```
 
-If your project uses kapt instead of KSP, use `kaptAndroidTest`. `core-ktx` provides the `launchActivity` function used below.
+`core-ktx` provides the `launchActivity` function used below.
 
 ## 2. Use a Hilt test runner
 
@@ -58,14 +58,25 @@ android {
 
 ## 3. Create a host activity
 
-In your `androidTest` sources, create a subclass of `ComposableTestActivity` annotated with `@AndroidEntryPoint`:
+In your `debug` source set, `src/debug/java`, create a subclass of `ComposableTestActivity` annotated with `@AndroidEntryPoint`:
 
 ```kotlin
 @AndroidEntryPoint
 class HiltComposableTestActivity : ComposableTestActivity()
 ```
 
-Declare it in the manifest of your `debug` source set, `src/debug/AndroidManifest.xml`, alongside `ComposableTestActivity`:
+Code in the `debug` source set can't see your `androidTest` dependencies, so add Testify to its compile classpath:
+
+```groovy
+dependencies {
+    debugCompileOnly "dev.testify:testify-compose:<testify version>"
+    debugCompileOnly "dev.testify:testify:<testify version>"
+}
+```
+
+Both are needed, because `ComposableTestActivity` implements an interface from the core `testify` library. `compileOnly` is enough: when the tests run, the Testify classes come from the test APK, just as they do for `ComposableTestActivity`. Using `debugImplementation` instead adds Testify's own test dependencies to your app, and they can conflict with the versions your `androidTest` sources use.
+
+Declare the activity in the manifest of the same source set, `src/debug/AndroidManifest.xml`, alongside `ComposableTestActivity`:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
