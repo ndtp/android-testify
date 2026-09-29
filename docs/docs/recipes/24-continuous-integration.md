@@ -167,3 +167,11 @@ $ adb shell am instrument -w \
 ```
 
 The GitHub Actions example above shards the same way, using `shard_count` and `shard_index`. On Firebase Test Lab, use `--num-uniform-shards`.
+
+If you run the tests with the Testify Gradle Plugin, pass `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord` instead:
+
+```shell-session
+$ ./gradlew app:screenshotTest -PshardCount=2 -PshardIndex=0
+```
+
+These properties fail with a `ClassCastException` in Testify 6.0.0 and earlier, so use the instrumentation arguments with those versions. See the [Settings reference](../settings.md#gradle-project-properties) for the other properties the plugin accepts.
