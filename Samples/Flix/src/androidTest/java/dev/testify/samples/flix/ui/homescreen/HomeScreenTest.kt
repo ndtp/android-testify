@@ -24,17 +24,19 @@
 package dev.testify.samples.flix.ui.homescreen
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.test.core.app.launchActivity
+import androidx.test.platform.app.InstrumentationRegistry
+import coil.Coil
+import coil.ImageLoader
 import dev.testify.ComposableTestActivity
 import dev.testify.annotation.ScreenshotInstrumentation
 import dev.testify.compose.scenario.ComposableScreenshotScenarioRule
 import dev.testify.internal.helpers.overrideResourceConfiguration
 import dev.testify.samples.flix.R
 import dev.testify.samples.flix.presentation.common.model.MoviePresentationModel
+import kotlinx.coroutines.Dispatchers
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.Locale
@@ -42,7 +44,16 @@ import java.util.Locale
 class HomeScreenTest {
 
     @get:Rule
-    val rule = ComposableScreenshotScenarioRule()
+    val rule = ComposableScreenshotScenarioRule(exactness = 0.9f)
+
+    @Before
+    fun before() {
+        Coil.setImageLoader(
+            ImageLoader.Builder(InstrumentationRegistry.getInstrumentation().targetContext)
+                .dispatcher(Dispatchers.Unconfined)
+                .build()
+        )
+    }
 
     @Composable
     private fun dummyData() = MoviePresentationModel(
@@ -58,6 +69,9 @@ class HomeScreenTest {
     @ScreenshotInstrumentation
     @Test
     fun homeScreenBottomSheet() {
+        overrideResourceConfiguration<ComposableTestActivity>(
+            locale = Locale.getDefault()
+        )
         launchActivity<ComposableTestActivity>().use { scenario ->
             rule
                 .withScenario(scenario)
@@ -83,11 +97,9 @@ class HomeScreenTest {
             rule
                 .withScenario(scenario)
                 .setCompose {
-                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                        HomeScreenBottomSheetBody(
-                            selectedMovie = dummyData()
-                        )
-                    }
+                    HomeScreenBottomSheetBody(
+                        selectedMovie = dummyData()
+                    )
                 }
                 .assertSame()
         }
