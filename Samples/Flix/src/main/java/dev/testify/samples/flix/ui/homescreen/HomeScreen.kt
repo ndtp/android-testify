@@ -25,11 +25,26 @@
 
 package dev.testify.samples.flix.ui.homescreen
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,7 +57,10 @@ import dev.testify.samples.flix.presentation.homescreen.action.HomeScreenViewAct
 import dev.testify.samples.flix.presentation.homescreen.viewmodel.HomeScreenViewActionHandler
 import dev.testify.samples.flix.presentation.homescreen.viewmodel.HomeScreenViewModel
 import dev.testify.samples.flix.presentation.homescreen.viewmodel.HomeScreenViewState
-import dev.testify.samples.flix.ui.common.composeables.*
+import dev.testify.samples.flix.ui.common.composeables.HeadliningMovieActions
+import dev.testify.samples.flix.ui.common.composeables.HorizontalThumbnailStripWithTitle
+import dev.testify.samples.flix.ui.common.composeables.MoviePoster
+import dev.testify.samples.flix.ui.common.composeables.MovieThumbnail
 import dev.testify.samples.flix.ui.common.renderer.ScreenState
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
@@ -74,9 +92,14 @@ fun HomeScreen(
     systemActions: SharedFlow<HomeScreenSystemAction>,
     homeScreenViewActionHandler: HomeScreenViewActionHandler
 ) = when (homeScreenViewState) {
-    is HomeScreenViewState.LoadedHomeScreenViewState -> LoadedHomeScreen(homeScreenViewState, systemActions, homeScreenViewActionHandler)
+    is HomeScreenViewState.LoadedHomeScreenViewState -> LoadedHomeScreen(
+        homeScreenViewState,
+        systemActions,
+        homeScreenViewActionHandler
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoadedHomeScreen(
     viewState: HomeScreenViewState.LoadedHomeScreenViewState,
@@ -101,7 +124,13 @@ fun HomeScreenContent(
         HeadliningMovieActions(
             movie = presentationModel.headliningMovie,
             modifier = Modifier.padding(bottom = 10.dp),
-            onViewInfoPressed = { movie -> homeScreenViewActionHandler?.invoke(HomeScreenViewAction.ViewHeadliningMoveInfoPressed(movie)) }
+            onViewInfoPressed = { movie ->
+                homeScreenViewActionHandler?.invoke(
+                    HomeScreenViewAction.ViewHeadliningMoveInfoPressed(
+                        movie
+                    )
+                )
+            }
         )
         NowPlaying(moviesNowPlaying = presentationModel.moviesNowPlaying) {
             homeScreenViewActionHandler?.invoke(it)
@@ -115,67 +144,76 @@ fun HomeScreenContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenBottomSheet(
-    systemActions: SharedFlow<HomeScreenSystemAction>?
+    systemActions: SharedFlow<HomeScreenSystemAction>?,
+    sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     val selectedMovie = remember { mutableStateOf<MoviePresentationModel?>(null) }
-    val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     LaunchedEffect(systemActions) {
         systemActions?.collect {
-            when(it) {
+            when (it) {
                 is HomeScreenSystemAction.ShowMovieDetailBottomSheet -> {
                     selectedMovie.value = it.moviePresentationModel
                     if (selectedMovie.value != null && !sheetState.isVisible)
                         sheetState.show()
                 }
+
                 else -> Unit
             }
         }
     }
     if (sheetState.isVisible) {
         ModalBottomSheet(
-            onDismissRequest = { scope.launch {
-                sheetState.hide()
-            }},
+            onDismissRequest = {
+                scope.launch {
+                    sheetState.hide()
+                }
+            },
             sheetState = sheetState,
             dragHandle = null
         ) {
             selectedMovie.value?.let { selectedMovie ->
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.25f)
-                    .padding(15.dp)
+                HomeScreenBottomSheetBody(selectedMovie)
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeScreenBottomSheetBody(selectedMovie: MoviePresentationModel) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.25f)
+            .padding(15.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            MovieThumbnail(selectedMovie)
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(horizontal = 10.dp)
+            ) {
+                Text(
+                    text = selectedMovie.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2
+                )
+                Row(
+                    modifier = Modifier.padding(vertical = 5.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        MovieThumbnail(selectedMovie)
-                        Column(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .padding(horizontal = 10.dp)
-                        ) {
-                            Text(
-                                text = selectedMovie.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 2
-                            )
-                            Row(
-                                modifier = Modifier.padding(vertical = 5.dp)
-                            ) {
-                                selectedMovie.releaseDateYear?.let {
-                                    Text(text = it, style = MaterialTheme.typography.bodySmall)
-                                }
-                            }
-                            selectedMovie.overview?.let {
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 4
-                                )
-                            }
-                        }
+                    selectedMovie.releaseDateYear?.let {
+                        Text(text = it, style = MaterialTheme.typography.bodySmall)
                     }
+                }
+                selectedMovie.overview?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 4
+                    )
                 }
             }
         }
