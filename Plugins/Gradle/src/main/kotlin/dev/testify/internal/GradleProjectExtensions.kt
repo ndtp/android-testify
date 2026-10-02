@@ -39,9 +39,6 @@ val Project.android: CommonExtension<*, *, *, *, *, *>
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
 
-val Project.useLocale: Boolean
-    get() = (this.properties["useLocale"] as? String)?.toBoolean() ?: false
-
 val Project.user: Int?
     get() = (this.properties["user"] as? String)?.toInt()
 

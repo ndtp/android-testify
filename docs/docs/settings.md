@@ -95,7 +95,6 @@ Pass these to any Testify Gradle task with `-P`.
 | `verbose` | Set to `true` to print the `adb` commands Testify runs. |
 | `reportFileName` | The file name to use when copying the test report from the device. |
 | `reportPath` | The local directory to copy the test report to. |
-| `useLocale` | Accepted, but the library doesn't currently use it ([#200](https://github.com/ndtp/android-testify/issues/200)). |
 
 `-PshardCount` and `-PshardIndex` fail with a `ClassCastException` in Testify 6.0.0 and earlier. With those versions, pass `numShards` and `shardIndex` as [instrumentation arguments](recipes/24-continuous-integration.md#splitting-tests-into-shards) instead.
 
