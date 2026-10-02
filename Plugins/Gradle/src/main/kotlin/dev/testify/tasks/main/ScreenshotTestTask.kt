@@ -31,6 +31,7 @@ import dev.testify.internal.Style.Failure
 import dev.testify.internal.TestOptionsBuilder
 import dev.testify.internal.fromEnv
 import dev.testify.internal.println
+import dev.testify.GradleExtensionException
 import dev.testify.tasks.internal.TaskDependencyProvider
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyDefaultTask
@@ -205,7 +206,60 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
 }
 
 internal fun getInstallDebugAndroidTestTask(project: Project): Task? =
-    project.tasks.findByPath(":${project.testifySettings.moduleName}:${project.testifySettings.installAndroidTestTask}")
+    project.findInstallTask(
+        taskName = project.testifySettings.installAndroidTestTask,
+        settingName = "installAndroidTestTask"
+    )
 
 internal fun getInstallDebugTask(project: Project): Task? =
-    project.tasks.findByPath(":${project.testifySettings.moduleName}:${project.testifySettings.installTask}")
+    project.findInstallTask(
+        taskName = project.testifySettings.installTask,
+        settingName = "installTask"
+    )
+
+/**
+ * Resolve an install task by its full Gradle path, built from the configured `moduleName`.
+ *
+ * Returns `null` when [taskName] is `null`, which is the legitimate case for a module that has no
+ * install task at all — an Android library, a `com.android.test` module, or a JVM-only module such
+ * as the Paparazzi sample. Those modules are expected to have nothing to depend on.
+ *
+ * When [taskName] is known but the path does not resolve, the configuration is wrong rather than
+ * absent, and the task would otherwise be dropped silently — leaving the tests to run against
+ * whatever happened to be installed on the device, or failing much later with Gradle's
+ * `A dependency must not be empty`. This is the case reported in
+ * [#238](https://github.com/ndtp/android-testify/issues/238): under a composite build the inferred
+ * `moduleName` of `project.name` is not the module's Gradle path, so the lookup cannot succeed.
+ */
+private fun Project.findInstallTask(taskName: String?, settingName: String): Task? {
+    if (taskName == null) return null
+
+    val moduleName = this.testifySettings.moduleName
+    val path = ":$moduleName:$taskName"
+
+    return this.tasks.findByPath(path) ?: throw GradleExtensionException(
+        """
+        |Testify could not find the `$taskName` task for this project.
+        |
+        |  Searched for : $path
+        |  moduleName   : $moduleName${if (this.testifySettings.moduleName == this.name) " (inferred from the project name)" else ""}
+        |  $settingName : $taskName
+        |
+        |`moduleName` must be the module's Gradle path, without the leading colon. It is inferred
+        |from the project name, which is correct for a top-level module but not for a nested one or
+        |for a module inside an included build — there, `${this.name}` is only the last segment of
+        |the path.
+        |
+        |Set it explicitly in this module's build file:
+        |
+        |    testify {
+        |        moduleName = "<the path to this module, without the leading colon>"
+        |    }
+        |
+        |Run `./gradlew $moduleName:testifySettings` to print the resolved configuration, and
+        |`./gradlew tasks --all` to find the task's real path.
+        |
+        |See https://testify.dev/docs/recipes/build-types-and-flavors#nested-modules
+        """.trimMargin()
+    )
+}

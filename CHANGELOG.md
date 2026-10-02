@@ -20,6 +20,10 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- `screenshotTest` and `screenshotRecord` now fail with an actionable message when the install task
+  they depend on cannot be resolved, instead of dropping the dependency silently. The message names
+  the path searched, the `moduleName` used and whether it was inferred. Modules that legitimately
+  have no install task, such as an Android library or a `com.android.test` module, are unaffected
 
 ## 6.0.0
 
