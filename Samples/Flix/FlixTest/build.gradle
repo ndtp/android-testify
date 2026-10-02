@@ -1,18 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-buildscript {
-    ext {
-        versions = [
-                'compose': [
-                        'compilerExt': '1.5.14',
-                        'core'       : '1.5.14',
-                        'material'   : '1.6.7',
-                        'ui'         : '1.6.7',
-                ]
-        ]
-    }
-}
-
 plugins {
     id 'com.android.test'
     id 'dev.testify'
@@ -45,9 +32,6 @@ android {
     buildFeatures {
         compose true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion "${versions.compose.compilerExt}"
-    }
 }
 
 dependencies {
@@ -55,40 +39,24 @@ dependencies {
     implementation project(":Library")
     implementation project(":ComposeExtensions")
 
+    def composeBom = platform('androidx.compose:compose-bom:2025.08.01')
+    implementation composeBom
+    implementation 'androidx.compose.material3:material3:1.3.2'
+
     // AndroidX Test
     implementation 'androidx.test.ext:junit:1.3.0'
-    implementation 'androidx.test.espresso:espresso-core:3.7.0'
+    // ComposableScreenshotRule extends ActivityTestRule, which lives here.
     implementation "androidx.test:rules:1.7.0"
     implementation "androidx.test:runner:1.7.0"
 
-    // Align lifecycle version with the target app to prevent classpath conflicts
-    // between the test APK and app APK.
+    // Align lifecycle with the application under test, to keep the test APK and app APK from
+    // disagreeing on the version.
     implementation "androidx.lifecycle:lifecycle-common:2.9.3"
     implementation "androidx.lifecycle:lifecycle-runtime:2.9.3"
-
-
-    def composeBom = platform('androidx.compose:compose-bom:2025.08.01')
-    implementation composeBom
-    //noinspection UseTomlInstead
-    implementation "androidx.appcompat:appcompat:1.7.1"
-    implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.9.3"
-    implementation "androidx.test.espresso.idling:idling-concurrent:3.7.0"
-    implementation "com.google.dagger:hilt-android:2.60.1"
-    implementation 'androidx.compose.material3:material3:1.3.2'
-    implementation 'androidx.core:core-ktx:1.17.0'
-    implementation 'io.ktor:ktor-client-android:3.2.3'
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0'
-    implementation("io.coil-kt:coil-compose:2.7.0")
 }
 
 testify {
-    // The app under test, named by `targetProjectPath` above. Screenshots are written into this
-    // application's data directory, so `screenshotPull` looks for them here.
-    applicationPackageId "dev.testify.samples.flix"
-
-    // This module's own APK, which carries the instrumentation.
-    testPackageId "dev.testify.samples.flix.test"
-
+    // applicationPackageId and testPackageId are both inferred for a test module:
+    // the application under test comes from `targetProjectPath`, and the test APK is this module.
     autoImplementLibrary false
 }
