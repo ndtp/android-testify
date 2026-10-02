@@ -106,7 +106,7 @@ class Adb(
         return this
     }
 
-    fun execute(targetsDevice: Boolean = true): String {
+    fun execute(targetsDevice: Boolean = true, redirectErrorStream: Boolean = false): String {
         if (targetsDevice) {
             val deviceTarget = Device.targets(adbService)[deviceTargetIndex]
             if (deviceTarget != null) {
@@ -121,7 +121,7 @@ class Adb(
             println(Description, command)
         }
 
-        return runProcess(command, streamData ?: BufferedStream())
+        return runProcess(command, streamData ?: BufferedStream(), redirectErrorStream)
     }
 
     fun testOptions(testOptionsBuilder: TestOptionsBuilder): Adb {

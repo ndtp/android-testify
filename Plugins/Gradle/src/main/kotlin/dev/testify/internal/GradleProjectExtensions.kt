@@ -41,6 +41,29 @@ val Project.android: CommonExtension<*, *, *, *, *, *>
 val Project.isTestModule: Boolean
     get() = this.extensions.findByType(TestExtension::class.java) != null
 
+/**
+ * The Gradle path of the application under test, for a `com.android.test` module.
+ *
+ * A test-only module declares its target with `targetProjectPath`. The instrumentation runs against
+ * that application, and its screenshots are written into that application's data directory, so the
+ * target's APK has to be installed for the tests to run at all.
+ *
+ * `null` for any other module type.
+ */
+val Project.targetProjectPath: String?
+    get() = this.extensions.findByType(TestExtension::class.java)?.targetProjectPath
+
+/**
+ * The applicationId of a `com.android.test` module's own APK.
+ *
+ * A test module's APK carries the instrumentation, so this is the package `am instrument` is invoked
+ * against. It has no `applicationId` in `defaultConfig`, so AGP uses its namespace.
+ *
+ * `null` for any other module type.
+ */
+val Project.testModulePackageId: String?
+    get() = this.extensions.findByType(TestExtension::class.java)?.namespace
+
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
 

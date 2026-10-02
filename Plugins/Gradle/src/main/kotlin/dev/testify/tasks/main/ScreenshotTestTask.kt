@@ -30,7 +30,9 @@ import dev.testify.internal.StreamData.ConsoleStream
 import dev.testify.internal.Style.Failure
 import dev.testify.internal.TestOptionsBuilder
 import dev.testify.internal.fromEnv
+import dev.testify.internal.inferredInstallTask
 import dev.testify.internal.println
+import dev.testify.internal.targetProjectPath
 import dev.testify.tasks.internal.TaskDependencyProvider
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyDefaultTask
@@ -168,14 +170,19 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             .argument("-w")
             .argument("$testPackageId/$testRunner")
             .stream(ConsoleStream)
-            .execute()
+            // `am instrument` reports a failure to start the tests on standard error, and
+            // finalizeTaskAction has to see it.
+            .execute(redirectErrorStream = true)
         finalizeTaskAction(log)
     }
 
     protected open fun finalizeTaskAction(log: String) {
         if (log.contains("FAILURES!!!") ||
             log.contains("INSTRUMENTATION_CODE: 0") ||
-            log.contains("Process crashed while executing")
+            log.contains("Process crashed while executing") ||
+            // `am instrument` could not run the tests at all, for example because the application
+            // under test is not installed. Without this the task reports success having run nothing.
+            log.contains("INSTRUMENTATION_STATUS: Error=")
         ) {
             println(Failure, "SCREENSHOT TESTS HAVE FAILED!!!")
             throw RuntimeException("Screenshot tests have failed")
@@ -199,6 +206,33 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             }
             getInstallDebugTask(project)?.let { installDebugTask ->
                 task.dependsOn(installDebugTask)
+            }
+            addTargetProjectInstallDependency(task, project)
+        }
+
+        /**
+         * For a `com.android.test` module, also install the application it targets.
+         *
+         * A test module's own `installDebug` installs the test APK; nothing installs the application
+         * named by `targetProjectPath`. Without it `am instrument` cannot find its target package,
+         * so no tests run — and the screenshots would have nowhere to go, because they are written
+         * into the target application's data directory.
+         */
+        private fun addTargetProjectInstallDependency(task: Task, project: Project) {
+            val targetPath = project.targetProjectPath ?: return
+            val targetProject = project.rootProject.findProject(targetPath) ?: return
+
+            fun dependOnInstallTaskOf(evaluated: Project) {
+                evaluated.inferredInstallTask?.let { taskName ->
+                    task.dependsOn("${evaluated.path}:$taskName")
+                }
+            }
+
+            // The target may be configured before or after this module, depending on project order.
+            if (targetProject.state.executed) {
+                dependOnInstallTaskOf(targetProject)
+            } else {
+                targetProject.afterEvaluate(::dependOnInstallTaskOf)
             }
         }
     }

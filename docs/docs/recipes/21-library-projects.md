@@ -50,3 +50,28 @@ Please see the [Flix Library sample](https://github.com/ndtp/android-testify/tre
 - [Instrumentation tests <OpenNew/>](https://source.android.com/docs/core/tests/development/instrumentation)
 
 ---
+
+## Test-only modules
+
+A [test-only module <OpenNew />](https://developer.android.com/studio/test/advanced-test-setup#use-separate-test-modules-for-instrumented-tests) applies `com.android.test` and names the application it tests with `targetProjectPath`. Apply `dev.testify` to it as usual and no extra configuration is needed:
+
+```groovy
+plugins {
+    id 'com.android.test'
+    id 'dev.testify'
+}
+
+android {
+    namespace 'com.example.screenshots'
+    targetProjectPath ':app'
+}
+```
+
+Two things differ from an application or library module, and the plugin handles both:
+
+- **`applicationPackageId` is the application under test**, taken from `targetProjectPath` — not this module. Screenshots are written into the application's data directory, so `screenshotPull` looks there. `testPackageId` is this module's own namespace, because its APK carries the instrumentation.
+- **Baselines live in `src/main/assets`**, because a test module has no `androidTest` source set. Its tests *are* its `main` sources.
+
+`screenshotTest` and `screenshotRecord` install both APKs, so a clean device or CI agent needs no extra setup.
+
+See [FlixTest <OpenNew />](https://github.com/ndtp/android-testify/tree/main/Samples/Flix/FlixTest) in the samples for a working module.
