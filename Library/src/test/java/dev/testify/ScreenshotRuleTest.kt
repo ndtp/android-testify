@@ -486,6 +486,60 @@ class ScreenshotRuleTest {
         verifyReporter()
     }
 
+    /**
+     * Record mode writes the capture and stops. Comparing first meant a capture that matched was
+     * deleted, so `screenshotRecord` produced nothing for tests that had not changed.
+     */
+    @Test
+    fun `WHEN record mode THEN the baseline is not loaded or compared`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { compareBitmaps(any(), any(), any()) } returns true
+
+        subject.test()
+
+        verify(exactly = 0) { loadBaselineBitmapForComparison(any(), any(), any()) }
+        verify(exactly = 0) { compareBitmaps(any(), any(), any()) }
+        verify { mockReporter.pass() }
+        verifyReporter()
+    }
+
+    @Test
+    fun `WHEN record mode AND the capture matches the baseline THEN the capture is kept`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { compareBitmaps(any(), any(), any()) } returns true
+
+        subject.test()
+
+        verify { mockDestination.finalize() }
+        verify(exactly = 0) { deleteBitmap(any()) }
+    }
+
+    /**
+     * The reason #11 asked for a forced record mode: a capture inside the `exactness` tolerance was
+     * treated as a match and discarded, so the baseline could never be refreshed.
+     */
+    @Test
+    fun `WHEN record mode AND a lenient exactness THEN the capture is still recorded`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { compareBitmaps(any(), any(), any()) } returns true
+
+        initSubject(configuration = TestifyConfiguration(exactness = 0.9f)).test()
+
+        verify { mockDestination.finalize() }
+        verify(exactly = 0) { deleteBitmap(any()) }
+    }
+
+    @Test
+    fun `WHEN not record mode AND the capture matches THEN the capture is deleted`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns false
+        every { compareBitmaps(any(), any(), any()) } returns true
+
+        subject.test()
+
+        verify { loadBaselineBitmapForComparison(any(), any(), any()) }
+        verify { deleteBitmap(any()) }
+    }
+
     @Test
     fun `WHEN configuration isRecordMode is true THEN pass`() {
         every { compareBitmaps(any(), any(), any()) } returns false

@@ -50,13 +50,17 @@ $ ./gradlew app:screenshotRecord -PtestClass=com.example.MainActivityScreenshotT
 
 :::note
 
-In record mode, Testify still compares the new screenshot with the existing baseline first. If the two match, the baseline file isn't rewritten.
+Record mode does not compare against the existing baseline. Every test writes its capture, so a recording run rewrites every baseline it covers, not only the ones that changed.
+
+This matters when you use [`exactness`](../recipes/4-tolerance.md). A capture that differs from the baseline but falls inside the tolerance passes `screenshotTest` — and before Testify 7.0 it was also treated as a match while recording, so the baseline could never be refreshed to the current rendering. It now is.
+
+The practical consequence: expect `screenshotPull` to bring back the whole suite, and expect your version control tool to show files whose pixels are unchanged as rewritten. Use `-PtestClass` and `-PtestName` to narrow a recording run.
 
 :::
 
 ## Pull images from the device
 
-When a test fails, or records a new baseline, Testify leaves the captured image on the device. Tests that pass delete their captured image. `screenshotPull` copies the remaining images into your baseline directory, so you can review the differences with your normal version control tools.
+When a test fails, or runs in record mode, Testify leaves the captured image on the device. Tests that pass a comparison delete their captured image. `screenshotPull` copies the remaining images into your baseline directory, so you can review the differences with your normal version control tools.
 
 ```shell-session
 $ ./gradlew app:screenshotPull

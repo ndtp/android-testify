@@ -20,6 +20,15 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- Record mode no longer compares against the baseline before writing. A recording run now rewrites
+  every baseline it covers rather than only those that changed, which makes `screenshotRecord`
+  independent of the configured `exactness`
+    - Previously a capture that differed from the baseline but fell inside the `exactness` tolerance
+      was treated as a match and discarded, so the baseline could never be refreshed. This is what
+      a forced record mode was asked for
+    - `screenshotPull` after a recording run now returns the whole suite, so expect version control
+      to show unchanged images as rewritten. Narrow a run with `-PtestClass` / `-PtestName`
+    - `GenerateDiffs` no longer produces diffs during a recording run, since there is no comparison
 
 ## 6.0.0
 
