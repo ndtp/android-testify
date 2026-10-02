@@ -292,6 +292,33 @@ data class TestifyConfiguration(
             else -> ::sameAsCompare
         }
     }
+
+    /**
+     * Get the [CompareMethod] used to decide whether a recording run needs to rewrite the baseline.
+     *
+     * This is [getBitmapCompare] with [exactness] removed. The distinction matters because the two
+     * kinds of leniency a test can configure mean different things while recording:
+     *
+     *  - **[exactness] is a tolerance.** It says a difference this small should not fail the build.
+     *    Honouring it while recording meant a capture that had genuinely drifted was treated as a
+     *    match and discarded, so the baseline could never be refreshed — which is what a forced
+     *    record mode was asked for.
+     *  - **[exclusionRects] and [compareMethod] are statements about what the test is testing.** The
+     *    author has said those pixels, or that notion of sameness, are not part of the test.
+     *    Rewriting the baseline because of them would churn a file on every recording run over
+     *    content the test does not care about — a status bar clock inside an excluded region, for
+     *    instance.
+     *
+     * So recording compares exactly, outside the excluded regions, deferring to a custom
+     * [compareMethod] where one is supplied.
+     */
+    internal fun getRecordModeCompare(): CompareMethod {
+        return when {
+            this.compareMethod != null -> this.compareMethod!!
+            this.hasExclusionRect() -> FuzzyCompare(this.copy(exactness = null))::compareBitmaps
+            else -> ::sameAsCompare
+        }
+    }
 }
 
 /**
