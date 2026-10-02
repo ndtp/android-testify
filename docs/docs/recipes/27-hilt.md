@@ -125,24 +125,26 @@ If your test launches one of your app's own `@AndroidEntryPoint` activities inst
 
 ## A worked example
 
-The `FlixHilt` sample module is this recipe, compiled and running in CI:
+The `FlixHilt` sample module follows these steps exactly, and runs on CI:
 
-- [HiltComposableTestActivity.kt <OpenNew />](https://github.com/ndtp/android-testify/blob/main/Samples/Flix/FlixHilt/src/main/java/dev/testify/samples/flix/hilt/HiltComposableTestActivity.kt) — step 3
+- [HiltComposableTestActivity.kt <OpenNew />](https://github.com/ndtp/android-testify/blob/main/Samples/Flix/FlixHilt/src/debug/java/dev/testify/samples/flix/hilt/HiltComposableTestActivity.kt) and [src/debug/AndroidManifest.xml <OpenNew />](https://github.com/ndtp/android-testify/blob/main/Samples/Flix/FlixHilt/src/debug/AndroidManifest.xml) — step 3
 - [HiltTestRunner.kt <OpenNew />](https://github.com/ndtp/android-testify/blob/main/Samples/Flix/FlixHilt/src/androidTest/java/dev/testify/samples/flix/hilt/HiltTestRunner.kt) — step 2
 - [HiltComposableScreenshotTest.kt <OpenNew />](https://github.com/ndtp/android-testify/blob/main/Samples/Flix/FlixHilt/src/androidTest/java/dev/testify/samples/flix/hilt/HiltComposableScreenshotTest.kt) — step 4
 
-Two things it does differently from the steps above, both because of what kind of module it is:
+It is a module of its own, and that is the one decision worth copying.
 
-- **The host activity is in `main`, not `debug`.** That module exists only to hold screenshot tests,
-  so there is no shipping build to keep the activity out of, and `compileOnly` replaces
-  `debugCompileOnly`. In an application module, keep it in `debug` as described above.
-- **It is a module of its own.** `testInstrumentationRunner` is set per module, so pointing an
-  existing module at a Hilt runner replaces its `Application` for *every* test in it. That is worth
-  checking before you do it: in the `Flix` sample it would have replaced the `FlixApplication` that
-  supplies Coil's `ImageLoader` through `ImageLoaderFactory`, and the image-backed screenshot tests
-  would have captured before their images had drawn. If your module has tests that depend on your
-  own `Application`, either give them their own image loader in `@Before` — see
-  [Fixing blank or incomplete screenshots <OpenNew />](https://testify.dev/docs/recipes/blank-or-incomplete-screenshots)
-  — or keep the Hilt tests separate.
+:::caution
+
+`testInstrumentationRunner` is set per module, so pointing an existing module at a Hilt runner
+replaces its `Application` for **every** test in that module, Hilt or not.
+
+Check what your own `Application` does before you do this. In the `Flix` sample it supplies Coil's
+`ImageLoader` through `ImageLoaderFactory`; replacing it left the image-backed screenshot tests
+capturing before their images had drawn, which is why the Hilt example is a separate module. If your
+module has tests that depend on your `Application`, either give them what they need directly in
+`@Before` — see [Fixing blank or incomplete screenshots](25-blank-or-incomplete-screenshots.md) — or
+keep the Hilt tests apart.
+
+:::
 
 For more on Hilt's testing APIs, see [Hilt testing guide <OpenNew />](https://developer.android.com/training/dependency-injection/hilt-testing).
