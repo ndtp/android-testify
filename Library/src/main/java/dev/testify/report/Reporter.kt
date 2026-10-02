@@ -71,6 +71,16 @@ internal open class Reporter protected constructor(
     private lateinit var testDescription: TestDescription
 
     /**
+     * Whether [captureOutput] has already recorded the image paths for the current test.
+     *
+     * [startTest] is called once per test method, but [captureOutput] is called from every
+     * `assertSame()`. A test that asserts more than once would otherwise append a second
+     * `baseline_image:` / `test_image:` pair inside the same `- test:` entry, producing duplicate
+     * keys and invalid YAML.
+     */
+    private var hasCapturedOutput: Boolean = false
+
+    /**
      * Creates a unique session ID for the given test run
      */
     fun identifySession(instrumentation: Instrumentation) {
@@ -83,6 +93,7 @@ internal open class Reporter protected constructor(
      */
     fun startTest(description: TestDescription) {
         testDescription = description
+        hasCapturedOutput = false
         session.addTest()
 
         builder.appendLine("- test:", indent = 4)
@@ -97,6 +108,9 @@ internal open class Reporter protected constructor(
      * modifications have been applied
      */
     fun captureOutput() {
+        if (hasCapturedOutput) return
+        hasCapturedOutput = true
+
         builder.appendLine("baseline_image: assets/${getBaselinePath()}", indent = 8)
         builder.appendLine("test_image: ${getOutputPath()}", indent = 8)
     }
@@ -165,7 +179,7 @@ internal open class Reporter protected constructor(
     internal open fun getBaselinePath(): String =
         getFileRelativeToRoot(
             subpath = getDeviceDescription(context),
-            fileName = testDescription.methodName,
+            fileName = testDescription.name,
             extension = PNG_EXTENSION
         )
 

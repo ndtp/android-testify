@@ -20,6 +20,11 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- Fix `baseline_image` in `report.yml` naming a file that does not exist. The path was built from the
+  test method name alone, while baselines are stored as `<Class>_<method>.png` — the same entry's
+  `test_image` already used the correct name
+- Fix duplicate `baseline_image` / `test_image` keys in `report.yml` when a test calls `assertSame()`
+  more than once, which produced invalid YAML
 
 ## 6.0.0
 
