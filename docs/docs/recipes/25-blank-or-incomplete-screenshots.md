@@ -17,17 +17,18 @@ A quick way to tell the two apart: if the missing content is a map, a video, a c
 
 How long Testify waits depends on which rule you use, and the difference matters most here.
 
-| Rule | Waits for |
-|---|---|
-| `ScreenshotRule` | Launches the activity, applies your view modifications and Espresso actions, then waits on [`Espresso.onIdle()` <OpenNew />](https://developer.android.com/reference/androidx/test/espresso/Espresso#onIdle()) |
-| `ScreenshotScenarioRule` | Nothing — idling is your test's responsibility |
-| `ComposableScreenshotRule`, `ComposableScreenshotScenarioRule` | The composition to be idle, via `ComposeTestRule.waitForIdle()` |
+| Rule | Waits for | Honours idling resources |
+|---|---|---|
+| `ScreenshotRule` | The main thread, then [`Espresso.onIdle()` <OpenNew />](https://developer.android.com/reference/androidx/test/espresso/Espresso#onIdle()), after applying your view modifications and Espresso actions | Yes |
+| `ScreenshotScenarioRule` | The main thread, via `Instrumentation.waitForIdleSync()` | **No** |
+| `ComposableScreenshotRule` | The same as `ScreenshotRule`, which it extends, plus `ComposeTestRule.waitForIdle()` | Yes |
+| `ComposableScreenshotScenarioRule` | The same as `ScreenshotScenarioRule`, which it extends, plus `ComposeTestRule.waitForIdle()` | **No** |
 
-Where `ScreenshotRule` waits, Espresso only knows about work on the main thread and in [idling resources <OpenNew />](https://developer.android.com/training/testing/espresso/idling-resource) that you register. Anything else, such as a network call on a background thread or an image decoding in an image-loading library, can still be running when Testify captures.
+The distinction in the last column is the one that matters here. Every rule waits for the main thread to settle, so work posted to it is covered either way. Only the `ScreenshotRule` family consults Espresso, and registering an idling resource is how you tell Espresso about work that is *not* on the main thread — a network call on a background thread, or an image decode inside an image-loading library. Under the scenario rules, that resource is never consulted, and the capture happens as soon as the main thread is quiet.
 
 ### Idling with `ScreenshotScenarioRule`
 
-`ScreenshotScenarioRule` deliberately has no Espresso integration — no idle wait and no `setEspressoActions`. With `ActivityScenario` your test already owns driving the activity, per [Android's guidance on driving an activity to a new state <OpenNew />](https://developer.android.com/guide/components/activities/testing#drive-activity-new-state), so Testify steps out of the way rather than waiting on a mechanism you may not be using.
+`ScreenshotScenarioRule` waits for the main thread — `afterInitializeView` calls `Instrumentation.waitForIdleSync()` — but it has no Espresso integration: it never calls `Espresso.onIdle()` and has no `setEspressoActions`. With `ActivityScenario` your test already owns driving the activity, per [Android's guidance on driving an activity to a new state <OpenNew />](https://developer.android.com/guide/components/activities/testing#drive-activity-new-state), so Testify steps out of the way rather than waiting on a mechanism you may not be using.
 
 That means you do the synchronising, inside `launchActivity { }.use { }` and before `assertSame()`. Driving Espresso directly is usually enough, because `perform()` synchronises for you:
 
@@ -70,7 +71,7 @@ Register the resource before the work starts, or Espresso may report idle before
 
 To check that your idling resource is registered at the right time, temporarily remove the call to `decrement()`. Under `ScreenshotRule` the test should now hang and then fail with an Espresso idling timeout that names your resource. If it captures without waiting, your resource wasn't registered in time.
 
-This check only works where something waits on Espresso. Under `ScreenshotScenarioRule` the test captures immediately whether the resource is registered or not, so add an explicit `Espresso.onIdle()` before `assertSame()` and test for the timeout there.
+This check only works where something waits on Espresso. Under `ScreenshotScenarioRule` the capture happens as soon as the main thread is idle, whether the resource is registered or not, so add an explicit `Espresso.onIdle()` before `assertSame()` and test for the timeout there.
 
 :::
 
@@ -126,7 +127,9 @@ fun setSynchronousImageLoader() {
 
 This needs `androidx.test.espresso.idling:idling-concurrent`. The full helper is [TestImageLoader.kt <OpenNew />](https://github.com/ndtp/android-testify/blob/main/Samples/Flix/FlixLibrary/src/androidTest/java/dev/testify/samples/flix/test/TestImageLoader.kt).
 
-Glide and Picasso both accept a custom `ExecutorService` in the same way — Glide through `GlideBuilder.setSourceExecutor`, Picasso through `Picasso.Builder.executor`. If you cannot reach the executor, fall back to tying a `CountingIdlingResource` to each request in the library's own listener: Glide's `RequestListener`, Coil's `ImageRequest.Listener` or Picasso's `Callback`.
+Picasso takes a custom `ExecutorService` the same way, through `Picasso.Builder.executor`. Glide does not: `GlideBuilder.setSourceExecutor` wants a `GlideExecutor`, which is built through its own factory methods rather than wrapped around an executor you supply.
+
+Where you cannot hand the loader an executor, tie a `CountingIdlingResource` to each request in the library's own listener instead — Glide's `RequestListener`, Coil's `ImageRequest.Listener` or Picasso's `Callback` — using the pattern above.
 
 ## Animations
 
