@@ -54,10 +54,14 @@ object TestInstrumentationRegistry {
 
     /**
      * Get the gradle project name of the module which contains the currently running test.
-     * This requires the argument "moduleName" to be specified. Tests run via Android Studio do not specify the
-     * "moduleName" argument and so this method will return an empty string.
      *
-     * @return Gradle module name if available.  e.g. :Sample
+     * The name is read from the "moduleName" instrumentation argument, which the Testify Gradle
+     * Plugin passes. Tests run directly from Android Studio do not specify that argument, so the
+     * value falls back to the manifest placeholder the plugin writes at build time.
+     *
+     * The name carries no Gradle path separator, so callers building a task path supply their own.
+     *
+     * @return Gradle module name if available. e.g. `Sample`
      *      Empty string otherwise.
      */
     @ExcludeFromJacocoGeneratedReport

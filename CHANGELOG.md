@@ -20,6 +20,11 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- Fix the `./gradlew app::screenshotPull` double colon in failure messages. `getModuleName()` appended
+  a `:` to the name read from the `moduleName` instrumentation argument, while every message that
+  consumes it adds its own separator. Runs started from Android Studio were unaffected, because the
+  manifest-placeholder fallback never appended one — so the same failure printed a different command
+  depending on how the test was launched
 - **Removed** the `useLocale` Gradle project property. It was declared but never read, and was typed
   `Boolean`, so `-PuseLocale=en_CA` evaluated to `false` and could never have worked. Set the locale
   per test with `TestifyConfiguration.locale` instead
