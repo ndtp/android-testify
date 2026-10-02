@@ -460,13 +460,14 @@ Print the test result report to the console
 - date: 2021-03-19@20:37:32
 - failed: 0
 - passed: 1
+- skipped: 0
 - total: 1
 - tests:
     - test:
         name: withFocusOnBackground
         class: ClientListActivityScreenshotTest
         package: dev.testify.sample.clients.index
-        baseline_image: assets/screenshots/29-1080x2220@440dp-en_US/withFocusOnBackground.png
+        baseline_image: assets/screenshots/29-1080x2220@440dp-en_US/ClientListActivityScreenshotTest_withFocusOnBackground.png
         test_image: /data/user/0/dev.testify.sample/app_images/screenshots/29-1080x2220@440dp-en_US/ClientListActivityScreenshotTest_withFocusOnBackground.png
         status: PASS
 ```
