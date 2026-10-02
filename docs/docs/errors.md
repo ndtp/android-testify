@@ -234,3 +234,12 @@ You must define `applicationPackageId` in your `testify` gradle extension block
 ```
 
 - Add the missing setting to the `testify` block. For library modules, see [Configuring Testify for Android Library Projects](recipes/21-library-projects.md). Every plugin setting is described in [Use the Gradle Plugin tasks](get-started/8-use-gradle-plugin.md).
+
+The same exception reports an `installTask` or `installAndroidTestTask` that names a task which doesn't exist:
+
+```
+Testify could not find the task `installNopeDebugAndroidTest`, configured as `installAndroidTestTask`.
+```
+
+- Check the name against `./gradlew <module>:tasks --all`, or remove the setting and let Testify infer the task from the module's own install tasks.
+- This only applies to a value you set yourself. If you have not configured either setting, Testify infers it, and a module with no install task — an Android library has no `installDebug`, a `com.android.test` module has no `installDebugAndroidTest` — simply has no dependency to add.
