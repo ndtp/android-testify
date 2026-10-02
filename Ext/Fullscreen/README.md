@@ -8,7 +8,7 @@ Use the [UiAutomator's](https://developer.android.com/training/testing/other-com
 
 The bitmap will be generated from a PNG at 1:1 scale and 100% quality. The bitmap's size will match the full device resolution and include all system UI such as the status bar and navigation bar.
 
-As the system UI content is highly variable, you can use [ScreenshotRule.excludeStatusBar](./src/main/java/dev/testify/capture/fullscreen/provider/StatusBarExclusionRectProvider.kt) and/or [ScreenshotRule.excludeNavigationBar](./src/main/java/dev/testify/capture/fullscreen/provider/NavigationBarExclusionRectProvider.kt) to ignore the status bar and navigation bar, respectively.
+As the system UI content is highly variable, you can use [TestifyConfiguration.excludeStatusBar](./src/main/java/dev/testify/capture/fullscreen/provider/StatusBarExclusionRectProvider.kt) and/or [TestifyConfiguration.excludeNavigationBar](./src/main/java/dev/testify/capture/fullscreen/provider/NavigationBarExclusionRectProvider.kt) to ignore the status bar and navigation bar, respectively.
 
 Though the PNG is intended to be lossless, some compression artifacts or GPU-related variance can occur. As such, it is recommended to use a small tolerance when capturing fullscreen images.
 
@@ -52,9 +52,11 @@ class FullscreenCaptureTest {
     @Test
     fun fullscreen() {
         rule
-            .captureFullscreen()    // Set the fullscreen capture method
-            .excludeSystemUi()      // Exclude the navigation bar and status bar areas from the comparison
-            .setExactness(0.95f)    // Allow a 5% variation in color
+            .captureFullscreen()        // Set the fullscreen capture method
+            .configure {
+                excludeSystemUi()       // Exclude the navigation bar and status bar areas from the comparison
+            }
+            .setExactness(0.95f)        // Allow a 5% variation in color
             .assertSame()
     }
 }

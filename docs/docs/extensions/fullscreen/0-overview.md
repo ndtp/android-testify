@@ -19,7 +19,7 @@ Testify Fullscreen Capture Method uses [UiAutomator's](https://developer.android
 
 The bitmap will be generated from a PNG at 1:1 scale and 100% quality. The bitmap's size will match the full device resolution and include all system UI such as the status bar and navigation bar.
 
-As the system UI content is highly variable, you can use [ScreenshotRule.excludeStatusBar](https://github.com/ndtp/android-testify/tree/main/Ext/Fullscreen/src/main/java/dev/testify/capture/fullscreen/provider/StatusBarExclusionRectProvider.kt) and/or [ScreenshotRule.excludeNavigationBar](https://github.com/ndtp/android-testify/tree/main/Ext/Fullscreen/src/main/java/dev/testify/capture/fullscreen/provider/NavigationBarExclusionRectProvider.kt) to ignore the status bar and navigation bar, respectively.
+As the system UI content is highly variable, you can use [TestifyConfiguration.excludeStatusBar](https://github.com/ndtp/android-testify/tree/main/Ext/Fullscreen/src/main/java/dev/testify/capture/fullscreen/provider/StatusBarExclusionRectProvider.kt) and/or [TestifyConfiguration.excludeNavigationBar](https://github.com/ndtp/android-testify/tree/main/Ext/Fullscreen/src/main/java/dev/testify/capture/fullscreen/provider/NavigationBarExclusionRectProvider.kt) to ignore the status bar and navigation bar, respectively.
 
 Though the PNG is intended to be lossless, some compression artifacts or GPU-related variance can occur. As such, it is recommended to use a small tolerance when capturing fullscreen images.
 

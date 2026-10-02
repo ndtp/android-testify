@@ -10,7 +10,7 @@ Additonal examples can be found in [FullscreenCaptureExampleTest.kt](https://git
 
 :::tip
 The Fullscreen Capture Method will capture system UI, which can include changes out of your control. This includes system notifications, the current time and the network strength indicator.
-It is frequently desirable to exclude these elements from the comparison. Testify can ignore differences in those elements through the use of the `excludeStatusBar()`, `excludeNavigationBar()`, or `excludeSystemUi()` methods.
+It is frequently desirable to exclude these elements from the comparison. Testify can ignore differences in those elements through the use of the `excludeStatusBar()`, `excludeNavigationBar()`, or `excludeSystemUi()` methods. These are `TestifyConfiguration` extensions, so call them inside `configure { }` rather than chaining them on the rule.
 :::
 
 ### Example
@@ -28,9 +28,11 @@ class FullscreenCaptureTest {
     @Test
     fun fullscreen() {
         rule
-            .captureFullscreen()    // Set the fullscreen capture method
-            .excludeSystemUi()      // Exclude the navigation bar and status bar areas from the comparison
-            .setExactness(0.95f)    // Allow a 5% variation in color
+            .captureFullscreen()        // Set the fullscreen capture method
+            .configure {
+                excludeSystemUi()       // Exclude the navigation bar and status bar areas from the comparison
+            }
+            .setExactness(0.95f)        // Allow a 5% variation in color
             .assertSame()
     }
 }
