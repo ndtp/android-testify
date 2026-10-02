@@ -20,10 +20,14 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
-- `screenshotTest` and `screenshotRecord` now fail with an actionable message when the install task
-  they depend on cannot be resolved, instead of dropping the dependency silently. The message names
-  the path searched, the `moduleName` used and whether it was inferred. Modules that legitimately
-  have no install task, such as an Android library or a `com.android.test` module, are unaffected
+- Fix `screenshotTest` and `screenshotRecord` silently skipping the APK install for a module whose
+  `moduleName` is not its full Gradle path — a nested module such as `:feature:login`, or any module
+  in an included build. The install tasks are now resolved within their own project rather than by
+  rebuilding a path from `moduleName`, so they are found whatever `moduleName` is set to
+    - `moduleName` still determines the Gradle commands printed in failure messages, so setting it
+      for a nested module is still worthwhile
+    - An `installTask` or `installAndroidTestTask` that you set yourself and that names a
+      non-existent task now fails with a message naming the setting, rather than being ignored
 
 ## 6.0.0
 

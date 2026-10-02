@@ -218,48 +218,39 @@ internal fun getInstallDebugTask(project: Project): Task? =
     )
 
 /**
- * Resolve an install task by its full Gradle path, built from the configured `moduleName`.
+ * Resolve an install task that `screenshotTest` and `screenshotRecord` should depend on.
+ *
+ * The task belongs to this project. [inferredInstallTask] and [inferredAndroidTestInstallTask] pick
+ * the name out of `project.tasks.names`, so a simple name is looked up with `findByName` — which
+ * resolves identically in a top-level module, a module nested inside another directory and a module
+ * inside an included build.
+ *
+ * This is deliberately independent of `moduleName`. Building `":${'$'}moduleName:${'$'}taskName"` and
+ * resolving it with `findByPath` meant the lookup depended on a setting that defaults to
+ * `project.name`, which is only the last segment of a nested module's path — so for `:feature:login`
+ * it searched `:login:installDebugAndroidTest`, found nothing, and silently dropped the dependency.
+ * That is [#238](https://github.com/ndtp/android-testify/issues/238), and resolving the task where it
+ * actually lives fixes it rather than reporting it.
  *
  * Returns `null` when [taskName] is `null`, which is the legitimate case for a module that has no
- * install task at all — an Android library, a `com.android.test` module, or a JVM-only module such
- * as the Paparazzi sample. Those modules are expected to have nothing to depend on.
+ * such task — an Android library has no `installDebug`, and a `com.android.test` module has no
+ * `installDebugAndroidTest` because its own APK carries the tests.
  *
- * When [taskName] is known but the path does not resolve, the configuration is wrong rather than
- * absent, and the task would otherwise be dropped silently — leaving the tests to run against
- * whatever happened to be installed on the device, or failing much later with Gradle's
- * `A dependency must not be empty`. This is the case reported in
- * [#238](https://github.com/ndtp/android-testify/issues/238): under a composite build the inferred
- * `moduleName` of `project.name` is not the module's Gradle path, so the lookup cannot succeed.
+ * The one remaining way to have a name that does not resolve is an explicitly configured
+ * [settingName] naming a task that does not exist, which is a misconfiguration worth failing on.
  */
 private fun Project.findInstallTask(taskName: String?, settingName: String): Task? {
     if (taskName == null) return null
 
-    val moduleName = this.testifySettings.moduleName
-    val path = ":$moduleName:$taskName"
+    // A configured value may be a full task path rather than a name in this project.
+    val task = if (taskName.contains(':')) tasks.findByPath(taskName) else tasks.findByName(taskName)
 
-    return this.tasks.findByPath(path) ?: throw GradleExtensionException(
+    return task ?: throw GradleExtensionException(
         """
-        |Testify could not find the `$taskName` task for this project.
+        |Testify could not find the task `$taskName`, configured as `$settingName`.
         |
-        |  Searched for : $path
-        |  moduleName   : $moduleName${if (this.testifySettings.moduleName == this.name) " (inferred from the project name)" else ""}
-        |  $settingName : $taskName
-        |
-        |`moduleName` must be the module's Gradle path, without the leading colon. It is inferred
-        |from the project name, which is correct for a top-level module but not for a nested one or
-        |for a module inside an included build — there, `${this.name}` is only the last segment of
-        |the path.
-        |
-        |Set it explicitly in this module's build file:
-        |
-        |    testify {
-        |        moduleName = "<the path to this module, without the leading colon>"
-        |    }
-        |
-        |Run `./gradlew $moduleName:testifySettings` to print the resolved configuration, and
-        |`./gradlew tasks --all` to find the task's real path.
-        |
-        |See https://testify.dev/docs/recipes/build-types-and-flavors#nested-modules
+        |Set it to a task that exists in this project, or remove it and let Testify infer the task.
+        |`./gradlew $path:tasks --all` lists the tasks available here.
         """.trimMargin()
     )
 }
