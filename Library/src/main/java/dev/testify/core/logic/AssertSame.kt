@@ -148,33 +148,43 @@ internal fun <TActivity : Activity> assertSame(
 
         val destination = getDestination(activity, outputFileName)
 
+        /*
+         * Record mode writes the capture and stops. It does not load or compare the baseline.
+         *
+         * Comparing first meant the capture was discarded whenever it matched, so `screenshotRecord`
+         * only ever produced the files that had changed — and "changed" was decided by the
+         * configured `exactness`. A capture that differed from the baseline but fell inside the
+         * tolerance was treated as a match and thrown away, so the baseline could never be refreshed
+         * to the current rendering. Recording the capture unconditionally is both the cheaper path
+         * and the one that makes `exactness` irrelevant to what gets recorded.
+         */
+        if (isRecordMode) {
+            TestInstrumentationRegistry.instrumentationPrintln(
+                "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
+            )
+            if (!destination.finalize()) {
+                throw FinalizeDestinationException(destination.description)
+            }
+            return
+        }
+
         baselineBitmap = loadBaselineBitmapForComparison(
             testContext = testContext,
             targetContext = activity,
             testName = description.name
         )
-            ?: if (isRecordMode) {
-                TestInstrumentationRegistry.instrumentationPrintln(
-                    "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
+            ?: throw ScreenshotBaselineNotDefinedException(
+                moduleName = TestInstrumentationRegistry.getModuleName(),
+                testName = description.name,
+                testClass = description.fullyQualifiedTestName,
+                deviceKey = formatDeviceString(
+                    DeviceStringFormatter(
+                        testContext,
+                        null
+                    ),
+                    DEFAULT_FOLDER_FORMAT
                 )
-                if (!destination.finalize()) {
-                    throw FinalizeDestinationException(destination.description)
-                }
-                return
-            } else {
-                throw ScreenshotBaselineNotDefinedException(
-                    moduleName = TestInstrumentationRegistry.getModuleName(),
-                    testName = description.name,
-                    testClass = description.fullyQualifiedTestName,
-                    deviceKey = formatDeviceString(
-                        DeviceStringFormatter(
-                            testContext,
-                            null
-                        ),
-                        DEFAULT_FOLDER_FORMAT
-                    )
-                )
-            }
+            )
 
         if (compareBitmaps(baselineBitmap, currentBitmap, configuration.getBitmapCompare())) {
             Assert.assertTrue(
@@ -195,16 +205,10 @@ internal fun <TActivity : Activity> assertSame(
                     .exactness(configuration.exactness)
                     .generate(context = activity)
             }
-            if (isRecordMode) {
-                TestInstrumentationRegistry.instrumentationPrintln(
-                    "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
-                )
-            } else {
-                throw ScreenshotIsDifferentException(
-                    TestInstrumentationRegistry.getModuleName(),
-                    description.fullyQualifiedTestName
-                )
-            }
+            throw ScreenshotIsDifferentException(
+                TestInstrumentationRegistry.getModuleName(),
+                description.fullyQualifiedTestName
+            )
         }
     } finally {
         currentBitmap?.recycle()
