@@ -50,11 +50,15 @@ $ ./gradlew app:screenshotRecord -PtestClass=com.example.MainActivityScreenshotT
 
 :::note
 
-Record mode does not compare against the existing baseline. Every test writes its capture, so a recording run rewrites every baseline it covers, not only the ones that changed.
+Record mode ignores [`exactness`](../recipes/4-tolerance.md). It still honours exclusion rects and a custom compare method.
 
-This matters when you use [`exactness`](../recipes/4-tolerance.md). A capture that differs from the baseline but falls inside the tolerance passes `screenshotTest` — and before Testify 7.0 it was also treated as a match while recording, so the baseline could never be refreshed to the current rendering. It now is.
+The difference matters because the two kinds of leniency mean different things while recording. `exactness` is a tolerance — it says a difference this small should not fail the build. Honouring it while recording meant a capture that had genuinely drifted was treated as a match and discarded, so the baseline could never be refreshed to the current rendering. Exclusion rects and a custom compare method are instead statements about what the test is testing, so recording leaves those baselines alone rather than rewriting a file over content the test has said it does not care about.
 
-The practical consequence: expect `screenshotPull` to bring back the whole suite, and expect your version control tool to show files whose pixels are unchanged as rewritten. Use `-PtestClass` and `-PtestName` to narrow a recording run.
+The consequence to expect: **a test that sets `exactness` on content that renders differently run to run will be rewritten every time you record it.** That is the point — it is the only way its baseline can be refreshed — but on a whole-module `screenshotRecord` it means those files show up as modified on every run. Narrow a recording run with `-PtestClass` and `-PtestName` when you only mean to refresh one thing.
+
+Everything else is stable. A deterministic test whose rendering has not changed is written back byte-identically, so version control shows nothing.
+
+:::
 
 :::
 

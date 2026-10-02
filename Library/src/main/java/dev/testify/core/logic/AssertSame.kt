@@ -149,16 +149,35 @@ internal fun <TActivity : Activity> assertSame(
         val destination = getDestination(activity, outputFileName)
 
         /*
-         * Record mode writes the capture and stops. It does not load or compare the baseline.
+         * Record mode compares with `exactness` removed, but still honours exclusion rects and a
+         * custom compare method. See `TestifyConfiguration.getRecordModeCompare()` for why those
+         * are treated differently.
          *
-         * Comparing first meant the capture was discarded whenever it matched, so `screenshotRecord`
-         * only ever produced the files that had changed — and "changed" was decided by the
-         * configured `exactness`. A capture that differed from the baseline but fell inside the
-         * tolerance was treated as a match and thrown away, so the baseline could never be refreshed
-         * to the current rendering. Recording the capture unconditionally is both the cheaper path
-         * and the one that makes `exactness` irrelevant to what gets recorded.
+         * Previously recording used the test's own comparison, so a capture that had drifted within
+         * the configured tolerance was treated as a match and discarded — the baseline could never
+         * be refreshed, which is what a forced record mode was asked for. Dropping the comparison
+         * altogether would fix that but churn every baseline whose test excludes a region, on every
+         * run, over pixels the test has said it does not care about.
          */
         if (isRecordMode) {
+            val recordedBaseline = loadBaselineBitmapForComparison(
+                testContext = testContext,
+                targetContext = activity,
+                testName = description.name
+            )
+
+            if (recordedBaseline != null) {
+                baselineBitmap = recordedBaseline
+                if (compareBitmaps(recordedBaseline, currentBitmap, configuration.getRecordModeCompare())) {
+                    // Identical where the test cares. Leave the baseline untouched.
+                    Assert.assertTrue(
+                        "Could not delete cached bitmap ${description.name}",
+                        deleteBitmap(destination)
+                    )
+                    return
+                }
+            }
+
             TestInstrumentationRegistry.instrumentationPrintln(
                 "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
             )

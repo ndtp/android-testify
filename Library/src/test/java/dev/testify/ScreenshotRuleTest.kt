@@ -487,46 +487,59 @@ class ScreenshotRuleTest {
     }
 
     /**
-     * Record mode writes the capture and stops. Comparing first meant a capture that matched was
-     * deleted, so `screenshotRecord` produced nothing for tests that had not changed.
+     * Record mode must not let `exactness` decide whether to rewrite the baseline: a capture that
+     * drifted inside the tolerance was treated as a match and discarded, so the baseline could
+     * never be refreshed. This is what #11 asked for.
      */
     @Test
-    fun `WHEN record mode THEN the baseline is not loaded or compared`() {
+    fun `WHEN record mode THEN exactness does not decide whether to record`() {
         every { TestInstrumentationRegistry.isRecordMode } returns true
-        every { compareBitmaps(any(), any(), any()) } returns true
+        // The test's own comparison would call this a match; the recording comparison must not.
+        every { compareBitmaps(any(), any(), any()) } returns false
 
-        subject.test()
-
-        verify(exactly = 0) { loadBaselineBitmapForComparison(any(), any(), any()) }
-        verify(exactly = 0) { compareBitmaps(any(), any(), any()) }
-        verify { mockReporter.pass() }
-        verifyReporter()
-    }
-
-    @Test
-    fun `WHEN record mode AND the capture matches the baseline THEN the capture is kept`() {
-        every { TestInstrumentationRegistry.isRecordMode } returns true
-        every { compareBitmaps(any(), any(), any()) } returns true
-
-        subject.test()
+        initSubject(configuration = TestifyConfiguration(exactness = 0.9f)).test()
 
         verify { mockDestination.finalize() }
         verify(exactly = 0) { deleteBitmap(any()) }
     }
 
     /**
-     * The reason #11 asked for a forced record mode: a capture inside the `exactness` tolerance was
-     * treated as a match and discarded, so the baseline could never be refreshed.
+     * Exclusion rects and a custom compare method are not tolerance — they say what the test is
+     * testing. Rewriting the baseline over an excluded region would churn the file on every
+     * recording run.
      */
     @Test
-    fun `WHEN record mode AND a lenient exactness THEN the capture is still recorded`() {
+    fun `WHEN record mode AND the capture matches outside the excluded regions THEN the baseline is kept`() {
         every { TestInstrumentationRegistry.isRecordMode } returns true
         every { compareBitmaps(any(), any(), any()) } returns true
 
-        initSubject(configuration = TestifyConfiguration(exactness = 0.9f)).test()
+        subject.test()
+
+        verify { loadBaselineBitmapForComparison(any(), any(), any()) }
+        verify { deleteBitmap(any()) }
+        verify(exactly = 0) { mockDestination.finalize() }
+    }
+
+    @Test
+    fun `WHEN record mode AND the capture differs THEN the baseline is rewritten`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { compareBitmaps(any(), any(), any()) } returns false
+
+        subject.test()
 
         verify { mockDestination.finalize() }
         verify(exactly = 0) { deleteBitmap(any()) }
+    }
+
+    @Test
+    fun `WHEN record mode AND there is no baseline THEN one is recorded`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { loadBaselineBitmapForComparison(any(), any(), any()) } returns null
+
+        subject.test()
+
+        verify { mockDestination.finalize() }
+        verify(exactly = 0) { compareBitmaps(any(), any(), any()) }
     }
 
     @Test
