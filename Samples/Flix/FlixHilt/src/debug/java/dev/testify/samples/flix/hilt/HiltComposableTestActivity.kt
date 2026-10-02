@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2026 ndtp
   *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,11 +43,15 @@ import dev.testify.ComposableTestActivity
  * Subclassing it here adds the annotation without changing anything else, so
  * `ComposableScreenshotScenarioRule` can host Hilt-backed composables.
  *
- * This lives in `main` rather than `androidTest` because the activity has to be declared in a
- * merged manifest, which cannot reference test sources. That is safe here because this whole module
- * exists only to host screenshot tests. In an application module, put it in the `debug` source set
- * instead so it is never shipped — see the
- * [Hilt recipe](https://testify.dev/docs/recipes/hilt).
+ * This lives in the `debug` source set, with its manifest entry in `src/debug/AndroidManifest.xml`
+ * and Testify on the debug compile classpath as `debugCompileOnly`. That is the arrangement an
+ * application module needs — a test-only activity has no business in a shipping build — and it is
+ * what the [Hilt recipe](https://testify.dev/docs/recipes/hilt) describes, so this sample mirrors
+ * the recipe step for step.
+ *
+ * It is not the only arrangement that works. In a library module the test APK *is* the application,
+ * so the activity can equally live in `androidTest` with an `androidTest` manifest and no
+ * `compileOnly` at all. `debug` is used here to match the recipe.
  *
  * @see HiltComposableScreenshotTest
  */
