@@ -59,10 +59,15 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.60.1"
     ksp "com.google.dagger:hilt-compiler:2.60.1"
 
-    // HiltComposableTestActivity extends ComposableTestActivity, which implements an interface from
-    // the core library, so both are needed to compile it.
-    compileOnly project(":Library")
-    compileOnly project(path: ":ComposeExtensions")
+    // HiltComposableTestActivity lives in the `debug` source set, which cannot see the
+    // `androidTest` dependencies below. It extends ComposableTestActivity, which implements an
+    // interface from the core library, so both artifacts are needed to compile it.
+    //
+    // `compileOnly` is enough: at run time the Testify classes come from the test APK, as they do
+    // for ComposableTestActivity itself. `debugImplementation` would instead add Testify's own test
+    // dependencies to the module and clash with the versions `androidTest` resolves.
+    debugCompileOnly project(":Library")
+    debugCompileOnly project(path: ":ComposeExtensions")
 
     androidTestImplementation composeBom
     androidTestImplementation project(":Library")

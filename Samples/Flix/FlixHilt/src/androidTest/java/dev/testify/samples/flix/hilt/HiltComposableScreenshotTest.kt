@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 ndtp
+ * Copyright (c) 2026 ndtp
   *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,8 @@ import org.junit.Test
  * The composable under test calls `hiltViewModel()`, which needs an `@AndroidEntryPoint` host. The
  * three pieces that make that work:
  *
- *  1. [HiltComposableTestActivity], an `@AndroidEntryPoint` subclass of `ComposableTestActivity`.
+ *  1. [HiltComposableTestActivity] in the `debug` source set, an `@AndroidEntryPoint` subclass of
+ *     `ComposableTestActivity`, declared in `src/debug/AndroidManifest.xml`.
  *  2. [HiltTestRunner] as the module's `testInstrumentationRunner`.
  *  3. [HiltAndroidRule] ordered before the Testify rule, so the component is ready before the
  *     activity launches.

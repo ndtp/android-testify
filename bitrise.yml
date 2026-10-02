@@ -430,6 +430,7 @@ workflows:
         - test_apk: "./Samples/Flix/FlixLibrary/build/outputs/apk/androidTest/debug/FlixLibrary-debug-androidTest.apk"
         - test_package: dev.testify.samples.flix.library.test
         - test_runner: androidx.test.runner.AndroidJUnitRunner
+        - verbose: true
     - android-build@1:
         inputs:
         - variant: DebugAndroidTest
