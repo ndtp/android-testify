@@ -57,12 +57,21 @@ val Project.targetProjectPath: String?
  * The applicationId of a `com.android.test` module's own APK.
  *
  * A test module's APK carries the instrumentation, so this is the package `am instrument` is invoked
- * against. It has no `applicationId` in `defaultConfig`, so AGP uses its namespace.
+ * against.
+ *
+ * It is the namespace, deliberately and not as a fallback. AGP 9 does not let a `com.android.test`
+ * module choose its own applicationId: `TestDefaultConfig` does not expose `applicationId` in the
+ * typed DSL, and setting it from the Groovy DSL is accepted silently and then ignored — the built
+ * APK, and the installed package, use the namespace regardless. Reading `defaultConfig.applicationId`
+ * would therefore report an id that is not installed.
  *
  * `null` for any other module type.
  */
 val Project.testModulePackageId: String?
-    get() = this.extensions.findByType(TestExtension::class.java)?.namespace
+    get() {
+        val testExtension = this.extensions.findByType(TestExtension::class.java) ?: return null
+        return testExtension.namespace
+    }
 
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false

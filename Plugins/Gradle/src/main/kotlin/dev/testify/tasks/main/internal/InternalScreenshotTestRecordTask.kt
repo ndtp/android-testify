@@ -40,7 +40,10 @@ open class InternalScreenshotTestRecordTask : ScreenshotTestTask() {
     }
 
     override fun finalizeTaskAction(log: String) {
-        // Do nothing
+        // A recording run never fails because a screenshot differs - that is the point of it. It
+        // must still fail if the instrumentation never ran, or it reports success having recorded
+        // nothing.
+        verifyInstrumentationRan(log)
     }
 
     companion object : TaskNameProvider {
