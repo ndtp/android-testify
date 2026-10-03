@@ -235,11 +235,14 @@ You must define `applicationPackageId` in your `testify` gradle extension block
 
 - Add the missing setting to the `testify` block. For library modules, see [Configuring Testify for Android Library Projects](recipes/21-library-projects.md). Every plugin setting is described in [Use the Gradle Plugin tasks](get-started/8-use-gradle-plugin.md).
 
-The same exception reports an `installTask` or `installAndroidTestTask` that names a task which doesn't exist:
+The same exception reports an `installTask` or `installAndroidTestTask` that names a task which doesn't exist. `screenshotTest` and `screenshotRecord` fail when they run; the rest of the build still configures.
 
 ```
-Testify could not find the task `installNopeDebugAndroidTest`, configured as `installAndroidTestTask`.
+Testify could not find the task `installNopeDebugAndroidTest`, configured as
+`installAndroidTestTask` in the `testify` block of :app.
 ```
 
-- Check the name against `./gradlew <module>:tasks --all`, or remove the setting and let Testify infer the task from the module's own install tasks.
-- This only applies to a value you set yourself. If you have not configured either setting, Testify infers it, and a module with no install task — an Android library has no `installDebug`, a `com.android.test` module has no `installDebugAndroidTest` — simply has no dependency to add.
+- Remove the setting and Testify will infer the task from the module's own install tasks. That is usually the answer — the inferred value is correct for an application, library or `com.android.test` module.
+- To pick one yourself, remove the setting first, then run `./gradlew <module>:tasks --all` to list what is available. Listing the tasks while the bad value is still set works too, since the failure is deferred to the task, but removing it first tells you what Testify would have chosen.
+- A task in another project can be named by its full path, beginning with `:`.
+- This only applies to a value you set yourself. With neither setting configured, Testify infers it, and a module with no install task — an Android library has no `installDebug`, a `com.android.test` module has no `installDebugAndroidTest` — simply has no dependency to add.

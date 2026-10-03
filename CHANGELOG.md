@@ -27,6 +27,9 @@
     - `moduleName` still determines the Gradle commands printed in failure messages, so setting it
       for a nested module is still worthwhile
     - An `installTask` or `installAndroidTestTask` that you set yourself and that names a
+      non-existent task now fails `screenshotTest` and `screenshotRecord` with a message naming the
+      setting, rather than being ignored. The failure is reported when the task runs, so the rest of
+      the build still configures
       non-existent task now fails with a message naming the setting, rather than being ignored
 - `screenshotTest` and `screenshotRecord` now fail with an actionable message when the install task
   they depend on cannot be resolved, instead of dropping the dependency silently. The message names

@@ -27,40 +27,82 @@ package dev.testify.tasks
 import com.google.common.truth.Truth.assertThat
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 import java.io.File
 
 /**
  * Asserts against the real root project that the install tasks actually join the task graph.
  *
- * The unit tests in `InstallTaskResolutionTest` mock `TaskContainer`, so they pin the lookup but
- * not the wiring. [#238](https://github.com/ndtp/android-testify/issues/238) was a dropped
- * dependency, and a dropped dependency is only visible in a graph, which is what this checks.
+ * The unit tests in `InstallTaskResolutionTest` mock `TaskContainer`, so they pin the lookup but not
+ * the wiring. [#238](https://github.com/ndtp/android-testify/issues/238) was a dropped dependency,
+ * and a dropped dependency is only visible in a graph.
  *
  * `--dry-run` configures the build and prints the graph without running anything, so this needs no
  * device.
  */
 class InstallTaskDependencyTest {
 
-    private fun taskGraphFor(task: String): String =
+    @TempDir
+    lateinit var tempDir: File
+
+    private fun taskGraphFor(task: String, vararg extraArgs: String): String =
         GradleRunner
             .create()
             .withProjectDir(File("../.."))
-            .withArguments("--dry-run", task)
+            .withArguments(listOf("--dry-run", task) + extraArgs)
             .build()
             .output
+
+    /**
+     * An init script is used rather than a fixture project because the behaviour needs the real
+     * plugin applied to a real Android module; only `moduleName` has to be wrong.
+     */
+    private fun forceModuleName(projectPath: String, moduleName: String): File =
+        File(tempDir, "wrong-module-name.gradle").apply {
+            writeText(
+                """
+                gradle.beforeProject { project ->
+                    if (project.path == '$projectPath') {
+                        project.plugins.withId('dev.testify') {
+                            project.extensions.getByName('testify').moduleName = '$moduleName'
+                        }
+                    }
+                }
+                """.trimIndent()
+            )
+        }
+
+    /**
+     * The #238 regression. `moduleName` defaults to `project.name`, which is only the last segment
+     * of a nested module's path, and the lookup used to be built from it — so the dependency was
+     * silently dropped. Forcing a `moduleName` that is not the project's path reproduces that
+     * without needing a nested fixture; this assertion fails against the implementation on `main`.
+     */
+    @Test
+    fun `the install task is found when moduleName is not the project path`() {
+        val initScript = forceModuleName(":FlixLibrary", "features:FlixLibrary")
+
+        val graph = taskGraphFor(
+            ":FlixLibrary:screenshotTest",
+            "--init-script",
+            initScript.absolutePath
+        )
+
+        assertThat(graph).contains(":FlixLibrary:installDebugAndroidTest SKIPPED")
+    }
 
     @Test
     fun `screenshotTest depends on the androidTest install task`() {
         val graph = taskGraphFor(":FlixLibrary:screenshotTest")
 
-        assertThat(graph).contains(":FlixLibrary:installDebugAndroidTest")
+        assertThat(graph).contains(":FlixLibrary:installDebugAndroidTest SKIPPED")
     }
 
     @Test
     fun `screenshotRecord depends on the androidTest install task`() {
         val graph = taskGraphFor(":FlixLibrary:screenshotRecord")
 
-        assertThat(graph).contains(":FlixLibrary:installDebugAndroidTest")
+        assertThat(graph).contains(":FlixLibrary:installDebugAndroidTest SKIPPED")
     }
 
     /**
@@ -70,8 +112,8 @@ class InstallTaskDependencyTest {
     fun `screenshotTest on an application module depends on both install tasks`() {
         val graph = taskGraphFor(":LegacySample:screenshotTest")
 
-        assertThat(graph).contains(":LegacySample:installDebugAndroidTest")
-        assertThat(graph).contains(":LegacySample:installDebug")
+        assertThat(graph).contains(":LegacySample:installDebugAndroidTest SKIPPED")
+        assertThat(graph).contains(":LegacySample:installDebug SKIPPED")
     }
 
     /**
@@ -82,6 +124,6 @@ class InstallTaskDependencyTest {
     fun `a library module has no plain install task in its graph`() {
         val graph = taskGraphFor(":FlixLibrary:screenshotTest")
 
-        assertThat(graph).doesNotContain(":FlixLibrary:installDebug\n")
+        assertThat(graph).doesNotContain(":FlixLibrary:installDebug SKIPPED")
     }
 }
