@@ -25,6 +25,8 @@
 package dev.testify.tasks
 
 import com.google.common.truth.Truth.assertThat
+import com.google.common.truth.TruthJUnit.assume
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -53,24 +55,43 @@ class InstallTaskDependencyTest {
             .build()
             .output
 
+    private fun buildFailureFor(task: String, vararg extraArgs: String): BuildResult =
+        GradleRunner
+            .create()
+            .withProjectDir(File("../.."))
+            .withArguments(listOf(task) + extraArgs)
+            .buildAndFail()
+
     /**
      * An init script is used rather than a fixture project because the behaviour needs the real
-     * plugin applied to a real Android module; only `moduleName` has to be wrong.
+     * plugin applied to a real Android module; only the one setting has to be wrong.
      */
-    private fun forceModuleName(projectPath: String, moduleName: String): File =
-        File(tempDir, "wrong-module-name.gradle").apply {
+    private fun forceSetting(projectPath: String, setting: String, value: String): File =
+        File(tempDir, "forced-$setting.gradle").apply {
             writeText(
                 """
                 gradle.beforeProject { project ->
                     if (project.path == '$projectPath') {
                         project.plugins.withId('dev.testify') {
-                            project.extensions.getByName('testify').moduleName = '$moduleName'
+                            project.extensions.getByName('testify').$setting = '$value'
                         }
                     }
                 }
                 """.trimIndent()
             )
         }
+
+    private fun assumeDevice() {
+        assume()
+            .that(
+                GradleRunner
+                    .create()
+                    .withProjectDir(File("../.."))
+                    .withArguments(":LegacySample:testifyDevices")
+                    .build()
+                    .output
+            ).contains("Connected devices    = 1")
+    }
 
     /**
      * The #238 regression. `moduleName` defaults to `project.name`, which is only the last segment
@@ -80,7 +101,7 @@ class InstallTaskDependencyTest {
      */
     @Test
     fun `the install task is found when moduleName is not the project path`() {
-        val initScript = forceModuleName(":FlixLibrary", "features:FlixLibrary")
+        val initScript = forceSetting(":FlixLibrary", "moduleName", "features:FlixLibrary")
 
         val graph = taskGraphFor(
             ":FlixLibrary:screenshotTest",
@@ -125,5 +146,57 @@ class InstallTaskDependencyTest {
         val graph = taskGraphFor(":FlixLibrary:screenshotTest")
 
         assertThat(graph).doesNotContain(":FlixLibrary:installDebug SKIPPED")
+    }
+
+    /**
+     * A misconfigured install task has to be reported before anything happens, not after.
+     *
+     * `screenshotRecord` is a placeholder that depends on `screenshotClear`, `screenshotTestRecord`
+     * and `screenshotPull`, so a guard on it alone fires only once the device has been cleared, the
+     * tests have run against whatever was installed, and the results have been pulled over the
+     * baselines.
+     */
+    @Test
+    fun `screenshotRecord fails before it clears the device`() {
+        assumeDevice()
+        val initScript = forceSetting(
+            ":FlixLibrary",
+            "installAndroidTestTask",
+            "installNopeDebugAndroidTest"
+        )
+
+        val result = buildFailureFor(
+            ":FlixLibrary:screenshotRecord",
+            "--init-script",
+            initScript.absolutePath
+        )
+
+        assertThat(result.output).contains("installNopeDebugAndroidTest")
+        assertThat(result.output).contains(":FlixLibrary:screenshotClear FAILED")
+        assertThat(result.output).doesNotContain(":FlixLibrary:screenshotTestRecord")
+        assertThat(result.output).doesNotContain(":FlixLibrary:screenshotPull")
+    }
+
+    /**
+     * The internal record task is an entry point of its own, so it is guarded too.
+     */
+    @Test
+    fun `screenshotTestRecord fails before it runs the tests`() {
+        assumeDevice()
+        val initScript = forceSetting(
+            ":FlixLibrary",
+            "installAndroidTestTask",
+            "installNopeDebugAndroidTest"
+        )
+
+        val result = buildFailureFor(
+            ":FlixLibrary:screenshotTestRecord",
+            "--init-script",
+            initScript.absolutePath
+        )
+
+        assertThat(result.output).contains("installNopeDebugAndroidTest")
+        assertThat(result.output).contains(":FlixLibrary:screenshotTestRecord FAILED")
+        assertThat(result.output).doesNotContain("OK (")
     }
 }
