@@ -486,6 +486,73 @@ class ScreenshotRuleTest {
         verifyReporter()
     }
 
+    /**
+     * Record mode must not let `exactness` decide whether to rewrite the baseline: a capture that
+     * drifted inside the tolerance was treated as a match and discarded, so the baseline could
+     * never be refreshed. This is what #11 asked for.
+     */
+    @Test
+    fun `WHEN record mode THEN exactness does not decide whether to record`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        // The test's own comparison would call this a match; the recording comparison must not.
+        every { compareBitmaps(any(), any(), any()) } returns false
+
+        initSubject(configuration = TestifyConfiguration(exactness = 0.9f)).test()
+
+        verify { mockDestination.finalize() }
+        verify(exactly = 0) { deleteBitmap(any()) }
+    }
+
+    /**
+     * Exclusion rects and a custom compare method are not tolerance — they say what the test is
+     * testing. Rewriting the baseline over an excluded region would churn the file on every
+     * recording run.
+     */
+    @Test
+    fun `WHEN record mode AND the capture matches outside the excluded regions THEN the baseline is kept`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { compareBitmaps(any(), any(), any()) } returns true
+
+        subject.test()
+
+        verify { loadBaselineBitmapForComparison(any(), any(), any()) }
+        verify { deleteBitmap(any()) }
+        verify(exactly = 0) { mockDestination.finalize() }
+    }
+
+    @Test
+    fun `WHEN record mode AND the capture differs THEN the baseline is rewritten`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { compareBitmaps(any(), any(), any()) } returns false
+
+        subject.test()
+
+        verify { mockDestination.finalize() }
+        verify(exactly = 0) { deleteBitmap(any()) }
+    }
+
+    @Test
+    fun `WHEN record mode AND there is no baseline THEN one is recorded`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns true
+        every { loadBaselineBitmapForComparison(any(), any(), any()) } returns null
+
+        subject.test()
+
+        verify { mockDestination.finalize() }
+        verify(exactly = 0) { compareBitmaps(any(), any(), any()) }
+    }
+
+    @Test
+    fun `WHEN not record mode AND the capture matches THEN the capture is deleted`() {
+        every { TestInstrumentationRegistry.isRecordMode } returns false
+        every { compareBitmaps(any(), any(), any()) } returns true
+
+        subject.test()
+
+        verify { loadBaselineBitmapForComparison(any(), any(), any()) }
+        verify { deleteBitmap(any()) }
+    }
+
     @Test
     fun `WHEN configuration isRecordMode is true THEN pass`() {
         every { compareBitmaps(any(), any(), any()) } returns false

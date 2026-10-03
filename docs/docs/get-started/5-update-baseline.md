@@ -50,13 +50,21 @@ $ ./gradlew app:screenshotRecord -PtestClass=com.example.MainActivityScreenshotT
 
 :::note
 
-In record mode, Testify still compares the new screenshot with the existing baseline first. If the two match, the baseline file isn't rewritten.
+Record mode ignores [`exactness`](../recipes/4-tolerance.md). It still honours exclusion rects and a custom compare method.
+
+The difference matters because the two kinds of leniency mean different things while recording. `exactness` is a tolerance — it says a difference this small should not fail the build. Honouring it while recording meant a capture that had genuinely drifted was treated as a match and discarded, so the baseline could never be refreshed to the current rendering. Exclusion rects and a custom compare method are instead statements about what the test is testing, so recording leaves those baselines alone rather than rewriting a file over content the test has said it does not care about.
+
+The consequence to expect: **a test that sets `exactness` on content that renders differently run to run will be rewritten every time you record it.** That is the point — it is the only way its baseline can be refreshed — but on a whole-module `screenshotRecord` it means those files show up as modified on every run. Narrow a recording run with `-PtestClass` and `-PtestName` when you only mean to refresh one thing.
+
+Everything else is stable. A test whose rendering has not changed matches the baseline, so its capture is discarded and nothing is written — version control shows nothing.
+
+One route back to the old problem: a custom `compareMethod` that is itself tolerant blocks a refresh in the same way `exactness` used to, because recording defers to it. That follows from treating it as a statement of what the test is testing, but it is worth knowing if you supply one.
 
 :::
 
 ## Pull images from the device
 
-When a test fails, or records a new baseline, Testify leaves the captured image on the device. Tests that pass delete their captured image. `screenshotPull` copies the remaining images into your baseline directory, so you can review the differences with your normal version control tools.
+Testify leaves a captured image on the device when a test fails, and when a recording run has something to record — a missing baseline, or one its capture no longer matches. Anything that matched its baseline is deleted. `screenshotPull` copies the remaining images into your baseline directory, so you can review the differences with your normal version control tools.
 
 ```shell-session
 $ ./gradlew app:screenshotPull

@@ -20,6 +20,14 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- Record mode now ignores `exactness` when deciding whether to rewrite a baseline, so a capture that
+  had drifted within the configured tolerance is recorded rather than discarded. Previously such a
+  baseline could never be refreshed
+    - Exclusion rects and a custom `compareMethod` are still honoured while recording. Those state
+      what a test is testing, rather than how much difference is tolerable, so recording does not
+      rewrite a baseline over content the test excludes
+    - Expect a test that sets `exactness` on content that renders differently run to run to be
+      rewritten on every recording run. Narrow a run with `-PtestClass` / `-PtestName`
 
 ## 6.0.0
 
