@@ -31,10 +31,15 @@
     - The Testify library is added as an `implementation` dependency rather than
       `androidTestImplementation` for the same reason
     - See the new `Samples/Flix/FlixTest` module for a worked example
-- `screenshotTest` and `screenshotRecord` now fail when `am instrument` could not run the tests at
-  all — an uninstalled application under test, for example. Previously the task reported success
-  having run nothing, because the error is reported on standard error and the plugin only read
-  standard output
+- `screenshotTest` and `screenshotRecord` now fail when `am instrument` did not run the tests at all
+  — an uninstalled application under test, for example. Previously the task reported success having
+  run nothing
+    - The check is that the output carries a JUnit summary, `OK (n tests)` or `FAILURES!!!`. A run
+      that executed always produces one, so this does not depend on recognising the ways
+      instrumentation can fail to start
+    - A recording run still never fails because a screenshot differs, but it does now fail if
+      nothing ran
+    - The plugin also reads the instrumentation's standard error, which it previously discarded
 
 ## 6.0.0
 

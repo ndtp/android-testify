@@ -177,19 +177,47 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
     }
 
     protected open fun finalizeTaskAction(log: String) {
+        verifyInstrumentationRan(log)
+
         if (log.contains("FAILURES!!!") ||
             log.contains("INSTRUMENTATION_CODE: 0") ||
-            log.contains("Process crashed while executing") ||
-            // `am instrument` could not run the tests at all, for example because the application
-            // under test is not installed. Without this the task reports success having run nothing.
-            log.contains("INSTRUMENTATION_STATUS: Error=")
+            log.contains("Process crashed while executing")
         ) {
             println(Failure, "SCREENSHOT TESTS HAVE FAILED!!!")
             throw RuntimeException("Screenshot tests have failed")
         }
     }
 
+    /**
+     * Fail if `am instrument` did not get as far as running the tests.
+     *
+     * A run that executed always ends with JUnit's summary — `OK (n tests)` when everything passed,
+     * `FAILURES!!!` otherwise — so a log with neither means nothing ran. Testing for the summary
+     * rather than for particular error strings is deliberate: the ways instrumentation can fail to
+     * start are open-ended, and matching them individually kept missing variants. An uninstalled
+     * application under test reports `Error=Unable to find instrumentation target package` on some
+     * runs and only `INSTRUMENTATION_FAILED` on others, and either way the task used to report
+     * success having run no tests at all.
+     */
+    protected fun verifyInstrumentationRan(log: String) {
+        if (log.contains(JUNIT_PASS_SUMMARY) || log.contains(JUNIT_FAIL_SUMMARY)) return
+
+        println(Failure, "THE SCREENSHOT TESTS DID NOT RUN!!!")
+        throw RuntimeException(
+            "`am instrument` did not run any tests. The output has no test summary, which means " +
+                "the instrumentation could not start. Check that the application under test is " +
+                "installed and that testPackageId and testRunner are correct; run with " +
+                "`-Pverbose=true` to see the command and its full output."
+        )
+    }
+
     companion object : TaskNameProvider, TaskDependencyProvider {
+        /** JUnit's summary for a run where every test passed, including a run of no tests. */
+        private const val JUNIT_PASS_SUMMARY = "OK ("
+
+        /** JUnit's summary for a run with at least one failure. */
+        private const val JUNIT_FAIL_SUMMARY = "FAILURES!!!"
+
         override fun taskName() = "screenshotTest"
 
         override fun setDependencies(taskNameProvider: TaskNameProvider, project: Project) {

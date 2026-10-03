@@ -69,7 +69,7 @@ android {
 
 Two things differ from an application or library module, and the plugin handles both:
 
-- **`applicationPackageId` is the application under test**, taken from `targetProjectPath` — not this module. Screenshots are written into the application's data directory, so `screenshotPull` looks there. `testPackageId` is this module's own namespace, because its APK carries the instrumentation.
+- **`applicationPackageId` is the application under test**, taken from `targetProjectPath` — not this module. Screenshots are written into the application's data directory, so `screenshotPull` looks there. `testPackageId` is this module's own namespace, because its APK carries the instrumentation — AGP does not let a test module choose a separate `applicationId`, so the namespace is the installed package. Give it a namespace of its own: reusing the application's `applicationId` plus `.test` collides with the application module's own androidTest APK, and the two install over each other.
 - **Baselines live in `src/main/assets`**, because a test module has no `androidTest` source set. Its tests *are* its `main` sources.
 
 `screenshotTest` and `screenshotRecord` install both APKs, so a clean device or CI agent needs no extra setup.

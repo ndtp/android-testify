@@ -444,7 +444,7 @@ workflows:
         - app_apk: "./Samples/Flix/build/outputs/apk/debug/FlixSample-debug.apk"
         - app_package: dev.testify.samples.flix
         - test_apk: "./Samples/Flix/FlixTest/build/outputs/apk/debug/FlixTest-debug.apk"
-        - test_package: dev.testify.samples.flix.test
+        - test_package: dev.testify.samples.flix.screenshots
         - test_runner: androidx.test.runner.AndroidJUnitRunner
         - verbose: true
     - custom-test-results-export@1.0:
