@@ -20,6 +20,26 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- Add support for test-only modules. The plugin can now be applied to a `com.android.test` module;
+  previously it failed with `Gradle project must contain an 'android' closure`
+    - `applicationPackageId` and `testPackageId` are both inferred: the application under test comes
+      from `targetProjectPath`, and the test package is the module's own namespace
+    - `screenshotTest` and `screenshotRecord` also depend on the target project's install task, so
+      the application under test is installed and not merely assumed to be present
+    - `baselineSourceDir` defaults to `src/main/assets` for a test module, since a `com.android.test`
+      module has no `androidTest` source set — its tests are its `main` sources
+    - The Testify library is added as an `implementation` dependency rather than
+      `androidTestImplementation` for the same reason
+    - See the new `Samples/Flix/FlixTest` module for a worked example
+- `screenshotTest` and `screenshotRecord` now fail when `am instrument` did not run the tests at all
+  — an uninstalled application under test, for example. Previously the task reported success having
+  run nothing
+    - The check is that the output carries a JUnit summary, `OK (n tests)` or `FAILURES!!!`. A run
+      that executed always produces one, so this does not depend on recognising the ways
+      instrumentation can fail to start
+    - A recording run still never fails because a screenshot differs, but it does now fail if
+      nothing ran
+    - The plugin also reads the instrumentation's standard error, which it previously discarded
 
 ## 6.0.0
 

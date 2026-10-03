@@ -1,8 +1,8 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2024 ndtp
- *
+ * Copyright (c) 2026 ndtp
+  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
@@ -21,32 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package dev.testify.tasks.main.internal
+package dev.testify.samples.flix.test
 
-import dev.testify.internal.AdbParam
-import dev.testify.tasks.internal.TaskNameProvider
-import dev.testify.tasks.main.ScreenshotTestTask
-import org.gradle.api.tasks.Internal
+import androidx.compose.material3.Text
+import dev.testify.ComposableScreenshotRule
+import dev.testify.annotation.ScreenshotInstrumentation
+import org.junit.Rule
+import org.junit.Test
 
-open class InternalScreenshotTestRecordTask : ScreenshotTestTask() {
+/**
+ * Demonstrates how to use the testify-compose extension library to test
+ * Jetpack Compose @Composable functions.
+ */
+class InstrumentedTestModuleExampleTest {
+    @get:Rule
+    val rule = ComposableScreenshotRule()
 
-    override val isHidden = true
-
-    override fun getDescription() = ""
-
-    @Internal
-    override fun getRuntimeParams(): List<AdbParam> {
-        return super.getRuntimeParams() + AdbParam("isRecordMode", "true")
-    }
-
-    override fun finalizeTaskAction(log: String) {
-        // A recording run never fails because a screenshot differs - that is the point of it. It
-        // must still fail if the instrumentation never ran, or it reports success having recorded
-        // nothing.
-        verifyInstrumentationRan(log)
-    }
-
-    companion object : TaskNameProvider {
-        override fun taskName() = "screenshotTestRecord"
+    @ScreenshotInstrumentation
+    @Test
+    fun default() {
+        rule
+            .setCompose {
+                Text(text = "Hello, Flix!")
+            }
+            .assertSame()
     }
 }

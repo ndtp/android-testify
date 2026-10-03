@@ -26,6 +26,9 @@
 package dev.testify
 
 import dev.testify.internal.android
+import dev.testify.internal.isTestModule
+import dev.testify.internal.targetProjectPath
+import dev.testify.internal.testModulePackageId
 import dev.testify.internal.applicationTargetPackageId
 import dev.testify.internal.inferredAndroidTestInstallTask
 import dev.testify.internal.inferredDefaultTestVariantId
@@ -113,12 +116,17 @@ internal data class TestifySettings(
             val android = project.android
             val extension = project.getTestifyExtension()
 
+            // A `com.android.test` module has no `androidTest` source set; its tests are its
+            // `main` sources, so that is where its baselines belong.
+            val testSourceSet = if (project.isTestModule) "main" else "androidTest"
             val baselineSourceDir = extension.baselineSourceDir
-                ?: project.android.sourceSets.findByName("androidTest")?.assets?.directories?.firstOrNull()
-                ?: "src/androidTest/assets"
+                ?: project.android.sourceSets.findByName(testSourceSet)?.assets?.directories?.firstOrNull()
+                ?: "src/$testSourceSet/assets"
             val testRunner = extension.testRunner ?: android.defaultConfig.testInstrumentationRunner ?: "unknown"
             val pullWaitTime = extension.pullWaitTime ?: 0L
-            val testPackageId = extension.testPackageId ?: project.inferredDefaultTestVariantId
+            val testPackageId = extension.testPackageId
+                ?: project.testModulePackageId
+                ?: project.inferredDefaultTestVariantId
             val targetPackageId = extension.applicationPackageId ?: project.inferredTargetPackageId
             val version = TestifySettings::class.java.getPackage().implementationVersion
             val isSnapshot = version?.contains("SNAPSHOT", ignoreCase = true) ?: false
@@ -188,6 +196,13 @@ private val Project.inferredTargetPackageId: String
     get() {
         var targetPackageId: String? = this.applicationTargetPackageId
 
+        // A `com.android.test` module has no applicationId of its own: the application under test is
+        // the project named by `targetProjectPath`. Screenshots are written into that application's
+        // data directory, so this has to be its id or `screenshotPull` looks in the wrong package.
+        if (targetPackageId.isNullOrEmpty()) {
+            targetPackageId = this.targetProjectApplicationId
+        }
+
         // If we still do not have a targetPackageId, it is likely a library project
         // Infer the package from the test configuration
         if (targetPackageId.isNullOrEmpty()) {
@@ -195,6 +210,17 @@ private val Project.inferredTargetPackageId: String
         }
 
         return targetPackageId
+    }
+
+/**
+ * The applicationId of the project a `com.android.test` module targets, or `null` for any other
+ * module type or when the target cannot be resolved.
+ */
+private val Project.targetProjectApplicationId: String?
+    get() {
+        val targetPath = this.targetProjectPath ?: return null
+        val targetProject = this.rootProject.findProject(targetPath) ?: return null
+        return targetProject.applicationTargetPackageId
     }
 
 open class TestifyExtension {

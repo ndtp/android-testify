@@ -28,13 +28,50 @@ package dev.testify.internal
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.TestExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 val Project.android: CommonExtension<*, *, *, *, *, *>
     get() = this.extensions.findByType(ApplicationExtension::class.java)
         ?: this.extensions.findByType(LibraryExtension::class.java)
+        ?: this.extensions.findByType(TestExtension::class.java)
         ?: throw GradleException("Gradle project must contain an `android` closure")
+
+val Project.isTestModule: Boolean
+    get() = this.extensions.findByType(TestExtension::class.java) != null
+
+/**
+ * The Gradle path of the application under test, for a `com.android.test` module.
+ *
+ * A test-only module declares its target with `targetProjectPath`. The instrumentation runs against
+ * that application, and its screenshots are written into that application's data directory, so the
+ * target's APK has to be installed for the tests to run at all.
+ *
+ * `null` for any other module type.
+ */
+val Project.targetProjectPath: String?
+    get() = this.extensions.findByType(TestExtension::class.java)?.targetProjectPath
+
+/**
+ * The applicationId of a `com.android.test` module's own APK.
+ *
+ * A test module's APK carries the instrumentation, so this is the package `am instrument` is invoked
+ * against.
+ *
+ * It is the namespace, deliberately and not as a fallback. AGP 9 does not let a `com.android.test`
+ * module choose its own applicationId: `TestDefaultConfig` does not expose `applicationId` in the
+ * typed DSL, and setting it from the Groovy DSL is accepted silently and then ignored — the built
+ * APK, and the installed package, use the namespace regardless. Reading `defaultConfig.applicationId`
+ * would therefore report an id that is not installed.
+ *
+ * `null` for any other module type.
+ */
+val Project.testModulePackageId: String?
+    get() {
+        val testExtension = this.extensions.findByType(TestExtension::class.java) ?: return null
+        return testExtension.namespace
+    }
 
 val Project.isVerbose: Boolean
     get() = (this.properties["verbose"] as? String)?.toBoolean() ?: false
