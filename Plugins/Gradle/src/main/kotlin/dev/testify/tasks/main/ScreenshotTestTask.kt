@@ -202,9 +202,7 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             getInstallDebugTask(project)?.let { installDebugTask ->
                 task.dependsOn(installDebugTask)
             }
-            configuredInstallTaskProblem(project)?.let { problem ->
-                task.doFirst { throw GradleExtensionException(problem) }
-            }
+            guardAgainstMisconfiguredInstallTask(project, task)
         }
     }
 }
@@ -236,9 +234,9 @@ internal fun getInstallDebugTask(project: Project): Task? =
  *
  * It also returns `null`, rather than throwing, when a name does not resolve. The remaining way for
  * that to happen is an explicitly configured setting naming a task that does not exist, which
- * [verifyConfiguredInstallTasks] reports when the task runs. This runs from `afterEvaluate`, so
- * throwing here would fail every invocation of the build — `help`, `assemble`, `tasks --all` and IDE
- * sync — including the commands the message would suggest to diagnose it.
+ * [guardAgainstMisconfiguredInstallTask] reports when the task runs. This runs from `afterEvaluate`,
+ * so throwing here would fail every invocation of the build — `help`, `assemble`, `tasks --all`
+ * and IDE sync — including the commands the message would suggest to diagnose it.
  */
 private fun Project.findInstallTask(taskName: String?): Task? {
     if (taskName == null) return null
@@ -248,15 +246,31 @@ private fun Project.findInstallTask(taskName: String?): Task? {
 }
 
 /**
+ * Fail each of [tasks] before it does any work if an install task is misconfigured.
+ *
+ * Attach this to every task that touches the device or the baseline directory, not only to the task
+ * the user names. `screenshotRecord` is a placeholder that depends on `screenshotClear`,
+ * `screenshotTestRecord` and `screenshotPull`, so guarding it alone reports the problem *after* the
+ * device has been cleared, the tests have run against whatever was installed, and the results have
+ * been pulled over the baselines — the worst possible moment.
+ *
+ * The message is computed once here, at configuration time, so the action captures a `String` rather
+ * than the `Project`; capturing the project would break the configuration cache.
+ */
+internal fun guardAgainstMisconfiguredInstallTask(project: Project, vararg tasks: Task) {
+    val problem = configuredInstallTaskProblem(project) ?: return
+
+    tasks.forEach { task ->
+        task.doFirst { throw GradleExtensionException(problem) }
+    }
+}
+
+/**
  * Describe a misconfigured `installTask` or `installAndroidTestTask`, or `null` when both are fine.
  *
  * Only a value set in the `testify` block is checked. An inferred name always resolves, because it
  * was read from this project's own task names, and a module with no install task has no name to
  * resolve.
- *
- * The message is built here, at configuration time, so the task action that reports it captures a
- * `String` rather than the `Project` — capturing the project would make `screenshotTest` and
- * `screenshotRecord` incompatible with the configuration cache.
  */
 internal fun configuredInstallTaskProblem(project: Project): String? {
     val extension = project.getTestifyExtension()
