@@ -120,7 +120,9 @@ $ ./gradlew app:screenshotTest -Pverbose=true
 
 ## Nested modules
 
-`screenshotTest` and `screenshotRecord` depend on the install tasks, so the APKs are installed before the tests run. The plugin looks for the install tasks at `:<moduleName>:<task name>`, and `moduleName` defaults to the module's own name, without its parent directories. For a module nested inside another directory, such as `:feature:login`, that gives `:login:installGoogleMockDebugAndroidTest`, which doesn't exist, so the plugin skips installing without an error ([#238](https://github.com/ndtp/android-testify/issues/238)).
+`moduleName` defaults to the module's own name, without its parent directories. For a module nested inside another directory, such as `:feature:login`, that gives `login` rather than `feature:login`.
+
+That no longer affects whether your APKs get installed — `screenshotTest` and `screenshotRecord` resolve the install tasks within their own project, so they are found whatever `moduleName` says. What it does affect is every Gradle command Testify prints. A failing test in `:feature:login` will tell you to run `./gradlew login:screenshotPull`, which is not a task that exists.
 
 Set `moduleName` to the module's full path, without the leading colon:
 

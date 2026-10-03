@@ -56,6 +56,10 @@ open class ScreenshotRecordTask : TestifyDefaultTask() {
 
             ScreenshotTestTask.setDependencies(taskNameProvider, project)
 
+            // setDependencies above guards the task it is given, which for this chain is the
+            // `screenshotRecord` placeholder - and that runs last. Guard the tasks that do the work.
+            guardAgainstMisconfiguredInstallTask(project, screenshotClearTask, recordInternalTask)
+
             getInstallDebugAndroidTestTask(project)?.let { installDebugAndroidTestTask ->
                 screenshotClearTask.mustRunAfter(installDebugAndroidTestTask)
                 screenshotPullTask.mustRunAfter(installDebugAndroidTestTask)

@@ -24,6 +24,7 @@
  */
 package dev.testify.tasks.main
 
+import dev.testify.getTestifyExtension
 import dev.testify.internal.Adb
 import dev.testify.internal.AdbParam
 import dev.testify.internal.StreamData.ConsoleStream
@@ -31,6 +32,7 @@ import dev.testify.internal.Style.Failure
 import dev.testify.internal.TestOptionsBuilder
 import dev.testify.internal.fromEnv
 import dev.testify.internal.println
+import dev.testify.GradleExtensionException
 import dev.testify.tasks.internal.TaskDependencyProvider
 import dev.testify.tasks.internal.TaskNameProvider
 import dev.testify.tasks.internal.TestifyDefaultTask
@@ -200,12 +202,98 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             getInstallDebugTask(project)?.let { installDebugTask ->
                 task.dependsOn(installDebugTask)
             }
+            guardAgainstMisconfiguredInstallTask(project, task)
         }
     }
 }
 
 internal fun getInstallDebugAndroidTestTask(project: Project): Task? =
-    project.tasks.findByPath(":${project.testifySettings.moduleName}:${project.testifySettings.installAndroidTestTask}")
+    project.findInstallTask(project.testifySettings.installAndroidTestTask)
 
 internal fun getInstallDebugTask(project: Project): Task? =
-    project.tasks.findByPath(":${project.testifySettings.moduleName}:${project.testifySettings.installTask}")
+    project.findInstallTask(project.testifySettings.installTask)
+
+/**
+ * Resolve an install task that `screenshotTest` and `screenshotRecord` should depend on.
+ *
+ * The task belongs to this project. [inferredInstallTask] and [inferredAndroidTestInstallTask] pick
+ * the name out of `project.tasks.names`, so a simple name is looked up with `findByName` — which
+ * resolves identically in a top-level module, a module nested inside another directory and a module
+ * inside an included build.
+ *
+ * This is deliberately independent of `moduleName`. Building `":${'$'}moduleName:${'$'}taskName"` and
+ * resolving it with `findByPath` meant the lookup depended on a setting that defaults to
+ * `project.name`, which is only the last segment of a nested module's path — so for `:feature:login`
+ * it searched `:login:installDebugAndroidTest`, found nothing, and silently dropped the dependency.
+ * That is [#238](https://github.com/ndtp/android-testify/issues/238), and resolving the task where it
+ * actually lives fixes it rather than reporting it.
+ *
+ * Returns `null` when the name is `null`, which is the legitimate case for a module that has no such
+ * task — an Android library has no `installDebug`, and a `com.android.test` module has no
+ * `installDebugAndroidTest` because its own APK carries the tests.
+ *
+ * It also returns `null`, rather than throwing, when a name does not resolve. The remaining way for
+ * that to happen is an explicitly configured setting naming a task that does not exist, which
+ * [guardAgainstMisconfiguredInstallTask] reports when the task runs. This runs from `afterEvaluate`,
+ * so throwing here would fail every invocation of the build — `help`, `assemble`, `tasks --all`
+ * and IDE sync — including the commands the message would suggest to diagnose it.
+ */
+private fun Project.findInstallTask(taskName: String?): Task? {
+    if (taskName == null) return null
+
+    // A configured value may be a full task path rather than a name in this project.
+    return if (taskName.contains(':')) tasks.findByPath(taskName) else tasks.findByName(taskName)
+}
+
+/**
+ * Fail each of [tasks] before it does any work if an install task is misconfigured.
+ *
+ * Attach this to every task that touches the device or the baseline directory, not only to the task
+ * the user names. `screenshotRecord` is a placeholder that depends on `screenshotClear`,
+ * `screenshotTestRecord` and `screenshotPull`, so guarding it alone reports the problem *after* the
+ * device has been cleared, the tests have run against whatever was installed, and the results have
+ * been pulled over the baselines — the worst possible moment.
+ *
+ * The message is computed once here, at configuration time, so the action captures a `String` rather
+ * than the `Project`; capturing the project would break the configuration cache.
+ */
+internal fun guardAgainstMisconfiguredInstallTask(project: Project, vararg tasks: Task) {
+    val problem = configuredInstallTaskProblem(project) ?: return
+
+    tasks.forEach { task ->
+        task.doFirst { throw GradleExtensionException(problem) }
+    }
+}
+
+/**
+ * Describe a misconfigured `installTask` or `installAndroidTestTask`, or `null` when both are fine.
+ *
+ * Only a value set in the `testify` block is checked. An inferred name always resolves, because it
+ * was read from this project's own task names, and a module with no install task has no name to
+ * resolve.
+ */
+internal fun configuredInstallTaskProblem(project: Project): String? {
+    val extension = project.getTestifyExtension()
+
+    val (settingName, taskName) = listOf(
+        "installTask" to extension.installTask,
+        "installAndroidTestTask" to extension.installAndroidTestTask
+    ).firstOrNull { (_, name) ->
+        name != null && project.findInstallTask(name) == null
+    } ?: return null
+
+    val listTasks =
+        if (project.path == ":") "./gradlew tasks --all" else "./gradlew ${project.path}:tasks --all"
+
+    return """
+        |Testify could not find the task `$taskName`, configured as `$settingName` in the
+        |`testify` block of ${project.path}.
+        |
+        |Remove that setting and Testify will infer the task from this project's own install
+        |tasks. To pick one yourself, remove it first and then run:
+        |
+        |    $listTasks
+        |
+        |A task in another project can be named by its full path, beginning with `:`.
+    """.trimMargin()
+}
