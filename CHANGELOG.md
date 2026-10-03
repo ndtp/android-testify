@@ -20,6 +20,9 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- **Removed** the `useLocale` Gradle project property. It was declared but never read, and was typed
+  `Boolean`, so `-PuseLocale=en_CA` evaluated to `false` and could never have worked. Set the locale
+  per test with `TestifyConfiguration.locale` instead
 - Fix `baseline_image` in `report.yml` naming a file that does not exist. The path was built from the
   test method name alone, while baselines are stored as `<Class>_<method>.png` — the same entry's
   `test_image` already used the correct name
