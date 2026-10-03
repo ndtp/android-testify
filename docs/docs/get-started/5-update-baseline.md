@@ -56,15 +56,15 @@ The difference matters because the two kinds of leniency mean different things w
 
 The consequence to expect: **a test that sets `exactness` on content that renders differently run to run will be rewritten every time you record it.** That is the point — it is the only way its baseline can be refreshed — but on a whole-module `screenshotRecord` it means those files show up as modified on every run. Narrow a recording run with `-PtestClass` and `-PtestName` when you only mean to refresh one thing.
 
-Everything else is stable. A deterministic test whose rendering has not changed is written back byte-identically, so version control shows nothing.
+Everything else is stable. A test whose rendering has not changed matches the baseline, so its capture is discarded and nothing is written — version control shows nothing.
 
-:::
+One route back to the old problem: a custom `compareMethod` that is itself tolerant blocks a refresh in the same way `exactness` used to, because recording defers to it. That follows from treating it as a statement of what the test is testing, but it is worth knowing if you supply one.
 
 :::
 
 ## Pull images from the device
 
-When a test fails, or runs in record mode, Testify leaves the captured image on the device. Tests that pass a comparison delete their captured image. `screenshotPull` copies the remaining images into your baseline directory, so you can review the differences with your normal version control tools.
+Testify leaves a captured image on the device when a test fails, and when a recording run has something to record — a missing baseline, or one its capture no longer matches. Anything that matched its baseline is deleted. `screenshotPull` copies the remaining images into your baseline directory, so you can review the differences with your normal version control tools.
 
 ```shell-session
 $ ./gradlew app:screenshotPull
