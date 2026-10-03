@@ -25,7 +25,9 @@
 package dev.testify.tasks.main
 
 import com.google.common.truth.Truth.assertThat
+import dev.testify.TestifyExtension
 import dev.testify.TestifySettings
+import dev.testify.tasks.main.configuredInstallTaskProblem
 import dev.testify.test.BaseTest
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
@@ -37,7 +39,6 @@ import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.tasks.TaskContainer
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 /**
  * Covers resolution of the install tasks that `screenshotTest` and `screenshotRecord` depend on.
@@ -72,6 +73,17 @@ class InstallTaskResolutionTest : BaseTest() {
             every { this@mockk.installTask } returns installTask
         }
         every { extensions.getByName(any()) } returns settings
+    }
+
+    private fun givenExtension(
+        installAndroidTestTask: String? = null,
+        installTask: String? = null
+    ) {
+        val extension = TestifyExtension().apply {
+            this.installAndroidTestTask = installAndroidTestTask
+            this.installTask = installTask
+        }
+        every { extensions.findByType(TestifyExtension::class.java) } returns extension
     }
 
     @BeforeEach
@@ -116,27 +128,63 @@ class InstallTaskResolutionTest : BaseTest() {
         assertThat(getInstallDebugTask(project)).isNull()
     }
 
+    /**
+     * The lookup itself no longer throws: it runs from `afterEvaluate`, so failing there would fail
+     * every invocation of the build, including the commands the message suggests for diagnosing it.
+     */
     @Test
-    fun `WHEN a configured task name does not exist THEN it fails naming the setting`() {
+    fun `WHEN a configured task name does not exist THEN the lookup returns null`() {
         givenSettings(installAndroidTestTask = "installNopeDebugAndroidTest")
         every { tasks.findByName(any()) } returns null
 
-        val error = assertThrows<Exception> { getInstallDebugAndroidTestTask(project) }
-
-        assertThat(error).hasMessageThat().contains("installNopeDebugAndroidTest")
-        assertThat(error).hasMessageThat().contains("installAndroidTestTask")
-        assertThat(error).hasMessageThat().contains(":feature:ui:tasks --all")
+        assertThat(getInstallDebugAndroidTestTask(project)).isNull()
     }
 
     @Test
-    fun `WHEN a configured plain install task does not exist THEN it names that setting`() {
-        givenSettings(installTask = "installNope")
+    fun `WHEN a configured task name does not exist THEN the problem names the setting`() {
+        givenSettings(installAndroidTestTask = "installNopeDebugAndroidTest")
+        givenExtension(installAndroidTestTask = "installNopeDebugAndroidTest")
         every { tasks.findByName(any()) } returns null
 
-        val error = assertThrows<Exception> { getInstallDebugTask(project) }
+        val problem = configuredInstallTaskProblem(project)
 
-        assertThat(error).hasMessageThat().contains("installNope")
-        assertThat(error).hasMessageThat().contains("installTask")
+        assertThat(problem).contains("installNopeDebugAndroidTest")
+        assertThat(problem).contains("installAndroidTestTask")
+        assertThat(problem).contains("./gradlew :feature:ui:tasks --all")
+    }
+
+    @Test
+    fun `WHEN a configured plain install task does not exist THEN the problem names that setting`() {
+        givenSettings(installTask = "installNope")
+        givenExtension(installTask = "installNope")
+        every { tasks.findByName(any()) } returns null
+
+        val problem = configuredInstallTaskProblem(project)
+
+        assertThat(problem).contains("installNope")
+        assertThat(problem).contains("installTask")
+    }
+
+    /**
+     * An inferred name always resolves, because it came from this project's own task names. Only a
+     * value someone typed can be wrong, so nothing is reported when the extension is empty.
+     */
+    @Test
+    fun `WHEN nothing was configured THEN no problem is reported`() {
+        givenSettings()
+        givenExtension()
+        every { tasks.findByName(any()) } returns null
+
+        assertThat(configuredInstallTaskProblem(project)).isNull()
+    }
+
+    @Test
+    fun `WHEN a configured task exists THEN no problem is reported`() {
+        givenSettings()
+        givenExtension(installAndroidTestTask = "installDebugAndroidTest")
+        every { tasks.findByName("installDebugAndroidTest") } returns installTask
+
+        assertThat(configuredInstallTaskProblem(project)).isNull()
     }
 
     /**

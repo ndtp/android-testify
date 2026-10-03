@@ -24,6 +24,7 @@
  */
 package dev.testify.tasks.main
 
+import dev.testify.getTestifyExtension
 import dev.testify.internal.Adb
 import dev.testify.internal.AdbParam
 import dev.testify.internal.StreamData.ConsoleStream
@@ -201,21 +202,18 @@ open class ScreenshotTestTask : TestifyDefaultTask() {
             getInstallDebugTask(project)?.let { installDebugTask ->
                 task.dependsOn(installDebugTask)
             }
+            configuredInstallTaskProblem(project)?.let { problem ->
+                task.doFirst { throw GradleExtensionException(problem) }
+            }
         }
     }
 }
 
 internal fun getInstallDebugAndroidTestTask(project: Project): Task? =
-    project.findInstallTask(
-        taskName = project.testifySettings.installAndroidTestTask,
-        settingName = "installAndroidTestTask"
-    )
+    project.findInstallTask(project.testifySettings.installAndroidTestTask)
 
 internal fun getInstallDebugTask(project: Project): Task? =
-    project.findInstallTask(
-        taskName = project.testifySettings.installTask,
-        settingName = "installTask"
-    )
+    project.findInstallTask(project.testifySettings.installTask)
 
 /**
  * Resolve an install task that `screenshotTest` and `screenshotRecord` should depend on.
@@ -232,25 +230,56 @@ internal fun getInstallDebugTask(project: Project): Task? =
  * That is [#238](https://github.com/ndtp/android-testify/issues/238), and resolving the task where it
  * actually lives fixes it rather than reporting it.
  *
- * Returns `null` when [taskName] is `null`, which is the legitimate case for a module that has no
- * such task — an Android library has no `installDebug`, and a `com.android.test` module has no
+ * Returns `null` when the name is `null`, which is the legitimate case for a module that has no such
+ * task — an Android library has no `installDebug`, and a `com.android.test` module has no
  * `installDebugAndroidTest` because its own APK carries the tests.
  *
- * The one remaining way to have a name that does not resolve is an explicitly configured
- * [settingName] naming a task that does not exist, which is a misconfiguration worth failing on.
+ * It also returns `null`, rather than throwing, when a name does not resolve. The remaining way for
+ * that to happen is an explicitly configured setting naming a task that does not exist, which
+ * [verifyConfiguredInstallTasks] reports when the task runs. This runs from `afterEvaluate`, so
+ * throwing here would fail every invocation of the build — `help`, `assemble`, `tasks --all` and IDE
+ * sync — including the commands the message would suggest to diagnose it.
  */
-private fun Project.findInstallTask(taskName: String?, settingName: String): Task? {
+private fun Project.findInstallTask(taskName: String?): Task? {
     if (taskName == null) return null
 
     // A configured value may be a full task path rather than a name in this project.
-    val task = if (taskName.contains(':')) tasks.findByPath(taskName) else tasks.findByName(taskName)
+    return if (taskName.contains(':')) tasks.findByPath(taskName) else tasks.findByName(taskName)
+}
 
-    return task ?: throw GradleExtensionException(
-        """
-        |Testify could not find the task `$taskName`, configured as `$settingName`.
+/**
+ * Describe a misconfigured `installTask` or `installAndroidTestTask`, or `null` when both are fine.
+ *
+ * Only a value set in the `testify` block is checked. An inferred name always resolves, because it
+ * was read from this project's own task names, and a module with no install task has no name to
+ * resolve.
+ *
+ * The message is built here, at configuration time, so the task action that reports it captures a
+ * `String` rather than the `Project` — capturing the project would make `screenshotTest` and
+ * `screenshotRecord` incompatible with the configuration cache.
+ */
+internal fun configuredInstallTaskProblem(project: Project): String? {
+    val extension = project.getTestifyExtension()
+
+    val (settingName, taskName) = listOf(
+        "installTask" to extension.installTask,
+        "installAndroidTestTask" to extension.installAndroidTestTask
+    ).firstOrNull { (_, name) ->
+        name != null && project.findInstallTask(name) == null
+    } ?: return null
+
+    val listTasks =
+        if (project.path == ":") "./gradlew tasks --all" else "./gradlew ${project.path}:tasks --all"
+
+    return """
+        |Testify could not find the task `$taskName`, configured as `$settingName` in the
+        |`testify` block of ${project.path}.
         |
-        |Set it to a task that exists in this project, or remove it and let Testify infer the task.
-        |`./gradlew $path:tasks --all` lists the tasks available here.
-        """.trimMargin()
-    )
+        |Remove that setting and Testify will infer the task from this project's own install
+        |tasks. To pick one yourself, remove it first and then run:
+        |
+        |    $listTasks
+        |
+        |A task in another project can be named by its full path, beginning with `:`.
+    """.trimMargin()
 }
