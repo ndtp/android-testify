@@ -227,7 +227,7 @@ internal open class ReporterTest {
                 "        name: startTest\n" +
                 "        class: ReporterTest\n" +
                 "        package: dev.testify.report\n" +
-                "        baseline_image: assets/screenshots/device/startTest.png\n" +
+                "        baseline_image: assets/screenshots/device/ReporterTest_startTest.png\n" +
                 "        test_image: path\n" +
                 "        status: PASS\n",
             yaml
@@ -270,7 +270,7 @@ internal open class ReporterTest {
         assertEquals("        name: skipTest", lines[9])
         assertEquals("        class: ReporterTest", lines[10])
         assertEquals("        package: dev.testify.report", lines[11])
-        assertEquals("        baseline_image: assets/screenshots/device/skipTest.png", lines[12])
+        assertEquals("        baseline_image: assets/screenshots/device/ReporterTest_skipTest.png", lines[12])
         assertEquals("        test_image: path", lines[13])
         assertEquals("        status: SKIP", lines[14])
         assertEquals("    - test:", lines[15])
@@ -289,6 +289,50 @@ internal open class ReporterTest {
         assertEquals("        baseline_image: assets/device", lines[28])
         assertEquals("        test_image: path", lines[29])
         assertEquals("        status: PASS", lines[30])
+    }
+
+    @Test
+    fun `getBaselinePath() matches the file name the baseline is loaded from`() {
+        reporter.startTest(mockDescription)
+
+        // loadBaselineBitmapForComparison() resolves the baseline with TestDescription.name,
+        // which is "<Class>_<method>". The report has to name the same file.
+        assertEquals("screenshots/device/${mockDescription.name}.png", reporter.getBaselinePath())
+        assertEquals("screenshots/device/ReporterTest_startTest.png", reporter.getBaselinePath())
+    }
+
+    @Test
+    fun `captureOutput() called twice in one test records the image paths once`() {
+        every { reporter.getBaselinePath() } returns "path"
+
+        reporter.startTest(mockDescription)
+        reporter.captureOutput()
+        reporter.captureOutput()
+        reporter.pass()
+
+        assertEquals(
+            "    - test:\n" +
+                "        name: startTest\n" +
+                "        class: ReporterTest\n" +
+                "        package: dev.testify.report\n" +
+                "        baseline_image: assets/path\n" +
+                "        test_image: path\n" +
+                "        status: PASS\n",
+            reporter.yaml
+        )
+    }
+
+    @Test
+    fun `startTest() allows the next test to record its own image paths`() {
+        every { reporter.getBaselinePath() } returns "path"
+
+        reporter.startTest(mockDescription)
+        reporter.captureOutput()
+        reporter.captureOutput()
+        reporter.startTest(mockDescription.copy(methodName = "secondTest"))
+        reporter.captureOutput()
+
+        assertEquals(2, Regex("baseline_image:").findAll(reporter.yaml).count())
     }
 
     private val Reporter.yaml: String
