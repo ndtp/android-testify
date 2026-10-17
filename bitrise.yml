@@ -510,11 +510,22 @@ workflows:
 
   test_nightly:
     steps:
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Library:ktlintCheck Ktx:ktlintCheck Plugin:ktlintCheck Accessibility:ktlintCheck
+            ComposeExtensions:ktlintCheck FullscreenCaptureMethod:ktlintCheck
+        title: KtLint
     - gradle-unit-test@1:
         title: Gradle Plugin unit tests
         inputs:
         - gradlew_file_path: ./gradlew
         - unit_test_task: Plugin:test
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: Plugin:assemble
+        title: Validate Plugin build
     - android-unit-test@1:
         title: Library unit tests
         inputs:
@@ -654,6 +665,44 @@ workflows:
         - gradlew_path: "./gradlew"
         - gradle_task: FullscreenCaptureMethod:assemble
         title: Validate FullscreenCaptureMethod build
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: PaparazziSample:verifyPaparazziDebug
+        title: Verify Paparazzi Snapshots
+    - gradle-runner@2:
+        inputs:
+        - gradlew_path: "./gradlew"
+        - gradle_task: PaparazziSampleLibrary:verifyPaparazziDebug
+        title: Verify Paparazzi Snapshots (Library)
+    - custom-test-results-export@1.0:
+        is_always_run: true
+        timeout: 120
+        inputs:
+        - test_name: Paparazzi Screenshot Test
+        - search_pattern: "**/Samples/Paparazzi/**build/test-results/**/*.xml"
+    - script@1:
+        is_always_run: true
+        title: Collect Paparazzi failure diffs
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            set -euo pipefail
+            shopt -s nullglob
+
+            found=0
+            for module in Samples/Paparazzi Samples/Paparazzi/PaparazziSampleLibrary; do
+              for image in "$module"/build/paparazzi/failures/*/*.png; do
+                cp "$image" "$BITRISE_DEPLOY_DIR/$(basename "$module")-$(basename "$image")"
+                found=1
+              done
+            done
+
+            if [ "$found" -eq 1 ]; then
+              echo "Collected Paparazzi failure diffs into \$BITRISE_DEPLOY_DIR"
+            else
+              echo "No Paparazzi failure diffs - all snapshots matched."
+            fi
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
@@ -677,5 +726,6 @@ app:
       is_expand: false
     VARIANT: Debug
 trigger_map:
+# Temporarily runs the single-build pipeline to reduce build count; restore `default` to re-enable parallel builds
 - pull_request_source_branch: "*"
-  pipeline: default
+  pipeline: nightly
