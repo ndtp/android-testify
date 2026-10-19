@@ -431,6 +431,22 @@ workflows:
         - test_package: dev.testify.samples.flix.library.test
         - test_runner: androidx.test.runner.AndroidJUnitRunner
         - verbose: true
+    - android-build@1:
+        inputs:
+        - variant: DebugAndroidTest
+        - module: FlixHilt
+    - git::https://github.com/ndtp/bitrise-step-android-testify.git@main:
+        timeout: 1800
+        title: Run Screenshot Tests
+        inputs:
+        - adb_command: "./gradlew FlixHilt:screenshotTest"
+        - module: ":FlixHilt"
+        - app_apk: "./Samples/Flix/FlixHilt/build/outputs/apk/androidTest/debug/FlixHilt-debug-androidTest.apk"
+        - app_package: dev.testify.samples.flix.hilt.test
+        - test_apk: "./Samples/Flix/FlixHilt/build/outputs/apk/androidTest/debug/FlixHilt-debug-androidTest.apk"
+        - test_package: dev.testify.samples.flix.hilt.test
+        - test_runner: dev.testify.samples.flix.hilt.HiltTestRunner
+        - verbose: true
     - custom-test-results-export@1.0:
         is_always_run: true
         timeout: 120

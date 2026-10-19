@@ -19,6 +19,7 @@ dependencyResolutionManagement {
 
 include ':Accessibility'
 include ':ComposeExtensions'
+include ':FlixHilt'
 include ':FlixLibrary'
 include ':FlixSample'
 include ':FullscreenCaptureMethod'
@@ -32,6 +33,7 @@ includeBuild("./Plugins/Gradle") { name = "Plugin" }
 
 project(':Accessibility').projectDir = new File("./Ext/Accessibility")
 project(':ComposeExtensions').projectDir = new File("./Ext/Compose")
+project(':FlixHilt').projectDir = new File("./Samples/Flix/FlixHilt")
 project(':FlixLibrary').projectDir = new File("./Samples/Flix/FlixLibrary")
 project(':FlixSample').projectDir = new File("./Samples/Flix")
 project(':FullscreenCaptureMethod').projectDir = new File("./Ext/Fullscreen")
