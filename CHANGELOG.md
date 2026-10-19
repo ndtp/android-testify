@@ -20,6 +20,23 @@
 - Fix `RootViewWithoutFocusException` being intermittently thrown by `Espresso.closeSoftKeyboard()`
     - **Breaking:** `dev.testify.internal.helpers.closeSoftKeyboard()` now requires an `Activity` parameter
 - Fix `ClassCastException` when passing `-PshardCount` and `-PshardIndex` to `screenshotTest` or `screenshotRecord`
+- Record mode now ignores `exactness` when deciding whether to rewrite a baseline, so a capture that
+  had drifted within the configured tolerance is recorded rather than discarded. Previously such a
+  baseline could never be refreshed
+    - Exclusion rects and a custom `compareMethod` are still honoured while recording. Those state
+      what a test is testing, rather than how much difference is tolerable, so recording does not
+      rewrite a baseline over content the test excludes
+    - Expect a test that sets `exactness` on content that renders differently run to run to be
+      rewritten on every recording run. Narrow a run with `-PtestClass` / `-PtestName`
+- Record mode no longer compares against the baseline before writing. A recording run now rewrites
+  every baseline it covers rather than only those that changed, which makes `screenshotRecord`
+  independent of the configured `exactness`
+    - Previously a capture that differed from the baseline but fell inside the `exactness` tolerance
+      was treated as a match and discarded, so the baseline could never be refreshed. This is what
+      a forced record mode was asked for
+    - `screenshotPull` after a recording run now returns the whole suite, so expect version control
+      to show unchanged images as rewritten. Narrow a run with `-PtestClass` / `-PtestName`
+    - `GenerateDiffs` no longer produces diffs during a recording run, since there is no comparison
 - **Removed** the `useLocale` Gradle project property. It was declared but never read, and was typed
   `Boolean`, so `-PuseLocale=en_CA` evaluated to `false` and could never have worked. Set the locale
   per test with `TestifyConfiguration.locale` instead

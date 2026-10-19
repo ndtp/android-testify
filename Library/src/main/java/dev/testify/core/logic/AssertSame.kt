@@ -148,33 +148,62 @@ internal fun <TActivity : Activity> assertSame(
 
         val destination = getDestination(activity, outputFileName)
 
+        /*
+         * Record mode compares with `exactness` removed, but still honours exclusion rects and a
+         * custom compare method. See `TestifyConfiguration.getRecordModeCompare()` for why those
+         * are treated differently.
+         *
+         * Previously recording used the test's own comparison, so a capture that had drifted within
+         * the configured tolerance was treated as a match and discarded — the baseline could never
+         * be refreshed, which is what a forced record mode was asked for. Dropping the comparison
+         * altogether would fix that but churn every baseline whose test excludes a region, on every
+         * run, over pixels the test has said it does not care about.
+         */
+        if (isRecordMode) {
+            val recordedBaseline = loadBaselineBitmapForComparison(
+                testContext = testContext,
+                targetContext = activity,
+                testName = description.name
+            )
+
+            if (recordedBaseline != null) {
+                baselineBitmap = recordedBaseline
+                if (compareBitmaps(recordedBaseline, currentBitmap, configuration.getRecordModeCompare())) {
+                    // Identical where the test cares. Leave the baseline untouched.
+                    Assert.assertTrue(
+                        "Could not delete cached bitmap ${description.name}",
+                        deleteBitmap(destination)
+                    )
+                    return
+                }
+            }
+
+            TestInstrumentationRegistry.instrumentationPrintln(
+                "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
+            )
+            if (!destination.finalize()) {
+                throw FinalizeDestinationException(destination.description)
+            }
+            return
+        }
+
         baselineBitmap = loadBaselineBitmapForComparison(
             testContext = testContext,
             targetContext = activity,
             testName = description.name
         )
-            ?: if (isRecordMode) {
-                TestInstrumentationRegistry.instrumentationPrintln(
-                    "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
+            ?: throw ScreenshotBaselineNotDefinedException(
+                moduleName = TestInstrumentationRegistry.getModuleName(),
+                testName = description.name,
+                testClass = description.fullyQualifiedTestName,
+                deviceKey = formatDeviceString(
+                    DeviceStringFormatter(
+                        testContext,
+                        null
+                    ),
+                    DEFAULT_FOLDER_FORMAT
                 )
-                if (!destination.finalize()) {
-                    throw FinalizeDestinationException(destination.description)
-                }
-                return
-            } else {
-                throw ScreenshotBaselineNotDefinedException(
-                    moduleName = TestInstrumentationRegistry.getModuleName(),
-                    testName = description.name,
-                    testClass = description.fullyQualifiedTestName,
-                    deviceKey = formatDeviceString(
-                        DeviceStringFormatter(
-                            testContext,
-                            null
-                        ),
-                        DEFAULT_FOLDER_FORMAT
-                    )
-                )
-            }
+            )
 
         if (compareBitmaps(baselineBitmap, currentBitmap, configuration.getBitmapCompare())) {
             Assert.assertTrue(
@@ -195,16 +224,10 @@ internal fun <TActivity : Activity> assertSame(
                     .exactness(configuration.exactness)
                     .generate(context = activity)
             }
-            if (isRecordMode) {
-                TestInstrumentationRegistry.instrumentationPrintln(
-                    "\n\t✓ " + "Recording baseline for ${description.name}".cyan()
-                )
-            } else {
-                throw ScreenshotIsDifferentException(
-                    TestInstrumentationRegistry.getModuleName(),
-                    description.fullyQualifiedTestName
-                )
-            }
+            throw ScreenshotIsDifferentException(
+                TestInstrumentationRegistry.getModuleName(),
+                description.fullyQualifiedTestName
+            )
         }
     } finally {
         currentBitmap?.recycle()
