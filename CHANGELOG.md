@@ -1,3 +1,5 @@
+# Testify Change Log
+
 ## Unreleased
 
 > [!CAUTION]
@@ -29,6 +31,8 @@
 - Fix duplicate `baseline_image` / `test_image` keys in `report.yml` when a test calls `assertSame()`
   more than once, which produced invalid YAML
 
+---
+
 ## 6.0.0
 
 - https://github.com/ndtp/android-testify/pull/269
@@ -56,6 +60,8 @@
 *   Fix setup documentation
 *   Allow Flix Sample to be triggered manually
 
+---
+
 ## 4.0.0
 
 - https://github.com/ndtp/android-testify/pull/266 Updated to Kotlin 2.2
@@ -70,8 +76,6 @@
     - Minimum SDK raised to 26
 
 ---
-
-# Testify Change Log
 
 ## 3.2.3
 
@@ -134,8 +138,6 @@
 
 Released without additional changes from 2.0.0-rc03.
 
----
-
 ## 2.0.0-rc03
 
 ### Library
@@ -150,8 +152,6 @@ Released without additional changes from 2.0.0-rc03.
 
 - Added a Dialog sample to test as a demonstration of how to capture dialog boxes and also as a regression test for the bug with `setCaptureMethod()`
 
----
-
 ## 2.0.0-rc02
 
 ### Library
@@ -159,8 +159,6 @@ Released without additional changes from 2.0.0-rc03.
 #### Fixed
 
 - Fixed a bug in ComposableScreenshotRule.setCaptureMethod() where it was incorrectly ignoring the passed in captureMethod argument.
-
----
 
 ## 2.0.0-rc01
 
@@ -237,8 +235,6 @@ Released without additional changes from 2.0.0-rc03.
 #### Fixed
 
 - [#175](https://github.com/ndtp/android-testify/issues/175): Output from Gradle Managed Devices now named according to Testify naming strategy
-
----
 
 ## 2.0.0-beta04
 
@@ -324,8 +320,6 @@ Released without additional changes from 2.0.0-rc03.
 ### Compose Extension
 
 - Fixed #120 - can set a custom capture method when using ComposableScreenshotRule
-
----
 
 ## 2.0.0-beta01
 
@@ -425,8 +419,6 @@ Capture the entire device screen, including system UI, dialogs and menus.
 Combine visual regression testing with accessibility checks to further improve the quality and
 expand the reach of your application.
 
----
-
 ## 2.0.0-alpha02
 
 ### Compose Extension Library
@@ -474,8 +466,6 @@ expand the reach of your application.
       .setFontScale(2.0f)
   ```
 
-## Unreleased
-
 ### Fullscreen Extension Library
 
 Capture the entire device screen, including system UI, dialogs and menus.
@@ -484,8 +474,6 @@ Capture the entire device screen, including system UI, dialogs and menus.
 
 Combine visual regression testing with accessibility checks to further improve the quality and
 expand the reach of your application.
-
----
 
 ## 2.0.0-alpha01
 
@@ -539,8 +527,6 @@ Please the the [Migration Guide](https://ndtp.github.io/android-testify/docs/mig
 - compileSdkVersion from 29 to 31
 - targetSdkVersion from 29 to 31
 
----
-
 ## 1.1.0
 
 Library and plugin released without additional changes.
@@ -587,8 +573,6 @@ Library and plugin released without additional changes.
     - Red pixels are different
 - Method `DeviceIdentifier.getDeviceDimensions(context: Context): Pair<Int, Int>` is now public.
 
----
-
 ## 1.1.0-beta3
 
 ### Library
@@ -615,8 +599,6 @@ Library and plugin released without additional changes.
 
 - Renamed the `rootViewId` setter on `ScreenshotTestRule` for better Java interoperability. It has
   been renamed to `setRootViewIdResource`.
-
----
 
 ## 1.1.0-beta2
 
@@ -711,8 +693,6 @@ Library and plugin released without additional changes.
 - Material from 1.1.0 to 1.3.0
 - MockitoKotlin from 2.1.0 to 2.2.0
 
----
-
 ## 1.0.0-rc3
 
 ### Library
@@ -755,8 +735,6 @@ Library and plugin released without additional changes.
 
 - Update Sample application to use a Pixel 3a API 30 baseline emulator.
 
----
-
 ## 1.0.0-rc1
 
 #### Changes
@@ -795,8 +773,6 @@ Library and plugin released without additional changes.
 
 - The gradle plugin has moved to `Plugins/Gradle`
 
----
-
 ## 1.0.0-beta5
 
 ### Library
@@ -813,8 +789,6 @@ Library and plugin released without additional changes.
 - AndroidX Test Rules to 1.2.0
 - Kotlin to 1.3.72
 - Mockito to 3.3.3
-
----
 
 ## 1.0.0-beta4 -- June 17, 2020
 
@@ -972,10 +946,10 @@ Breaking changes introduced. Bumped Testify to 1.0.0-beta1
 - Extend MaterialComponents theme instead of AppCompat theme
 - Re-record baseline using locale key
 
----
-
 ## 1.0.0-alpha1 - April 5, 2019
 
 https://github.com/Shopify/android-testify/commit/3a5b617cf9a1f13e31830cfbcb009393c90e3b37
 
 Initial public release 🎉
+
+---
