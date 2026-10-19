@@ -731,6 +731,7 @@ meta:
     stack: ubuntu-resolute-26.04-bitrise-2026-android
     machine_type_id: g2.linux.large
 app:
+  status_report_name: "<project_title> / <target_id>"
   envs:
   - opts:
       is_expand: false
