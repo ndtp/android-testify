@@ -72,7 +72,7 @@ jobs:
           channel: beta
           arch: x86_64
           profile: pixel_3a
-          ram-size: 4096M
+          ram-size: 6144M
           disk-size: 6G
 
       - name: Enable kernel-based virtual machine (KVM)
@@ -90,6 +90,21 @@ jobs:
           # sys.boot_completed goes high while PackageManager is still doing
           # first-boot work, so wait for the package service to actually answer.
           timeout 240 bash -c 'until adb shell service check package | grep -q ": found"; do sleep 2; done'
+          # First boot then fans out a burst of broadcasts that start many
+          # background apps; wait for the queues to drain before installing.
+          timeout 120 adb shell am wait-for-broadcast-idle || echo "Broadcast queues still busy; continuing"
+          # Wait until lowmemorykiller has gone 15s without a kill, so the app
+          # under test is not started into a memory squeeze.
+          timeout 120 bash -c '
+            last=-1; quiet=0
+            while [ "$quiet" -lt 15 ]; do
+              kills=$(adb logcat -d -s lowmemorykiller | grep -c "Kill ") || true
+              if [ "$kills" = "$last" ]; then quiet=$((quiet + 3)); else quiet=0; last=$kills; fi
+              sleep 3
+            done
+            echo "lowmemorykiller quiet after $kills kills"
+          ' || echo "lowmemorykiller still active; continuing"
+          echo "Guest memory:"; adb shell cat /proc/meminfo | head -3
           echo "Host disk:"; df -h /
           echo "Guest /data:"; adb shell df -h /data
 
