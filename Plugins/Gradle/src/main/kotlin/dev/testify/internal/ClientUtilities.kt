@@ -88,8 +88,23 @@ sealed class StreamData {
 internal val Project.destinationImageDirectory: String
     get() = "${project.testifySettings.baselineSourceDir}${File.separatorChar}"
 
-fun runProcess(command: String, streamData: StreamData = BufferedStream()): String {
-    val process = Runtime.getRuntime().exec(command)
+/**
+ * Run [command] and return what it wrote.
+ *
+ * @param redirectErrorStream merge the process's standard error into the returned output. `adb`
+ *   writes most of what it has to say to standard output, but `am instrument` reports a failure to
+ *   start the tests at all — an uninstalled target package, for instance — on standard error. A
+ *   caller that inspects the output for failures has to see it, or it reports success having run
+ *   nothing.
+ */
+fun runProcess(
+    command: String,
+    streamData: StreamData = BufferedStream(),
+    redirectErrorStream: Boolean = false
+): String {
+    val process = ProcessBuilder(*command.split(" ").toTypedArray())
+        .redirectErrorStream(redirectErrorStream)
+        .start()
     val result = streamData.handleInputStream(process.inputStream)
     process.waitFor()
     return result
