@@ -130,7 +130,7 @@ abstract class BaseScreenshotAction(
             text = if (isClass()) classMenuText else methodMenuText
             isEnabledAndVisible = (anActionEvent.project != null)
             icon = IconLoader.getIcon(
-                "/icons/${this@BaseScreenshotAction.icon}.svg",
+                "/icons/testify/${this@BaseScreenshotAction.icon}.svg",
                 this@BaseScreenshotAction::class.java
             )
         }

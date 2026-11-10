@@ -44,7 +44,7 @@ abstract class BaseFileAction(protected val anchorElement: PsiElement) : BaseUti
             text = menuText
             isEnabled = isInProject
             isVisible = (anActionEvent.project != null)
-            icon = IconLoader.getIcon("/icons/${this@BaseFileAction.icon}.svg", this@BaseFileAction::class.java)
+            icon = IconLoader.getIcon("/icons/testify/${this@BaseFileAction.icon}.svg", this@BaseFileAction::class.java)
         }
     }
 

@@ -34,7 +34,7 @@
                 class="dev.testify.actions.utility.GoToSourceAction"
                 text="Go To Source"
                 description="Navigate to the test source for this baseline image"
-                icon="/icons/camera.svg">
+                icon="/icons/testify/camera.svg">
             <keyboard-shortcut
                     keymap="$default"
                     first-keystroke="meta shift T"
