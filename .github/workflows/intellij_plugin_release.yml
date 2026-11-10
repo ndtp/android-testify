@@ -1,0 +1,40 @@
+name: Publish IntelliJ plugin to JetBrains Marketplace
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # Releases come from main; remove this line to allow publishing from any branch.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: Plugins/IntelliJ
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: 25
+
+      - name: Publish plugin
+        run: ./gradlew publishPlugin
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+
+      - name: Upload published zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: intellij-plugin
+          path: Plugins/IntelliJ/build/distributions/*.zip
+          if-no-files-found: error
