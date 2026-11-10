@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [6.1.0]
+
+- Raise minimum supported Android Studio version to Quail 4 2026.1.4 Patch 1
+
 ## [6.0.0]
 
 - Raise minimum supported Android Studio version to Otter | 2025.2.1.
