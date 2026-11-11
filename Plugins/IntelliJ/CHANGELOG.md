@@ -4,7 +4,7 @@
 
 ## [Unreleased]
 
-## [6.1.0]
+## [6.1.1]
 
 - Raise minimum supported Android Studio version to Quail 4 2026.1.4 Patch 1
 
